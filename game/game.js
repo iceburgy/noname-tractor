@@ -716,7 +716,7 @@
 					show_splash:{
 						name:'显示开始界面',
 						intro:'游戏开始前进入模式选择画面',
-						init:'init',
+						init:'off',
 						item:{
 							off:'关闭',
 							init:'首次启动',
@@ -7282,48 +7282,48 @@
 						_status.windowLoaded=true;
 					}
 				};
-				window.onerror=function(msg, src, line, column, err){
-					var str=msg + '\n' + _status.event.name + ': ' + _status.event.step;
-					str+='\n'+_status.event.parent.name+': '+_status.event.parent.step;
-					str+='\n'+_status.event.parent.parent.name+': '+_status.event.parent.parent.step;
-					var evt=_status.event;
-					if(evt.player||evt.target||evt.source||evt.skill||evt.card){
-						str+='\n-------------'
-					}
-					if(evt.player){
-						str+='\nplayer: ' + evt.player.name;
-					}
-					if(evt.target){
-						str+='\ntarget: ' + evt.target.name;
-					}
-					if(evt.source){
-						str+='\nsource: ' + evt.source.name;
-					}
-					if(evt.skill){
-						str+='\nskill: ' + evt.skill.name;
-					}
-					if(evt.card){
-						str+='\ncard: ' + evt.card.name;
-					}
-					str+='\n-------------';
-					str+='\n'+line;
-					str+='\n'+column;
-					str+='\n'+err.stack;
-					alert(str);
-					window.ea=Array.from(arguments);
-					window.em=msg;
-					window.el=line;
-					window.ec=column;
-					window.eo=err;
-					game.print(msg);
-					game.print(line);
-					game.print(column);
-					game.print(err.stack);
-					if(!lib.config.errstop){
-						_status.withError=true;
-						game.loop();
-					}
-				};
+				// window.onerror=function(msg, src, line, column, err){
+				// 	var str=msg + '\n' + _status.event.name + ': ' + _status.event.step;
+				// 	str+='\n'+_status.event.parent.name+': '+_status.event.parent.step;
+				// 	str+='\n'+_status.event.parent.parent.name+': '+_status.event.parent.parent.step;
+				// 	var evt=_status.event;
+				// 	if(evt.player||evt.target||evt.source||evt.skill||evt.card){
+				// 		str+='\n-------------'
+				// 	}
+				// 	if(evt.player){
+				// 		str+='\nplayer: ' + evt.player.name;
+				// 	}
+				// 	if(evt.target){
+				// 		str+='\ntarget: ' + evt.target.name;
+				// 	}
+				// 	if(evt.source){
+				// 		str+='\nsource: ' + evt.source.name;
+				// 	}
+				// 	if(evt.skill){
+				// 		str+='\nskill: ' + evt.skill.name;
+				// 	}
+				// 	if(evt.card){
+				// 		str+='\ncard: ' + evt.card.name;
+				// 	}
+				// 	str+='\n-------------';
+				// 	str+='\n'+line;
+				// 	str+='\n'+column;
+				// 	str+='\n'+err.stack;
+				// 	alert(str);
+				// 	window.ea=Array.from(arguments);
+				// 	window.em=msg;
+				// 	window.el=line;
+				// 	window.ec=column;
+				// 	window.eo=err;
+				// 	game.print(msg);
+				// 	game.print(line);
+				// 	game.print(column);
+				// 	game.print(err.stack);
+				// 	if(!lib.config.errstop){
+				// 		_status.withError=true;
+				// 		game.loop();
+				// 	}
+				// };
 
 				if(window.noname_update){
 					lib.version=window.noname_update.version;
@@ -35320,6 +35320,30 @@
 				ui.iptext.remove();
 				delete ui.iptext;
 			}
+			if(ui.playernamenode){
+				ui.playernamenode.remove();
+				delete ui.playernamenode;
+			}
+			if(ui.playernametext){
+				ui.playernametext.remove();
+				delete ui.playernametext;
+			}
+			if(ui.passwordnode){
+				ui.passwordnode.remove();
+				delete ui.passwordnode;
+			}
+			if(ui.passwordtext){
+				ui.passwordtext.remove();
+				delete ui.passwordtext;
+			}
+			if(ui.emailnode){
+				ui.emailnode.remove();
+				delete ui.emailnode;
+			}
+			if(ui.emailtext){
+				ui.emailtext.remove();
+				delete ui.emailtext;
+			}
 			if(ui.ipbutton){
 				ui.ipbutton.remove();
 				delete ui.ipbutton;
@@ -45761,20 +45785,20 @@
 				ui.system1=ui.create.div('#system1',ui.system);
 				ui.system2=ui.create.div('#system2',ui.system);
 
-				ui.replay=ui.create.system('重来',function(){
-					if(this.innerHTML=='<span>确认</span>'){
-						clearTimeout(this.confirmTimeout);
-						game.reload();
-					}
-					else{
-						this.innerHTML='<span>确认</span>';
-						var that=this;
-						this.confirmTimeout=setTimeout(function(){
-							that.innerHTML='<span>重来</span>';
-						},1000);
-					}
-				},true);
-				ui.replay.id='restartbutton';
+				// ui.replay=ui.create.system('重来',function(){
+				// 	if(this.innerHTML=='<span>确认</span>'){
+				// 		clearTimeout(this.confirmTimeout);
+				// 		game.reload();
+				// 	}
+				// 	else{
+				// 		this.innerHTML='<span>确认</span>';
+				// 		var that=this;
+				// 		this.confirmTimeout=setTimeout(function(){
+				// 			that.innerHTML='<span>重来</span>';
+				// 		},1000);
+				// 	}
+				// },true);
+				// ui.replay.id='restartbutton';
 				ui.config2=ui.create.system('选项',ui.click.config);
 				ui.pause=ui.create.system('暂停',ui.click.pause);
 				ui.pause.id='pausebutton';
@@ -45787,12 +45811,14 @@
 				if(!lib.config.show_pause){
 					ui.pause.style.display='none';
 				}
+				ui.pause.hide();
+				ui.pause.style.display='none';
 				ui.cardPileButton=ui.create.system('牌堆',null,true);
 				ui.cardPileButton.style.display='none';
 				lib.setPopped(ui.cardPileButton,ui.click.cardPileButton,220);
-				ui.leaderboardButton=ui.create.system('战况',null,true);
-				lib.setPopped(ui.leaderboardButton,ui.click.leaderboardButton,700);
-				ui.changeLogDialog=ui.create.system('版本',null,true);
+				// ui.leaderboardButton=ui.create.system('战况',null,true);
+				// lib.setPopped(ui.leaderboardButton,ui.click.leaderboardButton,700);
+				ui.changeLogDialog=ui.create.system('版本',null);
 				lib.setPopped(ui.changeLogDialog,ui.click.changeLogDialog,450);
 				ui.wuxie=ui.create.system('不询问无懈',ui.click.wuxie,true);
 				if(!lib.config.touchscreen){
@@ -45844,23 +45870,23 @@
 				// 	ui.cardPileButton.style.display='none';
 				// }
 				
-				ui.sortCard=ui.create.system('整理手牌',function(){
-					var hs=game.me.getCards('h');
-					if(!hs.length) return;
-					game.addVideo('lose',game.me,[get.cardsInfo(hs),[],[]]);
-					for(var i=0;i<hs.length;i++){
-						hs[i].goto(ui.special);
-					}
-					hs.sort(function(b,a){
-						if(a.name!=b.name) return lib.sort.card(a.name,b.name);
-						else if(a.suit!=b.suit) return lib.suit.indexOf(a)-lib.suit.indexOf(b);
-						else return a.number-b.number;
-					});
-					game.me.directgain(hs,false);
-				});
-				if(!lib.config.show_sortcard){
-					ui.sortCard.style.display='none';
-				}
+				// ui.sortCard=ui.create.system('整理手牌',function(){
+				// 	var hs=game.me.getCards('h');
+				// 	if(!hs.length) return;
+				// 	game.addVideo('lose',game.me,[get.cardsInfo(hs),[],[]]);
+				// 	for(var i=0;i<hs.length;i++){
+				// 		hs[i].goto(ui.special);
+				// 	}
+				// 	hs.sort(function(b,a){
+				// 		if(a.name!=b.name) return lib.sort.card(a.name,b.name);
+				// 		else if(a.suit!=b.suit) return lib.suit.indexOf(a)-lib.suit.indexOf(b);
+				// 		else return a.number-b.number;
+				// 	});
+				// 	game.me.directgain(hs,false);
+				// });
+				// if(!lib.config.show_sortcard){
+				// 	ui.sortCard.style.display='none';
+				// }
 				ui.playerids=ui.create.system('显示身份',function(){
 					if(game.showIdentity){
 						game.showIdentity();
@@ -45953,9 +45979,9 @@
 				ui.shortcut=ui.create.div('#shortcut.hidden',ui.window);
 				ui.shortcut.listen(ui.click.shortcut);
 				ui.create.div(ui.shortcut,function(e){e.stopPropagation()});
-				ui.create.div('.menubutton.round','<span>重来</span>',ui.shortcut,game.reload).dataset.position=1;
-				ui.create.div('.menubutton.round','<span>退出</span>',ui.shortcut,game.exit).dataset.position=3;
-				ui.create.div('.menubutton.round','<span>记录</span>',ui.shortcut,ui.click.pause).dataset.position=4;
+				// ui.create.div('.menubutton.round','<span>重来</span>',ui.shortcut,game.reload).dataset.position=1;
+				// ui.create.div('.menubutton.round','<span>退出</span>',ui.shortcut,game.exit).dataset.position=3;
+				// ui.create.div('.menubutton.round','<span>记录</span>',ui.shortcut,ui.click.pause).dataset.position=4;
 				ui.shortcut.autobutton=ui.create.div('.menubutton.round','<span>托管</span>',ui.shortcut,ui.click.auto);
 				ui.shortcut.autobutton.dataset.position=2;
 				ui.favmodelist=ui.create.div('.favmodelist',ui.shortcut);

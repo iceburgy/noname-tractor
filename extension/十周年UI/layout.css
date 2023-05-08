@@ -627,3 +627,6 @@ body>.background {
 #window>.player.connect[data-position='7']{left:calc(400% / 9 - 300px / 9);top:calc(400% / 7 - 40px + 5px);}
 #window>.player.connect[data-position='8']{left:calc(500% / 9 + 150px / 9);top:calc(400% / 7 - 40px + 5px);}
 #window>.player.connect[data-position='9']{left:calc(600% / 9 + 600px / 9);top:calc(400% / 7 - 40px + 5px);}
+
+/*--------位置(Tractor)------*/
+#window>.pokertable[data-position='0']{left:calc(200% / 9 - 1200px / 9);top:calc(300% / 7 - 160px + 5px);height: 160px;width: 160px;background-size: 100% 100%;background-repeat: no-repeat;}

@@ -476,6 +476,12 @@
 #window.more_room>.player.connect[data-position='c4']{transform:translateY(105px);}
 #window.more_room>.player.connect[data-position='c5']{transform:translateY(105px);}
 
+/*--------位置(Tractor)------*/
+/* #window>.framemain>.pokertable[data-position='0']{left:calc(35% - 80px);top:calc(30% - 80px);height: 160px;width: 160px;background-size: 100% 100%;background-repeat: no-repeat;}
+#window>.framemain>.pokertable[data-position='1']{left:calc(75% - 80px);top:calc(30% - 80px);height: 160px;width: 160px;background-size: 100% 100%;background-repeat: no-repeat;}
+#window>.framemain>.pokertable[data-position='2']{left:calc(35% - 80px);top:calc(70% - 80px);height: 160px;width: 160px;background-size: 100% 100%;background-repeat: no-repeat;}
+#window>.framemain>.pokertable[data-position='3']{left:calc(75% - 80px);top:calc(70% - 80px);height: 160px;width: 160px;background-size: 100% 100%;background-repeat: no-repeat;} */
+
 #window>.player.connect{
 	width: 150px;
 }

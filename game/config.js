@@ -139,7 +139,7 @@ window.config={
 	customcardpile:{},
 	addedpile:{},
 
-	mode:'identity',
+	mode:'connect',
 	mode_config:{
 		global:{
 			player_number:8,
