@@ -151,6 +151,8 @@ export var CommonMethods = /** @class */ (function () {
         CommonMethods.UIToServerCardMap[52] = 53;
         CommonMethods.ServerToUICardMap[53] = 52;
         CommonMethods.UIToServerCardMap[53] = 52;
+        CommonMethods.ServerToUICardMap[54] = 54;
+        CommonMethods.UIToServerCardMap[54] = 54;
     };
     CommonMethods.ArrayCopy = function (from, start, len) {
         var to = [];

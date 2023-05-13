@@ -243,10 +243,10 @@
     right: 13px;
 }
 
-#arena>.player:not(.minskin){
+/* #arena>.player:not(.minskin){
     width: 120px !important;
     height: 220px !important;
-}
+} */
 #arena>.player:not(.minskin)>.damage.dieidentity{
     font-size: 60px;
     transform: scale(1);
@@ -261,12 +261,12 @@
     transform: scale(0.8);
     transform-origin: bottom left;
 }
-#arena>.player:not(.minskin)>.avatar,
+/* #arena>.player:not(.minskin)>.avatar,
 #arena>.player:not(.minskin)>.avatar2{
     width: calc(100% - 14px) !important;
     height: calc(100% - 14px) !important;
     background-position: 50% !important;
-}
+} */
 #arena.uslim_player>.player:not(.minskin)>.avatar,
 #arena.uslim_player>.player:not(.minskin)>.avatar2{
     width: calc(100% - 6px) !important;

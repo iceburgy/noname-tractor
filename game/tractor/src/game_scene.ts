@@ -1,17 +1,15 @@
-// import { Match } from './match.js';
-// import { RoomState } from './room_state.js';
-// import { count } from "console";
-// import { RoomSetting } from "./room_setting.js";
-// import { GameState } from "./game_state.js";
-// import { CurrentHandState } from "./current_hand_state.js";
-// import { CurrentTrickState } from "./current_trick_state.js";
-// import { TractorPlayer } from "./tractor_player.js";
+import { RoomState } from './room_state.js';
+import { RoomSetting } from "./room_setting.js";
+import { GameState } from "./game_state.js";
+import { CurrentHandState } from "./current_hand_state.js";
+import { CurrentTrickState } from "./current_trick_state.js";
+import { TractorPlayer } from "./tractor_player.js";
 import { MainForm } from "./main_form.js";
-// import { Coordinates } from "./coordinates.js";
+import { Coordinates } from "./coordinates.js";
 import { CommonMethods } from "./common_methods.js";
-// import { ShowingCardsValidationResult } from "./showing_cards_validation_result.js";
-// import { ReplayEntity } from "./replay_entity.js";
-// import { IDBHelper } from "./idb_helper.js";
+import { ShowingCardsValidationResult } from "./showing_cards_validation_result.js";
+import { ReplayEntity } from "./replay_entity.js";
+import { IDBHelper } from "./idb_helper.js";
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
@@ -28,17 +26,16 @@ export class GameScene {
     // // public prepareOkImg: Phaser.GameObjects.Image[]
     // // public pokerTableChairImg: { tableImg: any, chairImgs: Phaser.GameObjects.Image[] }[]
     // // public pokerTableChairNames: { tableName: any, chairNames: { myOwnName: any, observerNames: Phaser.GameObjects.Text[] }[] }[]
-    // public match: Match 
     public mainForm!: MainForm;
-    // // public cardImages: Phaser.GameObjects.GameObject[]
-    // // public cardImageSequence: Phaser.GameObjects.Text[]
-    // // public toolbarImages: Phaser.GameObjects.GameObject[]
-    // // public sidebarImages: Phaser.GameObjects.GameObject[]
-    // // public scoreCardsImages: Phaser.GameObjects.GameObject[]
-    // // public last8CardsImages: Phaser.GameObjects.GameObject[]
-    // // public showedCardImages: Phaser.GameObjects.GameObject[]
-    // // public OverridingFlagImage: Phaser.GameObjects.Image
-    // public overridingLabelImages: string[] 
+    public cardImages!: any[]
+    public cardImageSequence!: any[]
+    public toolbarImages!: any[]
+    public sidebarImages!: any[]
+    public scoreCardsImages!: any[]
+    public last8CardsImages!: any[]
+    public showedCardImages!: any[]
+    public OverridingFlagImage: any
+    public overridingLabelImages!: string[]
     // public overridingLabelAnims: string[] 
     // // public hallPlayerHeader: Phaser.GameObjects.Text
     // // public hallPlayerNames: Phaser.GameObjects.Text[]
@@ -47,7 +44,7 @@ export class GameScene {
     // public joinAudioUrl: string 
     public nickNameOverridePass: string = ""
     public playerEmail: string = ""
-    // // public clientMessages: Phaser.GameObjects.Text[]
+    public clientMessages!: any[]
     // public danmuMessages: any[] 
     // // public roomUIControls: { images: any[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
     // public soundPool: any
@@ -65,13 +62,13 @@ export class GameScene {
     // // public soundwin: Phaser.Sound.BaseSound;
     // public soundVolume: number 
     // public noDanmu: string 
-    // public noCutCards: string 
-    // public yesDragSelect: string 
+    public noCutCards!: string
+    public yesDragSelect!: string
     // public yesFirstPersonView: string 
-    // public qiangliangMin: string 
+    public qiangliangMin!: string
     // public skinInUse: string 
     // public decadeUICanvas: HTMLElement 
-    // public coordinates: Coordinates 
+    public coordinates!: Coordinates
     public wsprotocal: string = "wss"
     public game: any
     public lib: any
@@ -94,31 +91,35 @@ export class GameScene {
         // // this.prepareOkImg = [null, null, null, null]
         // // this.pokerTableChairImg = []
         // // this.pokerTableChairNames = []
-        // this.match = new Match()
-        // // this.cardImages = [];
-        // // this.cardImageSequence = [];
-        // // this.toolbarImages = [];
-        // // this.sidebarImages = [];
-        // // this.scoreCardsImages = [];
-        // // this.last8CardsImages = [];
-        // // this.showedCardImages = [];
-        // this.overridingLabelImages = [];
+        this.cardImages = [];
+        this.cardImageSequence = [];
+        this.toolbarImages = [];
+        this.sidebarImages = [];
+        this.scoreCardsImages = [];
+        this.last8CardsImages = [];
+        this.showedCardImages = [];
+        this.overridingLabelImages = [
+            "bagua",
+            "zhugong",
+            "sha",
+            "huosha",
+            "leisha",
+        ]
         // this.overridingLabelAnims = [];
         // // this.hallPlayerNames = [];
-        // // this.clientMessages = [];
+        this.clientMessages = [];
         // this.danmuMessages = [];
         // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
         // // this.soundVolume = cookies.get("soundVolume");
         // // if (this.soundVolume === undefined) this.soundVolume = 0.5
         // // this.noDanmu = cookies.get("noDanmu");
         // // if (this.noDanmu === undefined) this.noDanmu = 'false'
-        // // this.noCutCards = cookies.get("noCutCards");
-        // // if (this.noCutCards === undefined) this.noCutCards = 'false'
-        // // this.yesDragSelect = cookies.get("yesDragSelect");
+        this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
+        this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
         // // if (this.yesDragSelect === undefined) this.yesDragSelect = 'false'
         // // this.yesFirstPersonView = cookies.get("yesFirstPersonView");
         // // if (this.yesFirstPersonView === undefined) this.yesFirstPersonView = 'false'
-        // // this.qiangliangMin = cookies.get("qiangliangMin");
+        this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
         let isIPPort = IPPort.test(this.hostName);
@@ -137,7 +138,7 @@ export class GameScene {
         this.nickNameOverridePass = nickNameOverridePass;
         this.playerEmail = playerEmail;
 
-        // this.coordinates = new Coordinates(this.isReplayMode);
+        this.coordinates = new Coordinates(this.isReplayMode);
 
         // this.soundPool = {};
     }
@@ -163,7 +164,7 @@ export class GameScene {
                     }
                 }
                 this.gs.sendMessageToServer(CommonMethods.PLAYER_ENTER_HALL_REQUEST, this.gs.playerName, JSON.stringify([this.gs.nickNameOverridePass, this.gs.playerEmail]));
-                 
+
                 this.gs.mainForm = new MainForm(this.gs)
                 this.gs.mainForm.drawFrameMain();
                 this.gs.mainForm.drawFrameChat();
@@ -199,42 +200,42 @@ export class GameScene {
                     // case CommonMethods.NotifyGameRoomPlayerList_RESPONSE:
                     //     this.gs.handleNotifyGameRoomPlayerList(playerID, objList);
                     //     break;
-                    // case CommonMethods.NotifyMessage_RESPONSE:
-                    //     this.gs.handleNotifyMessage(objList);
-                    //     break;
-                    // case CommonMethods.NotifyRoomSetting_RESPONSE:
-                    //     this.gs.handleNotifyRoomSetting(objList);
-                    //     break;
-                    // case CommonMethods.NotifyGameState_RESPONSE:
-                    //     this.gs.handleNotifyGameState(objList);
-                    //     break;
-                    // case CommonMethods.NotifyCurrentHandState_RESPONSE:
-                    //     this.gs.handleNotifyCurrentHandState(objList);
-                    //     break;
-                    // case CommonMethods.NotifyCurrentTrickState_RESPONSE:
-                    //     this.gs.handleNotifyCurrentTrickState(objList);
-                    //     break;
-                    // case CommonMethods.GetDistributedCard_RESPONSE:
-                    //     this.gs.handleGetDistributedCard(objList);
-                    //     break;
-                    // case CommonMethods.NotifyCardsReady_RESPONSE:
-                    //     this.gs.handleNotifyCardsReady(objList);
-                    //     break;
-                    // case CommonMethods.NotifyDumpingValidationResult_RESPONSE:
-                    //     this.gs.handleNotifyDumpingValidationResult(objList);
-                    //     break;
-                    // case CommonMethods.NotifyTryToDumpResult_RESPONSE:
-                    //     this.gs.handleNotifyTryToDumpResult(objList);
-                    //     break;
+                    case CommonMethods.NotifyMessage_RESPONSE:
+                        this.gs.handleNotifyMessage(objList);
+                        break;
+                    case CommonMethods.NotifyRoomSetting_RESPONSE:
+                        this.gs.handleNotifyRoomSetting(objList);
+                        break;
+                    case CommonMethods.NotifyGameState_RESPONSE:
+                        this.gs.handleNotifyGameState(objList);
+                        break;
+                    case CommonMethods.NotifyCurrentHandState_RESPONSE:
+                        this.gs.handleNotifyCurrentHandState(objList);
+                        break;
+                    case CommonMethods.NotifyCurrentTrickState_RESPONSE:
+                        this.gs.handleNotifyCurrentTrickState(objList);
+                        break;
+                    case CommonMethods.GetDistributedCard_RESPONSE:
+                        this.gs.handleGetDistributedCard(objList);
+                        break;
+                    case CommonMethods.NotifyCardsReady_RESPONSE:
+                        this.gs.handleNotifyCardsReady(objList);
+                        break;
+                    case CommonMethods.NotifyDumpingValidationResult_RESPONSE:
+                        this.gs.handleNotifyDumpingValidationResult(objList);
+                        break;
+                    case CommonMethods.NotifyTryToDumpResult_RESPONSE:
+                        this.gs.handleNotifyTryToDumpResult(objList);
+                        break;
                     // case CommonMethods.NotifyStartTimer_RESPONSE:
                     //     this.gs.handleNotifyStartTimer(objList);
                     //     break;
                     // case CommonMethods.NotifyEmoji_RESPONSE:
                     //     this.gs.handleNotifyEmoji(objList);
                     //     break;
-                    // case CommonMethods.CutCardShoeCards_RESPONSE:
-                    //     this.gs.handleCutCardShoeCards();
-                    //     break;
+                    case CommonMethods.CutCardShoeCards_RESPONSE:
+                        this.gs.handleCutCardShoeCards();
+                        break;
                     // case CommonMethods.NotifyReplayState_RESPONSE:
                     //     this.gs.handleNotifyReplayState(objList);
                     //     break;
@@ -268,11 +269,11 @@ export class GameScene {
                 // }
             }
             this.websocket.onerror = function (e: any) {
-                document.body.innerHTML = `<div>!!! 尝试链接服务器失败，请确认输入信息无误：${this.gs.hostNameOriginal}</div>`
+                document.body.innerHTML = `<div>!!! 尝试与服务器建立连接失败，请确认输入信息无误：${this.gs.hostNameOriginal}</div>`
                 console.error(JSON.stringify(e));
             }
         } catch (e: any) {
-            document.body.innerHTML = `<div>!!! 尝试链接服务器出错，请确认输入信息无误：${this.hostNameOriginal}</div>`
+            document.body.innerHTML = `<div>!!! 尝试连接服务器出错，请确认输入信息无误：${this.hostNameOriginal}</div>`
             console.log(e);
         }
     }
@@ -282,7 +283,7 @@ export class GameScene {
     //     this.mainForm.sgDrawingHelper.NotifyUpdateGobang(result);
     // }
 
-    // public handleNotifyDaojuInfo(objList: []) {
+    // public handleNotifyDaojuInfo(objList: any) {
     //     var daojuInfo: any = objList[0];
     //     var updateQiandao: boolean = objList[1];
     //     var updateSkin: boolean = objList[2];
@@ -314,43 +315,43 @@ export class GameScene {
         this.mainForm.tractorPlayer.NotifyPing()
     }
 
-    // public handleNotifyReplayState(objList: []) {
+    // public handleNotifyReplayState(objList: any) {
     //     var result: ReplayEntity = objList[0];
     //     this.mainForm.tractorPlayer.NotifyReplayState(result)
     // }
 
-    // public handleCutCardShoeCards() {
-    //     this.mainForm.tractorPlayer.CutCardShoeCards()
-    // }
+    public handleCutCardShoeCards() {
+        this.mainForm.CutCardShoeCardsEventHandler()
+    }
 
-    // public handleNotifyEmoji(objList: []) {
+    // public handleNotifyEmoji(objList: any) {
     //     this.mainForm.tractorPlayer.NotifyEmoji(...objList)
     // }
 
-    // public handleNotifyStartTimer(objList: []) {
+    // public handleNotifyStartTimer(objList: any) {
     //     var result: number = objList[0];
     //     this.mainForm.tractorPlayer.NotifyStartTimer(result)
     // }
 
-    // public handleNotifyDumpingValidationResult(objList: []) {
-    //     var result: ShowingCardsValidationResult = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyDumpingValidationResult(result)
-    // }
+    public handleNotifyDumpingValidationResult(objList: any) {
+        var result: ShowingCardsValidationResult = objList[0];
+        this.mainForm.NotifyDumpingValidationResultEventHandler(result)
+    }
 
-    // public handleNotifyTryToDumpResult(objList: []) {
-    //     var result: ShowingCardsValidationResult = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyTryToDumpResult(result)
-    // }
+    public handleNotifyTryToDumpResult(objList: any) {
+        var result: ShowingCardsValidationResult = objList[0];
+        this.mainForm.NotifyTryToDumpResultEventHandler(result)
+    }
 
-    // public handleNotifyCardsReady(objList: []) {
-    //     var cardsReady: boolean[] = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyCardsReady(cardsReady)
-    // }
+    public handleNotifyCardsReady(objList: any) {
+        var cardsReady: boolean[] = objList[0];
+        this.mainForm.tractorPlayer.NotifyCardsReady(cardsReady)
+    }
 
-    // public handleGetDistributedCard(objList: []) {
-    //     var cardNumber: number = objList[0];
-    //     this.mainForm.tractorPlayer.GetDistributedCard(cardNumber)
-    // }
+    public handleGetDistributedCard(objList: any) {
+        var cardNumber: number = objList[0];
+        this.mainForm.tractorPlayer.GetDistributedCard(cardNumber)
+    }
 
     public handleNotifyGameHall(objList: any) {
         var roomStateList = objList[0];
@@ -359,45 +360,45 @@ export class GameScene {
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
     }
 
-    // public handleNotifyOnlinePlayerList(playerID: string, objList: []) {
+    // public handleNotifyOnlinePlayerList(playerID: string, objList: any) {
     //     var isJoining: boolean = objList[0];
     //     this.mainForm.tractorPlayer.NotifyOnlinePlayerList(playerID, isJoining)
     // }
 
-    // public handleNotifyGameRoomPlayerList(playerID: string, objList: []) {
+    // public handleNotifyGameRoomPlayerList(playerID: string, objList: any) {
     //     var isJoining: boolean = objList[0];
     //     var roomName: string = objList[1];
     //     this.mainForm.tractorPlayer.NotifyGameRoomPlayerList(playerID, isJoining, roomName)
     // }
 
-    // public handleNotifyMessage(objList: []) {
-    //     var msgs = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyMessage(msgs)
-    // }
+    public handleNotifyMessage(objList: any) {
+        var msgs = objList[0];
+        this.mainForm.tractorPlayer.NotifyMessage(msgs)
+    }
 
-    // public handleNotifyRoomSetting(objList: []) {
-    //     var roomSetting: RoomSetting = objList[0];
-    //     var showMessage: boolean = objList[1];
-    //     this.mainForm.tractorPlayer.NotifyRoomSetting(roomSetting, showMessage)
-    // }
+    public handleNotifyRoomSetting(objList: any) {
+        var roomSetting: RoomSetting = objList[0];
+        var showMessage: boolean = objList[1];
+        this.mainForm.tractorPlayer.NotifyRoomSetting(roomSetting, showMessage)
+    }
 
-    // public handleNotifyGameState(objList: []) {
-    //     var gameState: GameState = objList[0];
-    //     var notifyType: string = objList[1];
-    //     this.mainForm.tractorPlayer.NotifyGameState(gameState, notifyType)
-    // }
+    public handleNotifyGameState(objList: any) {
+        var gameState: GameState = objList[0];
+        var notifyType: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyGameState(gameState, notifyType)
+    }
 
-    // public handleNotifyCurrentHandState(objList: []) {
-    //     var currentHandState: CurrentHandState = objList[0];
-    //     var notifyType: string = objList[1];
-    //     this.mainForm.tractorPlayer.NotifyCurrentHandState(currentHandState, notifyType)
-    // }
+    public handleNotifyCurrentHandState(objList: any) {
+        var currentHandState: CurrentHandState = objList[0];
+        var notifyType: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyCurrentHandState(currentHandState, notifyType)
+    }
 
-    // public handleNotifyCurrentTrickState(objList: []) {
-    //     var currentTrickState: CurrentTrickState = objList[0];
-    //     var notifyType: string = objList[1];
-    //     this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState, notifyType)
-    // }
+    public handleNotifyCurrentTrickState(objList: any) {
+        var currentTrickState: CurrentTrickState = objList[0];
+        var notifyType: string = objList[1];
+        this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState, notifyType)
+    }
 
     private processAuth(): boolean {
         try {
@@ -486,13 +487,6 @@ export class GameScene {
     //     cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     // }
 
-    // // [flag, pass, email]
-    // public savePlayerLoginInfo(loginInfo: string[]) {
-    //     this.nickNameOverridePass = loginInfo[1];
-    //     cookies.set('NickNameOverridePass', loginInfo[1], { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('playerEmail', loginInfo[2], { path: '/', expires: CommonMethods.GetCookieExpires() });
-    // }
-
     public sendMessageToServer(messageType: string, playerID: string, content: string) {
         this.websocket.send(JSON.stringify({
             "messageType": messageType, "playerID": playerID, "content": content
@@ -500,15 +494,11 @@ export class GameScene {
     }
 
     public isInGameHall() {
-        // TODO:
-        // return this.hallPlayerHeader && this.hallPlayerHeader.visible
-        return true;
+        return this.ui && this.ui.frameGameHall && this.ui.frameGameHall;
     }
 
     public isInGameRoom() {
-        // TODO:
-        // return this.mainForm.roomNameText && this.mainForm.roomNameText.visible
-        return true;
+        return this.ui && this.ui.frameGameRoom && this.ui.frameGameRoom;
     }
 
     // // public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {

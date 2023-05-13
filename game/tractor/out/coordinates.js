@@ -39,7 +39,7 @@ var Coordinates = /** @class */ (function () {
         this.danmuOffset = 40;
         // room controls
         this.controlButtonOffset = 10;
-        this.clientMessagePosition = { x: this.centerX - 200, y: this.centerY };
+        this.clientMessagePosition = { x: "50% - 200px", y: "50%" };
         this.lineOffsetY = 40;
         this.cardWidth = 90;
         this.cardHeight = 120;
@@ -59,100 +59,108 @@ var Coordinates = /** @class */ (function () {
         // players
         this.player1TextWid = 20;
         this.player1TextWidBigDelta = 12;
-        this.playerMainTextPositions = [
-            { x: this.centerX - this.cardWidth / 2, y: screenHeight - 60 },
-            { x: this.screenWid - 20, y: this.centerY - 80 },
-            { x: this.centerX - this.cardWidth / 2, y: 10 },
-            { x: 5, y: this.centerY - 80 },
-        ];
-        this.playerTextPositions = [
-            { x: this.playerMainTextPositions[0].x, y: this.playerMainTextPositions[0].y },
-            { x: this.playerMainTextPositions[1].x, y: this.playerMainTextPositions[1].y + 120 },
-            { x: this.playerMainTextPositions[2].x, y: this.playerMainTextPositions[2].y },
-            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y + 120 },
-        ];
+        // this.playerMainTextPositions = [
+        //     { x: "0px", y: "0px" },
+        //     { x: "0px", y: "50% - 80px" },
+        //     { x: "50% - 60px", y: "0px" },
+        //     { x: "0px", y: "50% - 80px" },
+        // ]
+        // this.playerTextPositions = [
+        //     { x: this.playerMainTextPositions[0].x, y: this.playerMainTextPositions[0].y },
+        //     { x: this.playerMainTextPositions[1].x, y: this.playerMainTextPositions[1].y + 120 },
+        //     { x: this.playerMainTextPositions[2].x, y: this.playerMainTextPositions[2].y }, // x is dynamically calculated based on skin width
+        //     { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y + 120 },
+        // ]
+        // from decadeLayout.css - using top
         this.playerSkinPositions = [
-            { x: screenWidthReal - 120, y: this.screenHei - 70 },
-            { x: this.playerMainTextPositions[1].x, y: this.playerMainTextPositions[1].y },
-            { x: this.playerMainTextPositions[2].x, y: this.playerMainTextPositions[2].y },
-            { x: this.playerMainTextPositions[3].x + 10, y: this.playerMainTextPositions[3].y },
+            { x: "0px", y: "0px" },
+            { x: "0px", y: "50% - 60px" },
+            { x: "50% - 45px", y: "1%" },
+            { x: "0px", y: "50% - 60px" },
+        ];
+        this.playerChairPositions = [
+            { x: "0px", y: "0px" },
+            { x: this.playerSkinPositions[1].x, y: "".concat(this.playerSkinPositions[1].y, " + 40px") },
+            { x: this.playerSkinPositions[2].x, y: this.playerSkinPositions[2].y },
+            { x: this.playerSkinPositions[3].x, y: "".concat(this.playerSkinPositions[3].y, " + 40px") },
         ];
         this.observerTextPositions = [
-            { x: this.playerTextPositions[0].x - this.controlButtonOffset, y: this.playerTextPositions[0].y + 10 },
-            { x: this.playerTextPositions[1].x, y: this.playerTextPositions[1].y + 40 },
-            { x: this.playerTextPositions[2].x, y: this.playerTextPositions[2].y + 40 },
-            { x: this.playerTextPositions[3].x, y: this.playerTextPositions[3].y + 40 },
+            { x: "90px", y: "1%" },
+            { x: "0px", y: "50% + 70px" },
+            { x: "50% + 55px", y: "0px" },
+            { x: "0px", y: "50% + 70px" },
         ];
-        this.player1StarterWid = 100;
+        // this.player1StarterWid = 100;
         this.playerStarterPositions = [
-            { x: this.playerMainTextPositions[0].x - 205, y: this.playerMainTextPositions[0].y },
-            { x: this.playerMainTextPositions[1].x - this.player1StarterWid, y: this.playerMainTextPositions[1].y - 50 },
-            { x: this.playerMainTextPositions[2].x - 205, y: this.playerMainTextPositions[2].y },
-            { x: this.playerMainTextPositions[3].x, y: this.playerMainTextPositions[3].y - 50 },
+            { x: "0px", y: "1% + 130px" },
+            { x: "0px", y: "50% + 70px" },
+            { x: "50% + 55px", y: "0px" },
+            { x: "0px", y: "50% + 70px" },
         ];
         this.emojiSize = 80;
-        this.playerEmojiPositions = [
-            { x: this.playerMainTextPositions[0].x - this.emojiSize - 120, y: this.playerStarterPositions[0].y - 30 },
-            { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerTextPositions[1].y + 50 },
-            { x: this.playerMainTextPositions[2].x - this.emojiSize - 20, y: this.danmuPositionY + 10 },
-            { x: this.playerMainTextPositions[3].x, y: this.playerTextPositions[1].y + 50 },
-        ];
+        // this.playerEmojiPositions = [
+        //     { x: this.playerMainTextPositions[0].x - this.emojiSize - 120, y: this.playerStarterPositions[0].y - 30 },
+        //     { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerTextPositions[1].y + 50 },
+        //     { x: this.playerMainTextPositions[2].x - this.emojiSize - 20, y: this.danmuPositionY + 10 },
+        //     { x: this.playerMainTextPositions[3].x, y: this.playerTextPositions[1].y + 50 },
+        // ]
         this.sgsAnimWidth = 80;
         this.sgsAnimHeight = 120;
         this.sgsAnimOffsetY = 10;
         // cards
         this.showedCardsPositions = [
-            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[0].y - 300 },
-            { x: this.screenWid - 300, y: this.playerMainTextPositions[1].y },
-            { x: this.centerX - this.cardWidth / 2, y: this.playerMainTextPositions[2].y + (CommonMethods.isMobile() ? 100 : 140) },
-            { x: this.playerMainTextPositions[3].x + 200, y: this.playerMainTextPositions[3].y },
+            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[0].y, " + ").concat(this.cardHeight + 40, "px") },
+            { x: "".concat(this.playerSkinPositions[1].x, " + 180px"), y: "".concat(this.playerSkinPositions[1].y) },
+            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + ").concat((CommonMethods.isMobile() ? 120 : 160), "px") },
+            { x: "".concat(this.playerSkinPositions[3].x, " + 180px"), y: "".concat(this.playerSkinPositions[3].y) },
         ];
         this.trumpMadeCardsScale = 2 / 3;
+        // from last trick
         this.trumpMadeCardsPositions = [
-            { x: this.playerMainTextPositions[0].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: screenHeight - this.cardHeight * this.trumpMadeCardsScale - 10 },
-            { x: this.screenWid - this.cardWidth * this.trumpMadeCardsScale - 10, y: this.playerStarterPositions[1].y - this.cardHeight * this.trumpMadeCardsScale - 10 },
-            { x: this.playerMainTextPositions[2].x - this.cardWidth * this.trumpMadeCardsScale - 120, y: 10 },
-            { x: this.playerMainTextPositions[3].x, y: this.playerStarterPositions[3].y - this.cardHeight * this.trumpMadeCardsScale - 10 },
+            { x: "0px", y: "1% + 130px" },
+            { x: "0px", y: "50% + 90px" },
+            { x: "50% + 70px", y: "0px" },
+            { x: "0px", y: "50% + 90px" },
         ];
         // last8cards
-        this.last8CardsForStarterPosition = { x: this.screenWid - 10 - this.hiddenWidth, y: 10 };
+        this.last8CardsForStarterPosition = { x: "0px", y: "0px" };
         // replay
         // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
         this.replayControlButtonWidth = 60;
         this.replayHandCardScale = 0.6;
         this.handCardPositions = [
-            { x: this.centerX - this.cardWidth / 2 - this.handCardOffset * 2, y: screenHeight - 200 },
-            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[0].y + this.cardHeight * (1 - this.replayHandCardScale) },
-            { x: this.last8CardsForStarterPosition.x - this.cardWidth * this.replayHandCardScale, y: this.showedCardsPositions[2].y + this.cardHeight * (1 - this.replayHandCardScale) },
-            { x: 10, y: this.showedCardsPositions[0].y + this.cardHeight * (1 - this.replayHandCardScale) },
+            { x: "50% - ".concat(this.cardWidth / 2, "px"), y: "0px" },
+            { x: this.last8CardsForStarterPosition.x, y: "".concat(this.showedCardsPositions[0].y) },
+            { x: this.last8CardsForStarterPosition.x, y: "".concat(this.showedCardsPositions[2].y, " + ").concat(this.cardHeight * (1 - this.replayHandCardScale), "px") },
+            { x: this.playerSkinPositions[3].x, y: "".concat(this.playerSkinPositions[0].y) },
         ];
         this.toolbarSize = 50;
-        this.toolbarPosition = { x: this.screenWid - 360, y: this.handCardPositions[0].y - 100 - 20 };
-        this.btnPigPosition = { x: this.screenWid * 0.7, y: this.handCardPositions[0].y - 100 };
+        this.toolbarPosition = { x: "10px", y: "".concat(this.showedCardsPositions[0].y) };
+        this.btnPigPosition = { x: "20%", y: "".concat(this.showedCardsPositions[0].y) };
         // sidebar for room info and game state
-        this.iconSize = 20;
-        this.sidebarOffset = 30;
-        this.roomNameTextPosition = { x: 10, y: 10 };
-        this.roomOwnerTextPosition = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset };
-        this.sidebarMyTeamPostion = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 2 };
-        this.sidebarOpTeamPostion = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 3 };
-        this.sidebarTrumpMaker = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 4 };
-        this.sidebarScoreText = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 5 };
-        this.sidebarScoreCards = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 6 };
+        // this.iconSize = 20
+        // this.sidebarOffset = 30
+        // this.roomNameTextPosition = { x: 10, y: 10 }
+        // this.roomOwnerTextPosition = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset }
+        // this.sidebarMyTeamPostion = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 2 }
+        // this.sidebarOpTeamPostion = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 3 }
+        // this.sidebarTrumpMaker = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 4 }
+        // this.sidebarScoreText = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 5 }
+        // this.sidebarScoreCards = { x: this.roomNameTextPosition.x, y: this.roomNameTextPosition.y + this.sidebarOffset * 6 }
         // sidebar for replay
         this.replayBarPosition = { x: this.screenWid * 0.65, y: 10 };
         // ending UI
-        this.last8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: (CommonMethods.isMobile() ? 100 : 140) };
-        this.scoreCardsPosition = { x: this.last8Position.x, y: this.last8Position.y + this.cardHeight + 30 };
-        this.winPointsPosition = { x: this.last8Position.x, y: this.scoreCardsPosition.y + this.cardHeight + 30 };
-        this.last8PointsPosition = { x: this.last8Position.x, y: this.winPointsPosition.y + 30 };
-        this.punishmentPointsPosition = { x: this.last8Position.x, y: this.last8PointsPosition.y + 30 };
-        this.totalPointsPosition = { x: this.last8Position.x, y: this.punishmentPointsPosition.y + 30 };
-        this.countDownPosition = { x: this.screenWid * 0.1, y: this.showedCardsPositions[0].y };
+        this.last8Position = { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + ").concat((CommonMethods.isMobile() ? 100 : 140), "px") };
+        this.scoreCardsPosition = { x: this.last8Position.x, y: "".concat(this.last8Position.y, " + ").concat(this.cardHeight + 30, "px") };
+        this.winPointsPosition = { x: this.last8Position.x, y: "".concat(this.scoreCardsPosition.y, " + ").concat(this.cardHeight + 30, "px") };
+        this.last8PointsPosition = { x: this.last8Position.x, y: "".concat(this.winPointsPosition.y, " + 30px") };
+        this.punishmentPointsPosition = { x: this.last8Position.x, y: "".concat(this.last8PointsPosition.y, " + 30px") };
+        this.totalPointsPosition = { x: this.last8Position.x, y: "".concat(this.punishmentPointsPosition.y, " + 30px") };
+        // this.countDownPosition = { x: this.screenWid * 0.1, y: this.showedCardsPositions[0].y }
         this.countDownSzie = 60;
         // distributing last 8
         this.distributingLast8MaxEdge = 30;
-        this.distributingLast8Position = { x: this.centerX - (this.cardWidth / 2) - this.handCardOffset * 3.5, y: this.centerY - this.cardHeight / 2 };
+        this.distributingLast8Position = { x: "50% - ".concat((this.cardWidth / 2), "px - ").concat(this.handCardOffset * 3.5, "px"), y: "50% - ".concat(this.cardHeight / 2, "px") };
     }
     return Coordinates;
 }());

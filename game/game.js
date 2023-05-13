@@ -45824,28 +45824,28 @@
 				if(!lib.config.touchscreen){
 					lib.setPopped(ui.config2,ui.click.pauseconfig,170);
 				}
-				ui.auto=ui.create.system('托管',ui.click.auto);
-				if(!game.syncMenu){
-					ui.config2.classList.add('hidden');
-					ui.config2.style.transition='all 0.5s';
-					ui.roundmenu.classList.add('transparent2');
+				// ui.auto=ui.create.system('托管',ui.click.auto);
+				// if(!game.syncMenu){
+				// 	ui.config2.classList.add('hidden');
+				// 	ui.config2.style.transition='all 0.5s';
+				// 	ui.roundmenu.classList.add('transparent2');
 
-					ui.auto.style.opacity=0.5;
-					ui.auto.style.transition='all 0.5s';
-					lib.onfree.push(function(){
-						ui.auto.style.opacity='';
-						setTimeout(function(){
-							ui.auto.style.transition='';
-						},500);
-					});
-				}
-				ui.auto.id='autobutton';
-				ui.autonode=ui.create.div('#autonode','<div>托管中...</div>',ui.arena);
-				ui.autonode.listen(ui.click.auto);
-				if(lib.config.mode=='connect'){
-					ui.auto.hide();
-					ui.pause.hide();
-				}
+				// 	ui.auto.style.opacity=0.5;
+				// 	ui.auto.style.transition='all 0.5s';
+				// 	lib.onfree.push(function(){
+				// 		ui.auto.style.opacity='';
+				// 		setTimeout(function(){
+				// 			ui.auto.style.transition='';
+				// 		},500);
+				// 	});
+				// }
+				// ui.auto.id='autobutton';
+				// ui.autonode=ui.create.div('#autonode','<div>托管中...</div>',ui.arena);
+				// ui.autonode.listen(ui.click.auto);
+				// if(lib.config.mode=='connect'){
+				// 	ui.auto.hide();
+				// 	ui.pause.hide();
+				// }
 
 				if(lib.forcehide){
 					if(lib.forcehide.contains('replay')) ui.replay.classList.add('forcehide');
@@ -46430,7 +46430,7 @@
 					name:ui.create.div('.name',node),
 					name2:ui.create.div('.name.name2',node),
 					nameol:ui.create.div('.nameol',node),
-					count:ui.create.div('.count',node).hide(),
+					// count:ui.create.div('.count',node).hide(),
 					equips:ui.create.div('.equips',node).hide(),
 					judges:ui.create.div('.judges',node),
 					marks:ui.create.div('.marks',node),

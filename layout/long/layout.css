@@ -30,10 +30,10 @@
     right: 13px;
 }
 
-#arena:not(.fewplayer)>.player:not(.minskin):not(*[data-position='0']){
+/* #arena:not(.fewplayer)>.player:not(.minskin):not(*[data-position='0']){
     width: 120px !important;
     height: 220px !important;
-}
+} */
 #arena:not(.fewplayer)>.player:not(.minskin):not(*[data-position='0'])>.marks{
     left: -15px;
 }

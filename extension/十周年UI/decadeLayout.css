@@ -63,10 +63,10 @@
 
 
 
-#arena[data-layout='nova']:not(*[data-player_height=''])>.player {
+/* #arena[data-layout='nova']:not(*[data-player_height=''])>.player {
     width: 120px;
     height: 180px;
-}
+} */
 
 /*
 #arena[data-layout='nova']:not(*[data-player_height=''])>.player[data-position='0']:not(.miniskin) {
@@ -185,18 +185,18 @@
 }
 
 /*4人座*/
-#arena[data-layout='nova'][data-number='4']>.player[data-position='1'] {
+#arena[data-layout='nova'][data-number='4']>.frameGameRoom>.player[data-position='1'] {
     left: auto;
-    top: 18%;
+    top: calc(50% - 60px);
     right: 0;
 }
-#arena[data-layout='nova'][data-number='4']>.player[data-position='2'] {
-    left: calc(50% - 60px);
+#arena[data-layout='nova'][data-number='4']>.frameGameRoom>.player[data-position='2'] {
+    left: calc(50% - 45px);
     top: 0;
 }
-#arena[data-layout='nova'][data-number='4']>.player[data-position='3'] {
+#arena[data-layout='nova'][data-number='4']>.frameGameRoom>.player[data-position='3'] {
     left: 0;
-    top: 18%;
+    top: calc(50% - 60px);
 }
 
 /*3人座*/

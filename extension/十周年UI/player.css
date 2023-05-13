@@ -75,10 +75,10 @@
     transition: opacity 0.3s linear;
 }
 
-#arena:not(.fewplayer)>.player:not(.minskin),
+/* #arena:not(.fewplayer)>.player:not(.minskin),
 #arena:not(.fewplayer):not(*[data-player_height=''])>.player:not(.minskin) {
     height: 180px !important;
-}
+} */
 
 
 /*玩家锁链*/

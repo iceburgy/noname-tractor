@@ -1,25 +1,24 @@
-// @ts-nocheck
-
 import { MainForm } from './main_form.js';
 import { CurrentPoker } from './current_poker.js';
 import { CommonMethods } from './common_methods.js';
 import { SuitEnums } from './suit_enums.js';
-import { TractorRules } from './tractor_rulesv';
+import { TractorRules } from './tractor_rules.js';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result.js';
 import { PokerHelper } from './poker_helper.js';
 import { TrumpState } from './trump_state.js';
-import { EmojiUtil } from './emoji_util.js';
 
 const CardsReady_REQUEST = "CardsReady"
 
 export class DrawingFormHelper {
-    public mainForm: MainForm
+    public mainForm: MainForm;
 
-    private startX: number = 0
-    private startY: number = 0
-    private handcardScale: number = 1
-    private suitSequence: number
-    public isDragging: any
+    private startX: string = "";
+    private startY: string = "";
+    private handcardScale: number = 1;
+    private handcardPosition: number = 1;
+    private suitSequence: number;
+    public isDragging: any;
+    public isMouseDown: boolean = false;
 
     constructor(mf: MainForm) {
         this.mainForm = mf
@@ -51,7 +50,7 @@ export class DrawingFormHelper {
         this.mainForm.SelectedCards = []
         for (let k = 0; k < this.mainForm.myCardIsReady.length; k++) {
             if (this.mainForm.myCardIsReady[k]) {
-                this.mainForm.SelectedCards.push(this.mainForm.gameScene.cardImages[k].getData("serverCardNumber"));
+                this.mainForm.SelectedCards.push(parseInt(this.mainForm.gameScene.cardImages[k].getAttribute("serverCardNumber")));
             }
         }
 
@@ -66,24 +65,19 @@ export class DrawingFormHelper {
                 &&
                 (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid ||
                     selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump)) {
-                if (this.mainForm.btnPig && this.mainForm.btnPig.visible) {
-                    this.mainForm.btnPig.setInteractive({ useHandCursor: true })
-                    this.mainForm.btnPig.setColor('white')
+                if (this.mainForm.gameScene.ui.btnPig && !this.mainForm.gameScene.ui.btnPig.classList.contains('hidden')) {
+                    this.mainForm.gameScene.ui.btnPig.classList.remove('disabled')
                 }
             }
             else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
                 && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
-                this.mainForm.btnPig.disableInteractive()
-                this.mainForm.btnPig.setColor('gray')
-                this.mainForm.btnPig.setStyle({ backgroundColor: 'gray' })
+                this.mainForm.gameScene.ui.btnPig.classList.add('disabled')
             }
 
         }
         else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
             && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
-            this.mainForm.btnPig.disableInteractive()
-            this.mainForm.btnPig.setColor('gray')
-            this.mainForm.btnPig.setStyle({ backgroundColor: 'gray' })
+            this.mainForm.gameScene.ui.btnPig.classList.add('disabled')
         }
 
 
@@ -102,30 +96,28 @@ export class DrawingFormHelper {
                 }
             }
             if (total == 8) {
-                this.mainForm.btnPig.setInteractive({ useHandCursor: true })
-                this.mainForm.btnPig.setColor('white')
+                this.mainForm.gameScene.ui.btnPig.classList.remove('disabled')
             }
             else {
-                this.mainForm.btnPig.disableInteractive()
-                this.mainForm.btnPig.setColor('gray')
-                this.mainForm.btnPig.setStyle({ backgroundColor: 'gray' })
+                this.mainForm.gameScene.ui.btnPig.classList.add('disabled')
             }
         }
     }
 
     // playerPos: 1-4
     public DrawHandCardsByPosition(playerPos: number, currentPoker: CurrentPoker, hcs: number) {
+        this.handcardPosition = playerPos;
         this.mainForm.cardsOrderNumber = 0
         let cardCount: number = currentPoker.Count()
-        let posIndex = playerPos - 1;
 
         this.handcardScale = hcs;
+        let posIndex = playerPos - 1;
         this.startX = this.mainForm.gameScene.coordinates.handCardPositions[posIndex].x;
         if (posIndex == 0) {
-            this.startX -= this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2 * (cardCount - 1);
+            this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2 * (cardCount - 1)}px`;
         } else if (posIndex == 1 || posIndex == 2) {
             let numOfSuits = CommonMethods.getNumOfSuits(currentPoker);
-            this.startX -= (this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale * (cardCount - 1) + (numOfSuits - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale);
+            this.startX = `${this.startX} + ${(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale * (cardCount - 1) + (numOfSuits - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale)}px`;
         }
 
         this.startY = this.mainForm.gameScene.coordinates.handCardPositions[posIndex].y
@@ -148,8 +140,8 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true)
             this.DrawCardsBySuit(allClubsNoRank, 39, true)
             if (this.DrawCardsBySuit(allHeartsNoRank, 0, true)) {
-                this.startX -= this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale
-                didDrawMaster = true
+                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                didDrawMaster = true;
             }
 
             primeSolidMasters[currentPoker.Rank] = currentPoker.HeartsRankTotal()
@@ -158,7 +150,7 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allClubsNoRank, 39, true)
             this.DrawCardsBySuit(allHeartsNoRank, 0, true)
             if (this.DrawCardsBySuit(allSpadesNoRank, 13, true)) {
-                this.startX -= this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale
+                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
                 didDrawMaster = true
             }
 
@@ -168,7 +160,7 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allHeartsNoRank, 0, true)
             this.DrawCardsBySuit(allSpadesNoRank, 13, true)
             if (this.DrawCardsBySuit(allDiamondsNoRank, 26, true)) {
-                this.startX -= this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale
+                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
                 didDrawMaster = true
             }
 
@@ -178,7 +170,7 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allSpadesNoRank, 13, true)
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true)
             if (this.DrawCardsBySuit(allClubsNoRank, 39, true)) {
-                this.startX -= this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale
+                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
                 didDrawMaster = true
             }
 
@@ -193,7 +185,7 @@ export class DrawingFormHelper {
         primeSolidMasters[52] = currentPoker.Cards[52]
         primeSolidMasters[53] = currentPoker.Cards[53]
         if (this.DrawCardsBySuit(subSolidMasters, 0, !didDrawMaster)) {
-            this.startX -= this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale
+            this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
             didDrawMaster = true
         }
         this.DrawCardsBySuit(primeSolidMasters, 0, !didDrawMaster)
@@ -208,7 +200,7 @@ export class DrawingFormHelper {
         // mainForm.myCardsNumber = new ArrayList();
 
         this.destroyAllCards()
-        this.startX = this.mainForm.gameScene.coordinates.handCardPositions[0].x - 13 * (cardCount - 1)
+        this.startX = `${this.mainForm.gameScene.coordinates.handCardPositions[0].x} - ${13 * (cardCount - 1)}px`;
         this.startY = this.mainForm.gameScene.coordinates.handCardPositions[0].y
 
         var allHeartsNoRank: number[] = currentPoker.HeartsNoRank()
@@ -240,40 +232,114 @@ export class DrawingFormHelper {
             var cardCount: number = cardsToDraw[i]
             for (let j = 0; j < cardCount; j++) {
                 this.drawCard(this.startX, this.startY, i + offset)
-                this.startX += this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale
+                this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
                 hasDrawn = true
             }
         }
-        if (hasDrawn) this.startX += this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale
+        if (hasDrawn) this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
         return hasDrawn
     }
 
-    private DrawShowedCards(serverCardList: number[], x: number, y: number, targetImages: Phaser.GameObjects.GameObject[], scale: number) {
+    private DrawShowedCards(serverCardList: number[], x: string, y: string, targetImages: any[], scale: number, pos: number) {
+        // 5 - last 8 cards
+        // 6 - score cards
+        if (pos === 2 || pos === 5) {
+            this.DrawShowedCardsReverse(serverCardList, x, y, targetImages, scale, pos);
+            return;
+        }
+        if (pos === 1 || pos === 3) {
+            x = `${x} - ${this.mainForm.gameScene.coordinates.handCardOffset * scale * (serverCardList.length - 1) / 2}px`;
+        }
+
         for (let i = 0; i < serverCardList.length; i++) {
             let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardList[i]]
-            let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', uiCardNumber)
-                .setOrigin(0, 0)
-                .setInteractive()
-                .setDisplaySize(this.mainForm.gameScene.coordinates.cardWidth * scale, this.mainForm.gameScene.coordinates.cardHeight * scale)
+            let image = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+
+            switch (pos) {
+                case 1:
+                    image.style.left = `calc(${x})`;
+                    image.style.bottom = `calc(${y})`;
+                    break;
+                case 3:
+                case 6:
+                    image.style.left = `calc(${x})`;
+                    image.style.top = `calc(${y})`;
+                    break;
+                case 4:
+                    image.style.left = `calc(${x})`;
+                    image.style.bottom = `calc(${y})`;
+                    break;
+                default:
+                    break;
+            }
             targetImages.push(image);
-            x += this.mainForm.gameScene.coordinates.handCardOffset * scale
+            x = `${x} + ${this.mainForm.gameScene.coordinates.handCardOffset * scale}px`;
         }
     }
 
-    private drawCard(x: number, y: number, serverCardNumber: number,) {
+    private DrawShowedCardsReverse(serverCardList: number[], x: string, y: string, targetImages: any[], scale: number, pos: number) {
+        x = `${x} + ${this.mainForm.gameScene.coordinates.handCardOffset * scale * (serverCardList.length - 1)}px`;
+        for (let i = 0; i < serverCardList.length; i++) {
+            let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardList[i]]
+            let image = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+
+            switch (pos) {
+                case 2:
+                    image.style.right = `calc(${x})`;
+                    image.style.bottom = `calc(${y})`;
+                    break;
+                case 5:
+                    image.style.right = `calc(${x})`;
+                    image.style.top = `calc(${y})`;
+                    break;
+                default:
+                    break;
+            }
+            targetImages.push(image);
+            x = `${x} - ${this.mainForm.gameScene.coordinates.handCardOffset * scale}px`;
+        }
+    }
+
+    private drawCard(x: string, y: string, serverCardNumber: number,) {
         let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumber]
-        let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', uiCardNumber).setOrigin(0, 0).setInteractive()
-            .setData("serverCardNumber", serverCardNumber)
-            .setData("cardsOrderNumber", this.mainForm.cardsOrderNumber)
-            .setScale(this.handcardScale)
-        this.mainForm.gameScene.cardImages.push(image);
-        this.mainForm.gameScene.input.setDraggable(image);
-        let leftCenter = image.getLeftCenter()
-        let seqText = this.mainForm.gameScene.add.text(leftCenter.x + 2 * this.handcardScale, leftCenter.y + 13 * this.handcardScale, this.suitSequence.toString())
-            .setColor("gray")
-            .setFontSize(this.mainForm.gameScene.coordinates.suitSequenceSize)
-            .setScale(this.handcardScale)
-        this.mainForm.gameScene.cardImageSequence.push(seqText);
+        let parent = this.mainForm.gameScene.ui.frameGameRoom;
+        if (this.handcardPosition === 1) parent = this.mainForm.gameScene.ui.handZone;
+
+        let image = this.createCard(parent, uiCardNumber, this.handcardScale);
+        image.setAttribute('serverCardNumber', serverCardNumber);
+        image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
+        image.node.seqnum.innerHTML = `${this.suitSequence}`;
+        image.node.seqnum.style.position = "absolute";
+        image.node.seqnum.style.left = "calc(1px)";
+        image.node.seqnum.style.top = "calc(65%)";
+        image.node.seqnum.style.fontSize = '15px';
+        image.node.seqnum.style.color = 'gray';
+        image.node.seqnum.style['font-family'] = 'serif';
+        image.node.seqnum.style['text-shadow'] = 'none';
+
+        switch (this.handcardPosition) {
+            case 1:
+                image.style.left = `calc(${x})`;
+                image.style.bottom = `calc(${y})`;
+                break;
+            case 2:
+                image.style.right = `calc(${x})`;
+                image.style.bottom = `calc(${y})`;
+                break;
+            case 3:
+                image.style.left = `calc(${x})`;
+                image.style.top = `calc(${y})`;
+                break;
+            case 4:
+                image.style.left = `calc(${x})`;
+                image.style.bottom = `calc(${y})`;
+                break;
+            default:
+                break;
+        }
+
+        this.mainForm.gameScene.cardImages.push(image)
+
         this.suitSequence++
         if (this.mainForm.gameScene.isReplayMode) return;
 
@@ -282,24 +348,26 @@ export class DrawingFormHelper {
         }
         if (!this.mainForm.tractorPlayer.isObserver) {
             // left click
-            image.on('dragstart', (pointer: Phaser.Input.Pointer) => {
-                if (pointer.leftButtonDown()) {
+            image.node.cover.addEventListener("mousedown", (e: any) => {
+                if (e.button === 0) {
                     this.handleSelectingCard(image)
+                    this.isMouseDown = true;
                     this.isDragging = image
                 }
             });
-            image.on('dragend', (pointer: Phaser.Input.Pointer) => {
+            window.addEventListener("mouseup", (e: any) => {
+                this.isMouseDown = false;
                 this.isDragging = undefined
             });
-            image.on('pointerover', (pointer: Phaser.Input.Pointer) => {
-                if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && pointer.leftButtonDown() && this.isDragging !== image) {
-                    this.handleSelectingCard(image)
+            image.node.cover.addEventListener("mouseover", (e: any) => {
+                if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && e.button === 0 && this.isDragging !== image && this.isMouseDown) {
+                    this.handleSelectingCard(image);
                 }
             });
 
             // right click
-            image.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-                if (pointer.rightButtonDown()) {
+            image.node.cover.addEventListener("mousedown", (e: any) => {
+                if (e.button === 2) {
                     this.handleSelectingCardRightClick(image)
                 }
             });
@@ -315,51 +383,71 @@ export class DrawingFormHelper {
             this.mainForm.tractorPlayer.CurrentHandState.TrumpMaker == this.mainForm.tractorPlayer.PlayerId &&
             trumpMadeCard == serverCardNumber) {
             if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker > SuitEnums.TrumpExposingPoker.SingleRank) {
-                image.setData("status", "up");
-                image.y -= 30
+                image.style.bottom = `calc(${y} + 30px)`;
+                image.setAttribute('status', "up");
             } else {
                 let lifted: boolean = false
                 for (let i = 0; i < this.mainForm.gameScene.cardImages.length; i++) {
-                    if ((this.mainForm.gameScene.cardImages[i] as Phaser.GameObjects.Sprite).y == y - 30) {
+                    if ((this.mainForm.gameScene.cardImages[i] as any).getAttribute('status') === 'up') {
                         lifted = true
                         break
                     }
                 }
                 if (!lifted) {
-                    image.setData("status", "up");
-                    image.y -= 30
+                    image.style.bottom = `calc(${y} + 30px)`;
+                    image.setAttribute('status', "up");
                 }
             }
         }
         if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) &&
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] &&
-            (image.data === null || !image.getData("status") || image.getData("status") === "down")) {
-            image.setData("status", "up");
-            image.y -= 30
+            (image.data === null || !image.getAttribute('status') || image.getAttribute('status') === "down")) {
+            image.style.bottom = `calc(${y} + 30px)`;
+            image.setAttribute('status', "up");
         }
         this.mainForm.cardsOrderNumber++
     }
 
-    private handleSelectingCard(image: Phaser.GameObjects.Sprite) {
+    private createCard(position: any, uiCardNumber: number, hcs: number): any {
+        var tractorCard = this.mainForm.gameScene.ui.create.div('.tractorCard', position);
+        tractorCard.node = {
+            seqnum: this.mainForm.gameScene.ui.create.div('.seqnum', tractorCard),
+            cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),
+        }
+
+        tractorCard.setBackgroundImage(`image/tractor/cards/tile0${uiCardNumber.toString().padStart(2, '0')}.png`);
+        tractorCard.style['background-size'] = '100% 100%';
+        tractorCard.style['background-repeat'] = 'no-repeat';
+
+        tractorCard.style.width = `${this.mainForm.gameScene.coordinates.cardWidth * hcs}px`;
+        tractorCard.style.height = `${this.mainForm.gameScene.coordinates.cardHeight * hcs}px`;
+
+        tractorCard.node.cover.style.width = "100%";
+        tractorCard.node.cover.style.height = "100%";
+
+        return tractorCard;
+    }
+
+    private handleSelectingCard(image: any) {
         if (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
             this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-            if (image.data === null || !image.getData("status") || image.getData("status") === "down") {
-                image.setData("status", "up");
-                image.y -= 30;
-                this.mainForm.myCardIsReady[image.getData("cardsOrderNumber")] = true
+            if (!image || !image.getAttribute("status") || image.getAttribute("status") === "down") {
+                image.setAttribute("status", "up");
+                image.style.bottom = `calc(${this.mainForm.gameScene.coordinates.handCardPositions[0].y} + 30px)`;
+                this.mainForm.myCardIsReady[parseInt(image.getAttribute("cardsOrderNumber"))] = true
                 this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
                 this.validateSelectedCards();
             } else {
-                image.setData("status", "down");
-                image.y += 30;
-                this.mainForm.myCardIsReady[image.getData("cardsOrderNumber")] = false
+                image.setAttribute("status", "down");
+                image.style.bottom = `calc(${this.mainForm.gameScene.coordinates.handCardPositions[0].y})`;
+                this.mainForm.myCardIsReady[parseInt(image.getAttribute("cardsOrderNumber"))] = false
                 this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
                 this.validateSelectedCards();
             }
         }
     }
 
-    private handleSelectingCardRightClick(image: Phaser.GameObjects.Sprite) {
+    private handleSelectingCardRightClick(image: any) {
         //统计已选中的牌张数
         let readyCount: number = 0;
         let crlength = this.mainForm.myCardIsReady.length
@@ -370,17 +458,17 @@ export class DrawingFormHelper {
         showingCardsCp.Trump = this.mainForm.tractorPlayer.CurrentHandState.Trump
         showingCardsCp.Rank = this.mainForm.tractorPlayer.CurrentHandState.Rank;
 
-        let i = image.getData("cardsOrderNumber")
+        let i = parseInt(image.getAttribute("cardsOrderNumber"));
         let b = this.mainForm.myCardIsReady[i];
         this.mainForm.myCardIsReady[i] = !b;
-        let clickedCardNumber = image.getData("serverCardNumber")
+        let clickedCardNumber = parseInt(image.getAttribute("serverCardNumber"));
         let isClickedTrump = PokerHelper.IsTrump(clickedCardNumber, showingCardsCp.Trump, showingCardsCp.Rank);
         //响应右键的3种情况：
         //1. 首出（默认）
         let selectMoreCount = 0;
         for (let left = i - 1; left >= 0; left--) {
-            let toAddImage = (this.mainForm.gameScene.cardImages[left] as Phaser.GameObjects.Sprite)
-            let toAddCardNumber = toAddImage.getData("serverCardNumber")
+            let toAddImage = (this.mainForm.gameScene.cardImages[left] as any)
+            let toAddCardNumber = parseInt(toAddImage.getAttribute("serverCardNumber"));
 
             if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
                 PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) selectMoreCount++;
@@ -410,10 +498,10 @@ export class DrawingFormHelper {
             if (isLeader && selectTopToDump) {
                 let singleCardFound = false;
                 for (let j = 1; j <= selectMoreCount; j++) {
-                    let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
-                    let toAddCardNumber = toAddImage.getData("serverCardNumber")
-                    let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
-                    let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                    let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as any)
+                    let toAddCardNumber = parseInt(toAddImage.getAttribute("serverCardNumber"));
+                    let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as any)
+                    let toAddCardNumberOnRight = parseInt(toAddCardImageOnRightImage.getAttribute("serverCardNumber"));
                     //如果候选牌是同一花色
                     if (!PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && !isClickedTrump && PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
                         PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
@@ -466,8 +554,8 @@ export class DrawingFormHelper {
 
                         //特殊情况处理，最后一个单张顶张进不到下个循环，须在上轮循环处理
                         if (j == selectMoreCount && !singleCardFound) {
-                            let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
-                            let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                            let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j] as any)
+                            let toAddCardNumberOnRight = parseInt(toAddCardImageOnRightImage.getAttribute("serverCardNumber"));
                             showingCardsCp.AddCard(toAddCardNumberOnRight);
                             showingCardsCp.AddCard(toAddCardNumberOnRight);
                             let tractorCount = showingCardsCp.GetTractorOfAnySuit().length;
@@ -491,10 +579,10 @@ export class DrawingFormHelper {
                 showingCardsCp.Clear();
                 let selectAll = false; //如果右键点的散牌，则向左选中所有本门花色的牌
                 for (let j = 1; j <= selectMoreCount; j++) {
-                    let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
-                    let toAddCardNumber = toAddImage.getData("serverCardNumber")
-                    let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
-                    let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                    let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as any)
+                    let toAddCardNumber = parseInt(toAddImage.getAttribute("serverCardNumber"));
+                    let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as any)
+                    let toAddCardNumberOnRight = parseInt(toAddCardImageOnRightImage.getAttribute("serverCardNumber"));
                     //如果候选牌是同一花色: 1. neither is trump, same suit; 2. both are trump
                     if (!PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && !isClickedTrump && PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
                         PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
@@ -534,10 +622,10 @@ export class DrawingFormHelper {
         }
         else {
             for (let j = 1; j <= i; j++) {
-                let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as Phaser.GameObjects.Sprite)
-                let toAddCardNumber = toAddImage.getData("serverCardNumber")
-                let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as Phaser.GameObjects.Sprite)
-                let toAddCardNumberOnRight = toAddCardImageOnRightImage.getData("serverCardNumber")
+                let toAddImage = (this.mainForm.gameScene.cardImages[i - j] as any)
+                let toAddCardNumber = parseInt(toAddImage.getAttribute("serverCardNumber"));
+                let toAddCardImageOnRightImage = (this.mainForm.gameScene.cardImages[i - j + 1] as any)
+                let toAddCardNumberOnRight = parseInt(toAddCardImageOnRightImage.getAttribute("serverCardNumber"));
                 //如果候选牌是同一花色
                 if (PokerHelper.GetSuit(toAddCardNumber) == PokerHelper.GetSuit(clickedCardNumber) ||
                     PokerHelper.IsTrump(toAddCardNumber, showingCardsCp.Trump, showingCardsCp.Rank) && isClickedTrump) {
@@ -551,18 +639,18 @@ export class DrawingFormHelper {
         this.mainForm.SelectedCards.length = 0
 
         for (let k = 0; k < crlength; k++) {
-            let toAddImage = (this.mainForm.gameScene.cardImages[k] as Phaser.GameObjects.Sprite)
+            let toAddImage = (this.mainForm.gameScene.cardImages[k] as any)
             if (this.mainForm.myCardIsReady[k]) {
-                let toAddCardNumber = toAddImage.getData("serverCardNumber")
+                let toAddCardNumber = parseInt(toAddImage.getAttribute("serverCardNumber"));
                 this.mainForm.SelectedCards.push(toAddCardNumber);
                 //将选定的牌向上提升 via gameScene.cardImages
-                if (toAddImage.data === null || !toAddImage.getData("status") || toAddImage.getData("status") === "down") {
-                    toAddImage.setData("status", "up");
-                    toAddImage.y -= 30;
+                if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
+                    toAddImage.setAttribute("status", "up");
+                    toAddImage.style.bottom = `calc(${this.mainForm.gameScene.coordinates.handCardPositions[0].y} + 30px)`;
                 }
-            } else if (toAddImage.data !== null && toAddImage.getData("status") && toAddImage.getData("status") === "up") {
-                toAddImage.setData("status", "down");
-                toAddImage.y += 30;
+            } else if (toAddImage && toAddImage.getAttribute("status") && toAddImage.getAttribute("status") === "up") {
+                toAddImage.setAttribute("status", "down");
+                toAddImage.style.bottom = `calc(${this.mainForm.gameScene.coordinates.handCardPositions[0].y})`;
             }
         }
 
@@ -578,18 +666,26 @@ export class DrawingFormHelper {
             return;
         var availableTrump = this.mainForm.tractorPlayer.AvailableTrumps();
 
-        let x = this.mainForm.gameScene.coordinates.toolbarPosition.x
-        let y = this.mainForm.gameScene.coordinates.toolbarPosition.y
+        let imageToolBar = this.mainForm.gameScene.ui.create.div('.imageToolBar', this.mainForm.gameScene.ui.frameGameRoom);
+        imageToolBar.setBackgroundImage('image/tractor/toolbar/suitsbar.png')
+        imageToolBar.style['background-size'] = '100% 100%';
+        imageToolBar.style['background-repeat'] = 'no-repeat';
+        imageToolBar.style.right = `calc(${this.mainForm.gameScene.coordinates.toolbarPosition.x})`;
+        imageToolBar.style.bottom = `calc(${this.mainForm.gameScene.coordinates.toolbarPosition.y})`;
+        imageToolBar.style.width = `250px`;
+        imageToolBar.style.height = `50px`;
+        this.mainForm.gameScene.toolbarImages.push(imageToolBar);
         for (let i = 0; i < 5; i++) {
-            let imagebar = this.mainForm.gameScene.add.sprite(x, y, 'suitsbarImage', i).setOrigin(0, 0).setInteractive()
-            this.mainForm.gameScene.toolbarImages.push(imagebar);
-
             let isSuiteAvailable = availableTrump.includes(i + 1)
             let suiteOffset = isSuiteAvailable ? 0 : 5;
-            let image = this.mainForm.gameScene.add.sprite(x + 10, y + 10, 'suitsImage', i + suiteOffset)
-                .setOrigin(0, 0)
-                .setInteractive()
-                .setDisplaySize(30, 30)
+            let imageToolBarSuit = this.mainForm.gameScene.ui.create.div('.imageToolBarSuit', imageToolBar);
+            imageToolBarSuit.setBackgroundImage(`image/tractor/toolbar/tile0${(i + suiteOffset).toString().padStart(2, '0')}.png`);
+            imageToolBarSuit.style['background-size'] = '100% 100%';
+            imageToolBarSuit.style['background-repeat'] = 'no-repeat';
+            imageToolBarSuit.style.width = `40px`;
+            imageToolBarSuit.style.height = `40px`;
+            imageToolBarSuit.style.right = `calc(5px + ${50 * (4 - i)}px)`;
+            imageToolBarSuit.style.bottom = "5px";
 
             if (isSuiteAvailable && !this.mainForm.tractorPlayer.isObserver) {
                 let trumpExpIndex = this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1
@@ -597,16 +693,10 @@ export class DrawingFormHelper {
                     if (this.mainForm.tractorPlayer.CurrentPoker.RedJoker() == 2) trumpExpIndex = SuitEnums.TrumpExposingPoker.PairRedJoker
                     else trumpExpIndex = SuitEnums.TrumpExposingPoker.PairBlackJoker
                 }
-                imagebar.on('pointerdown', () => {
-                    this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1, 0);
-                })
-                image.on('pointerdown', () => {
+                imageToolBarSuit.addEventListener('pointerdown', () => {
                     this.mainForm.tractorPlayer.ExposeTrump(trumpExpIndex, i + 1, 0);
                 })
             }
-
-            this.mainForm.gameScene.toolbarImages.push(image);
-            x += this.mainForm.gameScene.coordinates.toolbarSize
         }
     }
 
@@ -683,89 +773,53 @@ export class DrawingFormHelper {
 
     public destroyToolbar() {
         this.mainForm.gameScene.toolbarImages.forEach(image => {
-            image.destroy();
+            image.remove();
         })
         this.mainForm.gameScene.toolbarImages = []
     }
 
     public destroySidebar() {
         this.mainForm.gameScene.sidebarImages.forEach(image => {
-            image.destroy();
+            image.remove();
         })
         this.mainForm.gameScene.sidebarImages = []
     }
 
     public destroyAllCards() {
-        this.mainForm.gameScene.cardImages.forEach(image => {
-            image.destroy();
+        this.mainForm.gameScene.cardImages.forEach((image: any) => {
+            image.remove();
         })
         this.mainForm.gameScene.cardImages = []
 
-        this.mainForm.gameScene.cardImageSequence.forEach(image => {
-            image.destroy();
+        this.mainForm.gameScene.cardImageSequence.forEach((image: any) => {
+            image.remove();
         })
         this.mainForm.gameScene.cardImageSequence = []
     }
 
     public destroyAllShowedCards() {
         this.mainForm.gameScene.showedCardImages.forEach(image => {
-            image.destroy();
+            image.remove();
         })
         this.mainForm.gameScene.showedCardImages = []
 
         if (this.mainForm.gameScene.OverridingFlagImage) {
-            this.mainForm.gameScene.OverridingFlagImage.destroy()
+            this.mainForm.gameScene.OverridingFlagImage.remove()
         }
     }
 
     // drawing showed cards
     public DrawShowedCardsByPosition(cards: number[], pos: number) {
-        let coords = this.getShowedCardsCoordinatesByPosition(cards.length, pos)
-        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, 1)
-    }
-
-    private getShowedCardsCoordinatesByPosition(count: number, pos: number): any {
-        let posInd = pos - 1
-        let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x
-        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y
-        switch (posInd) {
-            case 0:
-                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
-                break;
-            case 1:
-                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset
-                break;
-            case 2:
-                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
-                break;
-            case 3:
-                break;
-            default:
-                break;
-        }
-        return { x: x, y: y }
+        let x = this.mainForm.gameScene.coordinates.showedCardsPositions[pos - 1].x
+        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[pos - 1].y
+        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, 1, pos)
     }
 
     // drawing TrumpMade cards from last trick
     public DrawTrumpMadeCardsByPositionFromLastTrick(cards: number[], pos: number) {
-        let coords = this.getTrumpMadeCardsCoordinatesByPosition(cards.length, pos)
-        this.DrawShowedCards(cards, coords.x, coords.y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale)
-    }
-
-    private getTrumpMadeCardsCoordinatesByPosition(count: number, pos: number): any {
-        let posInd = pos - 1
-        let x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[posInd].x
-        let y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[posInd].y
-        switch (posInd) {
-            case 0:
-            case 1:
-            case 2:
-                x = x - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.mainForm.gameScene.coordinates.trumpMadeCardsScale
-                break;
-            default:
-                break;
-        }
-        return { x: x, y: y }
+        let x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].x
+        let y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].y
+        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos)
     }
 
     public DrawSidebarFull() {
@@ -794,10 +848,23 @@ export class DrawingFormHelper {
         let meString = `我方：${meRank}${meStarterString}`
         let opString = `对方：${opRank}${opStarterString}`
 
-        this.mainForm.gameScene.sidebarImages.push(
-            this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.sidebarMyTeamPostion.x, this.mainForm.gameScene.coordinates.sidebarMyTeamPostion.y, meString).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize))
-        this.mainForm.gameScene.sidebarImages.push(
-            this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.sidebarOpTeamPostion.x, this.mainForm.gameScene.coordinates.sidebarOpTeamPostion.y, opString).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize))
+        var sidebarMeText = this.mainForm.gameScene.ui.create.div('.sidebarMeText', meString, this.mainForm.gameScene.ui.frameGameRoom);
+        sidebarMeText.style.fontFamily = 'serif';
+        sidebarMeText.style.fontSize = '20px';
+        sidebarMeText.style.color = 'orange';
+        sidebarMeText.style.textAlign = 'left';
+        sidebarMeText.style.left = `calc(0px)`;
+        sidebarMeText.style.top = `calc(60px)`;
+        this.mainForm.gameScene.sidebarImages.push(sidebarMeText)
+
+        var sidebarOpText = this.mainForm.gameScene.ui.create.div('.sidebarOpText', opString, this.mainForm.gameScene.ui.frameGameRoom);
+        sidebarOpText.style.fontFamily = 'serif';
+        sidebarOpText.style.fontSize = '20px';
+        sidebarOpText.style.color = 'orange';
+        sidebarOpText.style.textAlign = 'left';
+        sidebarOpText.style.left = `calc(0px)`;
+        sidebarOpText.style.top = `calc(90px)`;
+        this.mainForm.gameScene.sidebarImages.push(sidebarOpText)
 
         let trumpMakerString = ""
         let trumpIndex = 0
@@ -809,19 +876,35 @@ export class DrawingFormHelper {
             trumpIndex = this.mainForm.tractorPlayer.CurrentHandState.Trump
         }
         let exposerString = `亮牌：${trumpMakerString}`
-        let trumpImage = this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.sidebarTrumpMaker.x, this.mainForm.gameScene.coordinates.sidebarTrumpMaker.y, exposerString).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize)
-        this.mainForm.gameScene.sidebarImages.push(trumpImage)
+
+        var sidebarTrumpText = this.mainForm.gameScene.ui.create.div('.sidebarTrumpText', exposerString, this.mainForm.gameScene.ui.frameGameRoom);
+        sidebarTrumpText.style.fontFamily = 'serif';
+        sidebarTrumpText.style.fontSize = '20px';
+        sidebarTrumpText.style.color = 'orange';
+        sidebarTrumpText.style.textAlign = 'left';
+        sidebarTrumpText.style.left = `calc(0px)`;
+        sidebarTrumpText.style.top = `calc(120px)`;
+        this.mainForm.gameScene.sidebarImages.push(sidebarTrumpText)
 
         if (trumpMaker && !this.mainForm.tractorPlayer.CurrentHandState.IsNoTrumpMaker) {
-            this.mainForm.gameScene.sidebarImages.push(
-                this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.sidebarTrumpMaker.x + trumpImage.displayWidth + 10, this.mainForm.gameScene.coordinates.sidebarTrumpMaker.y, 'suitsImage', trumpIndex - 1 + 5)
-                    .setOrigin(0, 0)
-                    .setDisplaySize(20, 20))
-            if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker > SuitEnums.TrumpExposingPoker.SingleRank) {
-                this.mainForm.gameScene.sidebarImages.push(
-                    this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.sidebarTrumpMaker.x + trumpImage.displayWidth + 10 + this.mainForm.gameScene.coordinates.iconSize, this.mainForm.gameScene.coordinates.sidebarTrumpMaker.y, 'suitsImage', trumpIndex - 1 + 5)
-                        .setOrigin(0, 0)
-                        .setDisplaySize(this.mainForm.gameScene.coordinates.iconSize, this.mainForm.gameScene.coordinates.iconSize))
+            let count = 1;
+            if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker > SuitEnums.TrumpExposingPoker.SingleRank) count++;
+            if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker === SuitEnums.TrumpExposingPoker.PairBlackJoker) trumpIndex = 10;
+
+            let x = sidebarTrumpText.clientWidth + 10;
+            let increment = 30;
+            for (let i = 0; i < count; i++) {
+                var sidebarTrumpImage = this.mainForm.gameScene.ui.create.div('.sidebarTrumpImage', '', this.mainForm.gameScene.ui.frameGameRoom);
+                sidebarTrumpImage.setBackgroundImage(`image/tractor/toolbar/tile0${(trumpIndex - 1).toString().padStart(2, '0')}.png`);
+                sidebarTrumpImage.style['background-size'] = '100% 100%';
+                sidebarTrumpImage.style['background-repeat'] = 'no-repeat';
+                sidebarTrumpImage.style.width = `25px`;
+                sidebarTrumpImage.style.height = `25px`;
+                sidebarTrumpImage.style.left = `calc(${x}px)`;
+                sidebarTrumpImage.style.top = `calc(120px)`;
+                this.mainForm.gameScene.sidebarImages.push(sidebarTrumpImage)
+
+                x += increment;
             }
         }
     }
@@ -838,57 +921,85 @@ export class DrawingFormHelper {
         //画底牌
         let posX = this.mainForm.gameScene.coordinates.last8Position.x
         let posY = this.mainForm.gameScene.coordinates.last8Position.y
-        this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards, posX, posY, this.mainForm.gameScene.showedCardImages, 1)
+        this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards, posX, posY, this.mainForm.gameScene.showedCardImages, 1, 3)
         //画上分牌
         posX = this.mainForm.gameScene.coordinates.scoreCardsPosition.x
         posY = this.mainForm.gameScene.coordinates.scoreCardsPosition.y
-        this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards, posX, posY, this.mainForm.gameScene.showedCardImages, 1)
+        this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards, posX, posY, this.mainForm.gameScene.showedCardImages, 1, 3)
 
         //画得分明细
-        // todo
-        // lblNickName.setStyle({ fixedWidth: 300 })
-        // lblNickName.setStyle({ align: 'right' })
-
         //上分
         let winPoints = CommonMethods.GetScoreCardsScore(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards);
         posX = this.mainForm.gameScene.coordinates.winPointsPosition.x
         posY = this.mainForm.gameScene.coordinates.winPointsPosition.y
-        this.mainForm.gameScene.showedCardImages.push(
-            this.mainForm.gameScene.add.text(posX, posY, `上分：${winPoints}`).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize))
+        var earnedPointsImage = this.mainForm.gameScene.ui.create.div('.earnedPointsImage', `上分：${winPoints}`, this.mainForm.gameScene.ui.frameGameRoom);
+        earnedPointsImage.style.fontFamily = 'serif';
+        earnedPointsImage.style.fontSize = '20px';
+        earnedPointsImage.style.color = 'orange';
+        earnedPointsImage.style.textAlign = 'left';
+        earnedPointsImage.style.left = `calc(${posX})`;
+        earnedPointsImage.style.top = `calc(${posY})`;
+        this.mainForm.gameScene.showedCardImages.push(earnedPointsImage)
+
         //底分
         let base = this.mainForm.tractorPlayer.CurrentHandState.ScoreLast8CardsBase
         let multiplier = this.mainForm.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier
         let last8Points = base * multiplier
         posX = this.mainForm.gameScene.coordinates.last8PointsPosition.x
         posY = this.mainForm.gameScene.coordinates.last8PointsPosition.y
-        let last8PointsImage = this.mainForm.gameScene.add.text(posX, posY, `底分：${last8Points}`).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize)
-        this.mainForm.gameScene.showedCardImages.push(last8PointsImage)
+
+        var last8PointsImage = this.mainForm.gameScene.ui.create.div('.last8PointsImage', `底分：${last8Points}`, this.mainForm.gameScene.ui.frameGameRoom);
+        last8PointsImage.style.fontFamily = 'serif';
+        last8PointsImage.style.fontSize = '20px';
+        last8PointsImage.style.color = 'orange';
+        last8PointsImage.style.textAlign = 'left';
+        last8PointsImage.style.left = `calc(${posX})`;
+        last8PointsImage.style.top = `calc(${posY})`;
+        this.mainForm.gameScene.showedCardImages.push(last8PointsImage);
+
         //底分明细
         if (base > 0) {
-            posX = this.mainForm.gameScene.coordinates.last8PointsPosition.x + last8PointsImage.displayWidth + 10
-            posY = this.mainForm.gameScene.coordinates.last8PointsPosition.y
-            this.mainForm.gameScene.showedCardImages.push(
-                this.mainForm.gameScene.add.text(posX, posY, `【${base}x${multiplier}】`)
-                    .setColor("yellow").setFontSize(this.mainForm.gameScene.coordinates.iconSize))
+            posX = `${posX} + ${last8PointsImage.clientWidth + 10}px`;
+            var last8PointsDetailImage = this.mainForm.gameScene.ui.create.div('.last8PointsDetailImage', `【${base}x${multiplier}】`, this.mainForm.gameScene.ui.frameGameRoom);
+            last8PointsDetailImage.style.fontFamily = 'serif';
+            last8PointsDetailImage.style.fontSize = '20px';
+            last8PointsDetailImage.style.color = 'yellow';
+            last8PointsDetailImage.style.textAlign = 'left';
+            last8PointsDetailImage.style.left = `calc(${posX})`;
+            last8PointsDetailImage.style.top = `calc(${posY})`;
+            this.mainForm.gameScene.showedCardImages.push(last8PointsDetailImage);
         }
 
         //罚分
         let scorePunishment = this.mainForm.tractorPlayer.CurrentHandState.ScorePunishment
         posX = this.mainForm.gameScene.coordinates.punishmentPointsPosition.x
         posY = this.mainForm.gameScene.coordinates.punishmentPointsPosition.y
-        this.mainForm.gameScene.showedCardImages.push(
-            this.mainForm.gameScene.add.text(posX, posY, `罚分：${scorePunishment}`).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize))
+        var punishPointsImage = this.mainForm.gameScene.ui.create.div('.punishPointsImage', `罚分：${scorePunishment}`, this.mainForm.gameScene.ui.frameGameRoom);
+        punishPointsImage.style.fontFamily = 'serif';
+        punishPointsImage.style.fontSize = '20px';
+        punishPointsImage.style.color = 'orange';
+        punishPointsImage.style.textAlign = 'left';
+        punishPointsImage.style.left = `calc(${posX})`;
+        punishPointsImage.style.top = `calc(${posY})`;
+        this.mainForm.gameScene.showedCardImages.push(punishPointsImage);
+
         //总得分
         let allTotal = this.mainForm.tractorPlayer.CurrentHandState.Score
         posX = this.mainForm.gameScene.coordinates.totalPointsPosition.x
         posY = this.mainForm.gameScene.coordinates.totalPointsPosition.y
-        this.mainForm.gameScene.showedCardImages.push(
-            this.mainForm.gameScene.add.text(posX, posY, `总分：${allTotal}`).setColor("white").setFontSize(this.mainForm.gameScene.coordinates.iconSize))
+        var totalPointsImage = this.mainForm.gameScene.ui.create.div('.totalPointsImage', `总分：${allTotal}`, this.mainForm.gameScene.ui.frameGameRoom);
+        totalPointsImage.style.fontFamily = 'serif';
+        totalPointsImage.style.fontSize = '20px';
+        totalPointsImage.style.color = 'white';
+        totalPointsImage.style.textAlign = 'left';
+        totalPointsImage.style.left = `calc(${posX})`;
+        totalPointsImage.style.top = `calc(${posY})`;
+        this.mainForm.gameScene.showedCardImages.push(totalPointsImage);
     }
 
     public destroyScoreImageAndCards() {
         this.mainForm.gameScene.scoreCardsImages.forEach(image => {
-            image.destroy();
+            image.remove();
         })
         this.mainForm.gameScene.scoreCardsImages = []
     }
@@ -897,21 +1008,22 @@ export class DrawingFormHelper {
         this.destroyScoreImageAndCards()
         //画得分图标
         let scores = this.mainForm.tractorPlayer.CurrentHandState.Score;
-        this.mainForm.gameScene.scoreCardsImages.push(this.mainForm.gameScene.add.text(this.mainForm.gameScene.coordinates.sidebarScoreText.x, this.mainForm.gameScene.coordinates.sidebarScoreText.y, `上分：${scores}`).setColor("orange").setFontSize(this.mainForm.gameScene.coordinates.iconSize))
+        var currentPointsText = this.mainForm.gameScene.ui.create.div('.currentPointsText', `上分：${scores}`, this.mainForm.gameScene.ui.frameGameRoom);
+        currentPointsText.style.fontFamily = 'serif';
+        currentPointsText.style.fontSize = '20px';
+        currentPointsText.style.color = 'orange';
+        currentPointsText.style.textAlign = 'left';
+        currentPointsText.style.left = `calc(0px)`;
+        currentPointsText.style.top = `calc(150px)`;
+        this.mainForm.gameScene.scoreCardsImages.push(currentPointsText)
+
         //画得分牌，画在得分图标的下边
-        let scoreCards: number[] = this.mainForm.tractorPlayer.CurrentHandState.ScoreCards
-        for (let i = 0; i < scoreCards.length; i++) {
-            let uiCardNumber = CommonMethods.ServerToUICardMap[scoreCards[i]]
-            this.mainForm.gameScene.scoreCardsImages.push(this.mainForm.gameScene.add.sprite(this.mainForm.gameScene.coordinates.sidebarScoreCards.x + i * (this.mainForm.gameScene.coordinates.handCardOffset / 2), this.mainForm.gameScene.coordinates.sidebarScoreCards.y, 'poker', uiCardNumber)
-                .setOrigin(0, 0)
-                .setInteractive()
-                .setDisplaySize(this.mainForm.gameScene.coordinates.cardWidth / 2, this.mainForm.gameScene.coordinates.cardHeight / 2))
-        }
+        this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, 1 / 2, 6);
     }
 
     public destroyLast8Cards() {
         this.mainForm.gameScene.last8CardsImages.forEach(image => {
-            image.destroy();
+            image.remove();
         })
         this.mainForm.gameScene.last8CardsImages = []
     }
@@ -923,27 +1035,24 @@ export class DrawingFormHelper {
         let allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards
         let count = allCards.length
         let scale = 0.5
-        posX = posX - this.mainForm.gameScene.coordinates.cardWidth * scale - (count - 1) * this.mainForm.gameScene.coordinates.handCardOffset * scale
-        this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, scale)
+        this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, scale, 5)
     }
 
     public DrawDiscardedCardsBackground() {
         //画8张底牌
-        let last8Images: Phaser.GameObjects.Sprite[] = []
+        let last8Images: any[] = [];
         let x = this.mainForm.gameScene.coordinates.distributingLast8Position.x
         let y = this.mainForm.gameScene.coordinates.distributingLast8Position.y
         let cardBackIndex = 54
+        let cards: number[] = [];
         for (let i = 0; i < 8; i++) {
-            let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', cardBackIndex)
-                .setOrigin(0, 0)
-                .setInteractive()
-            last8Images.push(image);
-            x += this.mainForm.gameScene.coordinates.handCardOffset / 4
+            cards.push(cardBackIndex);
         }
+        this.DrawShowedCards(cards, x, y, last8Images, 1, 3);
         //隐藏
         setTimeout(() => {
             last8Images.forEach(image => {
-                image.destroy();
+                image.remove();
             })
             last8Images.length = 0
         }, 1000);
@@ -952,42 +1061,35 @@ export class DrawingFormHelper {
     //基于庄家相对于自己所在的位置，画庄家获得底牌的动画
     public DrawDistributingLast8Cards(position: number) {
         //画8张底牌
-        let last8Images: Phaser.GameObjects.Sprite[] = []
+        let last8Images: any[] = []
         let x = this.mainForm.gameScene.coordinates.distributingLast8Position.x
         let y = this.mainForm.gameScene.coordinates.distributingLast8Position.y
         let cardBackIndex = 54
+        let cards: number[] = [];
         for (let i = 0; i < 8; i++) {
-            let image = this.mainForm.gameScene.add.sprite(x, y, 'poker', cardBackIndex)
-                .setOrigin(0, 0)
-                .setInteractive()
-            last8Images.push(image);
-            x += this.mainForm.gameScene.coordinates.handCardOffset / 4
+            cards.push(cardBackIndex);
         }
+        this.DrawShowedCards(cards, x, y, last8Images, 1, 3);
         //分发
-        setTimeout(() => {
-            for (let i = 0; i < 8; i++) {
-                let curImage: Phaser.GameObjects.Sprite = last8Images[i]
-                let pos = curImage.getTopLeft()
-                let movingDir = [
-                    { x: pos.x, y: pos.y },
-                    { x: this.mainForm.gameScene.coordinates.screenWid - this.mainForm.gameScene.coordinates.distributingLast8MaxEdge - this.mainForm.gameScene.coordinates.cardWidth, y: pos.y },
-                    { x: this.mainForm.gameScene.coordinates.screenWid * 0.5 - this.mainForm.gameScene.coordinates.cardWidth / 2, y: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge },
-                    { x: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge, y: pos.y },
-                ]
-                this.mainForm.gameScene.tweens.add({
-                    targets: last8Images[i],
-                    x: movingDir[position - 1].x,
-                    y: movingDir[position - 1].y,
-                    delay: (7 - i) * 100,
-                    duration: 200,
-                    ease: "Cubic.easeOut"
-                });
-            }
-        }, 200);
+        // setTimeout(() => {
+        //     for (let i = 0; i < 8; i++) {
+        //         let curImage: any = last8Images[i]
+        //         let posX = curImage.style.left;
+        //         let posY = curImage.style.top;
+        //         let movingDir = [
+        //             { x: posX, y: posY },
+        //             { x: `` - this.mainForm.gameScene.coordinates.distributingLast8MaxEdge - this.mainForm.gameScene.coordinates.cardWidth, y: pos.y },
+        //             { x: this.mainForm.gameScene.coordinates.screenWid * 0.5 - this.mainForm.gameScene.coordinates.cardWidth / 2, y: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge },
+        //             { x: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge, y: pos.y },
+        //         ]
+        //         curImage.style.left = movingDir[position - 1].x;
+        //         curImage.style.top = movingDir[position - 1].y;
+        //     }
+        // }, 200);
         //隐藏
         setTimeout(() => {
             last8Images.forEach(image => {
-                image.destroy();
+                image.remove();
             })
             last8Images.length = 0
         }, 1500);
@@ -997,138 +1099,149 @@ export class DrawingFormHelper {
         if (this.mainForm.tractorPlayer.CurrentRoomSetting.HideOverridingFlag) return;
 
         if (this.mainForm.gameScene.OverridingFlagImage) {
-            this.mainForm.gameScene.OverridingFlagImage.destroy()
+            this.mainForm.gameScene.OverridingFlagImage.remove()
         }
+
+        var orImage = this.mainForm.gameScene.ui.create.div('.orImage', this.mainForm.gameScene.ui.frameGameRoom);
+        orImage.setBackgroundImage(`image/tractor/${this.mainForm.gameScene.overridingLabelImages[winType]}.png`)
 
         let posInd = position - 1
         let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x
-        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y
+        if (posInd === 0 || posInd === 2) {
+            x = `${x} - ${this.mainForm.gameScene.coordinates.handCardOffset * (cardsCount - 1) / 2}px`;
+        }
+
+        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y;
         switch (posInd) {
-            case 0:
-                x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
-                break;
             case 1:
-                x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset
+                x = `${x} + ${this.mainForm.gameScene.coordinates.handCardOffset * (cardsCount - 1)}px`;
+                orImage.style.right = `calc(${x} + ${this.mainForm.gameScene.coordinates.cardWidth - this.mainForm.gameScene.coordinates.overridingFlagWidth}px)`;
+                orImage.style.bottom = `calc(${y})`;
                 break;
             case 2:
-                x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
-                break;
-            case 3:
+                y = `${y} + ${this.mainForm.gameScene.coordinates.cardHeight - this.mainForm.gameScene.coordinates.overridingFlagHeight}px`;
+                orImage.style.left = `calc(${x})`;
+                orImage.style.top = `calc(${y})`;
                 break;
             default:
+                orImage.style.left = `calc(${x})`;
+                orImage.style.bottom = `calc(${y})`;
                 break;
         }
-        y = y + this.mainForm.gameScene.coordinates.cardHeight - this.mainForm.gameScene.coordinates.overridingFlagHeight
-        let image = this.mainForm.gameScene.add.image(x, y, this.mainForm.gameScene.overridingLabelImages[winType])
-            .setOrigin(0, 0)
-            .setDisplaySize(this.mainForm.gameScene.coordinates.overridingFlagWidth, this.mainForm.gameScene.coordinates.overridingFlagHeight)
-        this.mainForm.gameScene.OverridingFlagImage = image
-        this.mainForm.gameScene.showedCardImages.push(image);
 
-        if (playAnimation && winType >= 2) {
-            this.mainForm.gameScene.decadeUICanvas.style.left = `${x}px`;
-            this.mainForm.gameScene.decadeUICanvas.style.top = `${this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y - this.mainForm.gameScene.coordinates.sgsAnimOffsetY}px`;
-            this.mainForm.gameScene.drawSgsAni(
-                this.mainForm.gameScene.overridingLabelAnims[winType][0], this.mainForm.gameScene.overridingLabelAnims[winType][1], this.mainForm.gameScene.coordinates.sgsAnimWidth, this.mainForm.gameScene.coordinates.sgsAnimHeight);
-        }
+        orImage.style.width = `${this.mainForm.gameScene.coordinates.overridingFlagWidth}px`;
+        orImage.style.height = `${this.mainForm.gameScene.coordinates.overridingFlagHeight}px`;
+        orImage.style['background-size'] = '100% 100%';
+        orImage.style['background-repeat'] = 'no-repeat';
+        orImage.style.cursor = 'pointer';
+        this.mainForm.gameScene.OverridingFlagImage = orImage;
+        this.mainForm.gameScene.showedCardImages.push(orImage);
+
+        // TODO: 
+        // if (playAnimation && winType >= 2) {
+        //     this.mainForm.gameScene.decadeUICanvas.style.left = `${x}px`;
+        //     this.mainForm.gameScene.decadeUICanvas.style.top = `${this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y - this.mainForm.gameScene.coordinates.sgsAnimOffsetY}px`;
+        //     this.mainForm.gameScene.drawSgsAni(
+        //         this.mainForm.gameScene.overridingLabelAnims[winType][0], this.mainForm.gameScene.overridingLabelAnims[winType][1], this.mainForm.gameScene.coordinates.sgsAnimWidth, this.mainForm.gameScene.coordinates.sgsAnimHeight);
+        // }
     }
 
     public DrawEmojiByPosition(position: number, emojiType: number, emojiIndex: number, isCenter: boolean) {
-        let emojiKey = EmojiUtil.emojiTypesAndInstances[emojiType][emojiIndex]
-        let posIndex = position - 1;
-        let x = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].x;
-        let y = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].y;
-        let displaySize = this.mainForm.gameScene.coordinates.emojiSize
-        if (isCenter) {
-            x = this.mainForm.gameScene.coordinates.screenWid / 2;
-            y = this.mainForm.gameScene.coordinates.screenHei / 2;
-            displaySize *= 5;
-        }
-        let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, emojiKey)
-            .setDisplaySize(displaySize, displaySize * EmojiUtil.emojiXToYRatio[emojiType][emojiIndex]);
-        if (!isCenter) {
-            spriteAnimation.setOrigin(0);
-        }
-        spriteAnimation.play(emojiKey);
+        // let emojiKey = EmojiUtil.emojiTypesAndInstances[emojiType][emojiIndex]
+        // let posIndex = position - 1;
+        // let x = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].x;
+        // let y = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].y;
+        // let displaySize = this.mainForm.gameScene.coordinates.emojiSize
+        // if (isCenter) {
+        //     x = this.mainForm.gameScene.coordinates.screenWid / 2;
+        //     y = this.mainForm.gameScene.coordinates.screenHei / 2;
+        //     displaySize *= 5;
+        // }
+        // let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, emojiKey)
+        //     .setDisplaySize(displaySize, displaySize * EmojiUtil.emojiXToYRatio[emojiType][emojiIndex]);
+        // if (!isCenter) {
+        //     spriteAnimation.setOrigin(0);
+        // }
+        // spriteAnimation.play(emojiKey);
     }
 
     public DrawMovingTractorByPosition(cardsCount: number, position: number) {
-        let posInd = position - 1
-        let height = this.mainForm.gameScene.coordinates.cardHeight - 10;
-        let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x;
-        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y + this.mainForm.gameScene.coordinates.cardHeight - height;
-        switch (posInd) {
-            case 0:
-                x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
-                break;
-            case 1:
-                x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset
-                break;
-            case 2:
-                x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
-                break;
-            case 3:
-                break;
-            default:
-                break;
-        }
-        let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, EmojiUtil.emMovingTractor)
-            .setDisplaySize(height * EmojiUtil.emMovingTractorYToXRatio, height);
-        spriteAnimation.setOrigin(0);
-        spriteAnimation.play(EmojiUtil.emMovingTractor);
+        // let posInd = position - 1
+        // let height = this.mainForm.gameScene.coordinates.cardHeight - 10;
+        // let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x;
+        // let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y + this.mainForm.gameScene.coordinates.cardHeight - height;
+        // switch (posInd) {
+        //     case 0:
+        //         x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
+        //         break;
+        //     case 1:
+        //         x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset
+        //         break;
+        //     case 2:
+        //         x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2
+        //         break;
+        //     case 3:
+        //         break;
+        //     default:
+        //         break;
+        // }
+        // let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, EmojiUtil.emMovingTractor)
+        //     .setDisplaySize(height * EmojiUtil.emMovingTractorYToXRatio, height);
+        // spriteAnimation.setOrigin(0);
+        // spriteAnimation.play(EmojiUtil.emMovingTractor);
     }
 
     public DrawDanmu(msgString: string) {
-        if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
-        let x = this.mainForm.gameScene.coordinates.screenWid;
-        let y = this.mainForm.gameScene.coordinates.danmuPositionY;
-        let danmuIndex = 0;
-        let danmus: Phaser.GameObjects.Text[] = (this.mainForm.gameScene.danmuMessages as Phaser.GameObjects.Text[]);
-        let foundEmptyDanmu = false;
-        let foundDanmu = false;
-        if (danmus.length > 0) {
-            for (let i = 0; i < danmus.length; i++) {
-                if (danmus[i] === undefined) {
-                    if (!foundEmptyDanmu) {
-                        foundEmptyDanmu = true;
-                        danmuIndex = i;
-                    }
-                } else {
-                    foundDanmu = true;
-                    if (!foundEmptyDanmu) danmuIndex = i + 1;
-                }
-            }
-        }
-        if (!foundDanmu) {
-            this.destroyAllDanmuMessages();
-        }
+        // if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
+        // let x = this.mainForm.gameScene.coordinates.screenWid;
+        // let y = this.mainForm.gameScene.coordinates.danmuPositionY;
+        // let danmuIndex = 0;
+        // let danmus: Phaser.GameObjects.Text[] = (this.mainForm.gameScene.danmuMessages as Phaser.GameObjects.Text[]);
+        // let foundEmptyDanmu = false;
+        // let foundDanmu = false;
+        // if (danmus.length > 0) {
+        //     for (let i = 0; i < danmus.length; i++) {
+        //         if (danmus[i] === undefined) {
+        //             if (!foundEmptyDanmu) {
+        //                 foundEmptyDanmu = true;
+        //                 danmuIndex = i;
+        //             }
+        //         } else {
+        //             foundDanmu = true;
+        //             if (!foundEmptyDanmu) danmuIndex = i + 1;
+        //         }
+        //     }
+        // }
+        // if (!foundDanmu) {
+        //     this.destroyAllDanmuMessages();
+        // }
 
-        y += this.mainForm.gameScene.coordinates.danmuOffset * danmuIndex;
-        var lblDanmu = this.mainForm.gameScene.add.text(x, y, msgString)
-            .setColor('white')
-            .setFontSize(30)
-            .setPadding(10)
-            .setShadow(2, 2, "#333333", 2, true, true)
-            .setVisible(true)
-        this.mainForm.gameScene.danmuMessages[danmuIndex] = lblDanmu;
+        // y += this.mainForm.gameScene.coordinates.danmuOffset * danmuIndex;
+        // var lblDanmu = this.mainForm.gameScene.add.text(x, y, msgString)
+        //     .setColor('white')
+        //     .setFontSize(30)
+        //     .setPadding(10)
+        //     .setShadow(2, 2, "#333333", 2, true, true)
+        //     .setVisible(true)
+        // this.mainForm.gameScene.danmuMessages[danmuIndex] = lblDanmu;
 
-        this.mainForm.gameScene.tweens.add({
-            targets: lblDanmu,
-            x: 0 - lblDanmu.width,
-            duration: CommonMethods.danmuDuration,
-            onComplete: () => {
-                this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined
-                lblDanmu.destroy();
-            }
-        });
+        // this.mainForm.gameScene.tweens.add({
+        //     targets: lblDanmu,
+        //     x: 0 - lblDanmu.width,
+        //     duration: CommonMethods.danmuDuration,
+        //     onComplete: () => {
+        //         this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined
+        //         lblDanmu.remove();
+        //     }
+        // });
     }
 
     public destroyAllDanmuMessages() {
-        if (this.mainForm.gameScene.danmuMessages == null || this.mainForm.gameScene.danmuMessages.length == 0) return
-        this.mainForm.gameScene.danmuMessages.forEach((msg: Phaser.GameObjects.Text) => {
-            if (msg) msg.destroy();
-        });
-        this.mainForm.gameScene.danmuMessages = []
+        // if (this.mainForm.gameScene.danmuMessages == null || this.mainForm.gameScene.danmuMessages.length == 0) return
+        // this.mainForm.gameScene.danmuMessages.forEach((msg: Phaser.GameObjects.Text) => {
+        //     if (msg) msg.remove();
+        // });
+        // this.mainForm.gameScene.danmuMessages = []
     }
 
     public resetReplay() {

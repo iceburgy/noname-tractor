@@ -29,7 +29,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				event.created = true;
 
 				// 访问密钥
-				var textHostName = ui.create.div('', '输入访问密钥');
+				var textHostName = ui.create.div('', '访问密钥');
 				textHostName.style.width = '400px';
 				textHostName.style.height = '30px';
 				textHostName.style.lineHeight = '30px';
@@ -37,7 +37,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				textHostName.style.fontSize = '30px';
 				textHostName.style.padding = '10px';
 				textHostName.style.left = 'calc(50% - 200px)';
-				textHostName.style.top = 'calc(50% - 320px)';
+				textHostName.style.top = 'calc(8%)';
 				textHostName.style.textAlign = 'center';
 				ui.window.appendChild(textHostName);
 				ui.iptext = textHostName;
@@ -50,7 +50,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodeHostName.style.fontSize = '30px';
 				nodeHostName.style.padding = '10px';
 				nodeHostName.style.left = 'calc(50% - 210px)';
-				nodeHostName.style.top = 'calc(50% - 260px)';
+				nodeHostName.style.top = 'calc(16%)';
 				nodeHostName.style.whiteSpace = 'nowrap';
 				nodeHostName.innerHTML = lib.config.last_ip || "";
 				nodeHostName.contentEditable = true;
@@ -58,12 +58,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodeHostName.style.textAlign = 'center';
 				ui.window.appendChild(nodeHostName);
 				ui.ipnode = nodeHostName;
-				nodeHostName.addEventListener('focus',function(e){
+				nodeHostName.addEventListener('focus', function (e) {
 					window.getSelection().selectAllChildren(e.target);
 				});
 
 				// 用户名
-				var textPlayerName = ui.create.div('', '输入用户名');
+				var textPlayerName = ui.create.div('', '用户名');
 				textPlayerName.style.width = '400px';
 				textPlayerName.style.height = '30px';
 				textPlayerName.style.lineHeight = '30px';
@@ -71,7 +71,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				textPlayerName.style.fontSize = '30px';
 				textPlayerName.style.padding = '10px';
 				textPlayerName.style.left = 'calc(50% - 200px)';
-				textPlayerName.style.top = 'calc(50% - 200px)';
+				textPlayerName.style.top = 'calc(24%)';
 				textPlayerName.style.textAlign = 'center';
 				ui.window.appendChild(textPlayerName);
 				ui.playernametext = textPlayerName;
@@ -84,7 +84,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodePlayerName.style.fontSize = '30px';
 				nodePlayerName.style.padding = '10px';
 				nodePlayerName.style.left = 'calc(50% - 210px)';
-				nodePlayerName.style.top = 'calc(50% - 140px)';
+				nodePlayerName.style.top = 'calc(32%)';
 				nodePlayerName.style.whiteSpace = 'nowrap';
 				nodePlayerName.innerHTML = lib.config.last_player_name || "";
 				nodePlayerName.contentEditable = true;
@@ -92,13 +92,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodePlayerName.style.textAlign = 'center';
 				ui.window.appendChild(nodePlayerName);
 				ui.playernamenode = nodePlayerName;
-				nodePlayerName.addEventListener('focus',function(e){
+				nodePlayerName.addEventListener('focus', function (e) {
 					window.getSelection().selectAllChildren(e.target);
 				});
 
 
 				// 密码
-				var textPassword = ui.create.div('', '输入密码');
+				var textPassword = ui.create.div('', '密码');
 				textPassword.style.width = '400px';
 				textPassword.style.height = '30px';
 				textPassword.style.lineHeight = '30px';
@@ -106,7 +106,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				textPassword.style.fontSize = '30px';
 				textPassword.style.padding = '10px';
 				textPassword.style.left = 'calc(50% - 200px)';
-				textPassword.style.top = 'calc(50% - 80px)';
+				textPassword.style.top = 'calc(40%)';
 				textPassword.style.textAlign = 'center';
 				ui.window.appendChild(textPassword);
 				ui.passwordtext = textPassword;
@@ -119,7 +119,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodePassword.style.fontSize = '30px';
 				nodePassword.style.padding = '10px';
 				nodePassword.style.left = 'calc(50% - 210px)';
-				nodePassword.style.top = 'calc(50% - 20px)';
+				nodePassword.style.top = 'calc(48%)';
 				nodePassword.style.whiteSpace = 'nowrap';
 				nodePassword.innerHTML = lib.config.last_password || "";
 				nodePassword.contentEditable = true;
@@ -127,12 +127,18 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodePassword.style.textAlign = 'center';
 				ui.window.appendChild(nodePassword);
 				ui.passwordnode = nodePassword;
-				nodePassword.addEventListener('focus',function(e){
+				nodePassword.addEventListener('focus', function (e) {
 					window.getSelection().selectAllChildren(e.target);
 				});
 
+				nodePassword.addEventListener('keydown', function (e) {
+					if (e.keyCode == 13) {
+						connect(e);
+					}
+				});
+
 				// 邮箱
-				var textEmail = ui.create.div('', '输入邮箱');
+				var textEmail = ui.create.div('', '邮箱');
 				textEmail.style.width = '400px';
 				textEmail.style.height = '30px';
 				textEmail.style.lineHeight = '30px';
@@ -140,7 +146,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				textEmail.style.fontSize = '30px';
 				textEmail.style.padding = '10px';
 				textEmail.style.left = 'calc(50% - 200px)';
-				textEmail.style.top = 'calc(50% + 40px)';
+				textEmail.style.top = 'calc(56%)';
 				textEmail.style.textAlign = 'center';
 				ui.window.appendChild(textEmail);
 				ui.emailtext = textEmail;
@@ -153,7 +159,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodeEmail.style.fontSize = '30px';
 				nodeEmail.style.padding = '10px';
 				nodeEmail.style.left = 'calc(50% - 210px)';
-				nodeEmail.style.top = 'calc(50% + 100px)';
+				nodeEmail.style.top = 'calc(64%)';
 				nodeEmail.style.whiteSpace = 'nowrap';
 				nodeEmail.innerHTML = lib.config.last_email || "";
 				nodeEmail.contentEditable = true;
@@ -161,12 +167,28 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				nodeEmail.style.textAlign = 'center';
 				ui.window.appendChild(nodeEmail);
 				ui.emailnode = nodeEmail;
-				nodeEmail.addEventListener('focus',function(e){
+				nodeEmail.addEventListener('focus', function (e) {
 					window.getSelection().selectAllChildren(e.target);
 				});
 
 				var connect = function (e) {
+					if (ui.ipbutton.classList.contains('disabled')) return;
+
 					clearTimeout(event.timeout);
+					game.clearConnect();
+
+					var textEmail = ui.create.div('', '连接中...');
+					textEmail.style.width = '400px';
+					textEmail.style.height = '30px';
+					textEmail.style.lineHeight = '30px';
+					textEmail.style.fontFamily = 'xinwei';
+					textEmail.style.fontSize = '30px';
+					textEmail.style.padding = '10px';
+					textEmail.style.left = 'calc(50% - 200px)';
+					textEmail.style.top = 'calc(56%)';
+					textEmail.style.textAlign = 'center';
+					ui.window.appendChild(textEmail);
+					ui.emailtext = textEmail;
 
 					import('../game/tractor/out/game_scene.js')
 						.then((GameScene) => {
@@ -178,6 +200,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							gameScene.connect();
 						})
 						.catch(error => {
+							document.body.innerHTML = `<div>!!! 尝试加载页面失败！</div>`
 							console.log(error);
 						});
 
@@ -191,7 +214,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				var button = ui.create.div('.menubutton.highlight.large.pointerdiv', '进入大厅', connect);
 				button.style.width = '140px';
 				button.style.left = 'calc(50% - 70px)';
-				button.style.top = 'calc(50% + 180px)';
+				button.style.top = 'calc(75%)';
 				ui.window.appendChild(button);
 				ui.ipbutton = button;
 
@@ -230,6 +253,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				// },220);
 				lib.init.onfree();
 			}
+
 			if (window.isNonameServer) {
 				game.connect(window.isNonameServerIp || 'localhost');
 			}
