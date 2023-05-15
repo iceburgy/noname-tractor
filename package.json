@@ -1,6 +1,10 @@
 {
   "type": "module",
   "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
     "@types/node": "^20.1.0"
+  },
+  "dependencies": {
+    "crypto-js": "^4.1.1"
   }
 }

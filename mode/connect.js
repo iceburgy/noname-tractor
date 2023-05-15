@@ -11,6 +11,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var directstartmode = lib.config.directstartmode;
 			ui.create.menu(true);
 			var createNode = function () {
+				if (lib.version != lib.config.version || _status.extensionChangeLog) return;
+
 				if (event.created) return;
 				if (directstartmode && lib.node) {
 					ui.exitroom = ui.create.system('退出房间', function () {
@@ -29,147 +31,60 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				event.created = true;
 
 				// 访问密钥
-				var textHostName = ui.create.div('', '访问密钥');
-				textHostName.style.width = '400px';
-				textHostName.style.height = '30px';
-				textHostName.style.lineHeight = '30px';
-				textHostName.style.fontFamily = 'xinwei';
-				textHostName.style.fontSize = '30px';
-				textHostName.style.padding = '10px';
-				textHostName.style.left = 'calc(50% - 200px)';
-				textHostName.style.top = 'calc(8%)';
-				textHostName.style.textAlign = 'center';
-				ui.window.appendChild(textHostName);
-				ui.iptext = textHostName;
-
-				var nodeHostName = ui.create.div('.shadowed');
-				nodeHostName.style.width = '400px';
-				nodeHostName.style.height = '30px';
-				nodeHostName.style.lineHeight = '30px';
-				nodeHostName.style.fontFamily = 'xinwei';
-				nodeHostName.style.fontSize = '30px';
-				nodeHostName.style.padding = '10px';
-				nodeHostName.style.left = 'calc(50% - 210px)';
+				var nodeHostName = document.createElement("INPUT");
+				nodeHostName.value = lib.config.last_ip || "";
+				nodeHostName.classList.add('tractor-connect-input');
 				nodeHostName.style.top = 'calc(16%)';
-				nodeHostName.style.whiteSpace = 'nowrap';
-				nodeHostName.innerHTML = lib.config.last_ip || "";
-				nodeHostName.contentEditable = true;
-				nodeHostName.style.webkitUserSelect = 'text';
-				nodeHostName.style.textAlign = 'center';
+				nodeHostName.setAttribute("type", "text");
+				nodeHostName.setAttribute("placeholder", "访问密钥");
 				ui.window.appendChild(nodeHostName);
 				ui.ipnode = nodeHostName;
-				nodeHostName.addEventListener('focus', function (e) {
-					window.getSelection().selectAllChildren(e.target);
-				});
 
 				// 用户名
-				var textPlayerName = ui.create.div('', '用户名');
-				textPlayerName.style.width = '400px';
-				textPlayerName.style.height = '30px';
-				textPlayerName.style.lineHeight = '30px';
-				textPlayerName.style.fontFamily = 'xinwei';
-				textPlayerName.style.fontSize = '30px';
-				textPlayerName.style.padding = '10px';
-				textPlayerName.style.left = 'calc(50% - 200px)';
-				textPlayerName.style.top = 'calc(24%)';
-				textPlayerName.style.textAlign = 'center';
-				ui.window.appendChild(textPlayerName);
-				ui.playernametext = textPlayerName;
-
-				var nodePlayerName = ui.create.div('.shadowed');
-				nodePlayerName.style.width = '400px';
-				nodePlayerName.style.height = '30px';
-				nodePlayerName.style.lineHeight = '30px';
-				nodePlayerName.style.fontFamily = 'xinwei';
-				nodePlayerName.style.fontSize = '30px';
-				nodePlayerName.style.padding = '10px';
-				nodePlayerName.style.left = 'calc(50% - 210px)';
-				nodePlayerName.style.top = 'calc(32%)';
-				nodePlayerName.style.whiteSpace = 'nowrap';
-				nodePlayerName.innerHTML = lib.config.last_player_name || "";
+				var nodePlayerName = document.createElement("INPUT");
+				nodePlayerName.value = lib.config.last_player_name || "";
+				nodePlayerName.classList.add('tractor-connect-input');
+				nodePlayerName.style.top = 'calc(26%)';
+				nodePlayerName.setAttribute("type", "text");
+				nodePlayerName.setAttribute("maxlength", "10");
+				nodePlayerName.setAttribute("placeholder", "用户名-不超过10个字符");
 				nodePlayerName.contentEditable = true;
-				nodePlayerName.style.webkitUserSelect = 'text';
-				nodePlayerName.style.textAlign = 'center';
 				ui.window.appendChild(nodePlayerName);
 				ui.playernamenode = nodePlayerName;
-				nodePlayerName.addEventListener('focus', function (e) {
-					window.getSelection().selectAllChildren(e.target);
-				});
 
 
 				// 密码
-				var textPassword = ui.create.div('', '密码');
-				textPassword.style.width = '400px';
-				textPassword.style.height = '30px';
-				textPassword.style.lineHeight = '30px';
-				textPassword.style.fontFamily = 'xinwei';
-				textPassword.style.fontSize = '30px';
-				textPassword.style.padding = '10px';
-				textPassword.style.left = 'calc(50% - 200px)';
-				textPassword.style.top = 'calc(40%)';
-				textPassword.style.textAlign = 'center';
-				ui.window.appendChild(textPassword);
-				ui.passwordtext = textPassword;
-
-				var nodePassword = ui.create.div('.shadowed');
-				nodePassword.style.width = '400px';
-				nodePassword.style.height = '30px';
-				nodePassword.style.lineHeight = '30px';
-				nodePassword.style.fontFamily = 'xinwei';
-				nodePassword.style.fontSize = '30px';
-				nodePassword.style.padding = '10px';
-				nodePassword.style.left = 'calc(50% - 210px)';
-				nodePassword.style.top = 'calc(48%)';
-				nodePassword.style.whiteSpace = 'nowrap';
-				nodePassword.innerHTML = lib.config.last_password || "";
-				nodePassword.contentEditable = true;
-				nodePassword.style.webkitUserSelect = 'text';
-				nodePassword.style.textAlign = 'center';
+				var nodePassword = document.createElement("INPUT");
+				nodePassword.value = lib.config.last_password || "";
+				nodePassword.classList.add('tractor-connect-input');
+				nodePassword.style.top = 'calc(36%)';
+				nodePassword.setAttribute("type", "password");
+				nodePassword.setAttribute("placeholder", "密码");
 				ui.window.appendChild(nodePassword);
 				ui.passwordnode = nodePassword;
-				nodePassword.addEventListener('focus', function (e) {
-					window.getSelection().selectAllChildren(e.target);
-				});
-
-				nodePassword.addEventListener('keydown', function (e) {
-					if (e.keyCode == 13) {
-						connect(e);
-					}
-				});
 
 				// 邮箱
-				var textEmail = ui.create.div('', '邮箱');
-				textEmail.style.width = '400px';
-				textEmail.style.height = '30px';
-				textEmail.style.lineHeight = '30px';
-				textEmail.style.fontFamily = 'xinwei';
-				textEmail.style.fontSize = '30px';
-				textEmail.style.padding = '10px';
-				textEmail.style.left = 'calc(50% - 200px)';
-				textEmail.style.top = 'calc(56%)';
-				textEmail.style.textAlign = 'center';
-				ui.window.appendChild(textEmail);
-				ui.emailtext = textEmail;
+				// var textEmail = ui.create.div('', '邮箱');
+				// textEmail.style.width = '400px';
+				// textEmail.style.height = '30px';
+				// textEmail.style.lineHeight = '30px';
+				// textEmail.style.fontFamily = 'xinwei';
+				// textEmail.style.fontSize = '30px';
+				// textEmail.style.padding = '10px';
+				// textEmail.style.left = 'calc(50% - 200px)';
+				// textEmail.style.top = 'calc(56%)';
+				// textEmail.style.textAlign = 'center';
+				// ui.window.appendChild(textEmail);
+				// ui.emailtext = textEmail;
 
-				var nodeEmail = ui.create.div('.shadowed');
-				nodeEmail.style.width = '400px';
-				nodeEmail.style.height = '30px';
-				nodeEmail.style.lineHeight = '30px';
-				nodeEmail.style.fontFamily = 'xinwei';
-				nodeEmail.style.fontSize = '30px';
-				nodeEmail.style.padding = '10px';
-				nodeEmail.style.left = 'calc(50% - 210px)';
-				nodeEmail.style.top = 'calc(64%)';
-				nodeEmail.style.whiteSpace = 'nowrap';
-				nodeEmail.innerHTML = lib.config.last_email || "";
-				nodeEmail.contentEditable = true;
-				nodeEmail.style.webkitUserSelect = 'text';
-				nodeEmail.style.textAlign = 'center';
+				var nodeEmail = document.createElement("INPUT");
+				nodeEmail.value = "";
+				nodeEmail.classList.add('tractor-connect-input');
+				nodeEmail.style.top = 'calc(46%)';
+				nodeEmail.setAttribute("type", "text");
+				nodeEmail.setAttribute("placeholder", "邮箱-正常登录时无需填写");
 				ui.window.appendChild(nodeEmail);
 				ui.emailnode = nodeEmail;
-				nodeEmail.addEventListener('focus', function (e) {
-					window.getSelection().selectAllChildren(e.target);
-				});
 
 				var connect = function (e) {
 					if (ui.ipbutton.classList.contains('disabled')) return;
@@ -192,7 +107,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 					import('../game/tractor/out/game_scene.js')
 						.then((GameScene) => {
-							var gameScene = new GameScene.GameScene(nodeHostName.innerHTML, nodePlayerName.innerHTML, nodePassword.innerHTML, nodeEmail.innerHTML);
+							var gameScene = new GameScene.GameScene(nodeHostName.value, nodePlayerName.value, nodePassword.value, nodeEmail.value);
 							gameScene.game = game;
 							gameScene.lib = lib;
 							gameScene.ui = ui;
@@ -205,18 +120,66 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						});
 
 					if (e) e.preventDefault();
-					game.saveConfig('last_ip', nodeHostName.innerHTML);
-					game.saveConfig('last_player_name', nodePlayerName.innerHTML);
-					game.saveConfig('last_password', nodePassword.innerHTML);
-					game.saveConfig('last_email', nodeEmail.innerHTML);
+					game.saveConfig('last_ip', nodeHostName.value);
+					game.saveConfig('last_player_name', nodePlayerName.value);
+					game.saveConfig('last_password', nodePassword.value);
+					game.saveConfig('last_email', nodeEmail.value);
 				};
 
-				var button = ui.create.div('.menubutton.highlight.large.pointerdiv', '进入大厅', connect);
-				button.style.width = '140px';
+				var button = ui.create.div('.menubutton.highlight.large.pointerdiv.disabled', '进入大厅', connect);
 				button.style.left = 'calc(50% - 70px)';
-				button.style.top = 'calc(75%)';
+				button.style.top = 'calc(56%)';
 				ui.window.appendChild(button);
 				ui.ipbutton = button;
+
+				updateButtonStatus = function () {
+					if (nodeHostName.value && nodePlayerName.value && nodePassword.value && nodeEmail.value) {
+						button.innerHTML = "注册用户";
+						button.classList.remove('disabled');
+					}
+					else if (nodeHostName.value && nodePlayerName.value && nodePassword.value && !nodeEmail.value) {
+						button.innerHTML = "进入大厅";
+						button.classList.remove('disabled');
+					}
+					else if (nodeHostName.value && nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
+						button.innerHTML = "找回密码";
+						button.classList.remove('disabled');
+					}
+					else if (nodeHostName.value && !nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
+						button.innerHTML = "找回用户";
+						button.classList.remove('disabled');
+					}
+					else {
+						button.innerHTML = "进入大厅";
+						if (!button.classList.contains('disabled')) button.classList.add('disabled');
+					}
+				}
+				updateButtonStatus();
+
+				nodeHostName.addEventListener('keyup', function (e) {
+					updateButtonStatus();
+					if (e.keyCode == 13) {
+						connect(e);
+					}
+				});
+				nodePlayerName.addEventListener('keyup', function (e) {
+					updateButtonStatus();
+					if (e.keyCode == 13) {
+						connect(e);
+					}
+				});
+				nodePassword.addEventListener('keyup', function (e) {
+					updateButtonStatus();
+					if (e.keyCode == 13) {
+						connect(e);
+					}
+				});
+				nodeEmail.addEventListener('keyup', function (e) {
+					updateButtonStatus();
+					if (e.keyCode == 13) {
+						connect(e);
+					}
+				});
 
 				// ui.hall_button=ui.create.system('联机大厅',function(){
 				// 	node.innerHTML=get.config('hall_ip')||lib.hallURL;

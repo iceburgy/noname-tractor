@@ -159,8 +159,8 @@ export class Coordinates {
         ]
 
         // danmu
-        this.danmuPositionY = 50
-        this.danmuOffset = 40
+        this.danmuPositionY = '50px';
+        this.danmuOffset = 40;
 
         // room controls
         this.controlButtonOffset = 10
@@ -215,9 +215,9 @@ export class Coordinates {
             { x: this.playerSkinPositions[3].x, y: `${this.playerSkinPositions[3].y} + 40px` },
         ]
         this.observerTextPositions = [
-            { x: "90px", y: "1%" },
+            { x: `${this.playerSkinPositions[0].x}`, y: "1%" },
             { x: "0px", y: "50% + 70px" },
-            { x: "50% + 55px", y: "0px" },
+            { x: `${this.playerSkinPositions[2].x}`, y: "0px" },
             { x: "0px", y: "50% + 70px" },
         ]
 

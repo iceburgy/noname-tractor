@@ -485,9 +485,11 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.reenterRoomSignal = "断线重连中,请稍后...";
     CommonMethods.resumeGameSignal = "牌局加载中,请稍后...";
     CommonMethods.wsErrorType_Insecure = "insecure";
+    CommonMethods.zIndexDanmu = 10;
+    CommonMethods.zIndexFrameChat = 11;
     CommonMethods.winEmojiLength = 4;
     CommonMethods.winEmojiTypeLength = 6;
-    CommonMethods.danmuDuration = 8000;
+    CommonMethods.danmuDuration = 8;
     CommonMethods.emojiMsgs = [
         "这波操作，666！",
         "亲，请注意细节",
@@ -517,5 +519,16 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.audioShafire = "shafire";
     CommonMethods.audioShathunder = "shathunder";
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
+    CommonMethods.ChatPresetMsgs = [
+        "这波操作，666！",
+        "亲，请注意细节",
+        "猴开心：）",
+        "嚎啕大哭：（",
+        "能不能快点啊，兵贵神速！",
+        "烟花",
+        "额~不好意思，刚才卡了",
+        "有劳点击“就绪”继续游戏",
+        "有劳房主点击自己昵称，再点击“继续上盘牌局”",
+    ];
     return CommonMethods;
 }());

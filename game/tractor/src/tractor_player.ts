@@ -77,9 +77,7 @@ export class TractorPlayer {
         this.PingStatus = 1;
         setTimeout(() => {
             if (this.PingStatus < 0) {
-                // TODO:
-                // this.NotifyMessage(["您已离线，请尝试刷新页面重连"]);
-                console.log("您已离线，请尝试刷新页面重连");
+                this.NotifyMessage(["您已离线，请尝试刷新页面重连"]);
             } else {
                 this.PingStatus = -1;
             }
@@ -96,7 +94,7 @@ export class TractorPlayer {
 
         var teamMade = false;
         var playerChanged = false;
-        var ObserverChanged = false;
+        var observerChanged = false;
         for (let i = 0; i < gameState.Players.length; i++) {
             var p = gameState.Players[i]
             if (p != null && p.Observers.includes(this.MyOwnId, 0)) {
@@ -124,7 +122,7 @@ export class TractorPlayer {
         for (let i = 0; i < 4; i++) {
             playerChanged = playerChanged || !(!newPositionPlayer[i + 1] && !this.mainForm.PositionPlayer[i + 1] ||
                 newPositionPlayer[i + 1] && this.mainForm.PositionPlayer[i + 1] && newPositionPlayer[i + 1] == this.mainForm.PositionPlayer[i + 1]);
-            ObserverChanged = ObserverChanged || !(this.CurrentGameState.Players[i] != null && gameState.Players[i] != null && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
+            observerChanged = observerChanged || !(this.CurrentGameState.Players[i] != null && gameState.Players[i] != null && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
 
             if (gameState.Players[i] != null && gameState.Players[i].Team != 0 &&
                 (this.CurrentGameState.Players[i] == null || this.CurrentGameState.Players[i].PlayerId != gameState.Players[i].PlayerId || this.CurrentGameState.Players[i].Team != gameState.Players[i].Team)) {
@@ -138,11 +136,11 @@ export class TractorPlayer {
 
         this.CurrentGameState.CloneFrom(gameState);
 
-        if (teamMade || ObserverChanged && totalPlayers == 4) {
+        if (teamMade || observerChanged && totalPlayers == 4) {
             this.mainForm.PlayersTeamMade()
         }
 
-        if ((playerChanged || ObserverChanged)) {
+        if ((playerChanged || observerChanged)) {
             this.mainForm.PlayerPosition = newPlayerPosition;
             this.mainForm.PositionPlayer = newPositionPlayer;
             this.mainForm.NewPlayerJoined(playerChanged)
@@ -444,6 +442,9 @@ export class TractorPlayer {
         if (msgs == null || msgs.length == 0) {
             return
         }
+        else if (msgs.length > 0 && msgs[0] === CommonMethods.loginSuccessFlag) {
+            return;
+        }
 
         this.destroyAllClientMessages()
         let posX = this.mainForm.gameScene.coordinates.clientMessagePosition.x;
@@ -494,6 +495,9 @@ export class TractorPlayer {
             if (this.mainForm.gameScene.isInGameRoom()) {
                 parent = this.mainForm.gameScene.ui.frameGameRoom;
             }
+            if (!parent) {
+                parent = this.mainForm.gameScene.ui.arena;
+            }
 
             var notifyMessageText = this.mainForm.gameScene.ui.create.div('.notifyMessageText', m, parent);
             notifyMessageText.style.fontFamily = 'serif';
@@ -515,6 +519,13 @@ export class TractorPlayer {
         this.mainForm.gameScene.sendMessageToServer(UsedShengbi_REQUEST, this.PlayerId, usedShengbiType)
     }
 
+    public NotifyDaojuInfo(daojuInfo: any, updateQiandao: boolean, updateSkin: boolean) {
+        this.mainForm.DaojuInfo = daojuInfo;
+        if (updateQiandao) this.mainForm.UpdateQiandaoStatus();
+        this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
+        if (updateSkin) this.mainForm.UpdateSkinStatus();
+    }
+
     /*
         public NotifyStartTimer(timerLength: number) {
             this.mainForm.NotifyStartTimerEventHandler(timerLength)
@@ -524,27 +535,8 @@ export class TractorPlayer {
             this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
         }
     
-        public NotifyOnlinePlayerList(playerID: string, isJoining: boolean) {
-            this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining)
-        }
-    
-        public NotifyGameRoomPlayerList(playerID: string, isJoining: boolean, roomName: string) {
-            this.mainForm.NotifyGameRoomPlayerListEventHandler(playerID, isJoining, roomName)
-        }
-    
-        public NotifyEmoji(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string, noSpeaker: boolean) {
-            this.mainForm.NotifyEmojiEventHandler(playerID, emojiType, emojiIndex, isCenter, msgString, noSpeaker)
-        }
-    
         public NotifyReplayState(replayState: ReplayEntity) {
             IDBHelper.SaveReplayEntity(replayState, () => { void (0); })
-        }
-    
-        public NotifyDaojuInfo(daojuInfo: any, updateQiandao: boolean, updateSkin: boolean) {
-            this.mainForm.DaojuInfo = daojuInfo;
-            if (updateQiandao) this.mainForm.UpdateQiandaoStatus();
-            this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
-            if (updateSkin) this.mainForm.UpdateSkinStatus();
         }
         */
 }

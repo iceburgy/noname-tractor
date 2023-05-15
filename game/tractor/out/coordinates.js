@@ -35,7 +35,7 @@ var Coordinates = /** @class */ (function () {
             { x: 160, y: 40 },
         ];
         // danmu
-        this.danmuPositionY = 50;
+        this.danmuPositionY = '50px';
         this.danmuOffset = 40;
         // room controls
         this.controlButtonOffset = 10;
@@ -85,9 +85,9 @@ var Coordinates = /** @class */ (function () {
             { x: this.playerSkinPositions[3].x, y: "".concat(this.playerSkinPositions[3].y, " + 40px") },
         ];
         this.observerTextPositions = [
-            { x: "90px", y: "1%" },
+            { x: "".concat(this.playerSkinPositions[0].x), y: "1%" },
             { x: "0px", y: "50% + 70px" },
-            { x: "50% + 55px", y: "0px" },
+            { x: "".concat(this.playerSkinPositions[2].x), y: "0px" },
             { x: "0px", y: "50% + 70px" },
         ];
         // this.player1StarterWid = 100;

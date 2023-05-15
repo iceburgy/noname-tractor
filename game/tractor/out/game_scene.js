@@ -3,6 +3,7 @@ import { Coordinates } from "./coordinates.js";
 import { CommonMethods } from "./common_methods.js";
 var dummyValue = "dummyValue";
 var IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
+var PLAYER_QIANDAO_REQUEST = "PlayerQiandao";
 var GameScene = /** @class */ (function () {
     function GameScene(hostName, playerName, nickNameOverridePass, playerEmail) {
         // public overridingLabelAnims: string[] 
@@ -46,12 +47,11 @@ var GameScene = /** @class */ (function () {
         // this.overridingLabelAnims = [];
         // // this.hallPlayerNames = [];
         this.clientMessages = [];
-        // this.danmuMessages = [];
+        this.danmuMessages = [];
         // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
         // // this.soundVolume = cookies.get("soundVolume");
         // // if (this.soundVolume === undefined) this.soundVolume = 0.5
-        // // this.noDanmu = cookies.get("noDanmu");
-        // // if (this.noDanmu === undefined) this.noDanmu = 'false'
+        this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
         // // if (this.yesDragSelect === undefined) this.yesDragSelect = 'false'
@@ -89,8 +89,12 @@ var GameScene = /** @class */ (function () {
             this.websocket = new WebSocket("".concat(this.wsprotocal, "://").concat(this.hostName));
             this.websocket.gs = this;
             this.websocket.onopen = function () {
+                var _this = this;
                 // try {
                 console.log("连接成功");
+                if (this.gs.ui.emailtext) {
+                    this.gs.game.clearConnect();
+                }
                 // empty password means recover password or playerName
                 if (!this.gs.nickNameOverridePass) {
                     this.gs.nickNameOverridePass = CommonMethods.recoverLoginPassFlag;
@@ -105,6 +109,10 @@ var GameScene = /** @class */ (function () {
                 // this.loadAudioFiles()
                 CommonMethods.BuildCardNumMap();
                 // IDBHelper.InitIDB();
+                this.gs.mainForm.EnableShortcutKeys();
+                this.gs.ui.btnQiandao = this.gs.ui.create.system('签到领福利', function () { _this.gs.sendMessageToServer(PLAYER_QIANDAO_REQUEST, _this.gs.playerName, ""); }, true);
+                this.gs.ui.btnQiandao.hide();
+                this.gs.ui.exitTractor = this.gs.ui.create.system('退出', function () { return _this.gs.mainForm.btnExitRoom_Click(); }, true);
                 // } catch (e) {
                 //     // alert("error")
                 //     document.body.innerHTML = `<div>!!! onopen Error: ${e}</div>`
@@ -125,12 +133,12 @@ var GameScene = /** @class */ (function () {
                     case CommonMethods.NotifyGameHall_RESPONSE:
                         this.gs.handleNotifyGameHall(objList);
                         break;
-                    // case CommonMethods.NotifyOnlinePlayerList_RESPONSE:
-                    //     this.gs.handleNotifyOnlinePlayerList(playerID, objList);
-                    //     break;
-                    // case CommonMethods.NotifyGameRoomPlayerList_RESPONSE:
-                    //     this.gs.handleNotifyGameRoomPlayerList(playerID, objList);
-                    //     break;
+                    case CommonMethods.NotifyOnlinePlayerList_RESPONSE:
+                        this.gs.handleNotifyOnlinePlayerList(playerID, objList);
+                        break;
+                    case CommonMethods.NotifyGameRoomPlayerList_RESPONSE:
+                        this.gs.handleNotifyGameRoomPlayerList(playerID, objList);
+                        break;
                     case CommonMethods.NotifyMessage_RESPONSE:
                         this.gs.handleNotifyMessage(objList);
                         break;
@@ -161,9 +169,9 @@ var GameScene = /** @class */ (function () {
                     // case CommonMethods.NotifyStartTimer_RESPONSE:
                     //     this.gs.handleNotifyStartTimer(objList);
                     //     break;
-                    // case CommonMethods.NotifyEmoji_RESPONSE:
-                    //     this.gs.handleNotifyEmoji(objList);
-                    //     break;
+                    case CommonMethods.NotifyEmoji_RESPONSE:
+                        this.gs.handleNotifyEmoji(objList);
+                        break;
                     case CommonMethods.CutCardShoeCards_RESPONSE:
                         this.gs.handleCutCardShoeCards();
                         break;
@@ -185,9 +193,9 @@ var GameScene = /** @class */ (function () {
                     // case CommonMethods.NotifyGrabStar_RESPONSE:
                     //     this.gs.handleNotifyGrabStar_RESPONSE(objList);
                     //     break;
-                    // case CommonMethods.NotifyDaojuInfo_RESPONSE:
-                    //     // this.gs.handleNotifyDaojuInfo(objList);
-                    //     break;
+                    case CommonMethods.NotifyDaojuInfo_RESPONSE:
+                        this.gs.handleNotifyDaojuInfo(objList);
+                        break;
                     // case CommonMethods.NotifyUpdateGobang_RESPONSE:
                     //     this.gs.handleNotifyUpdateGobang_RESPONSE(objList);
                     //     break;
@@ -213,12 +221,12 @@ var GameScene = /** @class */ (function () {
     //     var result: SGGBState = objList[0];
     //     this.mainForm.sgDrawingHelper.NotifyUpdateGobang(result);
     // }
-    // public handleNotifyDaojuInfo(objList: any) {
-    //     var daojuInfo: any = objList[0];
-    //     var updateQiandao: boolean = objList[1];
-    //     var updateSkin: boolean = objList[2];
-    //     this.mainForm.tractorPlayer.NotifyDaojuInfo(daojuInfo, updateQiandao, updateSkin);
-    // }
+    GameScene.prototype.handleNotifyDaojuInfo = function (objList) {
+        var daojuInfo = objList[0];
+        var updateQiandao = objList[1];
+        var updateSkin = objList[2];
+        this.mainForm.tractorPlayer.NotifyDaojuInfo(daojuInfo, updateQiandao, updateSkin);
+    };
     // public handleNotifyGrabStar_RESPONSE(objList) {
     //     let playerIndex: number = objList[0];
     //     let starIndex: number = objList[1];
@@ -246,9 +254,9 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleCutCardShoeCards = function () {
         this.mainForm.CutCardShoeCardsEventHandler();
     };
-    // public handleNotifyEmoji(objList: any) {
-    //     this.mainForm.tractorPlayer.NotifyEmoji(...objList)
-    // }
+    GameScene.prototype.handleNotifyEmoji = function (objList) {
+        this.mainForm.NotifyEmojiEventHandler.apply(this.mainForm, objList);
+    };
     // public handleNotifyStartTimer(objList: any) {
     //     var result: number = objList[0];
     //     this.mainForm.tractorPlayer.NotifyStartTimer(result)
@@ -272,18 +280,17 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleNotifyGameHall = function (objList) {
         var roomStateList = objList[0];
         var playerList = objList[1];
-        this.game.clearConnect();
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList);
     };
-    // public handleNotifyOnlinePlayerList(playerID: string, objList: any) {
-    //     var isJoining: boolean = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyOnlinePlayerList(playerID, isJoining)
-    // }
-    // public handleNotifyGameRoomPlayerList(playerID: string, objList: any) {
-    //     var isJoining: boolean = objList[0];
-    //     var roomName: string = objList[1];
-    //     this.mainForm.tractorPlayer.NotifyGameRoomPlayerList(playerID, isJoining, roomName)
-    // }
+    GameScene.prototype.handleNotifyOnlinePlayerList = function (playerID, objList) {
+        var isJoining = objList[0];
+        this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining);
+    };
+    GameScene.prototype.handleNotifyGameRoomPlayerList = function (playerID, objList) {
+        var isJoining = objList[0];
+        var roomName = objList[1];
+        this.mainForm.NotifyGameRoomPlayerListEventHandler(playerID, isJoining, roomName);
+    };
     GameScene.prototype.handleNotifyMessage = function (objList) {
         var msgs = objList[0];
         this.mainForm.tractorPlayer.NotifyMessage(msgs);
@@ -310,7 +317,6 @@ var GameScene = /** @class */ (function () {
     };
     GameScene.prototype.processAuth = function () {
         try {
-            var CryptoJS = require("crypto-js");
             var bytes = CryptoJS.AES.decrypt(this.hostName, dummyValue);
             var originalText = bytes.toString(CryptoJS.enc.Utf8);
             if (bytes && bytes.sigBytes > 0 && originalText) {

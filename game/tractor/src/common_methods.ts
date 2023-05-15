@@ -42,9 +42,11 @@ export class CommonMethods {
     public static resumeGameSignal = "牌局加载中,请稍后...";
 
     public static wsErrorType_Insecure = "insecure";
+    public static zIndexDanmu = 10
+    public static zIndexFrameChat = 11
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
-    public static danmuDuration = 8000
+    public static danmuDuration = 8
     public static emojiMsgs: string[] = [
         "这波操作，666！",
         "亲，请注意细节",
@@ -76,6 +78,18 @@ export class CommonMethods {
     public static audioShathunder = "shathunder";
 
     public static NotifyStateType_ObservePlayerById = "ObservePlayerById";
+
+    public static ChatPresetMsgs = [
+        "这波操作，666！",
+        "亲，请注意细节",
+        "猴开心：）",
+        "嚎啕大哭：（",
+        "能不能快点啊，兵贵神速！",
+        "烟花",
+        "额~不好意思，刚才卡了",
+        "有劳点击“就绪”继续游戏",
+        "有劳房主点击自己昵称，再点击“继续上盘牌局”",
+    ];
 
     constructor() {
     }

@@ -53,9 +53,7 @@ var TractorPlayer = /** @class */ (function () {
         this.PingStatus = 1;
         setTimeout(function () {
             if (_this.PingStatus < 0) {
-                // TODO:
-                // this.NotifyMessage(["您已离线，请尝试刷新页面重连"]);
-                console.log("您已离线，请尝试刷新页面重连");
+                _this.NotifyMessage(["您已离线，请尝试刷新页面重连"]);
             }
             else {
                 _this.PingStatus = -1;
@@ -71,7 +69,7 @@ var TractorPlayer = /** @class */ (function () {
         }
         var teamMade = false;
         var playerChanged = false;
-        var ObserverChanged = false;
+        var observerChanged = false;
         for (var i = 0; i < gameState.Players.length; i++) {
             var p = gameState.Players[i];
             if (p != null && p.Observers.includes(this.MyOwnId, 0)) {
@@ -97,7 +95,7 @@ var TractorPlayer = /** @class */ (function () {
         for (var i = 0; i < 4; i++) {
             playerChanged = playerChanged || !(!newPositionPlayer[i + 1] && !this.mainForm.PositionPlayer[i + 1] ||
                 newPositionPlayer[i + 1] && this.mainForm.PositionPlayer[i + 1] && newPositionPlayer[i + 1] == this.mainForm.PositionPlayer[i + 1]);
-            ObserverChanged = ObserverChanged || !(this.CurrentGameState.Players[i] != null && gameState.Players[i] != null && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
+            observerChanged = observerChanged || !(this.CurrentGameState.Players[i] != null && gameState.Players[i] != null && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
             if (gameState.Players[i] != null && gameState.Players[i].Team != 0 &&
                 (this.CurrentGameState.Players[i] == null || this.CurrentGameState.Players[i].PlayerId != gameState.Players[i].PlayerId || this.CurrentGameState.Players[i].Team != gameState.Players[i].Team)) {
                 teamMade = true;
@@ -108,10 +106,10 @@ var TractorPlayer = /** @class */ (function () {
         }
         var anyBecomesReady = CommonMethods.SomeoneBecomesReady(this.CurrentGameState.Players, gameState.Players);
         this.CurrentGameState.CloneFrom(gameState);
-        if (teamMade || ObserverChanged && totalPlayers == 4) {
+        if (teamMade || observerChanged && totalPlayers == 4) {
             this.mainForm.PlayersTeamMade();
         }
-        if ((playerChanged || ObserverChanged)) {
+        if ((playerChanged || observerChanged)) {
             this.mainForm.PlayerPosition = newPlayerPosition;
             this.mainForm.PositionPlayer = newPositionPlayer;
             this.mainForm.NewPlayerJoined(playerChanged);
@@ -381,6 +379,9 @@ var TractorPlayer = /** @class */ (function () {
         if (msgs == null || msgs.length == 0) {
             return;
         }
+        else if (msgs.length > 0 && msgs[0] === CommonMethods.loginSuccessFlag) {
+            return;
+        }
         this.destroyAllClientMessages();
         var posX = this.mainForm.gameScene.coordinates.clientMessagePosition.x;
         var posY = "".concat(this.mainForm.gameScene.coordinates.clientMessagePosition.y, " - ").concat((msgs.length - 1) / 2 * this.mainForm.gameScene.coordinates.lineOffsetY, "px");
@@ -428,6 +429,9 @@ var TractorPlayer = /** @class */ (function () {
             if (this.mainForm.gameScene.isInGameRoom()) {
                 parent_1 = this.mainForm.gameScene.ui.frameGameRoom;
             }
+            if (!parent_1) {
+                parent_1 = this.mainForm.gameScene.ui.arena;
+            }
             var notifyMessageText = this.mainForm.gameScene.ui.create.div('.notifyMessageText', m, parent_1);
             notifyMessageText.style.fontFamily = 'serif';
             notifyMessageText.style.fontSize = '28px';
@@ -446,6 +450,14 @@ var TractorPlayer = /** @class */ (function () {
     };
     TractorPlayer.prototype.UsedShengbi = function (usedShengbiType) {
         this.mainForm.gameScene.sendMessageToServer(UsedShengbi_REQUEST, this.PlayerId, usedShengbiType);
+    };
+    TractorPlayer.prototype.NotifyDaojuInfo = function (daojuInfo, updateQiandao, updateSkin) {
+        this.mainForm.DaojuInfo = daojuInfo;
+        if (updateQiandao)
+            this.mainForm.UpdateQiandaoStatus();
+        this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
+        if (updateSkin)
+            this.mainForm.UpdateSkinStatus();
     };
     return TractorPlayer;
 }());

@@ -66,18 +66,18 @@ export class DrawingFormHelper {
                 (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid ||
                     selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump)) {
                 if (this.mainForm.gameScene.ui.btnPig && !this.mainForm.gameScene.ui.btnPig.classList.contains('hidden')) {
-                    this.mainForm.gameScene.ui.btnPig.classList.remove('disabled')
+                    this.mainForm.gameScene.ui.btnPig.classList.remove('disabled');
                 }
             }
             else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
                 && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
-                this.mainForm.gameScene.ui.btnPig.classList.add('disabled')
+                this.mainForm.gameScene.ui.btnPig.classList.add('disabled');
             }
 
         }
         else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
             && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
-            this.mainForm.gameScene.ui.btnPig.classList.add('disabled')
+            this.mainForm.gameScene.ui.btnPig.classList.add('disabled');
         }
 
 
@@ -113,10 +113,10 @@ export class DrawingFormHelper {
         this.handcardScale = hcs;
         let posIndex = playerPos - 1;
         this.startX = this.mainForm.gameScene.coordinates.handCardPositions[posIndex].x;
+        let numOfSuits = CommonMethods.getNumOfSuits(currentPoker);
         if (posIndex == 0) {
-            this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2 * (cardCount - 1)}px`;
+            this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2 * (cardCount - 1)}px - ${(numOfSuits - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2}px`;
         } else if (posIndex == 1 || posIndex == 2) {
-            let numOfSuits = CommonMethods.getNumOfSuits(currentPoker);
             this.startX = `${this.startX} + ${(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale * (cardCount - 1) + (numOfSuits - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale)}px`;
         }
 
@@ -892,7 +892,7 @@ export class DrawingFormHelper {
             if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker === SuitEnums.TrumpExposingPoker.PairBlackJoker) trumpIndex = 10;
 
             let x = sidebarTrumpText.clientWidth + 10;
-            let increment = 30;
+            let increment = 25;
             for (let i = 0; i < count; i++) {
                 var sidebarTrumpImage = this.mainForm.gameScene.ui.create.div('.sidebarTrumpImage', '', this.mainForm.gameScene.ui.frameGameRoom);
                 sidebarTrumpImage.setBackgroundImage(`image/tractor/toolbar/tile0${(trumpIndex - 1).toString().padStart(2, '0')}.png`);
@@ -1192,56 +1192,55 @@ export class DrawingFormHelper {
     }
 
     public DrawDanmu(msgString: string) {
-        // if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
-        // let x = this.mainForm.gameScene.coordinates.screenWid;
-        // let y = this.mainForm.gameScene.coordinates.danmuPositionY;
-        // let danmuIndex = 0;
-        // let danmus: Phaser.GameObjects.Text[] = (this.mainForm.gameScene.danmuMessages as Phaser.GameObjects.Text[]);
-        // let foundEmptyDanmu = false;
-        // let foundDanmu = false;
-        // if (danmus.length > 0) {
-        //     for (let i = 0; i < danmus.length; i++) {
-        //         if (danmus[i] === undefined) {
-        //             if (!foundEmptyDanmu) {
-        //                 foundEmptyDanmu = true;
-        //                 danmuIndex = i;
-        //             }
-        //         } else {
-        //             foundDanmu = true;
-        //             if (!foundEmptyDanmu) danmuIndex = i + 1;
-        //         }
-        //     }
-        // }
-        // if (!foundDanmu) {
-        //     this.destroyAllDanmuMessages();
-        // }
+        if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
+        let danmuIndex = 0;
+        let foundEmptyDanmu = false;
+        let foundDanmu = false;
+        if (this.mainForm.gameScene.danmuMessages.length > 0) {
+            for (let i = 0; i < this.mainForm.gameScene.danmuMessages.length; i++) {
+                if (this.mainForm.gameScene.danmuMessages[i] === undefined) {
+                    if (!foundEmptyDanmu) {
+                        foundEmptyDanmu = true;
+                        danmuIndex = i;
+                    }
+                } else {
+                    foundDanmu = true;
+                    if (!foundEmptyDanmu) danmuIndex = i + 1;
+                }
+            }
+        }
+        if (!foundDanmu) {
+            this.destroyAllDanmuMessages();
+        }
 
-        // y += this.mainForm.gameScene.coordinates.danmuOffset * danmuIndex;
-        // var lblDanmu = this.mainForm.gameScene.add.text(x, y, msgString)
-        //     .setColor('white')
-        //     .setFontSize(30)
-        //     .setPadding(10)
-        //     .setShadow(2, 2, "#333333", 2, true, true)
-        //     .setVisible(true)
-        // this.mainForm.gameScene.danmuMessages[danmuIndex] = lblDanmu;
+        let posY = `calc(${this.mainForm.gameScene.coordinates.danmuPositionY} + ${this.mainForm.gameScene.coordinates.danmuOffset * danmuIndex}px)`;
+        let lblDanmu = this.mainForm.gameScene.ui.create.div('', msgString, this.mainForm.gameScene.ui.frameMain);
+        lblDanmu.style.color = 'white';
+        lblDanmu.style.fontFamily = 'serif';
+        lblDanmu.style.fontSize = '25px';
+        lblDanmu.style.left = `calc(100%)`;
+        lblDanmu.style.top = `calc(${posY})`;
+        lblDanmu.style.transition = `left ${CommonMethods.danmuDuration}s`;
+        lblDanmu.style['transition-timing-function'] = 'linear';
+        lblDanmu.style['white-space'] = 'nowrap';
+        lblDanmu.style['z-index'] = CommonMethods.zIndexDanmu;
+        this.mainForm.gameScene.danmuMessages[danmuIndex] = lblDanmu;
 
-        // this.mainForm.gameScene.tweens.add({
-        //     targets: lblDanmu,
-        //     x: 0 - lblDanmu.width,
-        //     duration: CommonMethods.danmuDuration,
-        //     onComplete: () => {
-        //         this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined
-        //         lblDanmu.remove();
-        //     }
-        // });
+        setTimeout(() => {
+            lblDanmu.style.left = `calc(0% - ${lblDanmu.clientWidth}px)`;
+        }, 100);
+        setTimeout(() => {
+            this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined
+            lblDanmu.remove();
+        }, (CommonMethods.danmuDuration + 1) * 1000);
     }
 
     public destroyAllDanmuMessages() {
-        // if (this.mainForm.gameScene.danmuMessages == null || this.mainForm.gameScene.danmuMessages.length == 0) return
-        // this.mainForm.gameScene.danmuMessages.forEach((msg: Phaser.GameObjects.Text) => {
-        //     if (msg) msg.remove();
-        // });
-        // this.mainForm.gameScene.danmuMessages = []
+        if (this.mainForm.gameScene.danmuMessages == null || this.mainForm.gameScene.danmuMessages.length == 0) return;
+        this.mainForm.gameScene.danmuMessages.forEach((msg: any) => {
+            if (msg) msg.remove();
+        });
+        this.mainForm.gameScene.danmuMessages = []
     }
 
     public resetReplay() {

@@ -91,11 +91,11 @@ var DrawingFormHelper = /** @class */ (function () {
         this.handcardScale = hcs;
         var posIndex = playerPos - 1;
         this.startX = this.mainForm.gameScene.coordinates.handCardPositions[posIndex].x;
+        var numOfSuits = CommonMethods.getNumOfSuits(currentPoker);
         if (posIndex == 0) {
-            this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2 * (cardCount - 1), "px");
+            this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2 * (cardCount - 1), "px - ").concat((numOfSuits - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale / 2, "px");
         }
         else if (posIndex == 1 || posIndex == 2) {
-            var numOfSuits = CommonMethods.getNumOfSuits(currentPoker);
             this.startX = "".concat(this.startX, " + ").concat((this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale * (cardCount - 1) + (numOfSuits - 1) * this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale), "px");
         }
         this.startY = this.mainForm.gameScene.coordinates.handCardPositions[posIndex].y;
@@ -826,7 +826,7 @@ var DrawingFormHelper = /** @class */ (function () {
             if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker === SuitEnums.TrumpExposingPoker.PairBlackJoker)
                 trumpIndex = 10;
             var x = sidebarTrumpText.clientWidth + 10;
-            var increment = 30;
+            var increment = 25;
             for (var i = 0; i < count; i++) {
                 var sidebarTrumpImage = this.mainForm.gameScene.ui.create.div('.sidebarTrumpImage', '', this.mainForm.gameScene.ui.frameGameRoom);
                 sidebarTrumpImage.setBackgroundImage("image/tractor/toolbar/tile0".concat((trumpIndex - 1).toString().padStart(2, '0'), ".png"));
@@ -1101,53 +1101,58 @@ var DrawingFormHelper = /** @class */ (function () {
         // spriteAnimation.play(EmojiUtil.emMovingTractor);
     };
     DrawingFormHelper.prototype.DrawDanmu = function (msgString) {
-        // if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
-        // let x = this.mainForm.gameScene.coordinates.screenWid;
-        // let y = this.mainForm.gameScene.coordinates.danmuPositionY;
-        // let danmuIndex = 0;
-        // let danmus: Phaser.GameObjects.Text[] = (this.mainForm.gameScene.danmuMessages as Phaser.GameObjects.Text[]);
-        // let foundEmptyDanmu = false;
-        // let foundDanmu = false;
-        // if (danmus.length > 0) {
-        //     for (let i = 0; i < danmus.length; i++) {
-        //         if (danmus[i] === undefined) {
-        //             if (!foundEmptyDanmu) {
-        //                 foundEmptyDanmu = true;
-        //                 danmuIndex = i;
-        //             }
-        //         } else {
-        //             foundDanmu = true;
-        //             if (!foundEmptyDanmu) danmuIndex = i + 1;
-        //         }
-        //     }
-        // }
-        // if (!foundDanmu) {
-        //     this.destroyAllDanmuMessages();
-        // }
-        // y += this.mainForm.gameScene.coordinates.danmuOffset * danmuIndex;
-        // var lblDanmu = this.mainForm.gameScene.add.text(x, y, msgString)
-        //     .setColor('white')
-        //     .setFontSize(30)
-        //     .setPadding(10)
-        //     .setShadow(2, 2, "#333333", 2, true, true)
-        //     .setVisible(true)
-        // this.mainForm.gameScene.danmuMessages[danmuIndex] = lblDanmu;
-        // this.mainForm.gameScene.tweens.add({
-        //     targets: lblDanmu,
-        //     x: 0 - lblDanmu.width,
-        //     duration: CommonMethods.danmuDuration,
-        //     onComplete: () => {
-        //         this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined
-        //         lblDanmu.remove();
-        //     }
-        // });
+        var _this = this;
+        if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true')
+            return;
+        var danmuIndex = 0;
+        var foundEmptyDanmu = false;
+        var foundDanmu = false;
+        if (this.mainForm.gameScene.danmuMessages.length > 0) {
+            for (var i = 0; i < this.mainForm.gameScene.danmuMessages.length; i++) {
+                if (this.mainForm.gameScene.danmuMessages[i] === undefined) {
+                    if (!foundEmptyDanmu) {
+                        foundEmptyDanmu = true;
+                        danmuIndex = i;
+                    }
+                }
+                else {
+                    foundDanmu = true;
+                    if (!foundEmptyDanmu)
+                        danmuIndex = i + 1;
+                }
+            }
+        }
+        if (!foundDanmu) {
+            this.destroyAllDanmuMessages();
+        }
+        var posY = "calc(".concat(this.mainForm.gameScene.coordinates.danmuPositionY, " + ").concat(this.mainForm.gameScene.coordinates.danmuOffset * danmuIndex, "px)");
+        var lblDanmu = this.mainForm.gameScene.ui.create.div('', msgString, this.mainForm.gameScene.ui.frameMain);
+        lblDanmu.style.color = 'white';
+        lblDanmu.style.fontFamily = 'serif';
+        lblDanmu.style.fontSize = '25px';
+        lblDanmu.style.left = "calc(100%)";
+        lblDanmu.style.top = "calc(".concat(posY, ")");
+        lblDanmu.style.transition = "left ".concat(CommonMethods.danmuDuration, "s");
+        lblDanmu.style['transition-timing-function'] = 'linear';
+        lblDanmu.style['white-space'] = 'nowrap';
+        lblDanmu.style['z-index'] = CommonMethods.zIndexDanmu;
+        this.mainForm.gameScene.danmuMessages[danmuIndex] = lblDanmu;
+        setTimeout(function () {
+            lblDanmu.style.left = "calc(0% - ".concat(lblDanmu.clientWidth, "px)");
+        }, 100);
+        setTimeout(function () {
+            _this.mainForm.gameScene.danmuMessages[danmuIndex] = undefined;
+            lblDanmu.remove();
+        }, (CommonMethods.danmuDuration + 1) * 1000);
     };
     DrawingFormHelper.prototype.destroyAllDanmuMessages = function () {
-        // if (this.mainForm.gameScene.danmuMessages == null || this.mainForm.gameScene.danmuMessages.length == 0) return
-        // this.mainForm.gameScene.danmuMessages.forEach((msg: Phaser.GameObjects.Text) => {
-        //     if (msg) msg.remove();
-        // });
-        // this.mainForm.gameScene.danmuMessages = []
+        if (this.mainForm.gameScene.danmuMessages == null || this.mainForm.gameScene.danmuMessages.length == 0)
+            return;
+        this.mainForm.gameScene.danmuMessages.forEach(function (msg) {
+            if (msg)
+                msg.remove();
+        });
+        this.mainForm.gameScene.danmuMessages = [];
     };
     DrawingFormHelper.prototype.resetReplay = function () {
         this.destroyAllCards();

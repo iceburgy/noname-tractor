@@ -20,6 +20,7 @@ import { IDBHelper } from './idb_helper.js';
 import { ReplayEntity } from './replay_entity.js';
 import { GameReplayScene } from './game_replay_scene.js';
 import { FileHelper } from './file_helper.js';
+import { debug } from 'console';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -36,7 +37,6 @@ const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
 const PLAYER_EXIT_AND_ENTER_ROOM_REQUEST = "ExitAndEnterRoom"
 const PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve"
-const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
 const BUY_USE_SKIN_REQUEST = "BuyUseSkin"
 const UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka"
 
@@ -109,6 +109,95 @@ export class MainForm {
         this.isSendEmojiEnabled = true;
         this.DaojuInfo = {};
         /*
+        /*
+                // 房间信息
+                this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "")
+                    .setVisible(false)
+                    .setColor("orange")
+                    .setFontSize(20)
+                    .setShadow(2, 2, "#333333", 2, true, true);
+                this.roomOwnerText = this.gameScene.add.text(this.gameScene.coordinates.roomOwnerTextPosition.x, this.gameScene.coordinates.roomOwnerTextPosition.y, "")
+                    .setVisible(false)
+                    .setColor("orange")
+                    .setFontSize(20)
+                    .setShadow(2, 2, "#333333", 2, true, true);
+                this.gameScene.roomUIControls.texts.push(this.roomNameText)
+                this.gameScene.roomUIControls.texts.push(this.roomOwnerText)
+        
+                // 回看上轮按钮
+                this.btnShowLastTrick = this.gameScene.add.text(this.gameScene.coordinates.btnShowLastTrickPosition.x, this.gameScene.coordinates.btnShowLastTrickPosition.y, '上轮')
+                    .setDepth(this.rightSideButtonDepth)
+                    .setColor('white')
+                    .setFontSize(30)
+                    .setPadding(10)
+                    .setShadow(2, 2, "#333333", 2, true, true)
+                    .setStyle({ backgroundColor: 'gray' })
+                    .setVisible(false)
+                    .setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => this.HandleRightClickEmptyArea())
+                    .on('pointerover', () => {
+                        this.btnShowLastTrick.setStyle({ backgroundColor: 'lightblue' })
+                    })
+                    .on('pointerout', () => {
+                        this.btnShowLastTrick.setStyle({ backgroundColor: 'gray' })
+                    })
+                this.gameScene.roomUIControls.texts.push(this.btnShowLastTrick)
+        
+                // 就绪按钮
+                this.btnReady = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '就绪')
+                    .setDepth(this.rightSideButtonDepth)
+                    .setColor('white')
+                    .setFontSize(30)
+                    .setPadding(10)
+                    .setShadow(2, 2, "#333333", 2, true, true)
+                    .setStyle({ backgroundColor: 'gray' })
+                    .setVisible(false)
+                    .setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => this.btnReady_Click())
+                    .on('pointerover', () => {
+                        this.btnReady.setStyle({ backgroundColor: 'lightblue' })
+                    })
+                    .on('pointerout', () => {
+                        this.btnReady.setStyle({ backgroundColor: 'gray' })
+                    })
+                this.gameScene.roomUIControls.texts.push(this.btnReady)
+        
+                // 托管按钮
+                this.btnRobot = this.gameScene.add.text(this.gameScene.coordinates.btnRobotPosition.x, this.gameScene.coordinates.btnRobotPosition.y, '托管')
+                    .setDepth(this.rightSideButtonDepth)
+                    .setColor('white')
+                    .setFontSize(30)
+                    .setPadding(10)
+                    .setShadow(2, 2, "#333333", 2, true, true)
+                    .setStyle({ backgroundColor: 'gray' })
+                    .setVisible(false)
+                    .setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => this.btnRobot_Click())
+                    .on('pointerover', () => {
+                        this.btnRobot.setStyle({ backgroundColor: 'lightblue' })
+                    })
+                    .on('pointerout', () => {
+                        this.btnRobot.setStyle({ backgroundColor: 'gray' })
+                    })
+                this.gameScene.roomUIControls.texts.push(this.btnRobot)
+        
+                // 退出按钮
+                this.btnExitRoom = this.gameScene.add.text(this.gameScene.coordinates.btnExitRoomPosition.x, this.gameScene.coordinates.btnExitRoomPosition.y, '退出')
+                    .setColor('white')
+                    .setFontSize(30)
+                    .setPadding(10)
+                    .setShadow(2, 2, "#333333", 2, true, true)
+                    .setStyle({ backgroundColor: 'gray' })
+                    .setInteractive({ useHandCursor: true })
+                    .on('pointerup', () => this.btnExitRoom_Click())
+                    .on('pointerover', () => {
+                        this.btnExitRoom.setStyle({ backgroundColor: 'lightblue' })
+                    })
+                    .on('pointerout', () => {
+                        this.btnExitRoom.setStyle({ backgroundColor: 'gray' })
+                    })
+        
+        /*      
                 // 房间信息
                 this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "")
                     .setVisible(false)
@@ -213,200 +302,6 @@ export class MainForm {
                         this.btnExitAndObserve.setStyle({ backgroundColor: 'gray' })
                     })
                 this.gameScene.roomUIControls.texts.push(this.btnExitAndObserve)
-        
-                // 小游戏按钮
-                this.btnSmallGames = this.gameScene.add.text(this.gameScene.coordinates.btnSmallGamesPosition.x, this.gameScene.coordinates.btnSmallGamesPosition.y, '小游戏')
-                    .setVisible(false)
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.SmallGamesHandler())
-                    .on('pointerover', () => {
-                        this.btnSmallGames.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnSmallGames.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnSmallGames)
-        
-                this.groupSmallGames = this.gameScene.add.group()
-                    .setVisible(false);
-        
-                let panelSmallGamesHeight = this.btnSmallGames.height * 2 + 40;
-                this.panelSmallGames = this.gameScene.add.sprite(this.gameScene.coordinates.btnSmallGamesPosition.x, this.gameScene.coordinates.btnSmallGamesPosition.y - panelSmallGamesHeight, 'chatPanel')
-                this.panelSmallGames.setOrigin(0, 0)
-                    .setDisplaySize(this.btnSmallGames.width, panelSmallGamesHeight)
-                    .setVisible(false)
-                    .setDepth(1);
-                this.groupSmallGames.add(this.panelSmallGames);
-        
-                this.btnGobang = this.gameScene.add.text(this.panelSmallGames.getTopLeft().x + this.panelSmallGames.displayWidth / 2, this.panelSmallGames.getTopLeft().y + 40, '五子棋',)
-                    .setVisible(false)
-                    .setColor('white')
-                    .setDepth(2)
-                    .setFontSize(20)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setInteractive({ useHandCursor: true })
-                    .setOrigin(0.5)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerover', () => {
-                        this.btnGobang.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnGobang.setStyle({ backgroundColor: 'gray' })
-                    })
-                    .on('pointerdown', () => {
-                        this.btnGobang.setScale(0.9);
-                    })
-                    .on('pointerup', () => {
-                        this.btnGobang.setScale(1);
-                        let args: (string | number)[] = [-1, -1, "gobang"];
-                        this.sendEmojiWithCheck(args);
-                        this.SmallGamesHandler();
-                    });
-                this.groupSmallGames.add(this.btnGobang);
-        
-                this.btnCollectStar = this.gameScene.add.text(this.panelSmallGames.getTopLeft().x + this.panelSmallGames.displayWidth / 2, this.panelSmallGames.getTopLeft().y + 100, '摘星星',)
-                    .setVisible(false)
-                    .setColor('white')
-                    .setDepth(2)
-                    .setFontSize(20)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setInteractive({ useHandCursor: true })
-                    .setOrigin(0.5)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerover', () => {
-                        this.btnCollectStar.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnCollectStar.setStyle({ backgroundColor: 'gray' })
-                    })
-                    .on('pointerdown', () => {
-                        this.btnCollectStar.setScale(0.9);
-                    })
-                    .on('pointerup', () => {
-                        this.btnCollectStar.setScale(1);
-                        let args: (string | number)[] = [-1, -1, "collectstar"];
-                        this.sendEmojiWithCheck(args);
-                        this.SmallGamesHandler();
-                    });
-                this.groupSmallGames.add(this.btnCollectStar);
-                this.gameScene.roomUIControls.images.push(this.groupSmallGames);
-        
-                // 确定按钮
-                this.gameScene.ui.btnPig = this.gameScene.add.text(this.gameScene.coordinates.btnPigPosition.x, this.gameScene.coordinates.btnPigPosition.y, '确定')
-                    .setColor('gray')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setVisible(false)
-                    .disableInteractive()
-                    .on('pointerup', () => this.btnPig_Click())
-                    .on('pointerover', () => {
-                        this.gameScene.ui.btnPig.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.gameScene.ui.btnPig.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.gameScene.ui.btnPig)
-        
-                // 昵称
-                this.lblNickNames = []
-                for (let i = 0; i < 4; i++) {
-                    var lblNickName = this.gameScene.add.text(this.gameScene.coordinates.playerTextPositions[i].x, this.gameScene.coordinates.playerTextPositions[i].y, "")
-                        .setColor('white')
-                        .setFontSize(30)
-                        .setPadding(10)
-                        .setShadow(2, 2, "#333333", 2, true, true)
-                        .setVisible(false)
-                    if (i == 0) {
-                        lblNickName.setText(this.gameScene.playerName)
-                            .setVisible(true)
-                            .setShadow(2, 2, "#333333", 2, true, true)
-                            .setStyle({ backgroundColor: 'rgb(105,105,105)' })
-                            .setInteractive({ useHandCursor: true })
-                            .on('pointerover', () => {
-                                this.lblNickNames[i].setStyle({ backgroundColor: 'lightblue' })
-                            })
-                            .on('pointerout', () => {
-                                this.lblNickNames[i].setStyle({ backgroundColor: 'rgb(105,105,105)' })
-                            })
-                            .on('pointerup', () => this.lblNickName_Click())
-                    }
-                    if (i == 1) {
-                        lblNickName.setStyle({ fixedWidth: 300 })
-                            .setStyle({ align: 'right' })
-                            .setPadding(0, 10, 0, 10)
-                    }
-                    this.lblNickNames[i] = lblNickName
-                    if (i != 0) {
-                        this.gameScene.roomUIControls.texts.push(lblNickName)
-                    }
-                }
-        
-                // 旁观玩家昵称
-                this.lblObservers = [];
-                for (let i = 0; i < 4; i++) {
-                    let ox = this.gameScene.coordinates.observerTextPositions[i].x + (i === 0 ? this.lblNickNames[i].width : 0);
-                    let oy = this.gameScene.coordinates.observerTextPositions[i].y;
-                    let lblObserver = this.gameScene.add.text(ox, oy, "")
-                        .setColor('white')
-                        .setFontSize(20)
-                        .setPadding(10)
-                        .setShadow(2, 2, "#333333", 2, true, true)
-                        .setVisible(false);
-                    if (i == 1) {
-                        lblObserver.setStyle({ fixedWidth: 300 })
-                            .setStyle({ align: 'right' })
-                            .setPadding(0, 10, 0, 10);
-                    }
-                    this.lblObservers[i] = lblObserver;
-                    this.gameScene.roomUIControls.texts.push(lblObserver);
-                }
-        
-                // 状态
-                this.lblStarters = []
-                for (let i = 0; i < 4; i++) {
-                    var lblStarter = this.gameScene.add.text(this.gameScene.coordinates.playerStarterPositions[i].x, this.gameScene.coordinates.playerStarterPositions[i].y, "")
-                        .setColor('orange')
-                        .setFontSize(30)
-                        .setPadding(10)
-                        .setShadow(2, 2, "#333333", 2, true, true)
-                        .setVisible(false)
-                    if (i == 1) {
-                        lblStarter.setStyle({ fixedWidth: this.gameScene.coordinates.player1StarterWid })
-                            .setStyle({ align: 'right' })
-                            .setPadding(0, 10, 0, 10)
-                    } else if (i == 0 || i == 2) {
-                        lblStarter.setStyle({ fixedWidth: 200 })
-                        lblStarter.setStyle({ align: 'right' })
-                    }
-                    this.lblStarters[i] = lblStarter
-                    this.gameScene.roomUIControls.texts.push(lblStarter)
-                }
-        
-                this.timerImage = this.gameScene.add.text(this.gameScene.coordinates.countDownPosition.x, this.gameScene.coordinates.countDownPosition.y, "")
-                    .setColor("orange")
-                    .setFontSize(this.gameScene.coordinates.countDownSzie)
-                    .setStyle({ fontWeight: "bold" })
-                    .setVisible(false)
-        
-                this.gameScene.input.on('pointerdown', (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
-                    // 右键点空白区
-                    if ((!currentlyOver || currentlyOver.length == 0) && pointer.rightButtonDown()) {
-                        this.HandleRightClickEmptyArea();
-                    }
-                    // 任意键
-                    this.resetGameRoomUI();
-                });
         
                 // 快捷键
                 this.gameScene.input.keyboard.on('keydown', this.shortcutKeyDownEventhandler, this)
@@ -578,115 +473,29 @@ export class MainForm {
                 }
             } else {
                 //skin
-                if (playerChanged && i !== 0) {
-                    let playerUI = this.CreatePlayer(i, p.PlayerId, this.gameScene.ui.frameGameRoom);
+                let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
+                if (playerChanged) {
+                    if (i !== 0) {
+                        let playerUI = this.CreatePlayer(i, p.PlayerId, this.gameScene.ui.frameGameRoom);
+                        this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
+                        let skinType = this.GetSkinType(skinInUse);
+                        let skinExtention = skinType === 0 ? "webp" : "gif";
+                        let skinURL = `image/tractor/skin/${skinInUse}.${skinExtention}`;
+                        this.SetAvatarImage(skinURL, playerUI, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
 
-                    this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
-
-
-                    // let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
-                    // let skinType = this.GetSkinType(skinInUse)
-                    // let skinImage: any
-                    // if (skinType === 0) {
-                    //     skinImage = this.gameScene.add.image(0, 0, skinInUse)
-                    //         .setDepth(-1)
-                    //         .setVisible(false);
-                    // } else {
-                    //     skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
-                    //         .setDepth(-1)
-                    //         .setVisible(false)
-                    //         .setInteractive()
-                    //         .on('pointerup', () => {
-                    //             if (skinImage.anims.isPlaying) skinImage.stop();
-                    //             else skinImage.play(skinInUse);
-                    //         });
-                    //     skinImage.play(skinInUse);
-                    // }
-                    // let x = this.gameScene.coordinates.playerSkinPositions[i].x;
-                    // let y = this.gameScene.coordinates.playerSkinPositions[i].y;
-                    // let height = this.gameScene.coordinates.cardHeight;
-                    // let width = height * (skinImage.width / skinImage.height);
-                    // switch (i) {
-                    //     case 1:
-                    //         x -= width;
-                    //         break;
-                    //     case 2:
-                    //         this.lblNickNames[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
-                    //         this.lblObservers[2].setX(this.gameScene.coordinates.observerTextPositions[2].x + width);
-                    //         break;
-                    //     default:
-                    //         break;
-                    // }
-                    // skinImage
-                    //     .setX(x)
-                    //     .setY(y)
-                    //     .setOrigin(0, 0)
-                    //     .setDisplaySize(width, height)
-                    //     .setVisible(true);
-                    // this.gameScene.roomUIControls.imagesChair.push(skinImage);
-                    // let skinFrame = this.gameScene.add.image(x, y, 'skin_frame')
-                    //     .setDepth(-1)
-                    //     .setOrigin(0, 0)
-                    //     .setDisplaySize(width, height);
-                    // this.gameScene.roomUIControls.imagesChair.push(skinFrame);
-                }
-
-                // var nickNameText = p.PlayerId;
-                if (i === 0) {
-                    this.gameScene.ui.gameMe.node.nameol.innerHTML = p.PlayerId;
-                }
-                // lblNickName.setText(`${nickNameText}`);
-                // if (i === 1) {
-                //     let countofNonEng = (nickNameText.match(this.gameScene.coordinates.regexNonEnglishChar) || []).length;
-                //     let tempWid = this.gameScene.coordinates.player1TextWid * nickNameText.length + this.gameScene.coordinates.player1TextWidBigDelta * countofNonEng;
-                //     lblNickName.setStyle({ fixedWidth: tempWid })
-                //     lblNickName.setX(this.gameScene.coordinates.playerTextPositions[i].x - tempWid)
-                // }
-
-                if (p.Observers && p.Observers.length > 0) {
-                    var obNameText = "";
-                    let tempWidOb = 0;
-                    for (let j = 0; j < p.Observers.length; j++) {
-                        let ob = p.Observers[j];
-                        if (i === 1) {
-                            let tempLenOb = ob.length + 2;
-                            let tempLenDeltaOb = (ob.match(this.gameScene.coordinates.regexNonEnglishChar) || []).length;
-                            let newWid = this.gameScene.coordinates.player1TextWid * tempLenOb + this.gameScene.coordinates.player1TextWidBigDelta * tempLenDeltaOb;
-                            tempWidOb = Math.max(tempWidOb, newWid);
-                        }
-                        var newLine = j === 0 || obNameText.length === 0 ? "" : "<br/>";
-                        obNameText += `${newLine}【${ob}】`
                     }
-                    var pokerPlayerOb = this.gameScene.ui.create.div('.pokerPlayerObGameRoom', obNameText, this.gameScene.ui.frameGameRoom);
-                    pokerPlayerOb.style.fontFamily = 'serif';
-                    pokerPlayerOb.style.fontSize = '16px';
-                    pokerPlayerOb.style.textAlign = 'left';
-                    this.gameScene.ui.pokerPlayerObGameRoom[i] = pokerPlayerOb;
-
-                    var obX = this.gameScene.coordinates.observerTextPositions[i].x;
-                    var obY = this.gameScene.coordinates.observerTextPositions[i].y;
-                    switch (i) {
-                        case 0:
-                            pokerPlayerOb.style.left = `calc(${obX})`;
-                            pokerPlayerOb.style.bottom = `calc(${obY})`;
-                            break;
-                        case 1:
-                            pokerPlayerOb.style.right = `calc(${obX})`;
-                            pokerPlayerOb.style.top = `calc(${obY})`;
-                            pokerPlayerOb.style.width = tempWidOb;
-                            pokerPlayerOb.style.textAlign = 'right';
-                            break;
-                        case 2:
-                            pokerPlayerOb.style.left = `calc(${obX})`;
-                            pokerPlayerOb.style.top = `calc(${obY})`;
-                            break;
-                        case 3:
-                            pokerPlayerOb.style.left = `calc(${obX})`;
-                            pokerPlayerOb.style.top = `calc(${obY})`;
-                            break;
-                        default:
-                            break;
+                    else {
+                        this.gameScene.ui.gameMe.node.nameol.innerHTML = this.tractorPlayer.PlayerId;
+                        let skinInUseMe = this.tractorPlayer.isObserver ? skinInUse : this.gameScene.skinInUse;
+                        let skinTypeMe = this.GetSkinType(skinInUseMe);
+                        let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+                        let skinURL = `image/tractor/skin/${skinInUseMe}.${skinExtentionMe}`;
+                        this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
                     }
+                }
+                else {
+                    let playerDiv = i === 0 ? this.gameScene.ui.gameMe : this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                    this.SetObText(p, i, this.gameScene, playerDiv.style.width);
                 }
 
                 // 旁观玩家切换视角
@@ -742,6 +551,56 @@ export class MainForm {
             curIndex = (curIndex + 1) % 4
         }
         // this.loadEmojiForm();
+    }
+
+    private SetObText(p: PlayerEntity, i: number, gs: GameScene, skinWid: number) {
+        if (p.Observers && p.Observers.length > 0) {
+            var obNameText = "";
+            let tempWidOb = 0;
+            for (let j = 0; j < p.Observers.length; j++) {
+                let ob = p.Observers[j];
+                if (i === 1) {
+                    let tempLenOb = ob.length + 2;
+                    let tempLenDeltaOb = (ob.match(gs.coordinates.regexNonEnglishChar) || []).length;
+                    let newWid = gs.coordinates.player1TextWid * tempLenOb + gs.coordinates.player1TextWidBigDelta * tempLenDeltaOb;
+                    tempWidOb = Math.max(tempWidOb, newWid);
+                }
+                var newLine = j === 0 || obNameText.length === 0 ? "" : "<br/>";
+                obNameText += `${newLine}【${ob}】`
+            }
+            var pokerPlayerOb = gs.ui.create.div('.pokerPlayerObGameRoom', obNameText, gs.ui.frameGameRoom);
+            pokerPlayerOb.style.fontFamily = 'serif';
+            pokerPlayerOb.style.fontSize = '16px';
+            pokerPlayerOb.style.textAlign = 'left';
+            gs.ui.pokerPlayerObGameRoom[i] = pokerPlayerOb;
+
+            var obX = gs.coordinates.observerTextPositions[i].x;
+            var obY = gs.coordinates.observerTextPositions[i].y;
+            switch (i) {
+                case 0:
+                    obX = `calc(${obX} + ${skinWid}px)`;
+                    pokerPlayerOb.style.left = `calc(${obX})`;
+                    pokerPlayerOb.style.bottom = `calc(${obY})`;
+                    break;
+                case 1:
+                    pokerPlayerOb.style.right = `calc(${obX})`;
+                    pokerPlayerOb.style.top = `calc(${obY})`;
+                    pokerPlayerOb.style.width = tempWidOb;
+                    pokerPlayerOb.style.textAlign = 'right';
+                    break;
+                case 2:
+                    obX = `calc(${obX} + ${skinWid}px)`;
+                    pokerPlayerOb.style.left = `calc(${obX})`;
+                    pokerPlayerOb.style.top = `calc(${obY})`;
+                    break;
+                case 3:
+                    pokerPlayerOb.style.left = `calc(${obX})`;
+                    pokerPlayerOb.style.top = `calc(${obY})`;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public ExitRoomAndEnter(posID: number) {
@@ -802,6 +661,17 @@ export class MainForm {
     }
 
     public destroyGameRoom() {
+        if (this.gameScene.ui.gameMe) {
+            this.gameScene.ui.gameMe.remove();
+            delete this.gameScene.ui.gameMe
+        }
+        delete this.gameScene.ui.roomNameText
+        delete this.gameScene.ui.roomOwnerText
+        delete this.gameScene.ui.btnPig
+
+        this.gameScene.ui.gameRoomImagesChairOrPlayer = [];
+        this.gameScene.ui.pokerPlayerStartersLabel = [];
+
         if (this.gameScene.ui.btnRobot) {
             this.gameScene.ui.btnRobot.remove();
             delete this.gameScene.ui.btnRobot;
@@ -824,6 +694,10 @@ export class MainForm {
         this.tractorPlayer.isObserver = false;
         if (this.gameScene.ui.gameMe) {
             this.gameScene.ui.gameMe.node.nameol.innerHTML = this.tractorPlayer.MyOwnId;
+            let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
+            let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+            let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
+            this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
         }
         // this.drawingFormHelper.destroyAllCards()
         // this.drawingFormHelper.destroyAllShowedCards()
@@ -838,33 +712,6 @@ export class MainForm {
         //重置状态
         this.tractorPlayer.CurrentGameState = new GameState();
         this.tractorPlayer.CurrentHandState = new CurrentHandState(this.tractorPlayer.CurrentGameState);
-
-        // this.gameScene.roomUIControls.images.forEach(image => {
-        //     image.setVisible(false)
-        // })
-        // this.destroyImagesChair();
-        // this.gameScene.roomUIControls.texts.forEach(text => {
-        //     text.setVisible(false)
-        // })
-        // for (let i = 1; i < 4; i++) {
-        //     this.lblNickNames[i].removeAllListeners();
-        //     this.lblNickNames[i].disableInteractive();
-        // }
-        // if (this.sgDrawingHelper.IsPlayingGame) {
-        //     switch (this.sgDrawingHelper.IsPlayingGame) {
-        //         case SGCSState.GameName:
-        //             this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
-        //             break;
-        //         case SGGBState.GameName:
-        //             this.sgDrawingHelper.sggbState.GameAction = "quit";
-        //             this.sgDrawingHelper.UpdateGobang();
-        //             break;
-        //         default:
-        //             break;
-        //     }
-
-        //     this.sgDrawingHelper.destroyGame(0);
-        // }
     }
 
     public destroyImagesChairOrPlayer() {
@@ -873,6 +720,15 @@ export class MainForm {
                 image.remove();
             })
             this.gameScene.ui.gameRoomImagesChairOrPlayer = [];
+        }
+    }
+
+    public destroyPokerPlayerStartersLabel() {
+        if (this.gameScene.ui.pokerPlayerStartersLabel) {
+            this.gameScene.ui.pokerPlayerStartersLabel.forEach((image: any) => {
+                image.remove();
+            })
+            this.gameScene.ui.pokerPlayerStartersLabel = [];
         }
     }
 
@@ -885,15 +741,6 @@ export class MainForm {
         })
         this.gameScene.ui.pokerPlayerObGameRoom = [];
     }
-
-    //     public destroyMySkinInUse() {
-    //         if (this.MySkinInUse) {
-    //             this.MySkinInUse.destroy();
-    //         }
-    //         if (this.MySkinFrame) {
-    //             this.MySkinFrame.destroy();
-    //         }
-    //     }
 
     public PlayerOnGetCard(cardNumber: number) {
 
@@ -1239,7 +1086,7 @@ export class MainForm {
                         let toAddImage = this.gameScene.cardImages[i] as any;
                         if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                             toAddImage.setAttribute("status", "up");
-                            toAddImage.y -= 30;
+                            toAddImage.style.bottom = `calc(${this.gameScene.coordinates.handCardPositions[0].y} + 30px)`;
                         }
                     }
                 }
@@ -1438,61 +1285,58 @@ export class MainForm {
     //         }
     //     }
 
-    //     private handleSelectPresetMsgsClick(selectPresetMsgs: any) {
-    //         if (this.selectPresetMsgsIsOpen) {
-    //             this.selectPresetMsgsIsOpen = false;
-    //             let selectedIndex = selectPresetMsgs.selectedIndex;
-    //             let selectedValue = selectPresetMsgs.value;
-    //             let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-    //             this.sendEmojiWithCheck(args)
-    //         } else {
-    //             this.selectPresetMsgsIsOpen = true;
-    //         }
-    //     }
+    private handleSelectPresetMsgsClick(selectPresetMsgs: any) {
+        if (this.selectPresetMsgsIsOpen) {
+            this.selectPresetMsgsIsOpen = false;
+            let selectedIndex = selectPresetMsgs.selectedIndex;
+            let selectedValue = selectPresetMsgs.value;
+            let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
+            this.sendEmojiWithCheck(args)
+        } else {
+            this.selectPresetMsgsIsOpen = true;
+        }
+    }
 
-    //     private emojiSubmitEventhandler() {
-    //         let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs")
-    //         if (!selectPresetMsgs) return;
-    //         let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
-    //         let emojiType = -1;
-    //         let emojiIndex = -1;
-    //         let msgString = textAreaMsg.value;
-    //         if (msgString) {
-    //             msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
-    //         }
-    //         textAreaMsg.value = "";
-    //         if (!msgString) {
-    //             msgString = selectPresetMsgs.value;
-    //             emojiType = selectPresetMsgs.selectedIndex;
-    //             emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
-    //         } else if (msgString.startsWith(CommonMethods.sendBroadcastPrefix)) {
-    //             // SendBroadcast
-    //             this.sendBroadcastMsgType(msgString);
-    //             return;
-    //         }
-    //         let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-    //         this.sendEmojiWithCheck(args)
-    //     }
+    private emojiSubmitEventhandler() {
+        if (!this.gameScene.ui.selectPresetMsgs) return;
+        let emojiType = -1;
+        let emojiIndex = -1;
+        let msgString = this.gameScene.ui.textAreaChatMsg.value;
+        if (msgString) {
+            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
+        }
+        this.gameScene.ui.textAreaChatMsg.value = "";
+        if (!msgString) {
+            msgString = this.gameScene.ui.selectPresetMsgs.value;
+            emojiType = this.gameScene.ui.selectPresetMsgs.selectedIndex;
+            emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
+        } else if (msgString.startsWith(CommonMethods.sendBroadcastPrefix)) {
+            // SendBroadcast
+            this.sendBroadcastMsgType(msgString);
+            return;
+        }
+        let args: (string | number)[] = [emojiType, emojiIndex, msgString];
+        this.sendEmojiWithCheck(args)
+    }
 
-    //     public sendBroadcastMsgType(msg: string) {
-    //         let shengbi = 0
-    //         if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
-    //             shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
-    //         }
-    //         if (shengbi < CommonMethods.sendBroadcastCost) {
-    //             alert("升币余额不足，无法发送广播消息")
-    //             return;
-    //         }
+    public sendBroadcastMsgType(msg: string) {
+        let shengbi = 0
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
+        }
+        if (shengbi < CommonMethods.sendBroadcastCost) {
+            alert("升币余额不足，无法发送广播消息")
+            return;
+        }
 
-    //         this.gameScene.sendMessageToServer(CommonMethods.SendBroadcast_REQUEST, this.tractorPlayer.MyOwnId, msg);
-    //     }
+        this.gameScene.sendMessageToServer(CommonMethods.SendBroadcast_REQUEST, this.tractorPlayer.MyOwnId, msg);
+    }
 
-    //     public blurChat() {
-    //         if (!this.chatForm) return;
-    //         let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
-    //         if (!textAreaMsg) return;
-    //         textAreaMsg.blur();
-    //     }
+    public blurChat() {
+        if (!this.gameScene.ui.textAreaChatMsg) return;
+        this.gameScene.ui.textAreaChatMsg.value = "";
+        this.gameScene.ui.textAreaChatMsg.blur();
+    }
 
     //     private shortcutKeyDownEventhandler(event: KeyboardEvent) {
     //         if (!event || !event.key || !this.sgDrawingHelper.IsPlayingGame || this.sgDrawingHelper.IsPlayingGame !== SGCSState.GameName) return;
@@ -1622,37 +1466,37 @@ export class MainForm {
     //         }
     //     }
 
-    //     private sendEmojiWithCheck(args: (string | number)[]) {
-    //         if ((this.sgDrawingHelper.hiddenEffects[args[2]] || this.sgDrawingHelper.hiddenGames[args[2]])) {
-    //             if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) &&
-    //                 (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing)) {
-    //                 this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
-    //                 return;
-    //             }
-    //             if (this.tractorPlayer.isObserver) {
-    //                 this.appendChatMsg("旁观玩家不能发动隐藏技");
-    //                 return;
-    //             }
-    //             if (this.sgDrawingHelper.hiddenEffectImages &&
-    //                 this.sgDrawingHelper.hiddenEffectImages.length > 0 &&
-    //                 this.sgDrawingHelper.hiddenEffectImages[0].visible ||
-    //                 this.sgDrawingHelper.hiddenGamesImages &&
-    //                 this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
-    //                 this.sgDrawingHelper.hiddenGamesImages[0].visible) {
-    //                 this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
-    //                 return;
-    //             }
-    //         }
-    //         if (!this.isSendEmojiEnabled) {
-    //             this.appendChatMsg(CommonMethods.emojiWarningMsg);
-    //             return;
-    //         }
-    //         this.isSendEmojiEnabled = false;
-    //         setTimeout(() => {
-    //             this.isSendEmojiEnabled = true;
-    //         }, 1000 * CommonMethods.emojiWarningIntervalInSec);
-    //         this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
-    //     }
+    private sendEmojiWithCheck(args: (string | number)[]) {
+        // if ((this.sgDrawingHelper.hiddenEffects[args[2]] || this.sgDrawingHelper.hiddenGames[args[2]])) {
+        //     if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) &&
+        //         (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing)) {
+        //         this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
+        //         return;
+        //     }
+        //     if (this.tractorPlayer.isObserver) {
+        //         this.appendChatMsg("旁观玩家不能发动隐藏技");
+        //         return;
+        //     }
+        //     if (this.sgDrawingHelper.hiddenEffectImages &&
+        //         this.sgDrawingHelper.hiddenEffectImages.length > 0 &&
+        //         this.sgDrawingHelper.hiddenEffectImages[0].visible ||
+        //         this.sgDrawingHelper.hiddenGamesImages &&
+        //         this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
+        //         this.sgDrawingHelper.hiddenGamesImages[0].visible) {
+        //         this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
+        //         return;
+        //     }
+        // }
+        if (!this.isSendEmojiEnabled) {
+            this.appendChatMsg(CommonMethods.emojiWarningMsg);
+            return;
+        }
+        this.isSendEmojiEnabled = false;
+        setTimeout(() => {
+            this.isSendEmojiEnabled = true;
+        }, 1000 * CommonMethods.emojiWarningIntervalInSec);
+        this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args))
+    }
 
     //     private lblNickName_Click() {
     //         if (this.modalForm) return
@@ -1918,16 +1762,16 @@ export class MainForm {
     //         return [false, ""];
     //     }
 
-    //     private GetSkinType(skinName: string): number {
-    //         let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
-    //         if (fullSkinInfo) {
-    //             let targetSkinInfo = fullSkinInfo[skinName];
-    //             if (targetSkinInfo) {
-    //                 return targetSkinInfo.skinType;
-    //             }
-    //         }
-    //         return 0;
-    //     }
+    private GetSkinType(skinName: string): number {
+        let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        if (fullSkinInfo) {
+            let targetSkinInfo = fullSkinInfo[skinName];
+            if (targetSkinInfo) {
+                return targetSkinInfo.skinType;
+            }
+        }
+        return 0;
+    }
 
     //     public GetPlayerSex(playerID: string): string {
     //         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
@@ -2198,21 +2042,21 @@ export class MainForm {
         }
     }
 
-    //     private resetGameRoomUI() {
-    //         this.blurChat();
-    //         if (this.modalForm) {
-    //             if (this.modalForm.getChildByID("btnBapi1")) {
-    //                 let cutPoint = 0;
-    //                 let cutInfo = `取消,${cutPoint}`;
-    //                 this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-    //             } else {
-    //                 if (!this.gameScene.isReplayMode)
-    //                     this.gameScene.loadAudioFiles();
-    //                 this.gameScene.saveSettings();
-    //                 this.DesotroyModalForm();
-    //             }
-    //         }
-    //     }
+    private resetGameRoomUI() {
+        this.blurChat();
+        // if (this.modalForm) {
+        //     if (this.modalForm.getChildByID("btnBapi1")) {
+        //         let cutPoint = 0;
+        //         let cutInfo = `取消,${cutPoint}`;
+        //         this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        //     } else {
+        //         if (!this.gameScene.isReplayMode)
+        //             this.gameScene.loadAudioFiles();
+        //         this.gameScene.saveSettings();
+        //         this.DesotroyModalForm();
+        //     }
+        // }
+    }
 
     //     private DesotroyModalForm() {
     //         if (!this.modalForm) return;
@@ -2266,17 +2110,12 @@ export class MainForm {
     }
 
     public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[]) {
-        // this.loadEmojiForm();
-        // this.updateOnlineAndRoomPlayerList(roomStateList, playerList);
+        this.updateOnlineAndRoomPlayerList(roomStateList, playerList);
         if (playerList.includes(this.tractorPlayer.MyOwnId)) {
             this.tractorPlayer.destroyAllClientMessages();
             this.destroyGameRoom();
             this.destroyGameHall();
             this.drawGameHall(roomStateList, playerList);
-
-            if (!this.gameScene.ui.exitTractor) {
-                this.gameScene.ui.exitTractor = this.gameScene.ui.create.system('退出', () => this.btnExitRoom_Click(), true);
-            }
         }
     }
 
@@ -2290,7 +2129,7 @@ export class MainForm {
     public drawFrameMain() {
         let frameMain = this.gameScene.ui.create.div('.frameMain', this.gameScene.ui.window);
         frameMain.style.position = 'absolute';
-        frameMain.style.top = '0px';
+        frameMain.style.top = 'calc(50px)';
         frameMain.style.left = '0px';
         frameMain.style.bottom = '0px';
         frameMain.style.right = '0px';
@@ -2307,17 +2146,56 @@ export class MainForm {
         let frameChat = this.gameScene.ui.create.div('.framechat', this.gameScene.ui.window);
         frameChat.style.width = '250px';
         frameChat.style.position = 'absolute';
-        frameChat.style.top = '0px';
+        frameChat.style.top = 'calc(50px)';
         frameChat.style.bottom = '0px';
         frameChat.style.right = '0px';
+        frameChat.style['z-index'] = CommonMethods.zIndexFrameChat;
         this.gameScene.ui.frameChat = frameChat;
+
+        let divOnlinePlayerList = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
+        divOnlinePlayerList.style.top = 'calc(0%)';
+        divOnlinePlayerList.style.height = 'calc(20% - 5px)';
+        this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
+
+        let divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
+        divChatHistory.style.top = 'calc(20%)';
+        divChatHistory.style.height = 'calc(60% - 5px)';
+        this.gameScene.ui.divChatHistory = divChatHistory;
+
+        var selectChatPresetMsgs = document.createElement("select");
+        selectChatPresetMsgs.style.top = 'calc(80%)';
+        selectChatPresetMsgs.style.height = 'calc(4%)';
+        selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
+        frameChat.appendChild(selectChatPresetMsgs);
+        this.gameScene.ui.selectPresetMsgs = selectChatPresetMsgs;
+        for (var i = 0; i < CommonMethods.ChatPresetMsgs.length; i++) {
+            var option = document.createElement("option");
+            option.value = CommonMethods.ChatPresetMsgs[i];
+            option.text = `${i + 1}-${CommonMethods.ChatPresetMsgs[i]}`;
+            selectChatPresetMsgs.appendChild(option);
+        }
+        if (CommonMethods.isMobile()) {
+            selectChatPresetMsgs.addEventListener('change', () => {
+                this.selectPresetMsgsIsOpen = true;
+                this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
+
+            });
+        } else {
+            selectChatPresetMsgs.addEventListener('click', () => {
+                this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
+            });
+        }
+
+
+        var textAreaChatMsg = document.createElement("textarea");
+        textAreaChatMsg.style.height = 'calc(13%)';
+        textAreaChatMsg.style.bottom = 'calc(2%)';
+        textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
+        frameChat.appendChild(textAreaChatMsg);
+        this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
     }
 
     public drawGameRoom() {
-        if (!this.gameScene.ui.exitTractor) {
-            this.gameScene.ui.exitTractor = this.gameScene.ui.create.system('退出', () => this.btnExitRoom_Click(), true);
-        }
-
         let frameGameRoom = this.gameScene.ui.create.div('.frameGameRoom', this.gameScene.ui.arena);
         frameGameRoom.style.position = 'absolute';
         frameGameRoom.style.top = '0px';
@@ -2326,7 +2204,11 @@ export class MainForm {
         frameGameRoom.style.right = '0px';
         this.gameScene.ui.frameGameRoom = frameGameRoom;
 
-        if (!this.gameScene.ui.me) {
+        if (!this.gameScene.ui.gameMe) {
+            this.drawGameMe();
+        }
+
+        if (!this.gameScene.ui.handZone) {
             this.drawHandZone();
         }
 
@@ -2399,6 +2281,7 @@ export class MainForm {
         btnPig.style.bottom = `calc(${this.gameScene.coordinates.showedCardsPositions[0].y})`;
         btnPig.style.fontFamily = 'serif';
         btnPig.style.fontSize = '20px';
+        btnPig.classList.add('disabled');
         btnPig.hide();
         this.gameScene.ui.frameGameRoom.appendChild(btnPig);
 
@@ -2426,6 +2309,8 @@ export class MainForm {
             this.drawGameMe();
         }
 
+        this.UpdateQiandaoStatus();
+
         let frameGameHall = this.gameScene.ui.create.div('.frameGameHall', this.gameScene.ui.frameMain);
         frameGameHall.style.position = 'absolute';
         frameGameHall.style.top = '0px';
@@ -2452,7 +2337,7 @@ export class MainForm {
             textHallPlayer.style.left = 'calc(10px)';
             textHallPlayer.style.top = `calc(${topPx}px)`;
             textHallPlayer.style.textAlign = 'left';
-            topPx += 40;
+            topPx += 30;
         }
 
 
@@ -2635,17 +2520,18 @@ export class MainForm {
 
     private drawGameMe() {
         this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
+        let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
+        let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+        let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
+        this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
     }
 
     private drawHandZone() {
-        if (!this.gameScene.ui.gameMe) {
-            this.drawGameMe();
-        }
-
         this.gameScene.ui.create.me(); // creates ui.me, which is hand zone
         this.gameScene.ui.handZone = this.gameScene.ui.me;
         this.gameScene.ui.handZone.style.position = "absolute";
         this.gameScene.ui.handZone.style.left = `calc(${this.gameScene.ui.gameMe.clientWidth}px)`;
+        // this.gameScene.ui.handZone.style.left will be re-adjusted via callback of drawGameMe
         this.gameScene.ui.handZone.style.right = `calc(0px)`;
         this.gameScene.ui.handZone.style.width = "auto";
     }
@@ -2653,7 +2539,6 @@ export class MainForm {
     private CreatePlayer(pos: number, playerId: string, parentNode: any) {
         let playerDiv = this.gameScene.ui.create.player(parentNode);
         playerDiv.setAttribute('data-position', pos);
-        playerDiv.node.avatar.setBackgroundImage('image/tractor/skin/questionmark.webp');
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
         playerDiv.node.avatar.show();
@@ -2661,163 +2546,173 @@ export class MainForm {
         playerDiv.node.nameol.innerHTML = playerId;
         return playerDiv;
     }
-    //     public UpdateQiandaoStatus() {
-    //         if (this.gameScene.btnQiandao && this.gameScene.btnQiandao.input) {
-    //             if (this.IsQiandaoRenewed()) {
-    //                 this.gameScene.btnQiandao.setText("签到领福利")
-    //                     .setInteractive({ useHandCursor: true })
-    //                     .setColor('white');
-    //             } else {
-    //                 this.gameScene.btnQiandao.setText("今日已签到")
-    //                     .disableInteractive()
-    //                     .setColor('gray');
-    //             }
-    //         }
-    //     }
 
-    //     public IsQiandaoRenewed(): boolean {
-    //         let daojuInfoByPlayer: any = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-    //         return daojuInfoByPlayer && daojuInfoByPlayer.isRenewed;
-    //     }
+    private EnableShortcutKeys() {
+        // 右键点空白区
+        window.addEventListener("mouseup", (e: any) => {
+            if (this.gameScene.isInGameRoom()) {
+                if (e.button === 2 && e.target.classList.contains('frameGameRoom')) {
+                    this.HandleRightClickEmptyArea();
+                    return;
+                }
+            }
+            if (e.button === 1 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall'))) {
+                this.resetGameRoomUI();
+                return;
+            }
+        });
+        window.addEventListener('keyup', (e: any) => {
+            let keyCode = e.keyCode;
 
-    //     public UpdateSkinStatus() {
-    //         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-    //         if (daojuInfoByPlayer) {
-    //             let ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
-    //             if (ownedSkinInfoList && ownedSkinInfoList.includes(this.gameScene.skinInUse)) {
-    //                 this.destroyMySkinInUse();
+            if (e.target === this.gameScene.ui.textAreaChatMsg) {
+                if (keyCode === 13) {
+                    this.emojiSubmitEventhandler();
+                }
+                return;
+            }
 
-    //                 let skinType = this.GetSkinType(this.gameScene.skinInUse);
-    //                 if (skinType === 0) {
-    //                     this.MySkinInUse = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
-    //                 } else {
-    //                     this.MySkinInUse = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, this.gameScene.skinInUse)
-    //                         .setInteractive()
-    //                         .on('pointerup', () => {
-    //                             if (this.MySkinInUse.anims.isPlaying) this.MySkinInUse.stop();
-    //                             else this.MySkinInUse.play(this.gameScene.skinInUse);
-    //                         })
-    //                         .play(this.gameScene.skinInUse);
-    //                 }
-    //                 let width = this.gameScene.coordinates.cardHeight * (this.MySkinInUse.width / this.MySkinInUse.height);
-    //                 this.MySkinInUse.setDisplaySize(width, this.gameScene.coordinates.cardHeight)
-    //                 this.MySkinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
-    //                     .setDisplaySize(width, this.gameScene.coordinates.cardHeight)
-    //             }
-    //         }
+            // 1 - 9: 49 - 57
+            if (49 <= keyCode && keyCode <= 49 + CommonMethods.emojiMsgs.length - 1) {
+                let prevSelection = this.gameScene.ui.selectPresetMsgs.selectedIndex;
+                let emojiType = keyCode - 49;
+                if (emojiType !== prevSelection) {
+                    this.gameScene.ui.selectPresetMsgs.selectedIndex = emojiType;
+                }
+                let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
+                let msgString = CommonMethods.emojiMsgs[emojiType]
+                let args: (string | number)[] = [emojiType, emojiIndex, msgString];
+                this.sendEmojiWithCheck(args)
+            }
 
-    //         // 如果在房间里，则事实更新其它玩家的皮肤
-    //         if (!this.gameScene.isInGameRoom()) return;
-    //         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
-    //         curIndex = (curIndex + 1) % 4;
-    //         this.destroyImagesChair();
-    //         for (let i = 1; i < 4; i++) {
-    //             let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
-    //             let isEmptySeat = !p;
-    //             if (isEmptySeat) {
-    //                 let chairImage = this.gameScene.add.image(this.gameScene.coordinates.playerMainTextPositions[i].x - (i == 1 ? 60 : 0), this.gameScene.coordinates.playerMainTextPositions[i].y, 'pokerChair')
-    //                     .setOrigin(0, 0)
-    //                     .setDisplaySize(60, 60)
+            if (this.gameScene.isInGameRoom()) {
+                switch (keyCode) {
+                    case 90:
+                        if (this.tractorPlayer.isObserver) return;
+                        this.btnReady_Click();
+                        return;
+                    case 83:
+                        if (this.tractorPlayer.isObserver) return;
+                        this.btnPig_Click();
+                        return;
+                    case 82:
+                        if (this.tractorPlayer.isObserver) return;
+                        this.btnRobot_Click();
+                        return;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+    public UpdateQiandaoStatus() {
+        if (this.gameScene.ui.btnQiandao) {
+            if (this.IsQiandaoRenewed()) {
+                this.gameScene.ui.btnQiandao.innerHTML = "签到领福利";
+                this.gameScene.ui.btnQiandao.show();
+            } else {
+                this.gameScene.ui.btnQiandao.innerHTML = "今日已签到";
+                this.gameScene.ui.btnQiandao.hide();
+            }
+        }
+    }
 
-    //                 // 旁观玩家/正常玩家：坐下
-    //                 chairImage.setInteractive({ useHandCursor: true })
-    //                     .on('pointerup', () => {
-    //                         let pos = i + 1;
-    //                         let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
-    //                         this.ExitRoomAndEnter(playerIndex);
-    //                     })
-    //                     .on('pointerover', () => {
-    //                         chairImage.y -= 3
-    //                     })
-    //                     .on('pointerout', () => {
-    //                         chairImage.y += 3
-    //                     })
-    //                 this.gameScene.roomUIControls.imagesChair.push(chairImage)
-    //             } else {
-    //                 //skin
-    //                 let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
-    //                 let skinType = this.GetSkinType(skinInUse)
-    //                 let skinImage: any
-    //                 if (skinType === 0) {
-    //                     skinImage = this.gameScene.add.image(0, 0, skinInUse)
-    //                         .setVisible(false);
-    //                 } else {
-    //                     skinImage = this.gameScene.add.sprite(0, 0, skinInUse)
-    //                         .setVisible(false)
-    //                         .setInteractive()
-    //                         .on('pointerup', () => {
-    //                             if (skinImage.anims.isPlaying) skinImage.stop();
-    //                             else skinImage.play(skinInUse);
-    //                         });
-    //                     skinImage.play(skinInUse);
-    //                 }
-    //                 let x = this.gameScene.coordinates.playerSkinPositions[i].x;
-    //                 let y = this.gameScene.coordinates.playerSkinPositions[i].y;
-    //                 let height = this.gameScene.coordinates.cardHeight;
-    //                 let width = height * (skinImage.width / skinImage.height);
-    //                 switch (i) {
-    //                     case 1:
-    //                         x -= width;
-    //                         break;
-    //                     case 2:
-    //                         this.lblNickNames[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
-    //                         this.lblObservers[2].setX(this.gameScene.coordinates.playerTextPositions[2].x + width);
-    //                         break;
-    //                     default:
-    //                         break;
-    //                 }
-    //                 skinImage
-    //                     .setDepth(-1)
-    //                     .setX(x)
-    //                     .setY(y)
-    //                     .setOrigin(0, 0)
-    //                     .setDisplaySize(width, height)
-    //                     .setVisible(true);
-    //                 this.gameScene.roomUIControls.imagesChair.push(skinImage);
-    //                 let skinFrame = this.gameScene.add.image(x, y, 'skin_frame')
-    //                     .setDepth(-1)
-    //                     .setOrigin(0, 0)
-    //                     .setDisplaySize(width, height);
-    //                 this.gameScene.roomUIControls.imagesChair.push(skinFrame);
-    //             }
-    //             curIndex = (curIndex + 1) % 4
-    //         }
-    //     }
+    public IsQiandaoRenewed(): boolean {
+        let daojuInfoByPlayer: any = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        return daojuInfoByPlayer && daojuInfoByPlayer.isRenewed;
+    }
 
-    //     public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string, noSpeaker: boolean) {
-    //         let isPlayerInGameHall = this.gameScene.isInGameHall();
-    //         if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
-    //             msgString = CommonMethods.emojiMsgs[emojiType];
-    //             if (!isPlayerInGameHall) {
-    //                 this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
-    //             }
-    //         }
-    //         if (isCenter) return;
-    //         let finalMsg = "";
-    //         if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenEffects[msgString]) {
-    //             if (this.isInHiddenGames()) {
-    //                 finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
-    //             } else {
-    //                 this.sgDrawingHelper.hiddenEffects[msgString].apply(this.sgDrawingHelper);
-    //                 finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
-    //             }
-    //         } else if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenGames[msgString]) {
-    //             if (this.isInHiddenGames()) {
-    //                 finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
-    //             } else {
-    //                 finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
-    //                 if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
-    //             }
-    //         } else {
-    //             let prefix = "【系统消息】：";
-    //             if (playerID && !noSpeaker) {
-    //                 prefix = `【${playerID}】说：`;
-    //             }
-    //             finalMsg = `${prefix}${msgString}`;
-    //         }
-    //         this.drawingFormHelper.DrawDanmu(finalMsg);
-    //         this.appendChatMsg(finalMsg);
-    //     }
+    private SetAvatarImage(skinURL: string, playerObj: any, fixedHeight: number, callback?: any, p?: PlayerEntity, i?: number, gs?: GameScene) {
+        var img = new Image();
+        img.onload = (e: any) => {
+            let wid = e.target.width;
+            let hei = e.target.height;
+            let skinWid = fixedHeight * wid / hei;
+            playerObj.style.width = `calc(${skinWid}px)`;
+            playerObj.node.avatar.setBackgroundImage(skinURL);
+            if (gs && playerObj === gs.ui.gameMe) {
+                gs.ui.handZone.style.left = `calc(${gs.ui.gameMe.clientWidth}px)`;
+            }
+
+            if (callback) {
+                callback(p, i, gs, skinWid);
+            }
+        };
+        img.src = skinURL;
+    }
+
+    public UpdateSkinStatus() {
+        this.destroyPokerPlayerObGameRoom();
+        let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.PlayerId];
+        let pMe = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId);
+        if (daojuInfoByPlayer) {
+            let ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
+            if (ownedSkinInfoList && ownedSkinInfoList.includes(this.gameScene.skinInUse)) {
+                let skinType = this.GetSkinType(this.gameScene.skinInUse);
+                let skinExtention = skinType === 0 ? "webp" : "gif";
+                let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtention}`;
+                if (this.gameScene.isInGameRoom()) {
+                    this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, pMe, 0, this.gameScene);
+                }
+                else {
+                    this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                }
+            }
+        }
+
+        // 如果在房间里，则事实更新其它玩家的皮肤
+        if (!this.gameScene.isInGameRoom()) return;
+        var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
+        curIndex = (curIndex + 1) % 4;
+        for (let i = 1; i < 4; i++) {
+            let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
+            if (p) {
+                let playerImage = this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                //skin
+                let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
+                let skinType = this.GetSkinType(skinInUse)
+                let skinExtention = skinType === 0 ? "webp" : "gif";
+                let skinURL = `image/tractor/skin/${skinInUse}.${skinExtention}`;
+                this.SetAvatarImage(skinURL, playerImage, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
+            }
+
+            curIndex = (curIndex + 1) % 4
+        }
+    }
+
+    public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string, noSpeaker: boolean) {
+        let isPlayerInGameHall = this.gameScene.isInGameHall();
+        if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
+            msgString = CommonMethods.emojiMsgs[emojiType];
+            if (!isPlayerInGameHall) {
+                this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
+            }
+        }
+        if (isCenter) return;
+        let finalMsg = "";
+        // if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenEffects[msgString]) {
+        //     if (this.isInHiddenGames()) {
+        //         finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
+        //     } else {
+        //         this.sgDrawingHelper.hiddenEffects[msgString].apply(this.sgDrawingHelper);
+        //         finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
+        //     }
+        // } else if (!isPlayerInGameHall && this.sgDrawingHelper.hiddenGames[msgString]) {
+        //     if (this.isInHiddenGames()) {
+        //         finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】，因为游戏中已屏蔽`;
+        //     } else {
+        //         finalMsg = `【${playerID}】发动了隐藏技：【${msgString}】`;
+        //         if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
+        //     }
+        // } else {
+        let prefix = "【系统消息】：";
+        if (playerID && !noSpeaker) {
+            prefix = `【${playerID}】说：`;
+        }
+        finalMsg = `${prefix}${msgString}`;
+        // }
+        this.drawingFormHelper.DrawDanmu(finalMsg);
+        this.appendChatMsg(finalMsg);
+    }
 
     //     public isInHiddenGames(): boolean {
     //         return this.sgDrawingHelper.hiddenGamesImages &&
@@ -2825,101 +2720,105 @@ export class MainForm {
     //             this.sgDrawingHelper.hiddenGamesImages[0].visible
     //     }
 
-    //     public appendChatMsg(finalMsg: string) {
-    //         let p = document.createElement("p");
-    //         p.innerText = finalMsg
-    //         let divChatHistory = this.chatForm.getChildByID("divChatHistory");
-    //         divChatHistory.appendChild(p);
-    //         divChatHistory.scrollTop = divChatHistory.scrollHeight;
-    //     }
+    public appendChatMsg(finalMsg: string) {
+        let p = document.createElement("p");
+        p.innerText = finalMsg
+        this.gameScene.ui.divChatHistory.appendChild(p);
+        this.gameScene.ui.divChatHistory.scrollTop = this.gameScene.ui.divChatHistory.scrollHeight;
+    }
 
-    //     public updateOnlineAndRoomPlayerList(roomStateList: RoomState[], playersInGameHall: string[]) {
-    //         // gather players with status
-    //         let playersInGameRoomPlaying: any = {};
-    //         let playersInGameRoomObserving: any = {};
+    public updateOnlineAndRoomPlayerList(roomStateList: RoomState[], playersInGameHall: string[]) {
+        // gather players with status
+        let playersInGameRoomPlaying: any = {};
+        let playersInGameRoomObserving: any = {};
 
-    //         for (let i = 0; i < roomStateList.length; i++) {
-    //             let rs: RoomState = roomStateList[i];
-    //             let roomName = rs.roomSetting.RoomName;
-    //             for (let j = 0; j < 4; j++) {
-    //                 if (rs.CurrentGameState.Players[j] != null) {
-    //                     let player: PlayerEntity = rs.CurrentGameState.Players[j];
-    //                     if (!playersInGameRoomPlaying[roomName]) {
-    //                         playersInGameRoomPlaying[roomName] = [];
-    //                     }
-    //                     if (!playersInGameRoomObserving[roomName]) {
-    //                         playersInGameRoomObserving[roomName] = [];
-    //                     }
-    //                     playersInGameRoomPlaying[roomName].push(player.PlayerId);
-    //                     if (player.Observers && player.Observers.length > 0) {
-    //                         playersInGameRoomObserving[roomName] = playersInGameRoomObserving[roomName].concat(player.Observers);
-    //                     }
-    //                 }
-    //             }
-    //         }
+        for (let i = 0; i < roomStateList.length; i++) {
+            let rs: RoomState = roomStateList[i];
+            let roomName = rs.roomSetting.RoomName;
+            for (let j = 0; j < 4; j++) {
+                if (rs.CurrentGameState.Players[j] != null) {
+                    let player: PlayerEntity = rs.CurrentGameState.Players[j];
+                    if (!playersInGameRoomPlaying[roomName]) {
+                        playersInGameRoomPlaying[roomName] = [];
+                    }
+                    if (!playersInGameRoomObserving[roomName]) {
+                        playersInGameRoomObserving[roomName] = [];
+                    }
+                    playersInGameRoomPlaying[roomName].push(player.PlayerId);
+                    if (player.Observers && player.Observers.length > 0) {
+                        playersInGameRoomObserving[roomName] = playersInGameRoomObserving[roomName].concat(player.Observers);
+                    }
+                }
+            }
+        }
 
-    //         let divOnlinePlayerList = this.chatForm.getChildByID("divOnlinePlayerList");
-    //         divOnlinePlayerList.innerHTML = '';
+        this.gameScene.ui.divOnlinePlayerList.innerHTML = '';
 
-    //         // players in game hall
-    //         if (playersInGameHall && playersInGameHall.length > 0) {
-    //             let headerGameHall = document.createElement("p");
-    //             headerGameHall.innerText = "大厅";
-    //             headerGameHall.style.fontWeight = 'bold';
-    //             divOnlinePlayerList.appendChild(headerGameHall);
+        // players in game hall
+        if (playersInGameHall && playersInGameHall.length > 0) {
+            let headerGameHall = document.createElement("p");
+            headerGameHall.innerText = "大厅";
+            headerGameHall.style.fontWeight = 'bold';
+            this.gameScene.ui.divOnlinePlayerList.appendChild(headerGameHall);
 
-    //             for (let i = 0; i < playersInGameHall.length; i++) {
-    //                 let d = document.createElement("div");
-    //                 let pid = playersInGameHall[i];
-    //                 d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
-    //                 divOnlinePlayerList.appendChild(d);
-    //             }
-    //         }
+            for (let i = 0; i < playersInGameHall.length; i++) {
+                let d = document.createElement("div");
+                d.style.position = 'static';
+                d.style.display = 'block';
+                let pid = playersInGameHall[i];
+                d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
+                this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+            }
+        }
 
-    //         // players in game room playing or observing
-    //         for (const [key, value] of Object.entries(playersInGameRoomPlaying)) {
-    //             let players: string[] = value as string[];
-    //             let obs: string[] = playersInGameRoomObserving[key]
+        // players in game room playing or observing
+        for (const [key, value] of Object.entries(playersInGameRoomPlaying)) {
+            let players: string[] = value as string[];
+            let obs: string[] = playersInGameRoomObserving[key]
 
-    //             let headerGameRoomPlaying = document.createElement("p");
-    //             headerGameRoomPlaying.innerText = `房间【${key}】桌上`;
-    //             headerGameRoomPlaying.style.fontWeight = 'bold';
-    //             divOnlinePlayerList.appendChild(headerGameRoomPlaying);
-    //             for (let i = 0; i < players.length; i++) {
-    //                 let d = document.createElement("div");
-    //                 let pid = players[i];
-    //                 d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
-    //                 divOnlinePlayerList.appendChild(d);
-    //             }
+            let headerGameRoomPlaying = document.createElement("p");
+            headerGameRoomPlaying.innerText = `房间【${key}】桌上`;
+            headerGameRoomPlaying.style.fontWeight = 'bold';
+            this.gameScene.ui.divOnlinePlayerList.appendChild(headerGameRoomPlaying);
+            for (let i = 0; i < players.length; i++) {
+                let d = document.createElement("div");
+                d.style.position = 'static';
+                d.style.display = 'block';
+                let pid = players[i];
+                d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
+                this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+            }
 
-    //             if (obs && obs.length > 0) {
-    //                 let headerGameRoomObserving = document.createElement("p");
-    //                 headerGameRoomObserving.innerText = `房间【${key}】树上`;
-    //                 headerGameRoomObserving.style.fontWeight = 'bold';
-    //                 divOnlinePlayerList.appendChild(headerGameRoomObserving);
-    //                 for (let i = 0; i < obs.length; i++) {
-    //                     let d = document.createElement("div");
-    //                     let oid = obs[i];
-    //                     d.innerText = `【${oid}】积分：${this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal}`;
-    //                     divOnlinePlayerList.appendChild(d);
-    //                 }
-    //             }
-    //         }
-    //         divOnlinePlayerList.scrollTop = divOnlinePlayerList.scrollHeight;
-    //     }
+            if (obs && obs.length > 0) {
+                let headerGameRoomObserving = document.createElement("p");
+                headerGameRoomObserving.innerText = `房间【${key}】树上`;
+                headerGameRoomObserving.style.fontWeight = 'bold';
+                this.gameScene.ui.divOnlinePlayerList.appendChild(headerGameRoomObserving);
+                for (let i = 0; i < obs.length; i++) {
+                    let d = document.createElement("div");
+                    d.style.position = 'static';
+                    d.style.display = 'block';
+                    let oid = obs[i];
+                    d.innerText = `【${oid}】积分：${this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal}`;
+                    this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                }
+            }
+        }
+        this.gameScene.ui.divOnlinePlayerList.scrollTop = this.gameScene.ui.divOnlinePlayerList.scrollHeight;
+    }
 
-    //     public NotifyOnlinePlayerListEventHandler(playerID: string, isJoining: boolean) {
-    //         let isJoingingStr = isJoining ? "加入" : "退出";
-    //         let chatMsg = `【${playerID}】${isJoingingStr}了游戏`;
-    //         this.appendChatMsg(chatMsg);
-    //     }
+    public NotifyOnlinePlayerListEventHandler(playerID: string, isJoining: boolean) {
+        let isJoingingStr = isJoining ? "加入" : "退出";
+        let chatMsg = `【${playerID}】${isJoingingStr}了游戏`;
+        this.appendChatMsg(chatMsg);
+    }
 
-    //     public NotifyGameRoomPlayerListEventHandler(playerID: string, isJoining: boolean, roomName: string) {
-    //         if (!roomName) return;
-    //         let isJoingingStr = isJoining ? "加入" : "退出";
-    //         let chatMsg = `【${playerID}】${isJoingingStr}了房间【${roomName}】`;
-    //         this.appendChatMsg(chatMsg);
-    //     }
+    public NotifyGameRoomPlayerListEventHandler(playerID: string, isJoining: boolean, roomName: string) {
+        if (!roomName) return;
+        let isJoingingStr = isJoining ? "加入" : "退出";
+        let chatMsg = `【${playerID}】${isJoingingStr}了房间【${roomName}】`;
+        this.appendChatMsg(chatMsg);
+    }
 
     public CutCardShoeCardsEventHandler() {
         let cutInfo = ""
