@@ -4,6 +4,8 @@ import { PlayerEntity } from './player_entity.js';
 import { SuitEnums } from './suit_enums.js';
 export class CommonMethods {
     public static SET_PLAYER_NAME_REQUEST = "set_player_name"
+    public static PLAYER_CLIENT_TYPE_REQUEST = "PlayerClientType"
+    public static PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp"
     public static PLAYER_ENTER_HALL_REQUEST = "PlayerEnterHall"
     public static JOIN_ROOM_REQUEST = "join_room"
     public static PREPARE_REQUEST = "prepare"

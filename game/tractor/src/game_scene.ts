@@ -165,6 +165,7 @@ export class GameScene {
                         this.gs.playerName = "";
                     }
                 }
+                this.gs.sendMessageToServer(CommonMethods.PLAYER_CLIENT_TYPE_REQUEST, this.gs.playerName, CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP);
                 this.gs.sendMessageToServer(CommonMethods.PLAYER_ENTER_HALL_REQUEST, this.gs.playerName, JSON.stringify([this.gs.nickNameOverridePass, this.gs.playerEmail]));
 
                 this.gs.mainForm = new MainForm(this.gs)

@@ -449,6 +449,8 @@ export var CommonMethods = /** @class */ (function () {
         return result;
     };
     CommonMethods.SET_PLAYER_NAME_REQUEST = "set_player_name";
+    CommonMethods.PLAYER_CLIENT_TYPE_REQUEST = "PlayerClientType";
+    CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp";
     CommonMethods.PLAYER_ENTER_HALL_REQUEST = "PlayerEnterHall";
     CommonMethods.JOIN_ROOM_REQUEST = "join_room";
     CommonMethods.PREPARE_REQUEST = "prepare";
