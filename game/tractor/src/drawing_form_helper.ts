@@ -26,7 +26,7 @@ export class DrawingFormHelper {
     }
 
     public IGetCard() {
-        this.DrawMySortedCardsLikeNT();
+        this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
         this.reDrawToolbar();
     }
 
@@ -105,7 +105,7 @@ export class DrawingFormHelper {
     }
 
     // playerPos: 1-4
-    public DrawHandCardsByPosition(playerPos: number, currentPoker: CurrentPoker, hcs: number) {
+    public DrawHandCardsByPosition(playerPos: number, currentPoker: CurrentPoker, hcs: number, curTrump?: number) {
         this.handcardPosition = playerPos;
         this.mainForm.cardsOrderNumber = 0
         let cardCount: number = currentPoker.Count()
@@ -126,7 +126,7 @@ export class DrawingFormHelper {
         var allDiamondsNoRank: number[] = currentPoker.DiamondsNoRank()
         var allClubsNoRank: number[] = currentPoker.ClubsNoRank()
 
-        let curTrump = this.mainForm.tractorPlayer.CurrentHandState.Trump
+        if (!curTrump) curTrump = this.mainForm.tractorPlayer.CurrentHandState.Trump;
         var subSolidMasters: number[] = []
         if (curTrump != SuitEnums.Suit.Heart) subSolidMasters[currentPoker.Rank] = currentPoker.HeartsRankTotal()
         if (curTrump != SuitEnums.Suit.Spade) subSolidMasters[currentPoker.Rank + 13] = currentPoker.SpadesRankTotal()
@@ -189,40 +189,6 @@ export class DrawingFormHelper {
             didDrawMaster = true
         }
         this.DrawCardsBySuit(primeSolidMasters, 0, !didDrawMaster)
-    }
-
-    public DrawMySortedCardsLikeNT() {
-        let currentPoker: CurrentPoker = this.mainForm.tractorPlayer.CurrentPoker
-        let cardCount: number = this.mainForm.tractorPlayer.CurrentPoker.Count()
-        //将临时变量清空
-        //这三个临时变量记录我手中的牌的位置、大小和是否被点出
-        // mainForm.myCardsLocation = new ArrayList();
-        // mainForm.myCardsNumber = new ArrayList();
-
-        this.destroyAllCards()
-        this.startX = `${this.mainForm.gameScene.coordinates.handCardPositions[0].x} - ${13 * (cardCount - 1)}px`;
-        this.startY = this.mainForm.gameScene.coordinates.handCardPositions[0].y
-
-        var allHeartsNoRank: number[] = currentPoker.HeartsNoRank()
-        this.DrawCardsBySuit(allHeartsNoRank, 0, true)
-
-        var allSpadesNoRank: number[] = currentPoker.SpadesNoRank()
-        this.DrawCardsBySuit(allSpadesNoRank, 13, true)
-
-        var allDiamondsNoRank: number[] = currentPoker.DiamondsNoRank()
-        this.DrawCardsBySuit(allDiamondsNoRank, 26, true)
-
-        var allClubsNoRank: number[] = currentPoker.ClubsNoRank()
-        this.DrawCardsBySuit(allClubsNoRank, 39, true)
-
-        var allSolidMasters: number[] = []
-        allSolidMasters[currentPoker.Rank] = currentPoker.HeartsRankTotal()
-        allSolidMasters[currentPoker.Rank + 13] = currentPoker.SpadesRankTotal()
-        allSolidMasters[currentPoker.Rank + 26] = currentPoker.DiamondsRankTotal()
-        allSolidMasters[currentPoker.Rank + 39] = currentPoker.ClubsRankTotal()
-        allSolidMasters[52] = currentPoker.Cards[52]
-        allSolidMasters[53] = currentPoker.Cards[53]
-        this.DrawCardsBySuit(allSolidMasters, 0, true)
     }
 
     private DrawCardsBySuit(cardsToDraw: number[], offset: number, resetSuitSequence: boolean): boolean {
@@ -1040,15 +1006,19 @@ export class DrawingFormHelper {
 
     public DrawDiscardedCardsBackground() {
         //画8张底牌
-        let last8Images: any[] = [];
+        let last8Images: any[] = []
         let x = this.mainForm.gameScene.coordinates.distributingLast8Position.x
         let y = this.mainForm.gameScene.coordinates.distributingLast8Position.y
         let cardBackIndex = 54
-        let cards: number[] = [];
+
         for (let i = 0; i < 8; i++) {
-            cards.push(cardBackIndex);
+            let cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
+            cardImage.style.left = `calc(${x})`;
+            cardImage.style.bottom = `calc(${y})`;
+            x = `${x} + ${this.mainForm.gameScene.coordinates.distributingLast8PositionOffset}px`;
+            last8Images.push(cardImage);
         }
-        this.DrawShowedCards(cards, x, y, last8Images, 1, 3);
+
         //隐藏
         setTimeout(() => {
             last8Images.forEach(image => {
@@ -1065,27 +1035,29 @@ export class DrawingFormHelper {
         let x = this.mainForm.gameScene.coordinates.distributingLast8Position.x
         let y = this.mainForm.gameScene.coordinates.distributingLast8Position.y
         let cardBackIndex = 54
-        let cards: number[] = [];
+
         for (let i = 0; i < 8; i++) {
-            cards.push(cardBackIndex);
+            let cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
+            cardImage.style.left = `calc(${x})`;
+            cardImage.style.bottom = `calc(${y})`;
+            cardImage.style['z-index'] = CommonMethods.zIndexLast8;
+            cardImage.style.transition = `left ${CommonMethods.distributeLast8Duration}s, bottom ${CommonMethods.distributeLast8Duration}s`;
+            cardImage.style['transition-delay'] = `${0.1 * (7 - i)}s`;
+            x = `${x} + ${this.mainForm.gameScene.coordinates.distributingLast8PositionOffset}px`;
+            last8Images.push(cardImage);
         }
-        this.DrawShowedCards(cards, x, y, last8Images, 1, 3);
+
         //分发
-        // setTimeout(() => {
-        //     for (let i = 0; i < 8; i++) {
-        //         let curImage: any = last8Images[i]
-        //         let posX = curImage.style.left;
-        //         let posY = curImage.style.top;
-        //         let movingDir = [
-        //             { x: posX, y: posY },
-        //             { x: `` - this.mainForm.gameScene.coordinates.distributingLast8MaxEdge - this.mainForm.gameScene.coordinates.cardWidth, y: pos.y },
-        //             { x: this.mainForm.gameScene.coordinates.screenWid * 0.5 - this.mainForm.gameScene.coordinates.cardWidth / 2, y: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge },
-        //             { x: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge, y: pos.y },
-        //         ]
-        //         curImage.style.left = movingDir[position - 1].x;
-        //         curImage.style.top = movingDir[position - 1].y;
-        //     }
-        // }, 200);
+        setTimeout(() => {
+            for (let i = 7; i >= 0; i--) {
+                let posInd = position - 1;
+                let curImage: any = last8Images[i]
+                if (posInd === 1) curImage.style.left = `calc(100% - ${this.mainForm.gameScene.coordinates.cardWidth}px)`;
+                else curImage.style.left = `calc(${this.mainForm.gameScene.coordinates.playerSkinPositions[posInd].x})`;
+                if (posInd === 2) curImage.style.bottom = `calc(99% - ${this.mainForm.gameScene.coordinates.cardHeight}px)`;
+                else curImage.style.bottom = `calc(${this.mainForm.gameScene.coordinates.playerSkinPositions[posInd].y})`;
+            }
+        }, 200);
         //隐藏
         setTimeout(() => {
             last8Images.forEach(image => {

@@ -48,9 +48,11 @@ export class CommonMethods {
     public static danmuMaxLength = 30;
     public static zIndexDanmu = 10
     public static zIndexFrameChat = 11
+    public static zIndexLast8 = 10
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
     public static danmuDuration = 8
+    public static distributeLast8Duration = 0.5;
     public static emojiMsgs: string[] = [
         "这波操作，666！",
         "亲，请注意细节",

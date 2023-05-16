@@ -160,7 +160,8 @@ var Coordinates = /** @class */ (function () {
         this.countDownSzie = 60;
         // distributing last 8
         this.distributingLast8MaxEdge = 30;
-        this.distributingLast8Position = { x: "50% - ".concat((this.cardWidth / 2), "px - ").concat(this.handCardOffset * 3.5, "px"), y: "50% - ".concat(this.cardHeight / 2, "px") };
+        this.distributingLast8PositionOffset = this.handCardOffset / 4;
+        this.distributingLast8Position = { x: "50% - ".concat((this.cardWidth / 2), "px - ").concat(this.distributingLast8PositionOffset * 3.5, "px"), y: "50% - ".concat(this.cardHeight / 2, "px") };
     }
     return Coordinates;
 }());

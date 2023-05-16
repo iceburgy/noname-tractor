@@ -124,6 +124,7 @@ export class Coordinates {
     // distributing last 8
     public distributingLast8MaxEdge
     public distributingLast8Position
+    public distributingLast8PositionOffset
 
     constructor(isrpm: boolean) {
         this.isReplayMode = isrpm;
@@ -300,6 +301,7 @@ export class Coordinates {
 
         // distributing last 8
         this.distributingLast8MaxEdge = 30
-        this.distributingLast8Position = { x: `50% - ${(this.cardWidth / 2)}px - ${this.handCardOffset * 3.5}px`, y: `50% - ${this.cardHeight / 2}px` }
+        this.distributingLast8PositionOffset = this.handCardOffset / 4;
+        this.distributingLast8Position = { x: `50% - ${(this.cardWidth / 2)}px - ${this.distributingLast8PositionOffset * 3.5}px`, y: `50% - ${this.cardHeight / 2}px` }
     }
 }

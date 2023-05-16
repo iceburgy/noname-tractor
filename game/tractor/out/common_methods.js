@@ -491,9 +491,11 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.danmuMaxLength = 30;
     CommonMethods.zIndexDanmu = 10;
     CommonMethods.zIndexFrameChat = 11;
+    CommonMethods.zIndexLast8 = 10;
     CommonMethods.winEmojiLength = 4;
     CommonMethods.winEmojiTypeLength = 6;
     CommonMethods.danmuDuration = 8;
+    CommonMethods.distributeLast8Duration = 0.5;
     CommonMethods.emojiMsgs = [
         "这波操作，666！",
         "亲，请注意细节",

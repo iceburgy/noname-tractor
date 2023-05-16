@@ -16,7 +16,7 @@ var DrawingFormHelper = /** @class */ (function () {
         this.suitSequence = 0;
     }
     DrawingFormHelper.prototype.IGetCard = function () {
-        this.DrawMySortedCardsLikeNT();
+        this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
         this.reDrawToolbar();
     };
     // drawing cards without any tilt
@@ -84,7 +84,7 @@ var DrawingFormHelper = /** @class */ (function () {
         }
     };
     // playerPos: 1-4
-    DrawingFormHelper.prototype.DrawHandCardsByPosition = function (playerPos, currentPoker, hcs) {
+    DrawingFormHelper.prototype.DrawHandCardsByPosition = function (playerPos, currentPoker, hcs, curTrump) {
         this.handcardPosition = playerPos;
         this.mainForm.cardsOrderNumber = 0;
         var cardCount = currentPoker.Count();
@@ -103,7 +103,8 @@ var DrawingFormHelper = /** @class */ (function () {
         var allSpadesNoRank = currentPoker.SpadesNoRank();
         var allDiamondsNoRank = currentPoker.DiamondsNoRank();
         var allClubsNoRank = currentPoker.ClubsNoRank();
-        var curTrump = this.mainForm.tractorPlayer.CurrentHandState.Trump;
+        if (!curTrump)
+            curTrump = this.mainForm.tractorPlayer.CurrentHandState.Trump;
         var subSolidMasters = [];
         if (curTrump != SuitEnums.Suit.Heart)
             subSolidMasters[currentPoker.Rank] = currentPoker.HeartsRankTotal();
@@ -168,33 +169,6 @@ var DrawingFormHelper = /** @class */ (function () {
             didDrawMaster = true;
         }
         this.DrawCardsBySuit(primeSolidMasters, 0, !didDrawMaster);
-    };
-    DrawingFormHelper.prototype.DrawMySortedCardsLikeNT = function () {
-        var currentPoker = this.mainForm.tractorPlayer.CurrentPoker;
-        var cardCount = this.mainForm.tractorPlayer.CurrentPoker.Count();
-        //将临时变量清空
-        //这三个临时变量记录我手中的牌的位置、大小和是否被点出
-        // mainForm.myCardsLocation = new ArrayList();
-        // mainForm.myCardsNumber = new ArrayList();
-        this.destroyAllCards();
-        this.startX = "".concat(this.mainForm.gameScene.coordinates.handCardPositions[0].x, " - ").concat(13 * (cardCount - 1), "px");
-        this.startY = this.mainForm.gameScene.coordinates.handCardPositions[0].y;
-        var allHeartsNoRank = currentPoker.HeartsNoRank();
-        this.DrawCardsBySuit(allHeartsNoRank, 0, true);
-        var allSpadesNoRank = currentPoker.SpadesNoRank();
-        this.DrawCardsBySuit(allSpadesNoRank, 13, true);
-        var allDiamondsNoRank = currentPoker.DiamondsNoRank();
-        this.DrawCardsBySuit(allDiamondsNoRank, 26, true);
-        var allClubsNoRank = currentPoker.ClubsNoRank();
-        this.DrawCardsBySuit(allClubsNoRank, 39, true);
-        var allSolidMasters = [];
-        allSolidMasters[currentPoker.Rank] = currentPoker.HeartsRankTotal();
-        allSolidMasters[currentPoker.Rank + 13] = currentPoker.SpadesRankTotal();
-        allSolidMasters[currentPoker.Rank + 26] = currentPoker.DiamondsRankTotal();
-        allSolidMasters[currentPoker.Rank + 39] = currentPoker.ClubsRankTotal();
-        allSolidMasters[52] = currentPoker.Cards[52];
-        allSolidMasters[53] = currentPoker.Cards[53];
-        this.DrawCardsBySuit(allSolidMasters, 0, true);
     };
     DrawingFormHelper.prototype.DrawCardsBySuit = function (cardsToDraw, offset, resetSuitSequence) {
         if (resetSuitSequence)
@@ -963,11 +937,13 @@ var DrawingFormHelper = /** @class */ (function () {
         var x = this.mainForm.gameScene.coordinates.distributingLast8Position.x;
         var y = this.mainForm.gameScene.coordinates.distributingLast8Position.y;
         var cardBackIndex = 54;
-        var cards = [];
         for (var i = 0; i < 8; i++) {
-            cards.push(cardBackIndex);
+            var cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
+            cardImage.style.left = "calc(".concat(x, ")");
+            cardImage.style.bottom = "calc(".concat(y, ")");
+            x = "".concat(x, " + ").concat(this.mainForm.gameScene.coordinates.distributingLast8PositionOffset, "px");
+            last8Images.push(cardImage);
         }
-        this.DrawShowedCards(cards, x, y, last8Images, 1, 3);
         //隐藏
         setTimeout(function () {
             last8Images.forEach(function (image) {
@@ -978,32 +954,37 @@ var DrawingFormHelper = /** @class */ (function () {
     };
     //基于庄家相对于自己所在的位置，画庄家获得底牌的动画
     DrawingFormHelper.prototype.DrawDistributingLast8Cards = function (position) {
+        var _this = this;
         //画8张底牌
         var last8Images = [];
         var x = this.mainForm.gameScene.coordinates.distributingLast8Position.x;
         var y = this.mainForm.gameScene.coordinates.distributingLast8Position.y;
         var cardBackIndex = 54;
-        var cards = [];
         for (var i = 0; i < 8; i++) {
-            cards.push(cardBackIndex);
+            var cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
+            cardImage.style.left = "calc(".concat(x, ")");
+            cardImage.style.bottom = "calc(".concat(y, ")");
+            cardImage.style['z-index'] = CommonMethods.zIndexLast8;
+            cardImage.style.transition = "left ".concat(CommonMethods.distributeLast8Duration, "s, bottom ").concat(CommonMethods.distributeLast8Duration, "s");
+            cardImage.style['transition-delay'] = "".concat(0.1 * (7 - i), "s");
+            x = "".concat(x, " + ").concat(this.mainForm.gameScene.coordinates.distributingLast8PositionOffset, "px");
+            last8Images.push(cardImage);
         }
-        this.DrawShowedCards(cards, x, y, last8Images, 1, 3);
         //分发
-        // setTimeout(() => {
-        //     for (let i = 0; i < 8; i++) {
-        //         let curImage: any = last8Images[i]
-        //         let posX = curImage.style.left;
-        //         let posY = curImage.style.top;
-        //         let movingDir = [
-        //             { x: posX, y: posY },
-        //             { x: `` - this.mainForm.gameScene.coordinates.distributingLast8MaxEdge - this.mainForm.gameScene.coordinates.cardWidth, y: pos.y },
-        //             { x: this.mainForm.gameScene.coordinates.screenWid * 0.5 - this.mainForm.gameScene.coordinates.cardWidth / 2, y: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge },
-        //             { x: this.mainForm.gameScene.coordinates.distributingLast8MaxEdge, y: pos.y },
-        //         ]
-        //         curImage.style.left = movingDir[position - 1].x;
-        //         curImage.style.top = movingDir[position - 1].y;
-        //     }
-        // }, 200);
+        setTimeout(function () {
+            for (var i = 7; i >= 0; i--) {
+                var posInd = position - 1;
+                var curImage = last8Images[i];
+                if (posInd === 1)
+                    curImage.style.left = "calc(100% - ".concat(_this.mainForm.gameScene.coordinates.cardWidth, "px)");
+                else
+                    curImage.style.left = "calc(".concat(_this.mainForm.gameScene.coordinates.playerSkinPositions[posInd].x, ")");
+                if (posInd === 2)
+                    curImage.style.bottom = "calc(99% - ".concat(_this.mainForm.gameScene.coordinates.cardHeight, "px)");
+                else
+                    curImage.style.bottom = "calc(".concat(_this.mainForm.gameScene.coordinates.playerSkinPositions[posInd].y, ")");
+            }
+        }, 200);
         //隐藏
         setTimeout(function () {
             last8Images.forEach(function (image) {
