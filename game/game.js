@@ -45813,8 +45813,8 @@
 				lib.setPopped(ui.cardPileButton,ui.click.cardPileButton,220);
 				// ui.leaderboardButton=ui.create.system('战况',null,true);
 				// lib.setPopped(ui.leaderboardButton,ui.click.leaderboardButton,700);
-				ui.changeLogDialog=ui.create.system('版本',null);
-				lib.setPopped(ui.changeLogDialog,ui.click.changeLogDialog,450);
+				ui.changeLogDialog=ui.create.system('版本',ui.click.changeLogDialogShow);
+				// lib.setPopped(ui.changeLogDialog,ui.click.changeLogDialog,450);
 				ui.wuxie=ui.create.system('不询问无懈',ui.click.wuxie,true);
 				if(!lib.config.touchscreen){
 					lib.setPopped(ui.config2,ui.click.pauseconfig,170);
@@ -47721,6 +47721,34 @@
 				}
 				uiintro.add(ul.outerHTML);
 				return uiintro;
+			},
+			changeLogDialogShow:function(){
+				var uiintro=ui.create.dialog('hidden');
+				uiintro.listen(function(e){
+					e.stopPropagation();
+				});
+				uiintro.classList.add('clsleaderboard');
+
+				var p=document.createElement('p');
+				p.innerHTML=lib.version+'更新内容';
+				uiintro.add(p.outerHTML);
+
+				var ul=document.createElement('ul');
+				ul.classList.add('text');
+				ul.style.textAlign='left';
+				for(var i=0;i<lib.changeLog.length;i++){
+					var li=document.createElement('li');
+					li.innerHTML=lib.changeLog[i];
+					ul.appendChild(li);
+				}
+				uiintro.add(ul.outerHTML);
+				var btnCloseMe = ui.create.div('.menubutton.highlight.large.pointerdiv', '确定', () => uiintro.remove());
+				uiintro.add(btnCloseMe);
+				uiintro.style.left="calc(30%)";
+				uiintro.style.top="calc(35%)";
+				uiintro.style.width="calc(40%)";
+				uiintro.style.height="calc(30%)";
+				ui.window.appendChild(uiintro);
 			},
 			leaderboardButton:function(){
 				var uiintro=ui.create.dialog('hidden');

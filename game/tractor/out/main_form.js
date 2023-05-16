@@ -28,6 +28,7 @@ var PLAYER_EXIT_AND_ENTER_ROOM_REQUEST = "ExitAndEnterRoom";
 var PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve";
 var BUY_USE_SKIN_REQUEST = "BuyUseSkin";
 var UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka";
+var PLAYER_QIANDAO_REQUEST = "PlayerQiandao";
 var MainForm = /** @class */ (function () {
     function MainForm(gs) {
         this.firstWinNormal = 1;
@@ -1105,6 +1106,56 @@ var MainForm = /** @class */ (function () {
     //             this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "")
     //         }
     //     }
+    MainForm.prototype.LoadUIUponConnect = function () {
+        var _this = this;
+        this.EnableShortcutKeys();
+        this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', function () { _this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, _this.gameScene.playerName, ""); }, true);
+        this.gameScene.ui.btnQiandao.hide();
+        this.gameScene.ui.gameSettings = this.gameScene.ui.create.system('设置', function () { return _this.btnGameSettings_Click(); }, true);
+        this.gameScene.ui.exitTractor = this.gameScene.ui.create.system('退出', function () { return _this.btnExitRoom_Click(); }, true);
+    };
+    MainForm.prototype.btnGameSettings_Click = function () {
+        // var uiintro = this.gameScene.ui.create.dialog('hidden');
+        // uiintro.listen(function (e:any) {
+        //     e.stopPropagation();
+        // });
+        // uiintro.classList.add('clsleaderboard');
+        // var p = document.createElement('p');
+        // p.innerHTML = lib.version + '更新内容';
+        // uiintro.add(p.outerHTML);
+        // var ul = document.createElement('ul');
+        // ul.classList.add('text');
+        // ul.style.textAlign = 'left';
+        // for (var i = 0; i < lib.changeLog.length; i++) {
+        //     var li = document.createElement('li');
+        //     li.innerHTML = lib.changeLog[i];
+        //     ul.appendChild(li);
+        // }
+        // uiintro.add(ul.outerHTML);
+        // var btnCloseMe = ui.create.div('.menubutton.highlight.large.pointerdiv', '确定', () => uiintro.remove());
+        // uiintro.add(btnCloseMe);
+        // uiintro.style.left = "calc(30%)";
+        // uiintro.style.top = "calc(35%)";
+        // uiintro.style.width = "calc(40%)";
+        // uiintro.style.height = "calc(30%)";
+        // ui.window.appendChild(uiintro);
+        // if (this.gameScene.isReplayMode) {
+        //     window.location.reload()
+        //     return
+        // }
+        // if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DiscardingLast8Cards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+        //     var c = window.confirm("游戏进行中退出将会重启游戏，是否确定退出？");
+        //     if (c == true) {
+        //         window.location.reload()
+        //     }
+        //     return
+        // }
+        // if (this.gameScene.isInGameRoom()) {
+        //     this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.tractorPlayer.MyOwnId, "")
+        //     return
+        // }
+        // window.location.reload()
+    };
     MainForm.prototype.btnExitRoom_Click = function () {
         if (this.gameScene.isReplayMode) {
             window.location.reload();

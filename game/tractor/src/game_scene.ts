@@ -13,7 +13,6 @@ import { IDBHelper } from "./idb_helper.js";
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
-const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
 
 export class GameScene {
     public isReplayMode: boolean
@@ -175,10 +174,7 @@ export class GameScene {
                 CommonMethods.BuildCardNumMap()
 
                 // IDBHelper.InitIDB();
-                this.gs.mainForm.EnableShortcutKeys();
-                this.gs.ui.btnQiandao = this.gs.ui.create.system('签到领福利', () => { this.gs.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.gs.playerName, "") }, true);
-                this.gs.ui.btnQiandao.hide();
-                this.gs.ui.exitTractor = this.gs.ui.create.system('退出', () => this.gs.mainForm.btnExitRoom_Click(), true);
+                this.gs.mainForm.LoadUIUponConnect();
 
                 // } catch (e) {
                 //     // alert("error")

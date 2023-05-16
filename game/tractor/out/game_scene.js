@@ -3,7 +3,6 @@ import { Coordinates } from "./coordinates.js";
 import { CommonMethods } from "./common_methods.js";
 var dummyValue = "dummyValue";
 var IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
-var PLAYER_QIANDAO_REQUEST = "PlayerQiandao";
 var GameScene = /** @class */ (function () {
     function GameScene(hostName, playerName, nickNameOverridePass, playerEmail) {
         // public overridingLabelAnims: string[] 
@@ -89,7 +88,6 @@ var GameScene = /** @class */ (function () {
             this.websocket = new WebSocket("".concat(this.wsprotocal, "://").concat(this.hostName));
             this.websocket.gs = this;
             this.websocket.onopen = function () {
-                var _this = this;
                 // try {
                 console.log("连接成功");
                 if (this.gs.ui.emailtext) {
@@ -110,10 +108,7 @@ var GameScene = /** @class */ (function () {
                 // this.loadAudioFiles()
                 CommonMethods.BuildCardNumMap();
                 // IDBHelper.InitIDB();
-                this.gs.mainForm.EnableShortcutKeys();
-                this.gs.ui.btnQiandao = this.gs.ui.create.system('签到领福利', function () { _this.gs.sendMessageToServer(PLAYER_QIANDAO_REQUEST, _this.gs.playerName, ""); }, true);
-                this.gs.ui.btnQiandao.hide();
-                this.gs.ui.exitTractor = this.gs.ui.create.system('退出', function () { return _this.gs.mainForm.btnExitRoom_Click(); }, true);
+                this.gs.mainForm.LoadUIUponConnect();
                 // } catch (e) {
                 //     // alert("error")
                 //     document.body.innerHTML = `<div>!!! onopen Error: ${e}</div>`
