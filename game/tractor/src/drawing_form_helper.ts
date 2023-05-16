@@ -1193,6 +1193,12 @@ export class DrawingFormHelper {
 
     public DrawDanmu(msgString: string) {
         if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
+
+        // truncate danmu message to certain length
+        if (msgString && msgString.length > CommonMethods.danmuMaxLength) {
+            msgString = `${msgString.slice(0, CommonMethods.danmuMaxLength)}...(略)`;
+        }
+
         let danmuIndex = 0;
         let foundEmptyDanmu = false;
         let foundDanmu = false;

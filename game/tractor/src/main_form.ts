@@ -2154,12 +2154,12 @@ export class MainForm {
 
         let divOnlinePlayerList = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divOnlinePlayerList.style.top = 'calc(0%)';
-        divOnlinePlayerList.style.height = 'calc(20% - 5px)';
+        divOnlinePlayerList.style.height = 'calc(20% - 20px)';
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
 
         let divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.height = 'calc(60% - 5px)';
+        divChatHistory.style.height = 'calc(60% - 20px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
 
         var selectChatPresetMsgs = document.createElement("select");
@@ -2188,7 +2188,9 @@ export class MainForm {
 
 
         var textAreaChatMsg = document.createElement("textarea");
-        textAreaChatMsg.style.height = 'calc(13%)';
+        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
+        textAreaChatMsg.placeholder = `消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，快捷消息的快捷键为对应的数字键`;
+        textAreaChatMsg.style.height = 'calc(13% - 10px)';
         textAreaChatMsg.style.bottom = 'calc(2%)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);

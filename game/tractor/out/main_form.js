@@ -1958,11 +1958,11 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.frameChat = frameChat;
         var divOnlinePlayerList = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divOnlinePlayerList.style.top = 'calc(0%)';
-        divOnlinePlayerList.style.height = 'calc(20% - 5px)';
+        divOnlinePlayerList.style.height = 'calc(20% - 20px)';
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
         var divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.height = 'calc(60% - 5px)';
+        divChatHistory.style.height = 'calc(60% - 20px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
         var selectChatPresetMsgs = document.createElement("select");
         selectChatPresetMsgs.style.top = 'calc(80%)';
@@ -1988,7 +1988,9 @@ var MainForm = /** @class */ (function () {
             });
         }
         var textAreaChatMsg = document.createElement("textarea");
-        textAreaChatMsg.style.height = 'calc(13%)';
+        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
+        textAreaChatMsg.placeholder = "\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7".concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
+        textAreaChatMsg.style.height = 'calc(13% - 10px)';
         textAreaChatMsg.style.bottom = 'calc(2%)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);

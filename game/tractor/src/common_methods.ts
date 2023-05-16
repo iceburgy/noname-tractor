@@ -44,6 +44,8 @@ export class CommonMethods {
     public static resumeGameSignal = "牌局加载中,请稍后...";
 
     public static wsErrorType_Insecure = "insecure";
+    public static chatMaxLength = 100;
+    public static danmuMaxLength = 30;
     public static zIndexDanmu = 10
     public static zIndexFrameChat = 11
     public static winEmojiLength = 4
