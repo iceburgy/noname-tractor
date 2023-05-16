@@ -1115,11 +1115,12 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.exitTractor = this.gameScene.ui.create.system('退出', function () { return _this.btnExitRoom_Click(); }, true);
     };
     MainForm.prototype.btnGameSettings_Click = function () {
-        // var uiintro = this.gameScene.ui.create.dialog('hidden');
-        // uiintro.listen(function (e:any) {
-        //     e.stopPropagation();
-        // });
-        // uiintro.classList.add('clsleaderboard');
+        var uiintro = this.gameScene.ui.create.dialog('hidden');
+        uiintro.listen(function (e) {
+            e.stopPropagation();
+        });
+        uiintro.classList.add('clsleaderboard');
+        // $("#includedContent").load("b.html");
         // var p = document.createElement('p');
         // p.innerHTML = lib.version + '更新内容';
         // uiintro.add(p.outerHTML);

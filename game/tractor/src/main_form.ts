@@ -1234,11 +1234,13 @@ export class MainForm {
     }
 
     private btnGameSettings_Click() {
-        // var uiintro = this.gameScene.ui.create.dialog('hidden');
-        // uiintro.listen(function (e:any) {
-        //     e.stopPropagation();
-        // });
-        // uiintro.classList.add('clsleaderboard');
+        var uiintro = this.gameScene.ui.create.dialog('hidden');
+        uiintro.listen(function (e:any) {
+            e.stopPropagation();
+        });
+        uiintro.classList.add('clsleaderboard');
+
+        // $("#includedContent").load("b.html");
 
         // var p = document.createElement('p');
         // p.innerHTML = lib.version + '更新内容';

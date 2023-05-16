@@ -13,6 +13,7 @@ import { IDBHelper } from "./idb_helper.js";
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
+declare let CryptoJS: any;
 
 export class GameScene {
     public isReplayMode: boolean
@@ -410,7 +411,10 @@ export class GameScene {
                 this.hostName = originalText
                 return true;
             }
-        } catch { }
+        } catch (ex) {
+            console.log("===")
+            console.log(ex)
+        }
         return false;
     }
 

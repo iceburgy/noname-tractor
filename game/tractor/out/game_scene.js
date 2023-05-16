@@ -320,7 +320,10 @@ var GameScene = /** @class */ (function () {
                 return true;
             }
         }
-        catch (_a) { }
+        catch (ex) {
+            console.log("===");
+            console.log(ex);
+        }
         return false;
     };
     GameScene.prototype.resolveUrl = function () {
