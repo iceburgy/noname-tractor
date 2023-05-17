@@ -11,6 +11,7 @@ import { TractorRules } from './tractor_rules.js';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result.js';
 import { Algorithm } from './algorithm.js';
 import { PokerHelper } from './poker_helper.js';
+import { IDBHelper } from './idb_helper.js';
 var ReadyToStart_REQUEST = "ReadyToStart";
 var ToggleIsRobot_REQUEST = "ToggleIsRobot";
 var ObserveNext_REQUEST = "ObserveNext";
@@ -1115,47 +1116,228 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.exitTractor = this.gameScene.ui.create.system('退出', function () { return _this.btnExitRoom_Click(); }, true);
     };
     MainForm.prototype.btnGameSettings_Click = function () {
-        var uiintro = this.gameScene.ui.create.dialog('hidden');
-        uiintro.listen(function (e) {
-            e.stopPropagation();
-        });
-        uiintro.classList.add('clsleaderboard');
-        // $("#includedContent").load("b.html");
-        // var p = document.createElement('p');
-        // p.innerHTML = lib.version + '更新内容';
-        // uiintro.add(p.outerHTML);
-        // var ul = document.createElement('ul');
-        // ul.classList.add('text');
-        // ul.style.textAlign = 'left';
-        // for (var i = 0; i < lib.changeLog.length; i++) {
-        //     var li = document.createElement('li');
-        //     li.innerHTML = lib.changeLog[i];
-        //     ul.appendChild(li);
-        // }
-        // uiintro.add(ul.outerHTML);
-        // var btnCloseMe = ui.create.div('.menubutton.highlight.large.pointerdiv', '确定', () => uiintro.remove());
-        // uiintro.add(btnCloseMe);
-        // uiintro.style.left = "calc(30%)";
-        // uiintro.style.top = "calc(35%)";
-        // uiintro.style.width = "calc(40%)";
-        // uiintro.style.height = "calc(30%)";
-        // ui.window.appendChild(uiintro);
-        // if (this.gameScene.isReplayMode) {
-        //     window.location.reload()
-        //     return
-        // }
-        // if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DiscardingLast8Cards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-        //     var c = window.confirm("游戏进行中退出将会重启游戏，是否确定退出？");
-        //     if (c == true) {
-        //         window.location.reload()
+        var _this = this;
+        var inputFormWrapper = this.gameScene.ui.create.div(this.gameScene.ui.frameMain);
+        inputFormWrapper.id = "inputFormWrapper";
+        inputFormWrapper.style.position = 'absolute';
+        inputFormWrapper.style.top = 'calc(25%)';
+        inputFormWrapper.style.left = 'calc(25%)';
+        inputFormWrapper.style.width = 'calc(50%)';
+        inputFormWrapper.style.height = 'calc(50%)';
+        inputFormWrapper.style.color = 'black';
+        inputFormWrapper.style.textShadow = 'none';
+        inputFormWrapper.style.zIndex = CommonMethods.zIndexSettingsForm;
+        this.gameScene.ui.inputFormWrapper = inputFormWrapper;
+        jQuery(inputFormWrapper).load("game/tractor/src/text/settings_form.htm", function (response, status, xhr) { _this.renderSettingsForm(response, status, xhr, _this.gameScene); });
+    };
+    MainForm.prototype.renderSettingsForm = function (response, status, xhr, gs) {
+        var _this = this;
+        if (status == "error") {
+            var msg = "renderSettingsForm error: ";
+            console.log(msg + xhr.status + " " + xhr.statusText);
+            return;
+        }
+        if (!gs.ui.inputFormWrapper)
+            return;
+        var txtPlayerEmail = document.getElementById("txtPlayerEmail");
+        txtPlayerEmail.value = gs.lib.config.playerEmail ? gs.lib.config.playerEmail : "";
+        var txtMaxReplays = document.getElementById("txtMaxReplays");
+        txtMaxReplays.value = IDBHelper.maxReplays;
+        txtMaxReplays.oninput = function () {
+            var maxString = txtMaxReplays.value;
+            var maxInt = 0;
+            if (CommonMethods.IsNumber(maxString)) {
+                maxInt = Math.max(maxInt, parseInt(maxString));
+            }
+            IDBHelper.maxReplays = maxInt;
+        };
+        // let btnCleanupReplays = document.getElementById("btnCleanupReplays")
+        // btnCleanupReplays.onclick = () => {
+        //     var c = window.confirm("你确定要清空所有录像文件吗？");
+        //     if (c === false) {
+        //         return
         //     }
-        //     return
+        //     IDBHelper.CleanupReplayEntity(() => {
+        //         this.ReinitReplayEntities(this);
+        //         if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试清空全部录像文件"]);
+        //     });
+        //     this.resetGameRoomUI();
         // }
-        // if (this.gameScene.isInGameRoom()) {
-        //     this.gameScene.sendMessageToServer(ExitRoom_REQUEST, this.tractorPlayer.MyOwnId, "")
-        //     return
+        // let btnExportZipFile = document.getElementById("btnExportZipFile")
+        // btnExportZipFile.onclick = () => {
+        //     FileHelper.ExportZipFile();
+        //     this.resetGameRoomUI();
         // }
-        // window.location.reload()
+        // let inputRecordingFile = document.getElementById("inputRecordingFile")
+        // inputRecordingFile.onchange = () => {
+        //     let fileName = inputRecordingFile.value;
+        //     let extension = fileName.split('.').pop();
+        //     if (!["json", "zip"].includes(extension.toLowerCase())) {
+        //         alert("unsupported file type!");
+        //         return;
+        //     }
+        //     if (!inputRecordingFile || !inputRecordingFile.files || inputRecordingFile.files.length <= 0) {
+        //         alert("No file has been selected!");
+        //         return;
+        //     }
+        //     if (extension.toLowerCase() === "json") {
+        //         FileHelper.ImportJsonFile(inputRecordingFile.files[0], () => {
+        //             this.ReinitReplayEntities(this);
+        //             if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+        //         });
+        //     } else {
+        //         FileHelper.ImportZipFile(inputRecordingFile.files[0], () => {
+        //             this.ReinitReplayEntities(this);
+        //             if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+        //         });
+        //     }
+        //     this.resetGameRoomUI();
+        // }
+        var noDanmu = document.getElementById("cbxNoDanmu");
+        noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
+        noDanmu.onchange = function () {
+            gs.noDanmu = noDanmu.checked.toString();
+            gs.lib.config.noDanmu = gs.noDanmu;
+        };
+        var cbxCutCards = document.getElementById("cbxCutCards");
+        cbxCutCards.checked = gs.noCutCards.toLowerCase() === "true";
+        cbxCutCards.onchange = function () {
+            gs.noCutCards = cbxCutCards.checked.toString();
+            gs.lib.config.noCutCards = gs.noCutCards;
+        };
+        var cbxYesDragSelect = document.getElementById("cbxYesDragSelect");
+        cbxYesDragSelect.checked = gs.yesDragSelect.toLowerCase() === "true";
+        cbxYesDragSelect.onchange = function () {
+            gs.yesDragSelect = cbxYesDragSelect.checked.toString();
+            gs.lib.config.yesDragSelect = gs.yesDragSelect;
+        };
+        if (gs.isReplayMode)
+            return;
+        // 以下为需要连接服务器才能显示的设置
+        // 游戏道具栏
+        var divDaojuWrapper = document.getElementById("divDaojuWrapper");
+        divDaojuWrapper.style.display = "block";
+        // 升币
+        var lblShengbi = document.getElementById("lblShengbi");
+        var shengbiNum = 0;
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            shengbiNum = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi;
+        }
+        lblShengbi.innerHTML = shengbiNum;
+        var btnShengbiLeadingBoard = document.getElementById("btnShengbiLeadingBoard");
+        btnShengbiLeadingBoard.onclick = function () {
+            var divShengbiLeadingBoard = document.getElementById("divShengbiLeadingBoard");
+            divShengbiLeadingBoard.style.width = "100%";
+            divShengbiLeadingBoard.innerHTML = "";
+            var shengbiLeadingBoard = _this.DaojuInfo.shengbiLeadingBoard;
+            if (!shengbiLeadingBoard)
+                return;
+            var sortable = [];
+            for (var _i = 0, _a = Object.entries(shengbiLeadingBoard); _i < _a.length; _i++) {
+                var _b = _a[_i], key = _b[0], value = _b[1];
+                sortable.push([key, value]);
+            }
+            sortable.sort(function (a, b) {
+                return a[1] !== b[1] ? -1 * (a[1] - b[1]) : (a[0] <= b[0] ? -1 : 1);
+            });
+            var ul = document.createElement("ul");
+            for (var i = 0; i < sortable.length; i++) {
+                var li = document.createElement("li");
+                li.innerText = "\u3010".concat(sortable[i][0], "\u3011").concat(sortable[i][1]);
+                ul.appendChild(li);
+            }
+            divShengbiLeadingBoard.appendChild(ul);
+        };
+        // 抢亮卡
+        var selectQiangliangMin = document.getElementById("selectQiangliangMin");
+        selectQiangliangMin.value = gs.qiangliangMin;
+        selectQiangliangMin.onchange = function () {
+            gs.qiangliangMin = selectQiangliangMin.value;
+            gs.lib.config.qiangliangMin = gs.qiangliangMin;
+        };
+        // 皮肤
+        var selectFullSkinInfo = document.getElementById("selectFullSkinInfo");
+        this.UpdateSkinInfoUI(false);
+        selectFullSkinInfo.onchange = function () {
+            _this.UpdateSkinInfoUI(true);
+        };
+        var btnBuyOrUseSelectedSkin = document.getElementById("btnBuyOrUseSelectedSkin");
+        btnBuyOrUseSelectedSkin.onclick = function () {
+            var skinName = selectFullSkinInfo.value;
+            var isSkinOwned = _this.IsSkinOwned(skinName);
+            if (isSkinOwned) {
+                gs.sendMessageToServer(BUY_USE_SKIN_REQUEST, _this.tractorPlayer.MyOwnId, skinName);
+                _this.resetGameRoomUI();
+                return;
+            }
+            var isSkinAfordableWithConfMsg = _this.IsSkinAfordableWithConfMsg(skinName);
+            var isSkinAfordable = isSkinAfordableWithConfMsg[0];
+            if (!isSkinAfordable) {
+                alert("升币余额不足，无法购买此皮肤");
+            }
+            else {
+                var doTransaction = true;
+                var msg_1 = isSkinAfordableWithConfMsg[1];
+                if (msg_1 && msg_1.length > 0) {
+                    var c = window.confirm(msg_1);
+                    if (!c) {
+                        doTransaction = false;
+                    }
+                }
+                if (doTransaction) {
+                    gs.sendMessageToServer(BUY_USE_SKIN_REQUEST, _this.tractorPlayer.MyOwnId, skinName);
+                    _this.resetGameRoomUI();
+                }
+            }
+        };
+        if (gs.isInGameRoom()) {
+            var cbxNoOverridingFlag_1 = document.getElementById("cbxNoOverridingFlag");
+            cbxNoOverridingFlag_1.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
+            cbxNoOverridingFlag_1.onchange = function () {
+                _this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag = cbxNoOverridingFlag_1.checked;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+            };
+            var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
+            divRoomSettingsWrapper.style.display = "block";
+            if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+                cbxNoOverridingFlag_1.disabled = true;
+            }
+            else {
+                var divRoomSettings = document.getElementById("divRoomSettings");
+                divRoomSettings.style.display = "block";
+                var btnResumeGame = document.getElementById("btnResumeGame");
+                btnResumeGame.onclick = function () {
+                    if (CommonMethods.AllOnline(_this.tractorPlayer.CurrentGameState.Players) && !_this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= _this.tractorPlayer.CurrentHandState.CurrentHandStep && _this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许继续牌局,请完成此盘游戏后重试");
+                    }
+                    else {
+                        gs.sendMessageToServer(ResumeGameFromFile_REQUEST, _this.tractorPlayer.MyOwnId, "");
+                    }
+                    _this.resetGameRoomUI();
+                };
+                var btnRandomSeat = document.getElementById("btnRandomSeat");
+                btnRandomSeat.onclick = function () {
+                    if (CommonMethods.AllOnline(_this.tractorPlayer.CurrentGameState.Players) && !_this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= _this.tractorPlayer.CurrentHandState.CurrentHandStep && _this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许随机组队,请完成此盘游戏后重试");
+                    }
+                    else {
+                        gs.sendMessageToServer(RandomSeat_REQUEST, _this.tractorPlayer.MyOwnId, "");
+                    }
+                    _this.resetGameRoomUI();
+                };
+                var btnSwapSeat = document.getElementById("btnSwapSeat");
+                btnSwapSeat.onclick = function () {
+                    if (CommonMethods.AllOnline(_this.tractorPlayer.CurrentGameState.Players) && !_this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= _this.tractorPlayer.CurrentHandState.CurrentHandStep && _this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许互换座位,请完成此盘游戏后重试");
+                    }
+                    else {
+                        var selectSwapSeat = document.getElementById("selectSwapSeat");
+                        gs.sendMessageToServer(SwapSeat_REQUEST, _this.tractorPlayer.MyOwnId, selectSwapSeat.value);
+                    }
+                    _this.resetGameRoomUI();
+                };
+            }
+        }
     };
     MainForm.prototype.btnExitRoom_Click = function () {
         if (this.gameScene.isReplayMode) {
@@ -1175,42 +1357,6 @@ var MainForm = /** @class */ (function () {
         }
         window.location.reload();
     };
-    //     public loadEmojiForm() {
-    //         if (this.chatForm && this.chatForm.visible) return;
-    //         let chatFormWid = this.gameScene.coordinates.chatWid;
-    //         this.chatForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid, 0)
-    //             .setOrigin(0)
-    //             .createFromCache('emojiForm');
-    //         let inputForm = this.chatForm.getChildByID("input-form")
-    //         inputForm.style.width = `${chatFormWid}px`;
-    //         inputForm.style.height = `${this.btnExitRoom.getBottomRight().y - this.gameScene.coordinates.cardHeight - 10}px`;
-    //         let divfooter = this.chatForm.getChildByID("divfooter")
-    //         divfooter.style.bottom = "-1px";
-    //         if (CommonMethods.isMobile()) {
-    //             divfooter.style.bottom = "-3px";
-    //         }
-    //         let fullTextDivHeight = this.gameScene.coordinates.screenHei - divfooter.offsetHeight - 10 - this.gameScene.coordinates.cardHeight - 10;
-    //         let divOnlinePlayerListHeight = fullTextDivHeight * (1 - this.gameScene.coordinates.chatHeightRatio);
-    //         let divChatHeight = fullTextDivHeight * this.gameScene.coordinates.chatHeightRatio - 5;
-    //         let divOnlinePlayerList = this.chatForm.getChildByID("divOnlinePlayerList")
-    //         divOnlinePlayerList.style.height = `${divOnlinePlayerListHeight}px`;
-    //         let divChatHistory = this.chatForm.getChildByID("divChatHistory")
-    //         divChatHistory.style.height = `${divChatHeight}px`;
-    //         let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs")
-    //         selectPresetMsgs.style.width = `${chatFormWid}px`;
-    //         let textAreaMsg = this.chatForm.getChildByID("textAreaMsg")
-    //         textAreaMsg.style.width = `${selectPresetMsgs.offsetWidth - 6}px`;
-    //         if (CommonMethods.isMobile()) {
-    //             selectPresetMsgs.onchange = () => {
-    //                 this.selectPresetMsgsIsOpen = true;
-    //                 this.handleSelectPresetMsgsClick(selectPresetMsgs);
-    //             }
-    //         } else {
-    //             selectPresetMsgs.onclick = () => {
-    //                 this.handleSelectPresetMsgsClick(selectPresetMsgs);
-    //             }
-    //         }
-    //     }
     MainForm.prototype.handleSelectPresetMsgsClick = function (selectPresetMsgs) {
         if (this.selectPresetMsgsIsOpen) {
             this.selectPresetMsgsIsOpen = false;
@@ -1260,7 +1406,7 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.blurChat = function () {
         if (!this.gameScene.ui.textAreaChatMsg)
             return;
-        this.gameScene.ui.textAreaChatMsg.value = "";
+        // this.gameScene.ui.textAreaChatMsg.value = "";
         this.gameScene.ui.textAreaChatMsg.blur();
     };
     //     private shortcutKeyDownEventhandler(event: KeyboardEvent) {
@@ -1302,7 +1448,7 @@ var MainForm = /** @class */ (function () {
     //             }
     //         }
     //         if (this.gameScene.isReplayMode) {
-    //             if (this.modalForm) return;
+    //             if (this.gameScene.ui.inputFormWrapper) return;
     //             event.preventDefault();
     //             switch (ekey) {
     //                 case 'arrowup':
@@ -1350,29 +1496,29 @@ var MainForm = /** @class */ (function () {
     //             }
     //             switch (ekey) {
     //                 case 'z':
-    //                     if (this.modalForm || this.tractorPlayer.isObserver) return;
+    //                     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver) return;
     //                     this.btnReady_Click();
     //                     return;
     //                 case 's':
-    //                     if (this.modalForm || this.tractorPlayer.isObserver) return;
+    //                     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver) return;
     //                     this.btnPig_Click();
     //                     return;
     //                 case 'r':
-    //                     if (this.modalForm || this.tractorPlayer.isObserver) return;
+    //                     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver) return;
     //                     this.btnRobot_Click();
     //                     return;
     //                 // case 'c':
-    //                 //     if (this.modalForm || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || !this.sgDrawingHelper.gameOver) return;
+    //                 //     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || !this.sgDrawingHelper.gameOver) return;
     //                 //     this.sgDrawingHelper.restartGame();
     //                 //     return;
     //                 // case 'p':
-    //                 //     if (this.modalForm || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || this.sgDrawingHelper.gameOver) return;
+    //                 //     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || this.sgDrawingHelper.gameOver) return;
     //                 //     this.sgDrawingHelper.pauseGame();
     //                 //     return;
     //                 default:
     //                     break;
     //             }
-    //             if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.modalForm) {
+    //             if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.gameScene.ui.inputFormWrapper) {
     //                 let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs");
     //                 let prevSelection = selectPresetMsgs.selectedIndex;
     //                 let emojiType = parseInt(ekey) - 1;
@@ -1418,243 +1564,26 @@ var MainForm = /** @class */ (function () {
         }, 1000 * CommonMethods.emojiWarningIntervalInSec);
         this.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(args));
     };
-    //     private lblNickName_Click() {
-    //         if (this.modalForm) return
-    //         this.modalForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('settingsForm');
-    //         if (!this.gameScene.isReplayMode) {
-    //             this.gameScene.decadeUICanvas.style.zIndex = "-1000";
-    //         }
-    //         let pAppVersion = this.modalForm.getChildByID("pAppVersion")
-    //         pAppVersion.innerText = `版本：${this.gameScene.appVersion}`
-    //         let volumeControl = this.modalForm.getChildByID("rangeAudioVolume")
-    //         volumeControl.value = Math.floor(this.gameScene.soundVolume * 100)
-    //         volumeControl.onchange = () => {
-    //             let volValue: number = volumeControl.value
-    //             this.gameScene.soundVolume = volValue / 100.0
-    //             this.gameScene.loadAudioFiles()
-    //             this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.MyOwnId));
-    //         }
-    //         let txtJoinAudioUrl = this.modalForm.getChildByID("txtJoinAudioUrl")
-    //         txtJoinAudioUrl.value = this.gameScene.joinAudioUrl
-    //         txtJoinAudioUrl.oninput = () => {
-    //             this.gameScene.joinAudioUrl = txtJoinAudioUrl.value
-    //         }
-    //         let txtPlayerEmail = this.modalForm.getChildByID("txtPlayerEmail")
-    //         txtPlayerEmail.value = cookies.get("playerEmail") ? cookies.get("playerEmail") : "";
-    //         let txtMaxReplays = this.modalForm.getChildByID("txtMaxReplays")
-    //         txtMaxReplays.value = IDBHelper.maxReplays
-    //         txtMaxReplays.oninput = () => {
-    //             let maxString = txtMaxReplays.value;
-    //             let maxInt = 0;
-    //             if (CommonMethods.IsNumber(maxString)) {
-    //                 maxInt = Math.max(maxInt, parseInt(maxString));
-    //             }
-    //             IDBHelper.maxReplays = maxInt
-    //         }
-    //         let btnCleanupReplays = this.modalForm.getChildByID("btnCleanupReplays")
-    //         btnCleanupReplays.onclick = () => {
-    //             var c = window.confirm("你确定要清空所有录像文件吗？");
-    //             if (c === false) {
-    //                 return
-    //             }
-    //             IDBHelper.CleanupReplayEntity(() => {
-    //                 this.ReinitReplayEntities(this);
-    //                 if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试清空全部录像文件"]);
-    //             });
-    //             this.DesotroyModalForm();
-    //         }
-    //         let btnExportZipFile = this.modalForm.getChildByID("btnExportZipFile")
-    //         btnExportZipFile.onclick = () => {
-    //             FileHelper.ExportZipFile();
-    //             this.DesotroyModalForm();
-    //         }
-    //         let inputRecordingFile = this.modalForm.getChildByID("inputRecordingFile")
-    //         inputRecordingFile.onchange = () => {
-    //             let fileName = inputRecordingFile.value;
-    //             let extension = fileName.split('.').pop();
-    //             if (!["json", "zip"].includes(extension.toLowerCase())) {
-    //                 alert("unsupported file type!");
-    //                 return;
-    //             }
-    //             if (!inputRecordingFile || !inputRecordingFile.files || inputRecordingFile.files.length <= 0) {
-    //                 alert("No file has been selected!");
-    //                 return;
-    //             }
-    //             if (extension.toLowerCase() === "json") {
-    //                 FileHelper.ImportJsonFile(inputRecordingFile.files[0], () => {
-    //                     this.ReinitReplayEntities(this);
-    //                     if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
-    //                 });
-    //             } else {
-    //                 FileHelper.ImportZipFile(inputRecordingFile.files[0], () => {
-    //                     this.ReinitReplayEntities(this);
-    //                     if (this.gameScene.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
-    //                 });
-    //             }
-    //             this.DesotroyModalForm();
-    //         }
-    //         let noDanmu = this.modalForm.getChildByID("cbxNoDanmu")
-    //         noDanmu.checked = this.gameScene.noDanmu.toLowerCase() === "true"
-    //         noDanmu.onchange = () => {
-    //             this.gameScene.noDanmu = noDanmu.checked.toString()
-    //         }
-    //         let cbxCutCards = this.modalForm.getChildByID("cbxCutCards")
-    //         cbxCutCards.checked = this.gameScene.noCutCards.toLowerCase() === "true"
-    //         cbxCutCards.onchange = () => {
-    //             this.gameScene.noCutCards = cbxCutCards.checked.toString()
-    //         }
-    //         let cbxYesDragSelect = this.modalForm.getChildByID("cbxYesDragSelect")
-    //         cbxYesDragSelect.checked = this.gameScene.yesDragSelect.toLowerCase() === "true"
-    //         cbxYesDragSelect.onchange = () => {
-    //             this.gameScene.yesDragSelect = cbxYesDragSelect.checked.toString()
-    //         }
-    //         if (this.gameScene.isReplayMode) return;
-    //         // 以下为需要连接服务器才能显示的设置
-    //         // 游戏道具栏
-    //         let divDaojuWrapper = this.modalForm.getChildByID("divDaojuWrapper");
-    //         divDaojuWrapper.style.display = "block";
-    //         // 升币
-    //         let lblShengbi = this.modalForm.getChildByID("lblShengbi");
-    //         let shengbiNum = 0;
-    //         if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
-    //             shengbiNum = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi;
-    //         }
-    //         lblShengbi.innerHTML = shengbiNum;
-    //         // 签到按钮
-    //         let btnQiandaoInSettings = this.modalForm.getChildByID("btnQiandaoInSettings")
-    //         if (this.IsQiandaoRenewed()) {
-    //             btnQiandaoInSettings.disabled = false;
-    //             btnQiandaoInSettings.value = "签到领福利";
-    //         } else {
-    //             btnQiandaoInSettings.disabled = true;
-    //             btnQiandaoInSettings.value = "今日已签到";
-    //         }
-    //         btnQiandaoInSettings.onclick = () => {
-    //             btnQiandaoInSettings.disabled = true;
-    //             this.DesotroyModalForm();
-    //             this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.tractorPlayer.MyOwnId, "")
-    //         }
-    //         let btnShengbiLeadingBoard = this.modalForm.getChildByID("btnShengbiLeadingBoard")
-    //         btnShengbiLeadingBoard.onclick = () => {
-    //             let divShengbiLeadingBoard = this.modalForm.getChildByID("divShengbiLeadingBoard")
-    //             divShengbiLeadingBoard.innerHTML = "";
-    //             let shengbiLeadingBoard = this.DaojuInfo.shengbiLeadingBoard;
-    //             if (!shengbiLeadingBoard) return;
-    //             let sortable = [];
-    //             for (const [key, value] of Object.entries(shengbiLeadingBoard)) {
-    //                 sortable.push([key, (value as number)]);
-    //             }
-    //             sortable.sort(function (a: any, b: any) {
-    //                 return a[1] !== b[1] ? -1 * (a[1] - b[1]) : (a[0] <= b[0] ? -1 : 1);
-    //             });
-    //             var ul = document.createElement("ul");
-    //             for (let i = 0; i < sortable.length; i++) {
-    //                 var li = document.createElement("li");
-    //                 li.innerText = `【${sortable[i][0]}】${sortable[i][1]}`;
-    //                 ul.appendChild(li);
-    //             }
-    //             divShengbiLeadingBoard.appendChild(ul);
-    //         }
-    //         // 抢亮卡
-    //         let selectQiangliangMin = this.modalForm.getChildByID("selectQiangliangMin")
-    //         selectQiangliangMin.value = this.gameScene.qiangliangMin;
-    //         selectQiangliangMin.onchange = () => {
-    //             this.gameScene.qiangliangMin = selectQiangliangMin.value;
-    //         }
-    //         // 皮肤
-    //         let selectFullSkinInfo = this.modalForm.getChildByID("selectFullSkinInfo")
-    //         this.UpdateSkinInfoUI(false);
-    //         selectFullSkinInfo.onchange = () => {
-    //             this.UpdateSkinInfoUI(true);
-    //         }
-    //         let btnBuyOrUseSelectedSkin = this.modalForm.getChildByID("btnBuyOrUseSelectedSkin")
-    //         btnBuyOrUseSelectedSkin.onclick = () => {
-    //             let skinName = selectFullSkinInfo.value;
-    //             let isSkinOwned = this.IsSkinOwned(skinName);
-    //             let isSkinAfordableWithConfMsg: any[] = this.IsSkinAfordableWithConfMsg(skinName);
-    //             let isSkinAfordable = isSkinAfordableWithConfMsg[0] as boolean;
-    //             if (!isSkinOwned && !isSkinAfordable) {
-    //                 alert("升币余额不足，无法购买此皮肤")
-    //             } else {
-    //                 let doTransaction = true;
-    //                 let msg = isSkinAfordableWithConfMsg[1] as string;
-    //                 if (msg && msg.length > 0) {
-    //                     var c = window.confirm(msg);
-    //                     if (!c) {
-    //                         doTransaction = false;
-    //                     }
-    //                 }
-    //                 if (doTransaction) {
-    //                     this.gameScene.sendMessageToServer(BUY_USE_SKIN_REQUEST, this.tractorPlayer.MyOwnId, skinName);
-    //                     this.DesotroyModalForm();
-    //                 }
-    //             }
-    //         }
-    //         if (this.gameScene.isInGameRoom()) {
-    //             let cbxNoOverridingFlag = this.modalForm.getChildByID("cbxNoOverridingFlag");
-    //             cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
-    //             cbxNoOverridingFlag.onchange = () => {
-    //                 this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag = cbxNoOverridingFlag.checked;
-    //                 this.gameScene.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
-    //             };
-    //             let divRoomSettingsWrapper = this.modalForm.getChildByID("divRoomSettingsWrapper");
-    //             divRoomSettingsWrapper.style.display = "block";
-    //             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
-    //                 cbxNoOverridingFlag.disabled = true;
-    //             } else {
-    //                 let divRoomSettings = this.modalForm.getChildByID("divRoomSettings");
-    //                 divRoomSettings.style.display = "block";
-    //                 let btnResumeGame = this.modalForm.getChildByID("btnResumeGame")
-    //                 btnResumeGame.onclick = () => {
-    //                     if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-    //                         alert("游戏中途不允许继续牌局,请完成此盘游戏后重试")
-    //                     } else {
-    //                         this.gameScene.sendMessageToServer(ResumeGameFromFile_REQUEST, this.tractorPlayer.MyOwnId, "");
-    //                     }
-    //                     this.DesotroyModalForm();
-    //                 }
-    //                 let btnRandomSeat = this.modalForm.getChildByID("btnRandomSeat")
-    //                 btnRandomSeat.onclick = () => {
-    //                     if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-    //                         alert("游戏中途不允许随机组队,请完成此盘游戏后重试")
-    //                     } else {
-    //                         this.gameScene.sendMessageToServer(RandomSeat_REQUEST, this.tractorPlayer.MyOwnId, "");
-    //                     }
-    //                     this.DesotroyModalForm();
-    //                 }
-    //                 let btnSwapSeat = this.modalForm.getChildByID("btnSwapSeat")
-    //                 btnSwapSeat.onclick = () => {
-    //                     if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-    //                         alert("游戏中途不允许互换座位,请完成此盘游戏后重试")
-    //                     } else {
-    //                         let selectSwapSeat = this.modalForm.getChildByID("selectSwapSeat")
-    //                         this.gameScene.sendMessageToServer(SwapSeat_REQUEST, this.tractorPlayer.MyOwnId, selectSwapSeat.value);
-    //                     }
-    //                     this.DesotroyModalForm();
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     private IsSkinOwned(skinName: string): boolean {
-    //         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-    //         if (daojuInfoByPlayer) {
-    //             let ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
-    //             return ownedSkinInfoList && ownedSkinInfoList.includes(skinName);
-    //         }
-    //         return false;
-    //     }
-    //     private IsSkinAfordableWithConfMsg(skinName: string): any[] {
-    //         let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
-    //         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-    //         if (fullSkinInfo && daojuInfoByPlayer.Shengbi >= fullSkinInfo[skinName].skinCost) {
-    //             let msg = "";
-    //             if (fullSkinInfo[skinName].skinCost > 0) {
-    //                 msg = `此次购买将消耗升币【${fullSkinInfo[skinName].skinCost}】，购买前余额：【${daojuInfoByPlayer.Shengbi}】，购买后余额：【${daojuInfoByPlayer.Shengbi - fullSkinInfo[skinName].skinCost}】，是否确定？`;
-    //             }
-    //             return [true, msg];
-    //         }
-    //         return [false, ""];
-    //     }
+    MainForm.prototype.IsSkinOwned = function (skinName) {
+        var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (daojuInfoByPlayer) {
+            var ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
+            return ownedSkinInfoList && ownedSkinInfoList.includes(skinName);
+        }
+        return false;
+    };
+    MainForm.prototype.IsSkinAfordableWithConfMsg = function (skinName) {
+        var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (fullSkinInfo && daojuInfoByPlayer.Shengbi >= fullSkinInfo[skinName].skinCost) {
+            var msg = "";
+            if (fullSkinInfo[skinName].skinCost > 0) {
+                msg = "\u6B64\u6B21\u8D2D\u4E70\u5C06\u6D88\u8017\u5347\u5E01\u3010".concat(fullSkinInfo[skinName].skinCost, "\u3011\uFF0C\u8D2D\u4E70\u524D\u4F59\u989D\uFF1A\u3010").concat(daojuInfoByPlayer.Shengbi, "\u3011\uFF0C\u8D2D\u4E70\u540E\u4F59\u989D\uFF1A\u3010").concat(daojuInfoByPlayer.Shengbi - fullSkinInfo[skinName].skinCost, "\u3011\uFF0C\u662F\u5426\u786E\u5B9A\uFF1F");
+            }
+            return [true, msg];
+        }
+        return [false, ""];
+    };
     MainForm.prototype.GetSkinType = function (skinName) {
         var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
         if (fullSkinInfo) {
@@ -1679,79 +1608,74 @@ var MainForm = /** @class */ (function () {
     //         }
     //         return "m";
     //     }
-    //     private UpdateSkinInfoUI(preview: boolean) {
-    //         let selectFullSkinInfo = this.modalForm.getChildByID("selectFullSkinInfo")
-    //         let lblSkinType = this.modalForm.getChildByID("lblSkinType");
-    //         let lblSkinCost = this.modalForm.getChildByID("lblSkinCost");
-    //         let lblSkinOnwers = this.modalForm.getChildByID("lblSkinOnwers");
-    //         let lblSkinIsOwned = this.modalForm.getChildByID("lblSkinIsOwned");
-    //         let lblSkinSex = this.modalForm.getChildByID("lblSkinSex");
-    //         let btnBuyOrUseSelectedSkin = this.modalForm.getChildByID("btnBuyOrUseSelectedSkin");
-    //         let curSkinInfo: any;
-    //         let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
-    //         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-    //         if (daojuInfoByPlayer) {
-    //             if (fullSkinInfo) {
-    //                 if (selectFullSkinInfo.options.length === 0) {
-    //                     for (const [key, value] of Object.entries(fullSkinInfo)) {
-    //                         var option = document.createElement("option");
-    //                         option.value = key;
-    //                         option.text = (value as any).skinDesc;
-    //                         selectFullSkinInfo.add(option);
-    //                     }
-    //                     selectFullSkinInfo.value = this.gameScene.skinInUse;
-    //                 }
-    //                 curSkinInfo = fullSkinInfo[selectFullSkinInfo.value];
-    //                 if (curSkinInfo) {
-    //                     lblSkinSex.innerHTML = curSkinInfo.skinSex === "f" ? "女性" : "男性";
-    //                     lblSkinType.innerHTML = curSkinInfo.skinType === 0 ? "静态" : "动态";
-    //                     lblSkinCost.innerHTML = `【升币】x${curSkinInfo.skinCost}`;
-    //                     let skinOwnersMsg = `此皮肤尚未被人解锁`;
-    //                     if (curSkinInfo.skinOwners > 0) {
-    //                         skinOwnersMsg = `已有【${curSkinInfo.skinOwners}】人拥有此皮肤`;
-    //                     }
-    //                     lblSkinOnwers.innerHTML = skinOwnersMsg;
-    //                     lblSkinIsOwned.innerHTML = "尚未拥有";
-    //                     btnBuyOrUseSelectedSkin.disabled = false;
-    //                     btnBuyOrUseSelectedSkin.value = "购买选定的皮肤";
-    //                 }
-    //             }
-    //             let ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
-    //             if (ownedSkinInfoList && ownedSkinInfoList.includes(selectFullSkinInfo.value)) {
-    //                 lblSkinIsOwned.innerHTML = "已经拥有";
-    //                 btnBuyOrUseSelectedSkin.disabled = false;
-    //                 btnBuyOrUseSelectedSkin.value = "启用选定的皮肤";
-    //                 if (this.gameScene.skinInUse === selectFullSkinInfo.value) {
-    //                     btnBuyOrUseSelectedSkin.disabled = true;
-    //                     btnBuyOrUseSelectedSkin.value = "正在使用选定的皮肤";
-    //                 }
-    //             }
-    //         }
-    //         if (preview) {
-    //             // 皮肤预览
-    //             if (curSkinInfo) {
-    //                 this.MySkinInUse.setVisible(false);
-    //                 this.MySkinFrame.setVisible(false);
-    //                 let skinImage: any;
-    //                 if (curSkinInfo.skinType === 0) {
-    //                     skinImage = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
-    //                 } else {
-    //                     skinImage = this.gameScene.add.sprite(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, selectFullSkinInfo.value)
-    //                         .play(selectFullSkinInfo.value);
-    //                 }
-    //                 let width = this.gameScene.coordinates.cardHeight * (skinImage.width / skinImage.height);
-    //                 skinImage.setDisplaySize(width, this.gameScene.coordinates.cardHeight)
-    //                 let skinFrame = this.gameScene.add.image(this.gameScene.coordinates.playerSkinPositions[0].x, this.gameScene.coordinates.playerSkinPositions[0].y, 'skin_frame')
-    //                     .setDisplaySize(width, this.gameScene.coordinates.cardHeight)
-    //                 setTimeout(() => {
-    //                     skinImage.destroy();
-    //                     skinFrame.destroy();
-    //                     this.MySkinInUse.setVisible(true);
-    //                     this.MySkinFrame.setVisible(true);
-    //                 }, 3000);
-    //             }
-    //         }
-    //     }
+    MainForm.prototype.UpdateSkinInfoUI = function (preview) {
+        var _this = this;
+        var selectFullSkinInfo = document.getElementById("selectFullSkinInfo");
+        var lblSkinType = document.getElementById("lblSkinType");
+        var lblSkinCost = document.getElementById("lblSkinCost");
+        var lblSkinOnwers = document.getElementById("lblSkinOnwers");
+        var lblSkinIsOwned = document.getElementById("lblSkinIsOwned");
+        var lblSkinSex = document.getElementById("lblSkinSex");
+        var btnBuyOrUseSelectedSkin = document.getElementById("btnBuyOrUseSelectedSkin");
+        var curSkinInfo;
+        var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        if (daojuInfoByPlayer) {
+            if (fullSkinInfo) {
+                if (selectFullSkinInfo.options.length === 0) {
+                    for (var _i = 0, _a = Object.entries(fullSkinInfo); _i < _a.length; _i++) {
+                        var _b = _a[_i], key = _b[0], value = _b[1];
+                        var option = document.createElement("option");
+                        option.value = key;
+                        option.text = value.skinDesc;
+                        selectFullSkinInfo.add(option);
+                    }
+                    selectFullSkinInfo.value = this.gameScene.skinInUse;
+                }
+                curSkinInfo = fullSkinInfo[selectFullSkinInfo.value];
+                if (curSkinInfo) {
+                    lblSkinSex.innerHTML = curSkinInfo.skinSex === "f" ? "女性" : "男性";
+                    lblSkinType.innerHTML = curSkinInfo.skinType === 0 ? "静态" : "动态";
+                    lblSkinCost.innerHTML = "\u3010\u5347\u5E01\u3011x".concat(curSkinInfo.skinCost);
+                    var skinOwnersMsg = "\u6B64\u76AE\u80A4\u5C1A\u672A\u88AB\u4EBA\u89E3\u9501";
+                    if (curSkinInfo.skinOwners > 0) {
+                        skinOwnersMsg = "\u5DF2\u6709\u3010".concat(curSkinInfo.skinOwners, "\u3011\u4EBA\u62E5\u6709\u6B64\u76AE\u80A4");
+                    }
+                    lblSkinOnwers.innerHTML = skinOwnersMsg;
+                    lblSkinIsOwned.innerHTML = "尚未拥有";
+                    btnBuyOrUseSelectedSkin.disabled = false;
+                    btnBuyOrUseSelectedSkin.value = "购买选定的皮肤";
+                }
+            }
+            var ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
+            if (ownedSkinInfoList && ownedSkinInfoList.includes(selectFullSkinInfo.value)) {
+                lblSkinIsOwned.innerHTML = "已经拥有";
+                btnBuyOrUseSelectedSkin.disabled = false;
+                btnBuyOrUseSelectedSkin.value = "启用选定的皮肤";
+                if (this.gameScene.skinInUse === selectFullSkinInfo.value) {
+                    btnBuyOrUseSelectedSkin.disabled = true;
+                    btnBuyOrUseSelectedSkin.value = "正在使用选定的皮肤";
+                }
+            }
+        }
+        if (preview && (!this.gameScene.isInGameRoom() || !this.tractorPlayer.isObserver)) {
+            // 皮肤预览
+            if (curSkinInfo) {
+                var skinExtention = curSkinInfo.skinType === 0 ? "webp" : "gif";
+                var skinURL = "image/tractor/skin/".concat(curSkinInfo.skinName, ".").concat(skinExtention);
+                this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                if (this.skinPreviewTimer)
+                    clearTimeout(this.skinPreviewTimer);
+                this.skinPreviewTimer = setTimeout(function () {
+                    var skinTypeMe = _this.GetSkinType(_this.gameScene.skinInUse);
+                    var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+                    var skinURL = "image/tractor/skin/".concat(_this.gameScene.skinInUse, ".").concat(skinExtentionMe);
+                    _this.SetAvatarImage(skinURL, _this.gameScene.ui.gameMe, _this.gameScene.coordinates.cardHeight);
+                    delete _this.skinPreviewTimer;
+                }, 3000);
+            }
+        }
+    };
     //     private ReinitReplayEntities(that: any) {
     //         if (that.gameScene.isReplayMode) {
     //             let grs = that.gameScene as GameReplayScene;
@@ -1911,27 +1835,16 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.resetGameRoomUI = function () {
         this.blurChat();
-        // if (this.modalForm) {
-        //     if (this.modalForm.getChildByID("btnBapi1")) {
-        //         let cutPoint = 0;
-        //         let cutInfo = `取消,${cutPoint}`;
-        //         this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-        //     } else {
-        //         if (!this.gameScene.isReplayMode)
-        //             this.gameScene.loadAudioFiles();
-        //         this.gameScene.saveSettings();
-        //         this.DesotroyModalForm();
-        //     }
-        // }
+        if (this.gameScene.ui.inputFormWrapper) {
+            if (document.getElementById("btnBapi1")) {
+                var cutPoint = 0;
+                var cutInfo = "\u53D6\u6D88,".concat(cutPoint);
+                this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+            }
+            this.gameScene.ui.inputFormWrapper.remove();
+            delete this.gameScene.ui.inputFormWrapper;
+        }
     };
-    //     private DesotroyModalForm() {
-    //         if (!this.modalForm) return;
-    //         this.modalForm.destroy();
-    //         this.modalForm = undefined;
-    //         if (!this.gameScene.isReplayMode) {
-    //             this.gameScene.decadeUICanvas.style.zIndex = "1000";
-    //         }
-    //     }
     MainForm.prototype.ShowLastTrickAndTumpMade = function () {
         //擦掉上一把
         this.drawingFormHelper.destroyAllShowedCards();
@@ -2391,13 +2304,16 @@ var MainForm = /** @class */ (function () {
                     return;
                 }
             }
-            if (e.button === 1 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall'))) {
+            if (e.button === 0 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall'))) {
                 _this.resetGameRoomUI();
                 return;
             }
         });
         window.addEventListener('keyup', function (e) {
             var keyCode = e.keyCode;
+            if (keyCode === 27) {
+                _this.resetGameRoomUI();
+            }
             if (e.target === _this.gameScene.ui.textAreaChatMsg) {
                 if (keyCode === 13) {
                     _this.emojiSubmitEventhandler();
@@ -2643,41 +2559,41 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.CutCardShoeCardsEventHandler = function () {
         var cutInfo = "";
         var cutPoint = -1;
-        // if (this.IsDebug || this.modalForm || this.gameScene.noCutCards.toLowerCase() === "true") {
+        // if (this.IsDebug || this.gameScene.ui.inputFormWrapper || this.gameScene.noCutCards.toLowerCase() === "true") {
         cutPoint = 0;
         cutInfo = "\u53D6\u6D88,".concat(cutPoint);
         this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
         return;
         // }
-        // this.modalForm = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('cutCardsForm');
+        // this.gameScene.ui.inputFormWrapper = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('cutCardsForm');
         // this.gameScene.decadeUICanvas.style.zIndex = "-1000";
-        // let btnRandom = this.modalForm.getChildByID("btnRandom")
+        // let btnRandom = document.getElementById("btnRandom")
         // btnRandom.onclick = () => {
         //     cutPoint = CommonMethods.GetRandomInt(107) + 1;
         //     cutInfo = `${btnRandom.value},${cutPoint}`;
         //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
         // }
-        // let btnCancel = this.modalForm.getChildByID("btnCancel")
+        // let btnCancel = document.getElementById("btnCancel")
         // btnCancel.onclick = () => {
         //     cutPoint = 0;
         //     cutInfo = `${btnCancel.value},${cutPoint}`;
         //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
         // }
-        // let btnBapi1 = this.modalForm.getChildByID("btnBapi1")
+        // let btnBapi1 = document.getElementById("btnBapi1")
         // btnBapi1.onclick = () => {
         //     cutPoint = 1;
         //     cutInfo = `${btnBapi1.value},${cutPoint}`;
         //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
         // }
-        // let btnBapi3 = this.modalForm.getChildByID("btnBapi3")
+        // let btnBapi3 = document.getElementById("btnBapi3")
         // btnBapi3.onclick = () => {
         //     cutPoint = 3;
         //     cutInfo = `${btnBapi3.value},${cutPoint}`;
         //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
         // }
-        // let btnManual = this.modalForm.getChildByID("btnManual")
+        // let btnManual = document.getElementById("btnManual")
         // btnManual.onclick = () => {
-        //     let txtManual = this.modalForm.getChildByID("txtManual")
+        //     let txtManual = document.getElementById("txtManual")
         //     let cutPointStr = txtManual.value;
         //     if (CommonMethods.IsNumber(cutPointStr)) {
         //         cutPoint = parseInt(cutPointStr);
@@ -2692,7 +2608,8 @@ var MainForm = /** @class */ (function () {
         }
         else {
             this.gameScene.sendMessageToServer(CommonMethods.PlayerHasCutCards_REQUEST, this.tractorPlayer.MyOwnId, cutInfo);
-            // this.DesotroyModalForm();
+            this.gameScene.ui.inputFormWrapper.remove();
+            delete this.gameScene.ui.inputFormWrapper;
         }
     };
     return MainForm;

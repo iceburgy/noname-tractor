@@ -48,8 +48,7 @@ var GameScene = /** @class */ (function () {
         this.clientMessages = [];
         this.danmuMessages = [];
         // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
-        // // this.soundVolume = cookies.get("soundVolume");
-        // // if (this.soundVolume === undefined) this.soundVolume = 0.5
+        // this.soundVolume = (this.lib && this.lib.config && this.lib.config.soundVolume) ? this.lib.config.noDanmu : 0.5;
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
@@ -381,19 +380,16 @@ var GameScene = /** @class */ (function () {
     //     this.soundwin = this.sound.add("win", { volume: this.soundVolume });
     //     this.soundclickwa = this.sound.add("clickwa", { volume: this.soundVolume });
     // }
-    // public saveSettings() {
-    //     cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
-    //         this.joinAudioUrl = 'http://' + this.joinAudioUrl;
-    //     }
-    //     cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    // }
+    GameScene.prototype.saveSettings = function () {
+        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
+    };
+    // [flag, pass, email]
+    GameScene.prototype.savePlayerLoginInfo = function (loginInfo) {
+        this.nickNameOverridePass = loginInfo[1];
+        this.game.saveConfig('NickNameOverridePass', loginInfo[1]);
+        this.game.saveConfig('playerEmail', loginInfo[2]);
+    };
     GameScene.prototype.sendMessageToServer = function (messageType, playerID, content) {
         this.websocket.send(JSON.stringify({
             "messageType": messageType, "playerID": playerID, "content": content

@@ -55,7 +55,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 				// 密码
 				var nodePassword = document.createElement("INPUT");
-				nodePassword.value = lib.config.last_password || "";
+				nodePassword.value = lib.config.NickNameOverridePass || lib.config.last_password || "";
 				nodePassword.classList.add('tractor-connect-input');
 				nodePassword.style.top = 'calc(36%)';
 				nodePassword.setAttribute("type", "password");

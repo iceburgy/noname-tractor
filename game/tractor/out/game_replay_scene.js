@@ -47,9 +47,8 @@ var GameReplayScene = /** @class */ (function (_super) {
         _this.showedCardImages = [];
         _this.clientMessages = [];
         _this.roomUIControls = { images: [], texts: [], imagesChair: [] };
-        _this.soundVolume = cookies.get("soundVolume");
-        if (_this.soundVolume === undefined)
-            _this.soundVolume = 0.5;
+        // this.soundVolume = cookies.get("soundVolume");
+        // if (this.soundVolume === undefined) this.soundVolume = 0.5
         _this.noDanmu = cookies.get("noDanmu");
         if (_this.noDanmu === undefined)
             _this.noDanmu = 'false';
@@ -684,17 +683,17 @@ var GameReplayScene = /** @class */ (function (_super) {
             this.mainForm.tractorPlayer.CurrentHandState.Starter === this.mainForm.tractorPlayer.replayEntity.Players[0];
     };
     GameReplayScene.prototype.saveSettings = function () {
-        cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
-            this.joinAudioUrl = 'http://' + this.joinAudioUrl;
-        }
-        cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
+        //     this.joinAudioUrl = 'http://' + this.joinAudioUrl;
+        // }
+        // cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     };
     GameReplayScene.prototype.isInGameHall = function () {
         return this.hallPlayerHeader && this.hallPlayerHeader.visible;

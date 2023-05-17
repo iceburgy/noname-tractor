@@ -70,7 +70,7 @@ export class GameReplayScene extends Phaser.Scene {
     public soundtie: Phaser.Sound.BaseSound;
     public soundclickwa: Phaser.Sound.BaseSound;
     public soundwin: Phaser.Sound.BaseSound;
-    public soundVolume: number
+    // public soundVolume: number
     public noDanmu: string
     public noCutCards: string
     public yesDragSelect: string
@@ -102,8 +102,8 @@ export class GameReplayScene extends Phaser.Scene {
         this.showedCardImages = [];
         this.clientMessages = [];
         this.roomUIControls = { images: [], texts: [], imagesChair: [] };
-        this.soundVolume = cookies.get("soundVolume");
-        if (this.soundVolume === undefined) this.soundVolume = 0.5
+        // this.soundVolume = cookies.get("soundVolume");
+        // if (this.soundVolume === undefined) this.soundVolume = 0.5
         this.noDanmu = cookies.get("noDanmu");
         if (this.noDanmu === undefined) this.noDanmu = 'false'
         this.noCutCards = cookies.get("noCutCards");
@@ -757,18 +757,18 @@ export class GameReplayScene extends Phaser.Scene {
     }
 
     public saveSettings() {
-        cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
 
-        if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
-            this.joinAudioUrl = 'http://' + this.joinAudioUrl;
-        }
-        cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
+        //     this.joinAudioUrl = 'http://' + this.joinAudioUrl;
+        // }
+        // cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
     public isInGameHall() {

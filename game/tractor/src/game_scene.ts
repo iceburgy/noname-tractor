@@ -60,7 +60,7 @@ export class GameScene {
     // // public soundtie: Phaser.Sound.BaseSound;
     // // public soundclickwa: Phaser.Sound.BaseSound;
     // // public soundwin: Phaser.Sound.BaseSound;
-    // public soundVolume: number 
+    // public soundVolume!: number
     public noDanmu!: string
     public noCutCards!: string
     public yesDragSelect!: string
@@ -110,8 +110,7 @@ export class GameScene {
         this.clientMessages = [];
         this.danmuMessages = [];
         // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
-        // // this.soundVolume = cookies.get("soundVolume");
-        // // if (this.soundVolume === undefined) this.soundVolume = 0.5
+        // this.soundVolume = (this.lib && this.lib.config && this.lib.config.soundVolume) ? this.lib.config.noDanmu : 0.5;
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
@@ -477,20 +476,17 @@ export class GameScene {
     //     this.soundclickwa = this.sound.add("clickwa", { volume: this.soundVolume });
     // }
 
-    // public saveSettings() {
-    //     cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
+    public saveSettings() {
+        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
+    }
 
-    //     if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
-    //         this.joinAudioUrl = 'http://' + this.joinAudioUrl;
-    //     }
-    //     cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    //     cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    // }
+    // [flag, pass, email]
+    public savePlayerLoginInfo(loginInfo: string[]) {
+        this.nickNameOverridePass = loginInfo[1];
+        this.game.saveConfig('NickNameOverridePass', loginInfo[1]);
+        this.game.saveConfig('playerEmail', loginInfo[2]);
+    }
 
     public sendMessageToServer(messageType: string, playerID: string, content: string) {
         this.websocket.send(JSON.stringify({
