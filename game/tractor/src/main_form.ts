@@ -2773,54 +2773,69 @@ export class MainForm {
     public CutCardShoeCardsEventHandler() {
         let cutInfo = ""
         let cutPoint = -1;
-        // if (this.IsDebug || this.gameScene.ui.inputFormWrapper || this.gameScene.noCutCards.toLowerCase() === "true") {
-        cutPoint = 0;
-        cutInfo = `取消,${cutPoint}`;
-        this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-        return;
-        // }
+        if (this.IsDebug || this.gameScene.ui.inputFormWrapper || this.gameScene.noCutCards.toLowerCase() === "true") {
+            cutPoint = 0;
+            cutInfo = `取消,${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+            return;
+        }
 
-        // this.gameScene.ui.inputFormWrapper = this.gameScene.add.dom(this.gameScene.coordinates.screenWid * 0.5, this.gameScene.coordinates.screenHei * 0.5).createFromCache('cutCardsForm');
-        // this.gameScene.decadeUICanvas.style.zIndex = "-1000";
+        var inputFormWrapper = this.gameScene.ui.create.div(this.gameScene.ui.frameMain);
+        inputFormWrapper.id = "inputFormWrapper";
+        inputFormWrapper.style.position = 'absolute';
+        inputFormWrapper.style.width = 'calc(100%)';
+        inputFormWrapper.style.height = 'calc(100%)';
+        inputFormWrapper.style.color = 'black';
+        inputFormWrapper.style.textShadow = 'none';
+        inputFormWrapper.style.zIndex = CommonMethods.zIndexSettingsForm;
 
-        // let btnRandom = document.getElementById("btnRandom")
-        // btnRandom.onclick = () => {
-        //     cutPoint = CommonMethods.GetRandomInt(107) + 1;
-        //     cutInfo = `${btnRandom.value},${cutPoint}`;
-        //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-        // }
+        this.gameScene.ui.inputFormWrapper = inputFormWrapper;
 
-        // let btnCancel = document.getElementById("btnCancel")
-        // btnCancel.onclick = () => {
-        //     cutPoint = 0;
-        //     cutInfo = `${btnCancel.value},${cutPoint}`;
-        //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-        // }
+        jQuery(inputFormWrapper).load("game/tractor/src/text/cutcards_form.htm", (response: any, status: any, xhr: any) => { this.renderCutCardsForm(response, status, xhr, this.gameScene) });
+    }
 
-        // let btnBapi1 = document.getElementById("btnBapi1")
-        // btnBapi1.onclick = () => {
-        //     cutPoint = 1;
-        //     cutInfo = `${btnBapi1.value},${cutPoint}`;
-        //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-        // }
+    public renderCutCardsForm(response: any, status: any, xhr: any, gs: GameScene) {
+        let cutInfo = ""
+        let cutPoint = -1;
 
-        // let btnBapi3 = document.getElementById("btnBapi3")
-        // btnBapi3.onclick = () => {
-        //     cutPoint = 3;
-        //     cutInfo = `${btnBapi3.value},${cutPoint}`;
-        //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-        // }
+        let btnRandom: any = document.getElementById("btnRandom")
+        btnRandom.onclick = () => {
+            cutPoint = CommonMethods.GetRandomInt(107) + 1;
+            cutInfo = `${btnRandom.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
 
-        // let btnManual = document.getElementById("btnManual")
-        // btnManual.onclick = () => {
-        //     let txtManual = document.getElementById("txtManual")
-        //     let cutPointStr = txtManual.value;
-        //     if (CommonMethods.IsNumber(cutPointStr)) {
-        //         cutPoint = parseInt(cutPointStr);
-        //     }
-        //     cutInfo = `${btnManual.value},${cutPoint}`;
-        //     this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
-        // }
+        let btnCancel: any = document.getElementById("btnCancel")
+        btnCancel.onclick = () => {
+            cutPoint = 0;
+            cutInfo = `${btnCancel.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+
+        let btnBapi1: any = document.getElementById("btnBapi1")
+        btnBapi1.onclick = () => {
+            cutPoint = 1;
+            cutInfo = `${btnBapi1.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+
+        let btnBapi3: any = document.getElementById("btnBapi3")
+        btnBapi3.onclick = () => {
+            cutPoint = 3;
+            cutInfo = `${btnBapi3.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
+
+        let btnManual: any = document.getElementById("btnManual")
+        btnManual.onclick = () => {
+            let txtManual: any = document.getElementById("txtManual")
+            let cutPointStr = txtManual.value;
+            if (CommonMethods.IsNumber(cutPointStr)) {
+                cutPoint = parseInt(cutPointStr);
+            }
+            cutInfo = `${btnManual.value},${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+        }
     }
     public CutCardShoeCardsCompleteEventHandler(cutPoint: number, cutInfo: string) {
         if (cutPoint < 0 || cutPoint > 108) {
