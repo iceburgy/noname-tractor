@@ -75,7 +75,6 @@ export class MainForm {
     public SelectedCards: number[]
     public cardsOrderNumber: number
 
-    public enableSound: boolean
     public drawingFormHelper: DrawingFormHelper
     // public sgDrawingHelper: SGDrawingHelper
     public IsDebug: boolean
@@ -104,7 +103,6 @@ export class MainForm {
         this.PositionPlayer = {}
         this.myCardIsReady = []
         this.cardsOrderNumber = 0
-        this.enableSound = true
         this.IsDebug = false
         this.SelectedCards = []
         this.timerIntervalID = []
@@ -649,7 +647,7 @@ export class MainForm {
         this.drawingFormHelper.DrawSidebarFull()
         if (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DistributingLast8Cards) {
-            // if (this.enableSound) this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.CurrentHandState.TrumpMaker));
+            this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.CurrentHandState.TrumpMaker));
             this.drawingFormHelper.TrumpMadeCardsShow()
         }
         this.drawingFormHelper.reDrawToolbar()
@@ -748,9 +746,9 @@ export class MainForm {
     public PlayerOnGetCard(cardNumber: number) {
 
         //发牌播放提示音
-        // if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards && this.enableSound) {
-        //     if (this.enableSound) this.gameScene.sounddraw.play()
-        // }
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards) {
+            this.gameScene.playAudio(CommonMethods.audioDraw);
+        }
 
         this.drawingFormHelper.IGetCard();
 
@@ -814,7 +812,7 @@ export class MainForm {
         }
         else {
             //播放摸底音效
-            // if (this.enableSound) this.gameScene.sounddrawx.play();
+            this.gameScene.playAudio(CommonMethods.audioDrawx);
         }
 
         if (this.tractorPlayer.isObserver) {
@@ -892,7 +890,7 @@ export class MainForm {
     }
 
     public Last8Discarded() {
-        // if (this.enableSound) this.gameScene.soundtie.play()
+        this.gameScene.playAudio(CommonMethods.audioTie);
 
         this.drawingFormHelper.DrawDiscardedCardsBackground();
 
@@ -988,13 +986,13 @@ export class MainForm {
 
             //播放出牌音效
             if (this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag) {
-                // if (this.enableSound) this.gameScene.playAudio(0, this.GetPlayerSex(latestPlayer));
+                this.gameScene.playAudio(0, this.GetPlayerSex(latestPlayer));
             } else if (!this.tractorPlayer.playerLocalCache.isLastTrick &&
                 !this.IsDebug &&
                 !this.tractorPlayer.CurrentTrickState.serverLocalCache.muteSound) {
                 let soundInex = winResult;
                 if (winResult > 0) soundInex = this.tractorPlayer.playerLocalCache.WinResult;
-                // if (this.enableSound) this.gameScene.playAudio(soundInex, this.GetPlayerSex(latestPlayer));
+                this.gameScene.playAudio(soundInex, this.GetPlayerSex(latestPlayer));
             }
 
             this.drawingFormHelper.DrawShowedCardsByPosition(showedCards, position);
@@ -1739,20 +1737,20 @@ export class MainForm {
         return 0;
     }
 
-    //     public GetPlayerSex(playerID: string): string {
-    //         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
-    //         if (daojuInfoByPlayer) {
-    //             let skinInUse = daojuInfoByPlayer.skinInUse
-    //             let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
-    //             if (fullSkinInfo) {
-    //                 let targetSkinInfo = fullSkinInfo[skinInUse];
-    //                 if (targetSkinInfo) {
-    //                     return targetSkinInfo.skinSex;
-    //                 }
-    //             }
-    //         }
-    //         return "m";
-    //     }
+    public GetPlayerSex(playerID: string): string {
+        let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
+        if (daojuInfoByPlayer) {
+            let skinInUse = daojuInfoByPlayer.skinInUse
+            let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+            if (fullSkinInfo) {
+                let targetSkinInfo = fullSkinInfo[skinInUse];
+                if (targetSkinInfo) {
+                    return targetSkinInfo.skinSex;
+                }
+            }
+        }
+        return "m";
+    }
 
     private UpdateSkinInfoUI(preview: boolean) {
         let selectFullSkinInfo: any = document.getElementById("selectFullSkinInfo")
@@ -1916,9 +1914,6 @@ export class MainForm {
                 `"罚分：${this.SelectedCards.length * 10}`,
             ]
             this.tractorPlayer.NotifyMessage(msgs)
-
-            //甩牌失败播放提示音
-            // soundPlayerDumpFailure.Play(this.enableSound);
 
             //暂时关闭托管功能，以免甩牌失败后立即点托管，会出别的牌
             this.gameScene.ui.btnRobot.hide();
@@ -2118,18 +2113,10 @@ export class MainForm {
             option.text = `${i + 1}-${CommonMethods.ChatPresetMsgs[i]}`;
             selectChatPresetMsgs.appendChild(option);
         }
-        if (CommonMethods.isMobile()) {
-            selectChatPresetMsgs.addEventListener('change', () => {
-                this.selectPresetMsgsIsOpen = true;
-                this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
-
-            });
-        } else {
-            selectChatPresetMsgs.addEventListener('click', () => {
-                this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
-            });
-        }
-
+        selectChatPresetMsgs.addEventListener('change', () => {
+            this.selectPresetMsgsIsOpen = true;
+            this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
+        });
 
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
@@ -2502,7 +2489,7 @@ export class MainForm {
                     return;
                 }
             }
-            if (e.button === 0 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall'))) {
+            if (e.button === 0 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall') || e.target.classList.contains('inputFormWrapper'))) {
                 this.resetGameRoomUI();
                 return;
             }
@@ -2780,7 +2767,7 @@ export class MainForm {
             return;
         }
 
-        var inputFormWrapper = this.gameScene.ui.create.div(this.gameScene.ui.frameMain);
+        var inputFormWrapper = this.gameScene.ui.create.div('.inputFormWrapper', this.gameScene.ui.frameMain);
         inputFormWrapper.id = "inputFormWrapper";
         inputFormWrapper.style.position = 'absolute';
         inputFormWrapper.style.width = 'calc(100%)';

@@ -121,11 +121,13 @@ var TractorPlayer = /** @class */ (function () {
             if (p.PlayerId == this.PlayerId) {
                 this.mainForm.NewPlayerReadyToStart(p.IsReadyToStart);
                 this.mainForm.PlayerToggleIsRobot(p.IsRobot);
-                // if (anyBecomesReady &&
-                //     (this.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards || this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.SpecialEnding)) {
-                //     if (CommonMethods.AllReady(this.CurrentGameState.Players)) this.mainForm.gameScene.soundtie.play()
-                //     else this.mainForm.gameScene.soundRecoverhp.play()
-                // }
+                if (anyBecomesReady &&
+                    (this.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards || this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.SpecialEnding)) {
+                    if (CommonMethods.AllReady(this.CurrentGameState.Players))
+                        this.mainForm.gameScene.playAudio(CommonMethods.audioTie);
+                    else
+                        this.mainForm.gameScene.playAudio(CommonMethods.audioRecoverhp);
+                }
                 break;
             }
         }
@@ -392,7 +394,7 @@ var TractorPlayer = /** @class */ (function () {
         for (var i = 0; i < msgs.length; i++) {
             var m = msgs[i];
             if (m.includes("获胜！")) {
-                // if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play()
+                this.mainForm.gameScene.playAudio(CommonMethods.audioWin);
                 // 播放烟花
                 if (this.CurrentRoomSetting.RoomOwner == this.MyOwnId) {
                     var emojiType = 5;
@@ -415,7 +417,7 @@ var TractorPlayer = /** @class */ (function () {
             }
             else if (m.includes("新游戏即将开始")) {
                 //新游戏开始前播放提示音，告诉玩家要抢庄
-                // if (this.mainForm.enableSound) this.mainForm.gameScene.soundwin.play();
+                this.mainForm.gameScene.playAudio(CommonMethods.audioWin);
             }
             else if (m.includes("罚分") && !this.mainForm.gameScene.isReplayMode) {
                 //甩牌失败播放提示音
@@ -423,7 +425,7 @@ var TractorPlayer = /** @class */ (function () {
                 if (msgs[0].includes("【")) {
                     playerID = msgs[0].split("【")[1].split("】")[0];
                 }
-                // if (this.mainForm.enableSound) this.mainForm.gameScene.playAudio(CommonMethods.audioShuaicuo, this.mainForm.GetPlayerSex(playerID));
+                this.mainForm.gameScene.playAudio(CommonMethods.audioShuaicuo, this.mainForm.GetPlayerSex(playerID));
             }
             var parent_1 = this.mainForm.gameScene.ui.frameGameHall;
             if (this.mainForm.gameScene.isInGameRoom()) {

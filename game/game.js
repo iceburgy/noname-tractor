@@ -1343,7 +1343,7 @@
 					},
 					image_background:{
 						name:'游戏背景',
-						init:'default',
+						init:'ol_bg',
 						item:{},
 						visualBar:function(node,item,create){
 							if(node.created){
@@ -1542,7 +1542,7 @@
 					},
 					image_background_blur:{
 						name:'背景模糊',
-						init:false,
+						init:true,
 						onclick:function(bool){
 							game.saveConfig('image_background_blur',bool);
 							if(lib.config.image_background_blur){
@@ -3856,7 +3856,7 @@
 					},
 					repeat_audio:{
 						name:'播放重复语音',
-						init:false,
+						init:true,
 					},
 					volumn_audio:{
 						name:'音效音量',
@@ -3878,7 +3878,7 @@
 					},
 					volumn_background:{
 						name:'音乐音量',
-						init:8,
+						init:0,
 						item:{
 							'0':'〇',
 							'1':'一',
@@ -35975,7 +35975,16 @@
 				// }
 				game.pause();
 				var control=ui.create.control('确定',function(){
-					if(shouldReload) game.reload();
+					if(shouldReload) {
+						// 玩家第一次登录，做一些设置优化
+						game.saveConfig('volumn_background',0);
+						ui.backgroundMusic.volume=0;
+
+						game.saveConfig('image_background','ol_bg');
+						game.saveConfig('image_background_blur',true);
+
+						game.reload();
+					}
 					else{
 						dialog.close();
 						control.close();

@@ -26,6 +26,7 @@ export class DrawingFormHelper {
     }
 
     public IGetCard() {
+        this.destroyAllCards()
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
         this.reDrawToolbar();
     }

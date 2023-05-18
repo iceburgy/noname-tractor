@@ -46,7 +46,6 @@ var MainForm = /** @class */ (function () {
         this.PositionPlayer = {};
         this.myCardIsReady = [];
         this.cardsOrderNumber = 0;
-        this.enableSound = true;
         this.IsDebug = false;
         this.SelectedCards = [];
         this.timerIntervalID = [];
@@ -582,7 +581,7 @@ var MainForm = /** @class */ (function () {
         this.drawingFormHelper.DrawSidebarFull();
         if (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DistributingLast8Cards) {
-            // if (this.enableSound) this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.CurrentHandState.TrumpMaker));
+            this.gameScene.playAudio(CommonMethods.audioLiangpai, this.GetPlayerSex(this.tractorPlayer.CurrentHandState.TrumpMaker));
             this.drawingFormHelper.TrumpMadeCardsShow();
         }
         this.drawingFormHelper.reDrawToolbar();
@@ -669,9 +668,9 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.PlayerOnGetCard = function (cardNumber) {
         //发牌播放提示音
-        // if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards && this.enableSound) {
-        //     if (this.enableSound) this.gameScene.sounddraw.play()
-        // }
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards) {
+            this.gameScene.playAudio(CommonMethods.audioDraw);
+        }
         this.drawingFormHelper.IGetCard();
         //托管代打：亮牌
         var shengbi = 0;
@@ -727,7 +726,7 @@ var MainForm = /** @class */ (function () {
         }
         else {
             //播放摸底音效
-            // if (this.enableSound) this.gameScene.sounddrawx.play();
+            this.gameScene.playAudio(CommonMethods.audioDrawx);
         }
         if (this.tractorPlayer.isObserver) {
             return;
@@ -793,7 +792,7 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.Last8Discarded = function () {
-        // if (this.enableSound) this.gameScene.soundtie.play()
+        this.gameScene.playAudio(CommonMethods.audioTie);
         this.drawingFormHelper.DrawDiscardedCardsBackground();
         if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             var tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId];
@@ -879,7 +878,7 @@ var MainForm = /** @class */ (function () {
             }
             //播放出牌音效
             if (this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag) {
-                // if (this.enableSound) this.gameScene.playAudio(0, this.GetPlayerSex(latestPlayer));
+                this.gameScene.playAudio(0, this.GetPlayerSex(latestPlayer));
             }
             else if (!this.tractorPlayer.playerLocalCache.isLastTrick &&
                 !this.IsDebug &&
@@ -887,7 +886,7 @@ var MainForm = /** @class */ (function () {
                 var soundInex = winResult;
                 if (winResult > 0)
                     soundInex = this.tractorPlayer.playerLocalCache.WinResult;
-                // if (this.enableSound) this.gameScene.playAudio(soundInex, this.GetPlayerSex(latestPlayer));
+                this.gameScene.playAudio(soundInex, this.GetPlayerSex(latestPlayer));
             }
             this.drawingFormHelper.DrawShowedCardsByPosition(showedCards, position);
         }
@@ -1594,20 +1593,20 @@ var MainForm = /** @class */ (function () {
         }
         return 0;
     };
-    //     public GetPlayerSex(playerID: string): string {
-    //         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
-    //         if (daojuInfoByPlayer) {
-    //             let skinInUse = daojuInfoByPlayer.skinInUse
-    //             let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
-    //             if (fullSkinInfo) {
-    //                 let targetSkinInfo = fullSkinInfo[skinInUse];
-    //                 if (targetSkinInfo) {
-    //                     return targetSkinInfo.skinSex;
-    //                 }
-    //             }
-    //         }
-    //         return "m";
-    //     }
+    MainForm.prototype.GetPlayerSex = function (playerID) {
+        var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
+        if (daojuInfoByPlayer) {
+            var skinInUse = daojuInfoByPlayer.skinInUse;
+            var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+            if (fullSkinInfo) {
+                var targetSkinInfo = fullSkinInfo[skinInUse];
+                if (targetSkinInfo) {
+                    return targetSkinInfo.skinSex;
+                }
+            }
+        }
+        return "m";
+    };
     MainForm.prototype.UpdateSkinInfoUI = function (preview) {
         var _this = this;
         var selectFullSkinInfo = document.getElementById("selectFullSkinInfo");
@@ -1763,8 +1762,6 @@ var MainForm = /** @class */ (function () {
                 "\"\u7F5A\u5206\uFF1A".concat(this.SelectedCards.length * 10),
             ];
             this.tractorPlayer.NotifyMessage(msgs);
-            //甩牌失败播放提示音
-            // soundPlayerDumpFailure.Play(this.enableSound);
             //暂时关闭托管功能，以免甩牌失败后立即点托管，会出别的牌
             this.gameScene.ui.btnRobot.hide();
             setTimeout(function () {
@@ -1941,17 +1938,10 @@ var MainForm = /** @class */ (function () {
             option.text = "".concat(i + 1, "-").concat(CommonMethods.ChatPresetMsgs[i]);
             selectChatPresetMsgs.appendChild(option);
         }
-        if (CommonMethods.isMobile()) {
-            selectChatPresetMsgs.addEventListener('change', function () {
-                _this.selectPresetMsgsIsOpen = true;
-                _this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
-            });
-        }
-        else {
-            selectChatPresetMsgs.addEventListener('click', function () {
-                _this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
-            });
-        }
+        selectChatPresetMsgs.addEventListener('change', function () {
+            _this.selectPresetMsgsIsOpen = true;
+            _this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
+        });
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
         textAreaChatMsg.placeholder = "\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7".concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
@@ -2304,7 +2294,7 @@ var MainForm = /** @class */ (function () {
                     return;
                 }
             }
-            if (e.button === 0 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall'))) {
+            if (e.button === 0 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall') || e.target.classList.contains('inputFormWrapper'))) {
                 _this.resetGameRoomUI();
                 return;
             }
@@ -2566,7 +2556,7 @@ var MainForm = /** @class */ (function () {
             this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
             return;
         }
-        var inputFormWrapper = this.gameScene.ui.create.div(this.gameScene.ui.frameMain);
+        var inputFormWrapper = this.gameScene.ui.create.div('.inputFormWrapper', this.gameScene.ui.frameMain);
         inputFormWrapper.id = "inputFormWrapper";
         inputFormWrapper.style.position = 'absolute';
         inputFormWrapper.style.width = 'calc(100%)';

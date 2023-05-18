@@ -16,6 +16,7 @@ var DrawingFormHelper = /** @class */ (function () {
         this.suitSequence = 0;
     }
     DrawingFormHelper.prototype.IGetCard = function () {
+        this.destroyAllCards();
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
         this.reDrawToolbar();
     };

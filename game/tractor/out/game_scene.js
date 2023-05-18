@@ -74,7 +74,8 @@ var GameScene = /** @class */ (function () {
         this.nickNameOverridePass = nickNameOverridePass;
         this.playerEmail = playerEmail;
         this.coordinates = new Coordinates(this.isReplayMode);
-        // this.soundPool = {};
+        this.soundPool = {};
+        this.loadAudioFiles();
     }
     GameScene.prototype.connect = function () {
         if (!this.hostName)
@@ -104,7 +105,6 @@ var GameScene = /** @class */ (function () {
                 this.gs.mainForm = new MainForm(this.gs);
                 this.gs.mainForm.drawFrameMain();
                 this.gs.mainForm.drawFrameChat();
-                // this.loadAudioFiles()
                 CommonMethods.BuildCardNumMap();
                 // IDBHelper.InitIDB();
                 this.gs.mainForm.LoadUIUponConnect();
@@ -343,43 +343,37 @@ var GameScene = /** @class */ (function () {
         }
         return false;
     };
-    // public loadAudioFiles() {
-    //     this.mainForm.enableSound = this.soundVolume > 0
-    //     this.soundMaleLiangpai = this.sound.add("soundMaleLiangpai", { volume: this.soundVolume });
-    //     this.soundFemaleLiangpai = this.sound.add("soundFemaleLiangpai", { volume: this.soundVolume });
-    //     this.soundMaleShuaicuo = this.sound.add("soundMaleShuaicuo", { volume: this.soundVolume });
-    //     this.soundFemaleShuaicuo = this.sound.add("soundFemaleShuaicuo", { volume: this.soundVolume });
-    //     let tempequip1 = this.sound.add("equip1", { volume: this.soundVolume });
-    //     let tempequip2 = this.sound.add("equip2", { volume: this.soundVolume });
-    //     let tempmalediaozhu = this.sound.add("soundMaleDiaozhu", { volume: this.soundVolume });
-    //     let tempfemalediaozhu = this.sound.add("soundFemaleDiaozhu", { volume: this.soundVolume });
-    //     let tempmalesha = this.sound.add("soundMaleSha", { volume: this.soundVolume });
-    //     let tempfemalediaosha = this.sound.add("soundFemaleSha", { volume: this.soundVolume });
-    //     let tempmaleshafire = this.sound.add("soundMaleShafire", { volume: this.soundVolume });
-    //     let tempfemaleshafire = this.sound.add("soundFemaleShafire", { volume: this.soundVolume });
-    //     let tempmaleshathunder = this.sound.add("soundMaleShathunder", { volume: this.soundVolume });
-    //     let tempfemaleshathunder = this.sound.add("soundFemaleShathunder", { volume: this.soundVolume });
-    //     this.soundPlayersShowCard = [
-    //         { "m": tempequip1, "f": tempequip1 },
-    //         { "m": tempequip2, "f": tempequip2 },
-    //         { "m": tempmalediaozhu, "f": tempfemalediaozhu },
-    //         { "m": tempmalesha, "f": tempfemalediaosha },
-    //         { "m": tempmaleshafire, "f": tempfemaleshafire },
-    //         { "m": tempmaleshathunder, "f": tempfemaleshathunder },
-    //     ];
-    //     this.soundPool[CommonMethods.audioLiangpai] = { "m": this.soundMaleLiangpai, "f": this.soundFemaleLiangpai };
-    //     this.soundPool[CommonMethods.audioShuaicuo] = { "m": this.soundMaleShuaicuo, "f": this.soundFemaleShuaicuo };
-    //     this.soundPool[CommonMethods.audioDiaozhu] = { "m": this.soundMaleDiaozhu, "f": this.soundFemaleDiaozhu };
-    //     this.soundPool[CommonMethods.audioSha] = { "m": this.soundMaleSha, "f": this.soundFemaleSha };
-    //     this.soundPool[CommonMethods.audioShafire] = { "m": this.soundMaleShafire, "f": this.soundFemaleShafire };
-    //     this.soundPool[CommonMethods.audioShathunder] = { "m": this.soundMaleShathunder, "f": this.soundFemaleShathunder };
-    //     this.soundRecoverhp = this.sound.add("recoverhp", { volume: this.soundVolume });
-    //     this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
-    //     this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
-    //     this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
-    //     this.soundwin = this.sound.add("win", { volume: this.soundVolume });
-    //     this.soundclickwa = this.sound.add("clickwa", { volume: this.soundVolume });
-    // }
+    GameScene.prototype.loadAudioFiles = function () {
+        this.soundMaleLiangpai = ["effect", "liangpai_m_shelie1"];
+        this.soundFemaleLiangpai = ["effect", "liangpai_f_biyue1"];
+        this.soundMaleShuaicuo = ["effect", "shuaicuo_m_fankui2"];
+        this.soundFemaleShuaicuo = ["effect", "shuaicuo_f_guose2"];
+        var tempequip1 = ["effect", "equip1"];
+        var tempequip2 = ["effect", "equip2"];
+        var tempmalediaozhu = ["effect", "zhu_junlve"];
+        var tempfemalediaozhu = ["effect", "zhu_lijian2"];
+        var tempmalesha = ["effect", "sha"];
+        var tempfemalesha = ["effect", "f_sha"];
+        var tempmaleshafire = ["effect", "sha_fire"];
+        var tempfemaleshafire = ["effect", "f_sha_fire"];
+        var tempmaleshathunder = ["effect", "sha_thunder"];
+        var tempfemaleshathunder = ["effect", "f_sha_thunder"];
+        this.soundPlayersShowCard = [
+            { "m": tempequip1, "f": tempequip1 },
+            { "m": tempequip2, "f": tempequip2 },
+            { "m": tempmalediaozhu, "f": tempfemalediaozhu },
+            { "m": tempmalesha, "f": tempfemalesha },
+            { "m": tempmaleshafire, "f": tempfemaleshafire },
+            { "m": tempmaleshathunder, "f": tempfemaleshathunder },
+        ];
+        this.soundPool[CommonMethods.audioLiangpai] = { "m": this.soundMaleLiangpai, "f": this.soundFemaleLiangpai };
+        this.soundPool[CommonMethods.audioShuaicuo] = { "m": this.soundMaleShuaicuo, "f": this.soundFemaleShuaicuo };
+        this.soundPool[CommonMethods.audioRecoverhp] = ["effect", "recover"];
+        this.soundPool[CommonMethods.audioDraw] = ["effect", "draw"];
+        this.soundPool[CommonMethods.audioDrawx] = ["effect", "drawx"];
+        this.soundPool[CommonMethods.audioTie] = ["effect", "tie"];
+        this.soundPool[CommonMethods.audioWin] = ["effect", "win"];
+    };
     GameScene.prototype.saveSettings = function () {
         // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
         // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
@@ -400,6 +394,31 @@ var GameScene = /** @class */ (function () {
     };
     GameScene.prototype.isInGameRoom = function () {
         return this.ui && this.ui.frameGameRoom && this.ui.frameGameRoom;
+    };
+    // // public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {
+    // //     if (!window.spine) {
+    // //         console.error('spine 未定义.');
+    // //         return;
+    // //     }
+    // //     skillAnimate(effectName, effectNature, wid, hei)
+    // // }
+    GameScene.prototype.playAudio = function (audioName, sex) {
+        var audioInfo = [];
+        if (typeof audioName === "string") {
+            if (sex) {
+                audioInfo = this.soundPool[audioName][sex];
+            }
+            else {
+                audioInfo = this.soundPool[audioName];
+            }
+        }
+        else if (sex) {
+            audioInfo = this.soundPlayersShowCard[audioName][sex];
+        }
+        else {
+            return;
+        }
+        this.game.playAudio(audioInfo[0], audioInfo[1]);
     };
     return GameScene;
 }());

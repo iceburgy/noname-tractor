@@ -47,19 +47,19 @@ export class GameScene {
     public clientMessages!: any[]
     public danmuMessages!: any[]
     // // public roomUIControls: { images: any[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
-    // public soundPool: any
-    // // public soundMaleLiangpai: Phaser.Sound.BaseSound;
-    // // public soundFemaleLiangpai: Phaser.Sound.BaseSound;
-    // // public soundMaleShuaicuo: Phaser.Sound.BaseSound;
-    // // public soundFemaleShuaicuo: Phaser.Sound.BaseSound;
+    public soundPool: any
+    public soundMaleLiangpai!: string[];
+    public soundFemaleLiangpai!: string[];
+    public soundMaleShuaicuo!: string[];
+    public soundFemaleShuaicuo!: string[];
 
-    // // public soundRecoverhp: Phaser.Sound.BaseSound;
-    // // public sounddraw: Phaser.Sound.BaseSound;
-    // // public sounddrawx: Phaser.Sound.BaseSound;
-    // public soundPlayersShowCard: any[] 
-    // // public soundtie: Phaser.Sound.BaseSound;
-    // // public soundclickwa: Phaser.Sound.BaseSound;
-    // // public soundwin: Phaser.Sound.BaseSound;
+    public soundRecoverhp!: string[];
+    public sounddraw!: string[];
+    public sounddrawx!: string[];
+    public soundPlayersShowCard!: any[]
+    public soundtie!: string[];
+    // public soundclickwa!: string;
+    public soundwin!: string[];
     // public soundVolume!: number
     public noDanmu!: string
     public noCutCards!: string
@@ -138,7 +138,8 @@ export class GameScene {
 
         this.coordinates = new Coordinates(this.isReplayMode);
 
-        // this.soundPool = {};
+        this.soundPool = {};
+        this.loadAudioFiles()
     }
 
     connect() {
@@ -170,7 +171,6 @@ export class GameScene {
                 this.gs.mainForm = new MainForm(this.gs)
                 this.gs.mainForm.drawFrameMain();
                 this.gs.mainForm.drawFrameChat();
-                // this.loadAudioFiles()
                 CommonMethods.BuildCardNumMap()
 
                 // IDBHelper.InitIDB();
@@ -435,46 +435,40 @@ export class GameScene {
         return false;
     }
 
-    // public loadAudioFiles() {
-    //     this.mainForm.enableSound = this.soundVolume > 0
-    //     this.soundMaleLiangpai = this.sound.add("soundMaleLiangpai", { volume: this.soundVolume });
-    //     this.soundFemaleLiangpai = this.sound.add("soundFemaleLiangpai", { volume: this.soundVolume });
-    //     this.soundMaleShuaicuo = this.sound.add("soundMaleShuaicuo", { volume: this.soundVolume });
-    //     this.soundFemaleShuaicuo = this.sound.add("soundFemaleShuaicuo", { volume: this.soundVolume });
+    public loadAudioFiles() {
+        this.soundMaleLiangpai = ["effect", "liangpai_m_shelie1"];
+        this.soundFemaleLiangpai = ["effect", "liangpai_f_biyue1"];
+        this.soundMaleShuaicuo = ["effect", "shuaicuo_m_fankui2"];
+        this.soundFemaleShuaicuo = ["effect", "shuaicuo_f_guose2"];
 
-    //     let tempequip1 = this.sound.add("equip1", { volume: this.soundVolume });
-    //     let tempequip2 = this.sound.add("equip2", { volume: this.soundVolume });
-    //     let tempmalediaozhu = this.sound.add("soundMaleDiaozhu", { volume: this.soundVolume });
-    //     let tempfemalediaozhu = this.sound.add("soundFemaleDiaozhu", { volume: this.soundVolume });
-    //     let tempmalesha = this.sound.add("soundMaleSha", { volume: this.soundVolume });
-    //     let tempfemalediaosha = this.sound.add("soundFemaleSha", { volume: this.soundVolume });
-    //     let tempmaleshafire = this.sound.add("soundMaleShafire", { volume: this.soundVolume });
-    //     let tempfemaleshafire = this.sound.add("soundFemaleShafire", { volume: this.soundVolume });
-    //     let tempmaleshathunder = this.sound.add("soundMaleShathunder", { volume: this.soundVolume });
-    //     let tempfemaleshathunder = this.sound.add("soundFemaleShathunder", { volume: this.soundVolume });
-    //     this.soundPlayersShowCard = [
-    //         { "m": tempequip1, "f": tempequip1 },
-    //         { "m": tempequip2, "f": tempequip2 },
-    //         { "m": tempmalediaozhu, "f": tempfemalediaozhu },
-    //         { "m": tempmalesha, "f": tempfemalediaosha },
-    //         { "m": tempmaleshafire, "f": tempfemaleshafire },
-    //         { "m": tempmaleshathunder, "f": tempfemaleshathunder },
-    //     ];
+        let tempequip1 = ["effect", "equip1"];
+        let tempequip2 = ["effect", "equip2"];
+        let tempmalediaozhu = ["effect", "zhu_junlve"];
+        let tempfemalediaozhu = ["effect", "zhu_lijian2"];
+        let tempmalesha = ["effect", "sha"];
+        let tempfemalesha = ["effect", "f_sha"];
+        let tempmaleshafire = ["effect", "sha_fire"];
+        let tempfemaleshafire = ["effect", "f_sha_fire"];
+        let tempmaleshathunder = ["effect", "sha_thunder"];
+        let tempfemaleshathunder = ["effect", "f_sha_thunder"];
+        this.soundPlayersShowCard = [
+            { "m": tempequip1, "f": tempequip1 },
+            { "m": tempequip2, "f": tempequip2 },
+            { "m": tempmalediaozhu, "f": tempfemalediaozhu },
+            { "m": tempmalesha, "f": tempfemalesha },
+            { "m": tempmaleshafire, "f": tempfemaleshafire },
+            { "m": tempmaleshathunder, "f": tempfemaleshathunder },
+        ];
 
-    //     this.soundPool[CommonMethods.audioLiangpai] = { "m": this.soundMaleLiangpai, "f": this.soundFemaleLiangpai };
-    //     this.soundPool[CommonMethods.audioShuaicuo] = { "m": this.soundMaleShuaicuo, "f": this.soundFemaleShuaicuo };
-    //     this.soundPool[CommonMethods.audioDiaozhu] = { "m": this.soundMaleDiaozhu, "f": this.soundFemaleDiaozhu };
-    //     this.soundPool[CommonMethods.audioSha] = { "m": this.soundMaleSha, "f": this.soundFemaleSha };
-    //     this.soundPool[CommonMethods.audioShafire] = { "m": this.soundMaleShafire, "f": this.soundFemaleShafire };
-    //     this.soundPool[CommonMethods.audioShathunder] = { "m": this.soundMaleShathunder, "f": this.soundFemaleShathunder };
+        this.soundPool[CommonMethods.audioLiangpai] = { "m": this.soundMaleLiangpai, "f": this.soundFemaleLiangpai };
+        this.soundPool[CommonMethods.audioShuaicuo] = { "m": this.soundMaleShuaicuo, "f": this.soundFemaleShuaicuo };
 
-    //     this.soundRecoverhp = this.sound.add("recoverhp", { volume: this.soundVolume });
-    //     this.sounddraw = this.sound.add("draw", { volume: this.soundVolume });
-    //     this.sounddrawx = this.sound.add("drawx", { volume: this.soundVolume });
-    //     this.soundtie = this.sound.add("tie", { volume: this.soundVolume });
-    //     this.soundwin = this.sound.add("win", { volume: this.soundVolume });
-    //     this.soundclickwa = this.sound.add("clickwa", { volume: this.soundVolume });
-    // }
+        this.soundPool[CommonMethods.audioRecoverhp] = ["effect", "recover"];
+        this.soundPool[CommonMethods.audioDraw] = ["effect", "draw"];
+        this.soundPool[CommonMethods.audioDrawx] = ["effect", "drawx"];
+        this.soundPool[CommonMethods.audioTie] = ["effect", "tie"];
+        this.soundPool[CommonMethods.audioWin] = ["effect", "win"];
+    }
 
     public saveSettings() {
         // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
@@ -510,12 +504,20 @@ export class GameScene {
     // //     skillAnimate(effectName, effectNature, wid, hei)
     // // }
 
-    // public playAudio(audioName: string | number, sex: string) {
-    //     if (typeof audioName === "string") {
-    //         this.soundPool[audioName][sex].play();
-    //     } else {
-    //         this.soundPlayersShowCard[audioName][sex].play();
-    //     }
-    // }
+    public playAudio(audioName: string | number, sex?: string) {
+        let audioInfo: string[] = [];
+        if (typeof audioName === "string") {
+            if (sex) {
+                audioInfo = this.soundPool[audioName][sex];
+            } else {
+                audioInfo = this.soundPool[audioName];
+            }
+        } else if (sex) {
+            audioInfo = this.soundPlayersShowCard[audioName][sex];
+        } else {
+            return;
+        }
+        this.game.playAudio(audioInfo[0], audioInfo[1]);
+    }
 }
 

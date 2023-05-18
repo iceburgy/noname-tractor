@@ -525,6 +525,11 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.audioSha = "sha";
     CommonMethods.audioShafire = "shafire";
     CommonMethods.audioShathunder = "shathunder";
+    CommonMethods.audioRecoverhp = "audioRecoverhp";
+    CommonMethods.audioDraw = "audiodraw";
+    CommonMethods.audioDrawx = "audiodrawx";
+    CommonMethods.audioTie = "audiotie";
+    CommonMethods.audioWin = "audiowin";
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
     CommonMethods.ChatPresetMsgs = [
         "这波操作，666！",

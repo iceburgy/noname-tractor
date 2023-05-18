@@ -1044,6 +1044,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 						gameVolume.onchange = function () {
 							game.saveConfig('volumn_audio', gameVolume.value);
+							game.playAudio('skill','biyue1');
 						};
 
 						setting.add('背景音量');

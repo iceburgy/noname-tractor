@@ -84,6 +84,12 @@ export class CommonMethods {
     public static audioShafire = "shafire";
     public static audioShathunder = "shathunder";
 
+    public static audioRecoverhp = "audioRecoverhp";
+    public static audioDraw = "audiodraw";
+    public static audioDrawx = "audiodrawx";
+    public static audioTie = "audiotie";
+    public static audioWin = "audiowin";
+
     public static NotifyStateType_ObservePlayerById = "ObservePlayerById";
 
     public static ChatPresetMsgs = [
