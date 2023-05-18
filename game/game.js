@@ -35312,6 +35312,10 @@
 			game.me=null;
 		},
 		clearConnect:function(){
+			if(ui.userNotes){
+				ui.userNotes.remove();
+				delete ui.userNotes;
+			}
 			if(ui.ipnode){
 				ui.ipnode.remove();
 				delete ui.ipnode;
@@ -47751,12 +47755,12 @@
 					ul.appendChild(li);
 				}
 				uiintro.add(ul.outerHTML);
-				var btnCloseMe = ui.create.div('.menubutton.highlight.large.pointerdiv', '确定', () => uiintro.remove());
+				var btnCloseMe = ui.create.div('.menubutton.highlight.pointerdiv', '确定', () => uiintro.remove());
 				uiintro.add(btnCloseMe);
 				uiintro.style.left="calc(30%)";
 				uiintro.style.top="calc(35%)";
 				uiintro.style.width="calc(40%)";
-				uiintro.style.height="calc(30%)";
+				uiintro.style.maxHeight="calc(40%)";
 				ui.window.appendChild(uiintro);
 			},
 			leaderboardButton:function(){

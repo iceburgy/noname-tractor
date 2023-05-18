@@ -181,6 +181,22 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 				});
 
+				// user notes
+				var userNotes = ui.create.div(".userNotes", ui.window);
+				userNotes.innerHTML = '初次访问？忘记用户名或密码？<br/>请点击<a href="javascript:void(0)" id="userManualLink">使用手册</a>查看如何注册新用户、找回用户名、密码';
+				userNotes.style.fontFamily = 'xinwei';
+				userNotes.style.fontSize = '20px';
+				userNotes.style.padding = '10px';
+				userNotes.style.width = 'calc(100%)';
+				userNotes.style.top = 'calc(70%)';
+				userNotes.style.textAlign = 'center';
+				ui.userNotes = userNotes;
+
+				var nodeUserManualLink = document.getElementById("userManualLink");
+				nodeUserManualLink.addEventListener('click', function (e) {
+					window.open("https://docs.google.com/document/d/12rgDuEzwhc8OZXU5Whygjwnqqz4xacm0BCqrLF5AsGY/edit?usp=sharing");
+				});
+
 				// ui.hall_button=ui.create.system('联机大厅',function(){
 				// 	node.innerHTML=get.config('hall_ip')||lib.hallURL;
 				// 	connect();
