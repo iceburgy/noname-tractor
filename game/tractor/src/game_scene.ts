@@ -230,9 +230,9 @@ export class GameScene {
                     case CommonMethods.NotifyTryToDumpResult_RESPONSE:
                         this.gs.handleNotifyTryToDumpResult(objList);
                         break;
-                    // case CommonMethods.NotifyStartTimer_RESPONSE:
-                    //     this.gs.handleNotifyStartTimer(objList);
-                    //     break;
+                    case CommonMethods.NotifyStartTimer_RESPONSE:
+                        this.gs.handleNotifyStartTimer(objList);
+                        break;
                     case CommonMethods.NotifyEmoji_RESPONSE:
                         this.gs.handleNotifyEmoji(objList);
                         break;
@@ -331,10 +331,10 @@ export class GameScene {
         this.mainForm.NotifyEmojiEventHandler.apply(this.mainForm, objList)
     }
 
-    // public handleNotifyStartTimer(objList: any) {
-    //     var result: number = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyStartTimer(result)
-    // }
+    public handleNotifyStartTimer(objList: any) {
+        var result: number = objList[0];
+        this.mainForm.NotifyStartTimerEventHandler(result)
+    }
 
     public handleNotifyDumpingValidationResult(objList: any) {
         var result: ShowingCardsValidationResult = objList[0];

@@ -1931,35 +1931,10 @@ export class MainForm {
         }
     }
 
-    //     public NotifyStartTimerEventHandler(timerLength: number) {
-    //         if (timerLength == 0) {
-    //             this.timerCountDown = 0
-    //             this.clearTimer()
-    //             return
-    //         }
-
-    //         this.timerCountDown = timerLength
-    //         this.timerImage.setVisible(true)
-    //         this.timerImage.depth = 100;
-    //         this.timerImage.setText(this.timerCountDown.toString())
-    //         this.timerIntervalID.push(setInterval(() => { this.timerTicker() }, 1000))
-    //     }
-
-    //     private timerTicker() {
-    //         this.timerCountDown--
-    //         if (this.timerCountDown >= 0) {
-    //             this.timerImage.setVisible(true)
-    //             this.timerImage.setText(this.timerCountDown.toString())
-    //         }
-    //         if (this.timerCountDown <= 0) {
-    //             setTimeout(() => { this.clearTimer() }, 200)
-    //         }
-    //     }
-
-    //     private clearTimer() {
-    //         if (this.timerIntervalID.length > 0) clearInterval(this.timerIntervalID.shift())
-    //         if (this.timerIntervalID.length == 0 && this.timerImage) this.timerImage.setVisible(false)
-    //     }
+    public NotifyStartTimerEventHandler(timerLength: number) {
+        this.gameScene.ui.timer.show();
+        this.gameScene.game.countDown(timerLength, () => { this.gameScene.ui.timer.hide(); }, true);
+    }
 
     //     //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
     private PlayerCurrentTrickShowedCards() {
@@ -2000,6 +1975,7 @@ export class MainForm {
                 let cutPoint = 0;
                 let cutInfo = `取消,${cutPoint}`;
                 this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+                return;
             }
             this.gameScene.ui.inputFormWrapper.remove();
             delete this.gameScene.ui.inputFormWrapper;

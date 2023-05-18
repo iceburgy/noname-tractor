@@ -527,14 +527,6 @@ export class TractorPlayer {
     }
 
     /*
-        public NotifyStartTimer(timerLength: number) {
-            this.mainForm.NotifyStartTimerEventHandler(timerLength)
-        }
-    
-        public NotifyGameHall(roomStateList: RoomState[], playerList: string[]) {
-            this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
-        }
-    
         public NotifyReplayState(replayState: ReplayEntity) {
             IDBHelper.SaveReplayEntity(replayState, () => { void (0); })
         }

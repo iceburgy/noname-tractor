@@ -1776,32 +1776,11 @@ var MainForm = /** @class */ (function () {
             }, 3000);
         }
     };
-    //     public NotifyStartTimerEventHandler(timerLength: number) {
-    //         if (timerLength == 0) {
-    //             this.timerCountDown = 0
-    //             this.clearTimer()
-    //             return
-    //         }
-    //         this.timerCountDown = timerLength
-    //         this.timerImage.setVisible(true)
-    //         this.timerImage.depth = 100;
-    //         this.timerImage.setText(this.timerCountDown.toString())
-    //         this.timerIntervalID.push(setInterval(() => { this.timerTicker() }, 1000))
-    //     }
-    //     private timerTicker() {
-    //         this.timerCountDown--
-    //         if (this.timerCountDown >= 0) {
-    //             this.timerImage.setVisible(true)
-    //             this.timerImage.setText(this.timerCountDown.toString())
-    //         }
-    //         if (this.timerCountDown <= 0) {
-    //             setTimeout(() => { this.clearTimer() }, 200)
-    //         }
-    //     }
-    //     private clearTimer() {
-    //         if (this.timerIntervalID.length > 0) clearInterval(this.timerIntervalID.shift())
-    //         if (this.timerIntervalID.length == 0 && this.timerImage) this.timerImage.setVisible(false)
-    //     }
+    MainForm.prototype.NotifyStartTimerEventHandler = function (timerLength) {
+        var _this = this;
+        this.gameScene.ui.timer.show();
+        this.gameScene.game.countDown(timerLength, function () { _this.gameScene.ui.timer.hide(); }, true);
+    };
     //     //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
     MainForm.prototype.PlayerCurrentTrickShowedCards = function () {
         //擦掉出牌区
@@ -1837,6 +1816,7 @@ var MainForm = /** @class */ (function () {
                 var cutPoint = 0;
                 var cutInfo = "\u53D6\u6D88,".concat(cutPoint);
                 this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+                return;
             }
             this.gameScene.ui.inputFormWrapper.remove();
             delete this.gameScene.ui.inputFormWrapper;

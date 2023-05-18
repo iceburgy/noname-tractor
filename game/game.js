@@ -28788,40 +28788,40 @@
 			if(game.timerTime<=0) return;
 			game.timerCurrent=game.timerTime;
 			ui.timer.set(game.timerCurrent,1);
-			if(!game.me.mlBalance){
-				game.invokePlayMoonlightAlert(game.me,game.timerCurrent);
-			}
-			var moonlightTime=parseInt(lib.configOL.moonlight_time);
-			var moonlightActivated=false;
+			// if(!game.me.mlBalance){
+			// 	game.invokePlayMoonlightAlert(game.me,game.timerCurrent);
+			// }
+			// var moonlightTime=parseInt(lib.configOL.moonlight_time);
+			// var moonlightActivated=false;
 			_status.countDown=setInterval(function(){
 				var isDone=false;
 				if(--game.timerCurrent>0){
 					ui.timer.set(game.timerCurrent,game.timerCurrent/game.timerTime);
-					if(!game.me.mlBalance){
-						game.invokePlayMoonlightAlert(game.me,game.timerCurrent);
-					}
+					// if(!game.me.mlBalance){
+					// 	game.invokePlayMoonlightAlert(game.me,game.timerCurrent);
+					// }
 				}
-				else if(!skipMoonlight&&game.me.mlBalance){
-					if(!moonlightActivated){
-						moonlightActivated=true;
-						game.invokeMoonlight(game.me);
-						game.invokePlayMoonlightAlert(game.me,game.me.mlBalance);
-					}
-					else if(--game.me.mlBalance>0){
-						game.invokePlayMoonlightAlert(game.me,game.me.mlBalance);
-					}
-					else{
-						isDone=true;
-					}
-					ui.click.moonlight();
-					ui.timer.set(game.me.mlBalance,game.me.mlBalance/moonlightTime);
-				}
+				// else if(!skipMoonlight&&game.me.mlBalance){
+				// 	if(!moonlightActivated){
+				// 		moonlightActivated=true;
+				// 		game.invokeMoonlight(game.me);
+				// 		game.invokePlayMoonlightAlert(game.me,game.me.mlBalance);
+				// 	}
+				// 	else if(--game.me.mlBalance>0){
+				// 		game.invokePlayMoonlightAlert(game.me,game.me.mlBalance);
+				// 	}
+				// 	else{
+				// 		isDone=true;
+				// 	}
+				// 	ui.click.moonlight();
+				// 	ui.timer.set(game.me.mlBalance,game.me.mlBalance/moonlightTime);
+				// }
 				else{
 					isDone=true;
 				}
 				if(isDone){
-					game.invokeTimeUpAlert();
-					if(!skipMoonlight) game.send('exec',game.useMoonlight,game.me,0,true);
+					// game.invokeTimeUpAlert();
+					// if(!skipMoonlight) game.send('exec',game.useMoonlight,game.me,0,true);
 					ui.timer.set(0,0);
 					clearInterval(_status.countDown);
 					delete _status.countDown;
@@ -45976,10 +45976,10 @@
 						this.style.top=top1;
 					}
 					if(this.position==1||this.position==4){
-						this.style.left=left2;
+						this.style.right=left2;
 					}
 					else{
-						this.style.left=left1;
+						this.style.right=left1;
 					}
 				}
 				ui.timer.listen(setTimerPosition);

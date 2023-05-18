@@ -161,9 +161,9 @@ var GameScene = /** @class */ (function () {
                     case CommonMethods.NotifyTryToDumpResult_RESPONSE:
                         this.gs.handleNotifyTryToDumpResult(objList);
                         break;
-                    // case CommonMethods.NotifyStartTimer_RESPONSE:
-                    //     this.gs.handleNotifyStartTimer(objList);
-                    //     break;
+                    case CommonMethods.NotifyStartTimer_RESPONSE:
+                        this.gs.handleNotifyStartTimer(objList);
+                        break;
                     case CommonMethods.NotifyEmoji_RESPONSE:
                         this.gs.handleNotifyEmoji(objList);
                         break;
@@ -252,10 +252,10 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleNotifyEmoji = function (objList) {
         this.mainForm.NotifyEmojiEventHandler.apply(this.mainForm, objList);
     };
-    // public handleNotifyStartTimer(objList: any) {
-    //     var result: number = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyStartTimer(result)
-    // }
+    GameScene.prototype.handleNotifyStartTimer = function (objList) {
+        var result = objList[0];
+        this.mainForm.NotifyStartTimerEventHandler(result);
+    };
     GameScene.prototype.handleNotifyDumpingValidationResult = function (objList) {
         var result = objList[0];
         this.mainForm.NotifyDumpingValidationResultEventHandler(result);
