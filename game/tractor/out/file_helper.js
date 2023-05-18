@@ -10,7 +10,6 @@ var FileHelper = /** @class */ (function () {
         fr.readAsText(fileBlob);
     };
     FileHelper.ImportZipFile = function (fileBlob, callback) {
-        var JSZip = require("jszip");
         JSZip.loadAsync(fileBlob).then(function (zip) {
             FileHelper.ReadZipFile(zip, callback);
         });
@@ -40,8 +39,6 @@ var FileHelper = /** @class */ (function () {
     };
     FileHelper.ExportZipFile = function () {
         IDBHelper.ReadReplayEntityAll(function (dtList) {
-            var JSZip = require("jszip");
-            var FileSaver = require("file-saver");
             var zip = new JSZip();
             var dates = [];
             for (var i = 0; i < dtList.length; i++) {
@@ -74,7 +71,7 @@ var FileHelper = /** @class */ (function () {
                     return;
                 clearInterval(intervalID);
                 zip.generateAsync({ type: 'blob' }).then(function (content) {
-                    FileSaver.saveAs(content, 'replays.zip');
+                    saveAs(content, 'replays.zip');
                 });
             }, 1000);
         });

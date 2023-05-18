@@ -18,7 +18,6 @@ import { PokerHelper } from './poker_helper.js';
 import { RoomState } from './room_state.js';
 import { IDBHelper } from './idb_helper.js';
 import { ReplayEntity } from './replay_entity.js';
-import { GameReplayScene } from './game_replay_scene.js';
 import { FileHelper } from './file_helper.js';
 import { debug } from 'console';
 
@@ -92,6 +91,16 @@ export class MainForm {
     public MySkinFrame: any;
 
     public selectPresetMsgsIsOpen: boolean = false;
+
+    // replay stuff
+    public currentReplayEntities!: any[]
+    public selectDates: any
+    public selectTimes: any
+    public btnFirstPersonView: any
+    public btnFirstTrick: any
+    public btnPreviousTrick: any
+    public btnNextTrick: any
+    public btnLastTrick: any
 
     constructor(gs: GameScene) {
         this.gameScene = gs
@@ -1226,9 +1235,11 @@ export class MainForm {
     //     }
 
     public LoadUIUponConnect() {
+        if (!this.gameScene.isReplayMode) {
+            this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', () => { this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.gameScene.playerName, "") }, true);
+            this.gameScene.ui.btnQiandao.hide();
+        }
         this.EnableShortcutKeys();
-        this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', () => { this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.gameScene.playerName, "") }, true);
-        this.gameScene.ui.btnQiandao.hide();
         this.gameScene.ui.gameSettings = this.gameScene.ui.create.system('设置', () => this.btnGameSettings_Click(), true);
         this.gameScene.ui.exitTractor = this.gameScene.ui.create.system('退出', () => this.btnExitRoom_Click(), true);
     }
@@ -1271,52 +1282,53 @@ export class MainForm {
                 maxInt = Math.max(maxInt, parseInt(maxString));
             }
             IDBHelper.maxReplays = maxInt
+            gs.lib.config.maxReplays = maxInt;
         }
 
-        // let btnCleanupReplays = document.getElementById("btnCleanupReplays")
-        // btnCleanupReplays.onclick = () => {
-        //     var c = window.confirm("你确定要清空所有录像文件吗？");
-        //     if (c === false) {
-        //         return
-        //     }
-        //     IDBHelper.CleanupReplayEntity(() => {
-        //         this.ReinitReplayEntities(this);
-        //         if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试清空全部录像文件"]);
-        //     });
-        //     this.resetGameRoomUI();
-        // }
+        let btnCleanupReplays: any = document.getElementById("btnCleanupReplays")
+        btnCleanupReplays.onclick = () => {
+            var c = window.confirm("你确定要清空所有录像文件吗？");
+            if (c === false) {
+                return
+            }
+            IDBHelper.CleanupReplayEntity(() => {
+                this.ReinitReplayEntities(this);
+                if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试清空全部录像文件"]);
+            });
+            this.resetGameRoomUI();
+        }
 
-        // let btnExportZipFile = document.getElementById("btnExportZipFile")
-        // btnExportZipFile.onclick = () => {
-        //     FileHelper.ExportZipFile();
-        //     this.resetGameRoomUI();
-        // }
+        let btnExportZipFile: any = document.getElementById("btnExportZipFile")
+        btnExportZipFile.onclick = () => {
+            FileHelper.ExportZipFile();
+            this.resetGameRoomUI();
+        }
 
-        // let inputRecordingFile = document.getElementById("inputRecordingFile")
-        // inputRecordingFile.onchange = () => {
-        //     let fileName = inputRecordingFile.value;
-        //     let extension = fileName.split('.').pop();
-        //     if (!["json", "zip"].includes(extension.toLowerCase())) {
-        //         alert("unsupported file type!");
-        //         return;
-        //     }
-        //     if (!inputRecordingFile || !inputRecordingFile.files || inputRecordingFile.files.length <= 0) {
-        //         alert("No file has been selected!");
-        //         return;
-        //     }
-        //     if (extension.toLowerCase() === "json") {
-        //         FileHelper.ImportJsonFile(inputRecordingFile.files[0], () => {
-        //             this.ReinitReplayEntities(this);
-        //             if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
-        //         });
-        //     } else {
-        //         FileHelper.ImportZipFile(inputRecordingFile.files[0], () => {
-        //             this.ReinitReplayEntities(this);
-        //             if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
-        //         });
-        //     }
-        //     this.resetGameRoomUI();
-        // }
+        let inputRecordingFile: any = document.getElementById("inputRecordingFile")
+        inputRecordingFile.onchange = () => {
+            let fileName = inputRecordingFile.value;
+            let extension = fileName.split('.').pop();
+            if (!["json", "zip"].includes(extension.toLowerCase())) {
+                alert("unsupported file type!");
+                return;
+            }
+            if (!inputRecordingFile || !inputRecordingFile.files || inputRecordingFile.files.length <= 0) {
+                alert("No file has been selected!");
+                return;
+            }
+            if (extension.toLowerCase() === "json") {
+                FileHelper.ImportJsonFile(inputRecordingFile.files[0], () => {
+                    this.ReinitReplayEntities(this);
+                    if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+                });
+            } else {
+                FileHelper.ImportZipFile(inputRecordingFile.files[0], () => {
+                    this.ReinitReplayEntities(this);
+                    if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+                });
+            }
+            this.resetGameRoomUI();
+        }
 
         let noDanmu: any = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
@@ -1821,12 +1833,11 @@ export class MainForm {
         }
     }
 
-    //     private ReinitReplayEntities(that: any) {
-    //         if (that.gameScene.isReplayMode) {
-    //             let grs = that.gameScene as GameReplayScene;
-    //             grs.InitReplayEntities(grs);
-    //         }
-    //     }
+    private ReinitReplayEntities(that: any) {
+        if (that.gameScene.isReplayMode) {
+            that.InitReplayEntities();
+        }
+    }
 
     private btnPig_Click() {
         if (!this.gameScene.ui.btnPig || this.gameScene.ui.btnPig.classList.contains('hidden') || this.gameScene.ui.btnPig.classList.contains('disabled')) return;
@@ -1932,6 +1943,12 @@ export class MainForm {
     }
 
     public NotifyStartTimerEventHandler(timerLength: number) {
+        if (timerLength <= 0) {
+            if (this.gameScene.ui.timer) {
+                this.gameScene.ui.timer.hide();
+            }
+            return;
+        }
         this.gameScene.ui.timer.show();
         this.gameScene.game.countDown(timerLength, () => { this.gameScene.ui.timer.hide(); }, true);
     }
@@ -2067,6 +2084,8 @@ export class MainForm {
         frameChat.style['z-index'] = CommonMethods.zIndexFrameChat;
         this.gameScene.ui.frameChat = frameChat;
 
+        if (this.gameScene.isReplayMode) return;
+
         let divOnlinePlayerList = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divOnlinePlayerList.style.top = 'calc(0%)';
         divOnlinePlayerList.style.height = 'calc(20% - 20px)';
@@ -2112,6 +2131,12 @@ export class MainForm {
         frameGameRoom.style.bottom = '0px';
         frameGameRoom.style.right = '0px';
         this.gameScene.ui.frameGameRoom = frameGameRoom;
+
+        if (this.gameScene.isReplayMode) {
+            this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
+            this.drawHandZone();
+            return;
+        }
 
         if (!this.gameScene.ui.gameMe) {
             this.drawGameMe();
@@ -2457,6 +2482,30 @@ export class MainForm {
     }
 
     private EnableShortcutKeys() {
+        if (this.gameScene.isReplayMode) {
+            window.addEventListener("keyup", (e: any) => {
+                let keyCode = e.keyCode;
+                switch (keyCode) {
+                    case 38:
+                        this.btnFirstTrick_Click();
+                        return;
+                    case 37:
+                        this.btnPreviousTrick_Click();
+                        return;
+                    case 39:
+                        this.btnNextTrick_Click();
+                        return;
+                    case 40:
+                        this.btnLastTrick_Click();
+                        return;
+                    case 96:
+                        this.btnFirstPersonView_Click();
+                        return;
+                    default:
+                        break;
+                }
+            });
+        }
         // 右键点空白区
         window.addEventListener("mouseup", (e: any) => {
             if (this.gameScene.isInGameRoom()) {
@@ -2465,7 +2514,7 @@ export class MainForm {
                     return;
                 }
             }
-            if (e.button === 0 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall') || e.target.classList.contains('inputFormWrapper'))) {
+            if (e.button === 0 && (e.target.classList.contains('replayFormWrapper') || e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall') || e.target.classList.contains('inputFormWrapper'))) {
                 this.resetGameRoomUI();
                 return;
             }
@@ -2476,6 +2525,7 @@ export class MainForm {
             if (keyCode === 27) {
                 this.resetGameRoomUI();
             }
+            if (this.gameScene.isReplayMode) return;
 
             if (e.target === this.gameScene.ui.textAreaChatMsg) {
                 if (keyCode === 13) {
@@ -2807,6 +2857,529 @@ export class MainForm {
             this.gameScene.sendMessageToServer(CommonMethods.PlayerHasCutCards_REQUEST, this.tractorPlayer.MyOwnId, cutInfo);
             this.gameScene.ui.inputFormWrapper.remove();
             delete this.gameScene.ui.inputFormWrapper;
+        }
+    }
+
+    public DoReplayMainForm() {
+        var replayFormWrapper = this.gameScene.ui.create.div('.replayFormWrapper', this.gameScene.ui.frameChat);
+        replayFormWrapper.id = "replayFormWrapper";
+        replayFormWrapper.style.position = 'relative';
+        replayFormWrapper.style.display = 'block';
+        replayFormWrapper.style.color = 'black';
+        replayFormWrapper.style.textShadow = 'none';
+        replayFormWrapper.style.textAlign = 'center';
+        replayFormWrapper.style.height = '100%';
+        this.gameScene.ui.replayFormWrapper = replayFormWrapper;
+
+        jQuery(replayFormWrapper).load("game/tractor/src/text/replay_form.htm", (response: any, status: any, xhr: any) => { this.renderReplayMainForm(response, status, xhr, this.gameScene) });
+    }
+
+    public renderReplayMainForm(response: any, status: any, xhr: any, gs: GameScene) {
+        this.selectDates = document.getElementById("selectDates")
+        this.selectTimes = document.getElementById("selectTimes")
+        let btnLoadReplay: any = document.getElementById("btnLoadReplay")
+
+        this.selectDates.onchange = () => {
+            this.onDatesSelectChange(true, 0)
+        }
+
+        if (!this.gameScene.ui.gameRoomImagesChairOrPlayer) {
+            this.gameScene.ui.gameRoomImagesChairOrPlayer = [];
+        }
+
+        if (!this.gameScene.ui.pokerPlayerStartersLabel) {
+            this.gameScene.ui.pokerPlayerStartersLabel = [];
+            for (let i = 0; i < 4; i++) {
+                var lblStarter = this.gameScene.ui.create.div('.lblStarter', "", this.gameScene.ui.frameGameRoom);
+                lblStarter.style.fontFamily = 'serif';
+                lblStarter.style.fontSize = '20px';
+                lblStarter.style.color = 'orange';
+                lblStarter.style['font-weight'] = 'bold';
+                lblStarter.style.textAlign = 'left';
+                this.gameScene.ui.pokerPlayerStartersLabel.push(lblStarter);
+
+                var obX = this.gameScene.coordinates.playerStarterPositions[i].x;
+                var obY = this.gameScene.coordinates.playerStarterPositions[i].y;
+                switch (i) {
+                    case 0:
+                        lblStarter.style.left = `calc(${obX})`;
+                        lblStarter.style.bottom = `calc(${obY})`;
+                        break;
+                    case 1:
+                        lblStarter.style.right = `calc(${obX})`;
+                        lblStarter.style.bottom = `calc(${obY})`;
+                        lblStarter.style.textAlign = 'right';
+                        break;
+                    case 2:
+                        lblStarter.style.right = `calc(${obX})`;
+                        lblStarter.style.top = `calc(${obY})`;
+                        break;
+                    case 3:
+                        lblStarter.style.left = `calc(${obX})`;
+                        lblStarter.style.bottom = `calc(${obY})`;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        this.InitReplayEntities();
+        btnLoadReplay.onclick = () => {
+            if (this.selectTimes.selectedIndex < 0) return;
+            this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+
+            // btnFirstPersonView
+            this.btnFirstPersonView = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass5', '第一视角', this.gameScene.ui.replayFormWrapper, () => this.btnFirstPersonView_Click());
+
+            // btnFirstTrick
+            this.btnFirstTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass4', '第一轮', this.gameScene.ui.replayFormWrapper, () => this.btnFirstTrick_Click());
+
+            // btnPreviousTrick
+            this.btnPreviousTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass3', '上一轮', this.gameScene.ui.replayFormWrapper, () => this.btnPreviousTrick_Click());
+
+            // btnNextTrick
+            this.btnNextTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass2', '下一轮', this.gameScene.ui.replayFormWrapper, () => this.btnNextTrick_Click());
+
+            // btnLastTrick
+            this.btnLastTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass1', '最末轮', this.gameScene.ui.replayFormWrapper, () => this.btnLastTrick_Click());
+        }
+    }
+
+    public InitReplayEntities() {
+        this.removeOptions(this.selectDates);
+        IDBHelper.ReadReplayEntityAll((dtList: string[]) => {
+            let dates: string[] = [];
+            for (let i = 0; i < dtList.length; i++) {
+                let dt: string = dtList[i];
+                let datetimes: string[] = dt.split(IDBHelper.replaySeparator);
+                let dateString = datetimes[0];
+                if (!dates.includes(dateString)) {
+                    dates.push(dateString);
+                    var option = document.createElement("option");
+                    option.text = dateString;
+                    this.selectDates.add(option);
+                }
+            }
+            this.selectDates.selectedIndex = this.selectDates.options.length - 1;
+            this.onDatesSelectChange(true, 0);
+        });
+    }
+
+    private loadReplayEntity(re: ReplayEntity, shouldDraw: boolean) {
+        this.tractorPlayer.replayEntity.CloneFrom(re);
+        let nullCTS = new CurrentTrickState();
+        nullCTS.Rank = -1;
+        this.tractorPlayer.replayEntity.CurrentTrickStates.push(nullCTS); // use null to indicate end of tricks, so that to show ending scores
+        this.tractorPlayer.replayedTricks = [];
+        this.tractorPlayer.replayEntity.Players = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.Players, this.tractorPlayer.replayAngle);
+        if (this.tractorPlayer.replayEntity.PlayerRanks != null) {
+            this.tractorPlayer.replayEntity.PlayerRanks = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.PlayerRanks, this.tractorPlayer.replayAngle);
+        }
+
+        this.StartReplay(shouldDraw);
+    }
+
+    private StartReplay(shouldDraw: boolean) {
+        this.drawingFormHelper.resetReplay();
+        this.drawingFormHelper.destroyLast8Cards()
+        let players: string[] = this.tractorPlayer.replayEntity.Players;
+        let playerRanks: number[] = new Array(4);
+        if (this.tractorPlayer.replayEntity.PlayerRanks != null) {
+            playerRanks = this.tractorPlayer.replayEntity.PlayerRanks;
+        }
+        else {
+            let tempRank: number = this.tractorPlayer.replayEntity.CurrentHandState.Rank;
+            playerRanks = [tempRank, tempRank, tempRank, tempRank];
+        }
+
+        this.destroyImagesChairOrPlayer();
+
+        for (let i = 0; i < 4; i++) {
+            let starterText = players[i] === this.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : `${i + 1}`;
+            this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = starterText
+
+            let playerUI;
+            if (i === 0) {
+                playerUI = this.gameScene.ui.gameMe;
+                playerUI.node.nameol.innerHTML = players[i];
+            }
+            else {
+                playerUI = this.CreatePlayer(i, players[i], this.gameScene.ui.frameGameRoom);
+                this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
+            }
+
+            if (i === 0) continue;
+
+            // 切换视角
+            playerUI.style.cursor = 'pointer';
+            // click
+            playerUI.addEventListener("click", (e: any) => {
+                let pos = i + 1;
+                this.replayAngleByPosition(pos);
+            });
+            // mouseover
+            playerUI.addEventListener("mouseover", (e: any) => {
+                let pos = parseInt(e.target.getAttribute('data-position'));
+                if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
+                else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
+            });
+            // mouseout
+            playerUI.addEventListener("mouseout", (e: any) => {
+                let pos = parseInt(e.target.getAttribute('data-position'));
+                if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+            });
+        }
+
+        this.tractorPlayer.PlayerId = players[0];
+
+        this.tractorPlayer.CurrentGameState = new GameState();
+        for (let i = 0; i < 4; i++) {
+            let temp = new PlayerEntity();
+            temp.PlayerId = players[i];
+            temp.Rank = playerRanks[i];
+            temp.Team = (i % 2) + 1;
+
+            this.tractorPlayer.CurrentGameState.Players[i] = temp;
+        }
+        //set player position
+        this.PlayerPosition = {};
+        this.PositionPlayer = {};
+        let nextPlayer: string = players[0];
+        let postion = 1;
+        this.PlayerPosition[nextPlayer] = postion;
+        this.PositionPlayer[postion] = nextPlayer;
+        nextPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, nextPlayer).PlayerId;
+        while (nextPlayer != players[0]) {
+            postion++;
+            this.PlayerPosition[nextPlayer] = postion;
+            this.PositionPlayer[postion] = nextPlayer;
+            nextPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, nextPlayer).PlayerId;
+        }
+
+        this.tractorPlayer.CurrentHandState = new CurrentHandState();
+        this.tractorPlayer.CurrentHandState.CloneFrom(this.tractorPlayer.replayEntity.CurrentHandState);
+        for (const [key, value] of Object.entries(this.tractorPlayer.CurrentHandState.PlayerHoldingCards)) {
+            let tempcp = new CurrentPoker();
+            tempcp.CloneFrom(value as CurrentPoker)
+            this.tractorPlayer.CurrentHandState.PlayerHoldingCards[key] = tempcp;
+            this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key] = tempcp;
+        }
+
+
+        this.tractorPlayer.CurrentHandState.Score = 0;
+        this.tractorPlayer.CurrentHandState.ScoreCards = [];
+        this.tractorPlayer.CurrentPoker = this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[players[0]];
+
+        this.drawingFormHelper.DrawSidebarFull();
+        if (this.shouldShowLast8Cards()) this.drawingFormHelper.DrawDiscardedCards();
+
+        if (shouldDraw) {
+            this.drawAllPlayerHandCards();
+            this.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
+        }
+    }
+
+    private drawAllPlayerHandCards() {
+        if (this.gameScene.yesFirstPersonView === "true") {
+            this.drawingFormHelper.DrawHandCardsByPosition(1, this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.PositionPlayer[1]], 1);
+        } else {
+            for (let i = 1; i <= 4; i++) {
+                this.drawingFormHelper.DrawHandCardsByPosition(i, this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.PositionPlayer[i]], i == 1 ? 1 : this.gameScene.coordinates.replayHandCardScale);
+            }
+        }
+    }
+
+    private replayNextTrick() {
+        if (this.tractorPlayer.replayEntity.CurrentTrickStates.length == 0) {
+            return;
+        }
+        let trick: CurrentTrickState = this.tractorPlayer.replayEntity.CurrentTrickStates[0];
+        this.tractorPlayer.replayEntity.CurrentTrickStates.shift();
+        this.tractorPlayer.replayedTricks.push(trick);
+        if (trick.Rank < 0) {
+            this.tractorPlayer.CurrentHandState.ScoreCards = CommonMethods.deepCopy<number[]>(this.tractorPlayer.replayEntity.CurrentHandState.ScoreCards);
+            this.tractorPlayer.CurrentHandState.Score = this.tractorPlayer.replayEntity.CurrentHandState.Score;
+
+            this.drawingFormHelper.resetReplay();
+            this.drawingFormHelper.DrawFinishedSendedCards();
+            return;
+        }
+        this.drawingFormHelper.resetReplay();
+
+        if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] == 1) {
+            this.DrawDumpFailureMessage(trick);
+        }
+
+        this.tractorPlayer.CurrentTrickState = trick;
+        let curPlayer: string = trick.Learder;
+        let drawDelay = 100;
+        let i = 1;
+        for (; i <= Object.keys(trick.ShowedCards).length; i++) {
+            let position = this.PlayerPosition[curPlayer];
+            if (Object.keys(trick.ShowedCards).length == 4) {
+                trick.ShowedCards[curPlayer].forEach((card: any) => {
+                    this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
+                })
+            }
+
+            let cardsList: number[] = CommonMethods.deepCopy<number[]>(trick.ShowedCards[curPlayer]);
+            setTimeout(() => {
+                this.drawingFormHelper.DrawShowedCardsByPosition(cardsList, position)
+            }, i * drawDelay);
+            curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
+        }
+
+        if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] != 1) {
+            this.DrawDumpFailureMessage(trick);
+        }
+
+        setTimeout(() => {
+            this.drawAllPlayerHandCards();
+        }, i * drawDelay);
+
+        if (trick.Winner) {
+            if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(
+                this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {
+                this.tractorPlayer.CurrentHandState.Score += trick.Points();
+                //收集得分牌
+                this.tractorPlayer.CurrentHandState.ScoreCards = this.tractorPlayer.CurrentHandState.ScoreCards.concat(trick.ScoreCards());
+            }
+        }
+        this.drawingFormHelper.DrawScoreImageAndCards();
+    }
+
+    private DrawDumpFailureMessage(trick: CurrentTrickState) {
+        this.tractorPlayer.NotifyMessage([
+            `玩家【${trick.Learder}】`,
+            `甩牌${trick.ShowedCards[trick.Learder].length}张失败`,
+            `罚分：${trick.ShowedCards[trick.Learder].length * 10}`,
+            "",
+            "",
+            "",
+            ""
+        ]);
+    }
+
+    public btnFirstPersonView_Click() {
+        if (this.gameScene.yesFirstPersonView === "false") {
+            this.gameScene.yesFirstPersonView = "true";
+            this.btnFirstPersonView.innerText = "全开视角";
+        } else {
+            this.gameScene.yesFirstPersonView = "false";
+            this.btnFirstPersonView.innerText = "第一视角";
+        }
+        this.StartReplay(true);
+        this.saveSettings();
+    }
+
+    public btnFirstTrick_Click() {
+        if (this.tractorPlayer.replayedTricks.length > 0) this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+        else {
+            if (this.replayPreviousFile()) this.btnLastTrick_Click();
+        }
+    }
+
+    public btnPreviousTrick_Click() {
+        if (this.tractorPlayer.replayedTricks.length > 1) {
+            this.drawingFormHelper.resetReplay();
+            this.revertReplayTrick();
+            this.revertReplayTrick();
+            this.replayNextTrick();
+        }
+        else if (this.tractorPlayer.replayedTricks.length == 1) {
+            this.btnFirstTrick_Click();
+        }
+        else {
+            if (this.replayPreviousFile()) this.btnLastTrick_Click();
+        }
+    }
+
+    public btnNextTrick_Click() {
+        if (this.tractorPlayer.replayEntity.CurrentTrickStates.length == 0) {
+            this.replayNextFile();
+            return;
+        }
+        this.replayNextTrick();
+    }
+
+    public btnLastTrick_Click() {
+        if (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 0) {
+            while (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 1) {
+                let trick: CurrentTrickState = this.tractorPlayer.replayEntity.CurrentTrickStates[0];
+                this.tractorPlayer.replayedTricks.push(trick);
+                this.tractorPlayer.replayEntity.CurrentTrickStates.shift();
+
+                // 甩牌失败
+                if (Object.keys(trick.ShowedCards).length == 1) continue;
+
+                let curPlayer: string = trick.Learder;
+                for (let i = 0; i < Object.keys(trick.ShowedCards).length; i++) {
+                    trick.ShowedCards[curPlayer].forEach((card: any) => {
+                        this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
+                    })
+                    curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
+                }
+            }
+            this.drawingFormHelper.DrawHandCardsByPosition(1, this.tractorPlayer.CurrentPoker, 1);
+            this.replayNextTrick();
+        }
+        else this.replayNextFile();
+    }
+
+    private replayPreviousFile(): boolean {
+        if (this.selectTimes.selectedIndex > 0) {
+            this.selectTimes.selectedIndex = this.selectTimes.selectedIndex - 1;
+            this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], false);
+            return true;
+        }
+        else if (this.selectDates.selectedIndex > 0) {
+            this.selectDates.selectedIndex = this.selectDates.selectedIndex - 1;
+            this.onDatesSelectChange(false, -1);
+            if (this.selectTimes.options && this.selectTimes.options.length > 0) {
+                this.selectTimes.selectedIndex = this.selectTimes.options.length - 1;
+                this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], false);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private replayNextFile() {
+        if (this.selectTimes.selectedIndex < this.selectTimes.options.length - 1) {
+            this.selectTimes.selectedIndex = this.selectTimes.selectedIndex + 1;
+            this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+        }
+        else if (this.selectDates.selectedIndex < this.selectDates.options.length - 1) {
+            this.selectDates.selectedIndex = this.selectDates.selectedIndex + 1;
+            this.onDatesSelectChange(false, 1);
+            if (this.selectTimes.options && this.selectTimes.options.length > 0) {
+                this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+            }
+        }
+    }
+
+    private revertReplayTrick() {
+        let trick: CurrentTrickState = (this.tractorPlayer.replayedTricks.pop() as CurrentTrickState);
+        this.tractorPlayer.replayEntity.CurrentTrickStates.unshift(trick);
+        if (trick.Rank < 0) {
+            this.tractorPlayer.CurrentHandState.Score -= this.tractorPlayer.CurrentHandState.ScorePunishment + this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
+            if (this.shouldShowLast8Cards()) this.drawingFormHelper.DrawDiscardedCards();
+        }
+        else if (Object.keys(trick.ShowedCards).length == 4) {
+            for (const [key, value] of Object.entries(trick.ShowedCards)) {
+                (value as number[]).forEach(card => {
+                    this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key].AddCard(card);
+                })
+            }
+            if (trick.Winner) {
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {
+                    this.tractorPlayer.CurrentHandState.Score -= trick.Points();
+                    //收集得分牌
+                    trick.ScoreCards().forEach(sc => {
+                        this.tractorPlayer.CurrentHandState.ScoreCards = CommonMethods.ArrayRemoveOneByValue(this.tractorPlayer.CurrentHandState.ScoreCards, sc)
+                    })
+                }
+            }
+            this.drawingFormHelper.DrawScoreImageAndCards();
+        }
+    }
+
+    // pos is 1-based
+    public replayAngleByPosition(pos: number) {
+        let angleOffset = pos - 1;
+        this.tractorPlayer.replayAngle = (this.tractorPlayer.replayAngle + angleOffset) % 4;
+        this.tractorPlayer.replayEntity.Players = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.Players, angleOffset);
+        if (this.tractorPlayer.replayEntity.PlayerRanks != null) {
+            this.tractorPlayer.replayEntity.PlayerRanks = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.PlayerRanks, angleOffset);
+        }
+        this.StartReplay(true);
+    }
+
+    private onDatesSelectChange(isFromClick: boolean, direction: number) {
+        if (isFromClick) {
+            this.currentReplayEntities = [undefined, undefined, undefined];
+            IDBHelper.ReadReplayEntityByDate(this.selectDates.value, (reList: ReplayEntity[]) => {
+                this.currentReplayEntities[1] = reList;
+                this.removeOptions(this.selectTimes);
+                for (let i = 0; i < reList.length; i++) {
+                    let re: ReplayEntity = reList[i];
+                    let datetimes: string[] = re.ReplayId.split(IDBHelper.replaySeparator);
+                    let timeString = datetimes[1];
+                    var option = document.createElement("option");
+                    option.text = timeString;
+                    this.selectTimes.add(option);
+                }
+            });
+            let prevDatesIndex = this.selectDates.selectedIndex - 1;
+            if (prevDatesIndex >= 0) {
+                IDBHelper.ReadReplayEntityByDate(this.selectDates.options[prevDatesIndex].value, (reList: ReplayEntity[]) => {
+                    this.currentReplayEntities[0] = reList;
+                });
+            }
+            let nextDatesIndex = this.selectDates.selectedIndex + 1;
+            if (nextDatesIndex < this.selectDates.options.length) {
+                IDBHelper.ReadReplayEntityByDate(this.selectDates.options[nextDatesIndex].value, (reList: ReplayEntity[]) => {
+                    this.currentReplayEntities[2] = reList;
+                });
+            }
+        } else {
+            this.removeOptions(this.selectTimes);
+            let reList: ReplayEntity[] = this.currentReplayEntities[1 + direction];
+            for (let i = 0; i < reList.length; i++) {
+                let re: ReplayEntity = reList[i];
+                let datetimes: string[] = re.ReplayId.split(IDBHelper.replaySeparator);
+                let timeString = datetimes[1];
+                var option = document.createElement("option");
+                option.text = timeString;
+                this.selectTimes.add(option);
+            }
+            let newDatesIndex = this.selectDates.selectedIndex + direction;
+            if (direction < 0) {
+                this.currentReplayEntities.pop();
+                this.currentReplayEntities.unshift(undefined);
+                if (newDatesIndex >= 0) {
+                    IDBHelper.ReadReplayEntityByDate(this.selectDates.options[newDatesIndex].value, (reList: ReplayEntity[]) => {
+                        this.currentReplayEntities[0] = reList;
+                    });
+                }
+            } else {
+                this.currentReplayEntities.shift();
+                this.currentReplayEntities.push(undefined);
+                if (newDatesIndex < this.selectDates.options.length) {
+                    IDBHelper.ReadReplayEntityByDate(this.selectDates.options[newDatesIndex].value, (reList: ReplayEntity[]) => {
+                        this.currentReplayEntities[2] = reList;
+                    });
+                }
+            }
+        }
+    }
+
+    private shouldShowLast8Cards() {
+        return this.gameScene.yesFirstPersonView !== "true" ||
+            this.tractorPlayer.CurrentHandState.Starter === this.tractorPlayer.replayEntity.Players[0];
+    }
+
+    public saveSettings() {
+        // cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
+
+        // if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
+        //     this.joinAudioUrl = 'http://' + this.joinAudioUrl;
+        // }
+        // cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
+    }
+
+    public removeOptions(selectElement: any) {
+        var i, L = selectElement.options.length - 1;
+        for (i = L; i >= 0; i--) {
+            selectElement.remove(i);
         }
     }
 }

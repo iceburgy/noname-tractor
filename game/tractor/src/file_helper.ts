@@ -1,6 +1,9 @@
 import { IDBHelper } from './idb_helper.js';
 import { ReplayEntity } from './replay_entity.js';
 
+declare let JSZip: any;
+declare let saveAs: any;
+
 export class FileHelper {
     constructor() {
     }
@@ -14,7 +17,6 @@ export class FileHelper {
     }
 
     public static ImportZipFile(fileBlob: any, callback: any) {
-        var JSZip = require("jszip");
         JSZip.loadAsync(fileBlob).then((zip: any) => {
             FileHelper.ReadZipFile(zip, callback);
         });
@@ -46,8 +48,6 @@ export class FileHelper {
 
     public static ExportZipFile() {
         IDBHelper.ReadReplayEntityAll((dtList: string[]) => {
-            var JSZip = require("jszip");
-            var FileSaver = require("file-saver");
             var zip = new JSZip();
 
             let dates: string[] = [];
@@ -83,7 +83,7 @@ export class FileHelper {
 
                 clearInterval(intervalID)
                 zip.generateAsync({ type: 'blob' }).then(function (content: any) {
-                    FileSaver.saveAs(content, 'replays.zip');
+                    saveAs(content, 'replays.zip');
                 });
             }, 1000)
         });

@@ -10,8 +10,8 @@ import { SuitEnums } from './suit_enums.js';
 import { TractorRules } from './tractor_rules.js';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result.js';
 import { RoomState } from './room_state.js';
-// import { ReplayEntity } from './replay_entity.js';
-// import { IDBHelper } from './idb_helper.js';
+import { ReplayEntity } from './replay_entity.js';
+import { IDBHelper } from './idb_helper.js';
 
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
 const UsedShengbi_REQUEST = "UsedShengbi"
@@ -33,8 +33,8 @@ export class TractorPlayer {
     public CurrentHandState: CurrentHandState
     public CurrentTrickState: CurrentTrickState;
     public playerLocalCache: PlayerLocalCache;
-    // public replayEntity: ReplayEntity;
-    // public replayedTricks: CurrentTrickState[];
+    public replayEntity: ReplayEntity;
+    public replayedTricks: CurrentTrickState[];
     public replayAngle: number;
     public PingInterval = 12000;
     public PingStatus = 0; // 0: uninitialized; -1: unhealthy; 1: healthy
@@ -54,8 +54,8 @@ export class TractorPlayer {
         this.CurrentHandState = new CurrentHandState(this.CurrentGameState)
         this.CurrentTrickState = new CurrentTrickState()
         this.playerLocalCache = new PlayerLocalCache()
-        // this.replayEntity = new ReplayEntity()
-        // this.replayedTricks = []
+        this.replayEntity = new ReplayEntity()
+        this.replayedTricks = []
         this.replayAngle = 0
     }
 
@@ -525,10 +525,4 @@ export class TractorPlayer {
         this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
         if (updateSkin) this.mainForm.UpdateSkinStatus();
     }
-
-    /*
-        public NotifyReplayState(replayState: ReplayEntity) {
-            IDBHelper.SaveReplayEntity(replayState, () => { void (0); })
-        }
-        */
 }

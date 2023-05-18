@@ -4,6 +4,7 @@ import { CurrentHandState } from './current_hand_state.js';
 import { CurrentTrickState } from './current_trick_state.js';
 import { PlayerLocalCache } from './player_local_cache.js';
 import { CommonMethods } from './common_methods.js';
+import { PlayerEntity } from './player_entity.js';
 import { TractorPlayer } from './tractor_player.js';
 import { SuitEnums } from './suit_enums.js';
 import { DrawingFormHelper } from './drawing_form_helper.js';
@@ -12,6 +13,7 @@ import { ShowingCardsValidationResult } from './showing_cards_validation_result.
 import { Algorithm } from './algorithm.js';
 import { PokerHelper } from './poker_helper.js';
 import { IDBHelper } from './idb_helper.js';
+import { FileHelper } from './file_helper.js';
 var ReadyToStart_REQUEST = "ReadyToStart";
 var ToggleIsRobot_REQUEST = "ToggleIsRobot";
 var ObserveNext_REQUEST = "ObserveNext";
@@ -1108,9 +1110,11 @@ var MainForm = /** @class */ (function () {
     //     }
     MainForm.prototype.LoadUIUponConnect = function () {
         var _this = this;
+        if (!this.gameScene.isReplayMode) {
+            this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', function () { _this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, _this.gameScene.playerName, ""); }, true);
+            this.gameScene.ui.btnQiandao.hide();
+        }
         this.EnableShortcutKeys();
-        this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', function () { _this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, _this.gameScene.playerName, ""); }, true);
-        this.gameScene.ui.btnQiandao.hide();
         this.gameScene.ui.gameSettings = this.gameScene.ui.create.system('设置', function () { return _this.btnGameSettings_Click(); }, true);
         this.gameScene.ui.exitTractor = this.gameScene.ui.create.system('退出', function () { return _this.btnExitRoom_Click(); }, true);
     };
@@ -1149,49 +1153,54 @@ var MainForm = /** @class */ (function () {
                 maxInt = Math.max(maxInt, parseInt(maxString));
             }
             IDBHelper.maxReplays = maxInt;
+            gs.lib.config.maxReplays = maxInt;
         };
-        // let btnCleanupReplays = document.getElementById("btnCleanupReplays")
-        // btnCleanupReplays.onclick = () => {
-        //     var c = window.confirm("你确定要清空所有录像文件吗？");
-        //     if (c === false) {
-        //         return
-        //     }
-        //     IDBHelper.CleanupReplayEntity(() => {
-        //         this.ReinitReplayEntities(this);
-        //         if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试清空全部录像文件"]);
-        //     });
-        //     this.resetGameRoomUI();
-        // }
-        // let btnExportZipFile = document.getElementById("btnExportZipFile")
-        // btnExportZipFile.onclick = () => {
-        //     FileHelper.ExportZipFile();
-        //     this.resetGameRoomUI();
-        // }
-        // let inputRecordingFile = document.getElementById("inputRecordingFile")
-        // inputRecordingFile.onchange = () => {
-        //     let fileName = inputRecordingFile.value;
-        //     let extension = fileName.split('.').pop();
-        //     if (!["json", "zip"].includes(extension.toLowerCase())) {
-        //         alert("unsupported file type!");
-        //         return;
-        //     }
-        //     if (!inputRecordingFile || !inputRecordingFile.files || inputRecordingFile.files.length <= 0) {
-        //         alert("No file has been selected!");
-        //         return;
-        //     }
-        //     if (extension.toLowerCase() === "json") {
-        //         FileHelper.ImportJsonFile(inputRecordingFile.files[0], () => {
-        //             this.ReinitReplayEntities(this);
-        //             if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
-        //         });
-        //     } else {
-        //         FileHelper.ImportZipFile(inputRecordingFile.files[0], () => {
-        //             this.ReinitReplayEntities(this);
-        //             if (gs.isReplayMode) this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
-        //         });
-        //     }
-        //     this.resetGameRoomUI();
-        // }
+        var btnCleanupReplays = document.getElementById("btnCleanupReplays");
+        btnCleanupReplays.onclick = function () {
+            var c = window.confirm("你确定要清空所有录像文件吗？");
+            if (c === false) {
+                return;
+            }
+            IDBHelper.CleanupReplayEntity(function () {
+                _this.ReinitReplayEntities(_this);
+                if (gs.isReplayMode)
+                    _this.tractorPlayer.NotifyMessage(["已尝试清空全部录像文件"]);
+            });
+            _this.resetGameRoomUI();
+        };
+        var btnExportZipFile = document.getElementById("btnExportZipFile");
+        btnExportZipFile.onclick = function () {
+            FileHelper.ExportZipFile();
+            _this.resetGameRoomUI();
+        };
+        var inputRecordingFile = document.getElementById("inputRecordingFile");
+        inputRecordingFile.onchange = function () {
+            var fileName = inputRecordingFile.value;
+            var extension = fileName.split('.').pop();
+            if (!["json", "zip"].includes(extension.toLowerCase())) {
+                alert("unsupported file type!");
+                return;
+            }
+            if (!inputRecordingFile || !inputRecordingFile.files || inputRecordingFile.files.length <= 0) {
+                alert("No file has been selected!");
+                return;
+            }
+            if (extension.toLowerCase() === "json") {
+                FileHelper.ImportJsonFile(inputRecordingFile.files[0], function () {
+                    _this.ReinitReplayEntities(_this);
+                    if (gs.isReplayMode)
+                        _this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+                });
+            }
+            else {
+                FileHelper.ImportZipFile(inputRecordingFile.files[0], function () {
+                    _this.ReinitReplayEntities(_this);
+                    if (gs.isReplayMode)
+                        _this.tractorPlayer.NotifyMessage(["已尝试加载本地录像文件"]);
+                });
+            }
+            _this.resetGameRoomUI();
+        };
         var noDanmu = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = function () {
@@ -1675,12 +1684,11 @@ var MainForm = /** @class */ (function () {
             }
         }
     };
-    //     private ReinitReplayEntities(that: any) {
-    //         if (that.gameScene.isReplayMode) {
-    //             let grs = that.gameScene as GameReplayScene;
-    //             grs.InitReplayEntities(grs);
-    //         }
-    //     }
+    MainForm.prototype.ReinitReplayEntities = function (that) {
+        if (that.gameScene.isReplayMode) {
+            that.InitReplayEntities();
+        }
+    };
     MainForm.prototype.btnPig_Click = function () {
         if (!this.gameScene.ui.btnPig || this.gameScene.ui.btnPig.classList.contains('hidden') || this.gameScene.ui.btnPig.classList.contains('disabled'))
             return;
@@ -1778,6 +1786,12 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.NotifyStartTimerEventHandler = function (timerLength) {
         var _this = this;
+        if (timerLength <= 0) {
+            if (this.gameScene.ui.timer) {
+                this.gameScene.ui.timer.hide();
+            }
+            return;
+        }
         this.gameScene.ui.timer.show();
         this.gameScene.game.countDown(timerLength, function () { _this.gameScene.ui.timer.hide(); }, true);
     };
@@ -1898,6 +1912,8 @@ var MainForm = /** @class */ (function () {
         frameChat.style.right = '0px';
         frameChat.style['z-index'] = CommonMethods.zIndexFrameChat;
         this.gameScene.ui.frameChat = frameChat;
+        if (this.gameScene.isReplayMode)
+            return;
         var divOnlinePlayerList = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divOnlinePlayerList.style.top = 'calc(0%)';
         divOnlinePlayerList.style.height = 'calc(20% - 20px)';
@@ -1940,6 +1956,11 @@ var MainForm = /** @class */ (function () {
         frameGameRoom.style.bottom = '0px';
         frameGameRoom.style.right = '0px';
         this.gameScene.ui.frameGameRoom = frameGameRoom;
+        if (this.gameScene.isReplayMode) {
+            this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
+            this.drawHandZone();
+            return;
+        }
         if (!this.gameScene.ui.gameMe) {
             this.drawGameMe();
         }
@@ -2266,6 +2287,30 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.EnableShortcutKeys = function () {
         var _this = this;
+        if (this.gameScene.isReplayMode) {
+            window.addEventListener("keyup", function (e) {
+                var keyCode = e.keyCode;
+                switch (keyCode) {
+                    case 38:
+                        _this.btnFirstTrick_Click();
+                        return;
+                    case 37:
+                        _this.btnPreviousTrick_Click();
+                        return;
+                    case 39:
+                        _this.btnNextTrick_Click();
+                        return;
+                    case 40:
+                        _this.btnLastTrick_Click();
+                        return;
+                    case 96:
+                        _this.btnFirstPersonView_Click();
+                        return;
+                    default:
+                        break;
+                }
+            });
+        }
         // 右键点空白区
         window.addEventListener("mouseup", function (e) {
             if (_this.gameScene.isInGameRoom()) {
@@ -2274,7 +2319,7 @@ var MainForm = /** @class */ (function () {
                     return;
                 }
             }
-            if (e.button === 0 && (e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall') || e.target.classList.contains('inputFormWrapper'))) {
+            if (e.button === 0 && (e.target.classList.contains('replayFormWrapper') || e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall') || e.target.classList.contains('inputFormWrapper'))) {
                 _this.resetGameRoomUI();
                 return;
             }
@@ -2284,6 +2329,8 @@ var MainForm = /** @class */ (function () {
             if (keyCode === 27) {
                 _this.resetGameRoomUI();
             }
+            if (_this.gameScene.isReplayMode)
+                return;
             if (e.target === _this.gameScene.ui.textAreaChatMsg) {
                 if (keyCode === 13) {
                     _this.emojiSubmitEventhandler();
@@ -2594,6 +2641,514 @@ var MainForm = /** @class */ (function () {
             this.gameScene.sendMessageToServer(CommonMethods.PlayerHasCutCards_REQUEST, this.tractorPlayer.MyOwnId, cutInfo);
             this.gameScene.ui.inputFormWrapper.remove();
             delete this.gameScene.ui.inputFormWrapper;
+        }
+    };
+    MainForm.prototype.DoReplayMainForm = function () {
+        var _this = this;
+        var replayFormWrapper = this.gameScene.ui.create.div('.replayFormWrapper', this.gameScene.ui.frameChat);
+        replayFormWrapper.id = "replayFormWrapper";
+        replayFormWrapper.style.position = 'relative';
+        replayFormWrapper.style.display = 'block';
+        replayFormWrapper.style.color = 'black';
+        replayFormWrapper.style.textShadow = 'none';
+        replayFormWrapper.style.textAlign = 'center';
+        replayFormWrapper.style.height = '100%';
+        this.gameScene.ui.replayFormWrapper = replayFormWrapper;
+        jQuery(replayFormWrapper).load("game/tractor/src/text/replay_form.htm", function (response, status, xhr) { _this.renderReplayMainForm(response, status, xhr, _this.gameScene); });
+    };
+    MainForm.prototype.renderReplayMainForm = function (response, status, xhr, gs) {
+        var _this = this;
+        this.selectDates = document.getElementById("selectDates");
+        this.selectTimes = document.getElementById("selectTimes");
+        var btnLoadReplay = document.getElementById("btnLoadReplay");
+        this.selectDates.onchange = function () {
+            _this.onDatesSelectChange(true, 0);
+        };
+        if (!this.gameScene.ui.gameRoomImagesChairOrPlayer) {
+            this.gameScene.ui.gameRoomImagesChairOrPlayer = [];
+        }
+        if (!this.gameScene.ui.pokerPlayerStartersLabel) {
+            this.gameScene.ui.pokerPlayerStartersLabel = [];
+            for (var i = 0; i < 4; i++) {
+                var lblStarter = this.gameScene.ui.create.div('.lblStarter', "", this.gameScene.ui.frameGameRoom);
+                lblStarter.style.fontFamily = 'serif';
+                lblStarter.style.fontSize = '20px';
+                lblStarter.style.color = 'orange';
+                lblStarter.style['font-weight'] = 'bold';
+                lblStarter.style.textAlign = 'left';
+                this.gameScene.ui.pokerPlayerStartersLabel.push(lblStarter);
+                var obX = this.gameScene.coordinates.playerStarterPositions[i].x;
+                var obY = this.gameScene.coordinates.playerStarterPositions[i].y;
+                switch (i) {
+                    case 0:
+                        lblStarter.style.left = "calc(".concat(obX, ")");
+                        lblStarter.style.bottom = "calc(".concat(obY, ")");
+                        break;
+                    case 1:
+                        lblStarter.style.right = "calc(".concat(obX, ")");
+                        lblStarter.style.bottom = "calc(".concat(obY, ")");
+                        lblStarter.style.textAlign = 'right';
+                        break;
+                    case 2:
+                        lblStarter.style.right = "calc(".concat(obX, ")");
+                        lblStarter.style.top = "calc(".concat(obY, ")");
+                        break;
+                    case 3:
+                        lblStarter.style.left = "calc(".concat(obX, ")");
+                        lblStarter.style.bottom = "calc(".concat(obY, ")");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        this.InitReplayEntities();
+        btnLoadReplay.onclick = function () {
+            if (_this.selectTimes.selectedIndex < 0)
+                return;
+            _this.loadReplayEntity(_this.currentReplayEntities[1][_this.selectTimes.selectedIndex], true);
+            // btnFirstPersonView
+            _this.btnFirstPersonView = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass5', '第一视角', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnFirstPersonView_Click(); });
+            // btnFirstTrick
+            _this.btnFirstTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass4', '第一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnFirstTrick_Click(); });
+            // btnPreviousTrick
+            _this.btnPreviousTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass3', '上一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnPreviousTrick_Click(); });
+            // btnNextTrick
+            _this.btnNextTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass2', '下一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnNextTrick_Click(); });
+            // btnLastTrick
+            _this.btnLastTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass1', '最末轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnLastTrick_Click(); });
+        };
+    };
+    MainForm.prototype.InitReplayEntities = function () {
+        var _this = this;
+        this.removeOptions(this.selectDates);
+        IDBHelper.ReadReplayEntityAll(function (dtList) {
+            var dates = [];
+            for (var i = 0; i < dtList.length; i++) {
+                var dt = dtList[i];
+                var datetimes = dt.split(IDBHelper.replaySeparator);
+                var dateString = datetimes[0];
+                if (!dates.includes(dateString)) {
+                    dates.push(dateString);
+                    var option = document.createElement("option");
+                    option.text = dateString;
+                    _this.selectDates.add(option);
+                }
+            }
+            _this.selectDates.selectedIndex = _this.selectDates.options.length - 1;
+            _this.onDatesSelectChange(true, 0);
+        });
+    };
+    MainForm.prototype.loadReplayEntity = function (re, shouldDraw) {
+        this.tractorPlayer.replayEntity.CloneFrom(re);
+        var nullCTS = new CurrentTrickState();
+        nullCTS.Rank = -1;
+        this.tractorPlayer.replayEntity.CurrentTrickStates.push(nullCTS); // use null to indicate end of tricks, so that to show ending scores
+        this.tractorPlayer.replayedTricks = [];
+        this.tractorPlayer.replayEntity.Players = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.Players, this.tractorPlayer.replayAngle);
+        if (this.tractorPlayer.replayEntity.PlayerRanks != null) {
+            this.tractorPlayer.replayEntity.PlayerRanks = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.PlayerRanks, this.tractorPlayer.replayAngle);
+        }
+        this.StartReplay(shouldDraw);
+    };
+    MainForm.prototype.StartReplay = function (shouldDraw) {
+        var _this = this;
+        this.drawingFormHelper.resetReplay();
+        this.drawingFormHelper.destroyLast8Cards();
+        var players = this.tractorPlayer.replayEntity.Players;
+        var playerRanks = new Array(4);
+        if (this.tractorPlayer.replayEntity.PlayerRanks != null) {
+            playerRanks = this.tractorPlayer.replayEntity.PlayerRanks;
+        }
+        else {
+            var tempRank = this.tractorPlayer.replayEntity.CurrentHandState.Rank;
+            playerRanks = [tempRank, tempRank, tempRank, tempRank];
+        }
+        this.destroyImagesChairOrPlayer();
+        var _loop_4 = function (i) {
+            var starterText = players[i] === this_3.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "".concat(i + 1);
+            this_3.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = starterText;
+            var playerUI = void 0;
+            if (i === 0) {
+                playerUI = this_3.gameScene.ui.gameMe;
+                playerUI.node.nameol.innerHTML = players[i];
+            }
+            else {
+                playerUI = this_3.CreatePlayer(i, players[i], this_3.gameScene.ui.frameGameRoom);
+                this_3.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
+            }
+            if (i === 0)
+                return "continue";
+            // 切换视角
+            playerUI.style.cursor = 'pointer';
+            // click
+            playerUI.addEventListener("click", function (e) {
+                var pos = i + 1;
+                _this.replayAngleByPosition(pos);
+            });
+            // mouseover
+            playerUI.addEventListener("mouseover", function (e) {
+                var pos = parseInt(e.target.getAttribute('data-position'));
+                if (pos === 2)
+                    e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                else
+                    e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+            });
+            // mouseout
+            playerUI.addEventListener("mouseout", function (e) {
+                var pos = parseInt(e.target.getAttribute('data-position'));
+                if (pos === 2)
+                    e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                else
+                    e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+            });
+        };
+        var this_3 = this;
+        for (var i = 0; i < 4; i++) {
+            _loop_4(i);
+        }
+        this.tractorPlayer.PlayerId = players[0];
+        this.tractorPlayer.CurrentGameState = new GameState();
+        for (var i = 0; i < 4; i++) {
+            var temp = new PlayerEntity();
+            temp.PlayerId = players[i];
+            temp.Rank = playerRanks[i];
+            temp.Team = (i % 2) + 1;
+            this.tractorPlayer.CurrentGameState.Players[i] = temp;
+        }
+        //set player position
+        this.PlayerPosition = {};
+        this.PositionPlayer = {};
+        var nextPlayer = players[0];
+        var postion = 1;
+        this.PlayerPosition[nextPlayer] = postion;
+        this.PositionPlayer[postion] = nextPlayer;
+        nextPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, nextPlayer).PlayerId;
+        while (nextPlayer != players[0]) {
+            postion++;
+            this.PlayerPosition[nextPlayer] = postion;
+            this.PositionPlayer[postion] = nextPlayer;
+            nextPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, nextPlayer).PlayerId;
+        }
+        this.tractorPlayer.CurrentHandState = new CurrentHandState();
+        this.tractorPlayer.CurrentHandState.CloneFrom(this.tractorPlayer.replayEntity.CurrentHandState);
+        for (var _i = 0, _a = Object.entries(this.tractorPlayer.CurrentHandState.PlayerHoldingCards); _i < _a.length; _i++) {
+            var _b = _a[_i], key = _b[0], value = _b[1];
+            var tempcp = new CurrentPoker();
+            tempcp.CloneFrom(value);
+            this.tractorPlayer.CurrentHandState.PlayerHoldingCards[key] = tempcp;
+            this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key] = tempcp;
+        }
+        this.tractorPlayer.CurrentHandState.Score = 0;
+        this.tractorPlayer.CurrentHandState.ScoreCards = [];
+        this.tractorPlayer.CurrentPoker = this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[players[0]];
+        this.drawingFormHelper.DrawSidebarFull();
+        if (this.shouldShowLast8Cards())
+            this.drawingFormHelper.DrawDiscardedCards();
+        if (shouldDraw) {
+            this.drawAllPlayerHandCards();
+            this.drawingFormHelper.TrumpMadeCardsShowFromLastTrick();
+        }
+    };
+    MainForm.prototype.drawAllPlayerHandCards = function () {
+        if (this.gameScene.yesFirstPersonView === "true") {
+            this.drawingFormHelper.DrawHandCardsByPosition(1, this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.PositionPlayer[1]], 1);
+        }
+        else {
+            for (var i = 1; i <= 4; i++) {
+                this.drawingFormHelper.DrawHandCardsByPosition(i, this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[this.PositionPlayer[i]], i == 1 ? 1 : this.gameScene.coordinates.replayHandCardScale);
+            }
+        }
+    };
+    MainForm.prototype.replayNextTrick = function () {
+        var _this = this;
+        if (this.tractorPlayer.replayEntity.CurrentTrickStates.length == 0) {
+            return;
+        }
+        var trick = this.tractorPlayer.replayEntity.CurrentTrickStates[0];
+        this.tractorPlayer.replayEntity.CurrentTrickStates.shift();
+        this.tractorPlayer.replayedTricks.push(trick);
+        if (trick.Rank < 0) {
+            this.tractorPlayer.CurrentHandState.ScoreCards = CommonMethods.deepCopy(this.tractorPlayer.replayEntity.CurrentHandState.ScoreCards);
+            this.tractorPlayer.CurrentHandState.Score = this.tractorPlayer.replayEntity.CurrentHandState.Score;
+            this.drawingFormHelper.resetReplay();
+            this.drawingFormHelper.DrawFinishedSendedCards();
+            return;
+        }
+        this.drawingFormHelper.resetReplay();
+        if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] == 1) {
+            this.DrawDumpFailureMessage(trick);
+        }
+        this.tractorPlayer.CurrentTrickState = trick;
+        var curPlayer = trick.Learder;
+        var drawDelay = 100;
+        var i = 1;
+        var _loop_5 = function () {
+            var position = this_4.PlayerPosition[curPlayer];
+            if (Object.keys(trick.ShowedCards).length == 4) {
+                trick.ShowedCards[curPlayer].forEach(function (card) {
+                    _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
+                });
+            }
+            var cardsList = CommonMethods.deepCopy(trick.ShowedCards[curPlayer]);
+            setTimeout(function () {
+                _this.drawingFormHelper.DrawShowedCardsByPosition(cardsList, position);
+            }, i * drawDelay);
+            curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_4.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
+        };
+        var this_4 = this;
+        for (; i <= Object.keys(trick.ShowedCards).length; i++) {
+            _loop_5();
+        }
+        if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] != 1) {
+            this.DrawDumpFailureMessage(trick);
+        }
+        setTimeout(function () {
+            _this.drawAllPlayerHandCards();
+        }, i * drawDelay);
+        if (trick.Winner) {
+            if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {
+                this.tractorPlayer.CurrentHandState.Score += trick.Points();
+                //收集得分牌
+                this.tractorPlayer.CurrentHandState.ScoreCards = this.tractorPlayer.CurrentHandState.ScoreCards.concat(trick.ScoreCards());
+            }
+        }
+        this.drawingFormHelper.DrawScoreImageAndCards();
+    };
+    MainForm.prototype.DrawDumpFailureMessage = function (trick) {
+        this.tractorPlayer.NotifyMessage([
+            "\u73A9\u5BB6\u3010".concat(trick.Learder, "\u3011"),
+            "\u7529\u724C".concat(trick.ShowedCards[trick.Learder].length, "\u5F20\u5931\u8D25"),
+            "\u7F5A\u5206\uFF1A".concat(trick.ShowedCards[trick.Learder].length * 10),
+            "",
+            "",
+            "",
+            ""
+        ]);
+    };
+    MainForm.prototype.btnFirstPersonView_Click = function () {
+        if (this.gameScene.yesFirstPersonView === "false") {
+            this.gameScene.yesFirstPersonView = "true";
+            this.btnFirstPersonView.innerText = "全开视角";
+        }
+        else {
+            this.gameScene.yesFirstPersonView = "false";
+            this.btnFirstPersonView.innerText = "第一视角";
+        }
+        this.StartReplay(true);
+        this.saveSettings();
+    };
+    MainForm.prototype.btnFirstTrick_Click = function () {
+        if (this.tractorPlayer.replayedTricks.length > 0)
+            this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+        else {
+            if (this.replayPreviousFile())
+                this.btnLastTrick_Click();
+        }
+    };
+    MainForm.prototype.btnPreviousTrick_Click = function () {
+        if (this.tractorPlayer.replayedTricks.length > 1) {
+            this.drawingFormHelper.resetReplay();
+            this.revertReplayTrick();
+            this.revertReplayTrick();
+            this.replayNextTrick();
+        }
+        else if (this.tractorPlayer.replayedTricks.length == 1) {
+            this.btnFirstTrick_Click();
+        }
+        else {
+            if (this.replayPreviousFile())
+                this.btnLastTrick_Click();
+        }
+    };
+    MainForm.prototype.btnNextTrick_Click = function () {
+        if (this.tractorPlayer.replayEntity.CurrentTrickStates.length == 0) {
+            this.replayNextFile();
+            return;
+        }
+        this.replayNextTrick();
+    };
+    MainForm.prototype.btnLastTrick_Click = function () {
+        var _this = this;
+        if (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 0) {
+            var _loop_6 = function () {
+                var trick = this_5.tractorPlayer.replayEntity.CurrentTrickStates[0];
+                this_5.tractorPlayer.replayedTricks.push(trick);
+                this_5.tractorPlayer.replayEntity.CurrentTrickStates.shift();
+                // 甩牌失败
+                if (Object.keys(trick.ShowedCards).length == 1)
+                    return "continue";
+                var curPlayer = trick.Learder;
+                for (var i = 0; i < Object.keys(trick.ShowedCards).length; i++) {
+                    trick.ShowedCards[curPlayer].forEach(function (card) {
+                        _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
+                    });
+                    curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_5.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
+                }
+            };
+            var this_5 = this;
+            while (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 1) {
+                _loop_6();
+            }
+            this.drawingFormHelper.DrawHandCardsByPosition(1, this.tractorPlayer.CurrentPoker, 1);
+            this.replayNextTrick();
+        }
+        else
+            this.replayNextFile();
+    };
+    MainForm.prototype.replayPreviousFile = function () {
+        if (this.selectTimes.selectedIndex > 0) {
+            this.selectTimes.selectedIndex = this.selectTimes.selectedIndex - 1;
+            this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], false);
+            return true;
+        }
+        else if (this.selectDates.selectedIndex > 0) {
+            this.selectDates.selectedIndex = this.selectDates.selectedIndex - 1;
+            this.onDatesSelectChange(false, -1);
+            if (this.selectTimes.options && this.selectTimes.options.length > 0) {
+                this.selectTimes.selectedIndex = this.selectTimes.options.length - 1;
+                this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], false);
+                return true;
+            }
+        }
+        return false;
+    };
+    MainForm.prototype.replayNextFile = function () {
+        if (this.selectTimes.selectedIndex < this.selectTimes.options.length - 1) {
+            this.selectTimes.selectedIndex = this.selectTimes.selectedIndex + 1;
+            this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+        }
+        else if (this.selectDates.selectedIndex < this.selectDates.options.length - 1) {
+            this.selectDates.selectedIndex = this.selectDates.selectedIndex + 1;
+            this.onDatesSelectChange(false, 1);
+            if (this.selectTimes.options && this.selectTimes.options.length > 0) {
+                this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
+            }
+        }
+    };
+    MainForm.prototype.revertReplayTrick = function () {
+        var _this = this;
+        var trick = this.tractorPlayer.replayedTricks.pop();
+        this.tractorPlayer.replayEntity.CurrentTrickStates.unshift(trick);
+        if (trick.Rank < 0) {
+            this.tractorPlayer.CurrentHandState.Score -= this.tractorPlayer.CurrentHandState.ScorePunishment + this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
+            if (this.shouldShowLast8Cards())
+                this.drawingFormHelper.DrawDiscardedCards();
+        }
+        else if (Object.keys(trick.ShowedCards).length == 4) {
+            var _loop_7 = function (key, value) {
+                value.forEach(function (card) {
+                    _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key].AddCard(card);
+                });
+            };
+            for (var _i = 0, _a = Object.entries(trick.ShowedCards); _i < _a.length; _i++) {
+                var _b = _a[_i], key = _b[0], value = _b[1];
+                _loop_7(key, value);
+            }
+            if (trick.Winner) {
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {
+                    this.tractorPlayer.CurrentHandState.Score -= trick.Points();
+                    //收集得分牌
+                    trick.ScoreCards().forEach(function (sc) {
+                        _this.tractorPlayer.CurrentHandState.ScoreCards = CommonMethods.ArrayRemoveOneByValue(_this.tractorPlayer.CurrentHandState.ScoreCards, sc);
+                    });
+                }
+            }
+            this.drawingFormHelper.DrawScoreImageAndCards();
+        }
+    };
+    // pos is 1-based
+    MainForm.prototype.replayAngleByPosition = function (pos) {
+        var angleOffset = pos - 1;
+        this.tractorPlayer.replayAngle = (this.tractorPlayer.replayAngle + angleOffset) % 4;
+        this.tractorPlayer.replayEntity.Players = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.Players, angleOffset);
+        if (this.tractorPlayer.replayEntity.PlayerRanks != null) {
+            this.tractorPlayer.replayEntity.PlayerRanks = CommonMethods.RotateArray(this.tractorPlayer.replayEntity.PlayerRanks, angleOffset);
+        }
+        this.StartReplay(true);
+    };
+    MainForm.prototype.onDatesSelectChange = function (isFromClick, direction) {
+        var _this = this;
+        if (isFromClick) {
+            this.currentReplayEntities = [undefined, undefined, undefined];
+            IDBHelper.ReadReplayEntityByDate(this.selectDates.value, function (reList) {
+                _this.currentReplayEntities[1] = reList;
+                _this.removeOptions(_this.selectTimes);
+                for (var i = 0; i < reList.length; i++) {
+                    var re = reList[i];
+                    var datetimes = re.ReplayId.split(IDBHelper.replaySeparator);
+                    var timeString = datetimes[1];
+                    var option = document.createElement("option");
+                    option.text = timeString;
+                    _this.selectTimes.add(option);
+                }
+            });
+            var prevDatesIndex = this.selectDates.selectedIndex - 1;
+            if (prevDatesIndex >= 0) {
+                IDBHelper.ReadReplayEntityByDate(this.selectDates.options[prevDatesIndex].value, function (reList) {
+                    _this.currentReplayEntities[0] = reList;
+                });
+            }
+            var nextDatesIndex = this.selectDates.selectedIndex + 1;
+            if (nextDatesIndex < this.selectDates.options.length) {
+                IDBHelper.ReadReplayEntityByDate(this.selectDates.options[nextDatesIndex].value, function (reList) {
+                    _this.currentReplayEntities[2] = reList;
+                });
+            }
+        }
+        else {
+            this.removeOptions(this.selectTimes);
+            var reList = this.currentReplayEntities[1 + direction];
+            for (var i = 0; i < reList.length; i++) {
+                var re = reList[i];
+                var datetimes = re.ReplayId.split(IDBHelper.replaySeparator);
+                var timeString = datetimes[1];
+                var option = document.createElement("option");
+                option.text = timeString;
+                this.selectTimes.add(option);
+            }
+            var newDatesIndex = this.selectDates.selectedIndex + direction;
+            if (direction < 0) {
+                this.currentReplayEntities.pop();
+                this.currentReplayEntities.unshift(undefined);
+                if (newDatesIndex >= 0) {
+                    IDBHelper.ReadReplayEntityByDate(this.selectDates.options[newDatesIndex].value, function (reList) {
+                        _this.currentReplayEntities[0] = reList;
+                    });
+                }
+            }
+            else {
+                this.currentReplayEntities.shift();
+                this.currentReplayEntities.push(undefined);
+                if (newDatesIndex < this.selectDates.options.length) {
+                    IDBHelper.ReadReplayEntityByDate(this.selectDates.options[newDatesIndex].value, function (reList) {
+                        _this.currentReplayEntities[2] = reList;
+                    });
+                }
+            }
+        }
+    };
+    MainForm.prototype.shouldShowLast8Cards = function () {
+        return this.gameScene.yesFirstPersonView !== "true" ||
+            this.tractorPlayer.CurrentHandState.Starter === this.tractorPlayer.replayEntity.Players[0];
+    };
+    MainForm.prototype.saveSettings = function () {
+        // cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
+        //     this.joinAudioUrl = 'http://' + this.joinAudioUrl;
+        // }
+        // cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
+        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
+    };
+    MainForm.prototype.removeOptions = function (selectElement) {
+        var i, L = selectElement.options.length - 1;
+        for (i = L; i >= 0; i--) {
+            selectElement.remove(i);
         }
     };
     return MainForm;

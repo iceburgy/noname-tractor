@@ -15,7 +15,7 @@ export class IDBHelper {
     public static replaySeparator = "===";
     public static maxReplays: number = 1000;
 
-    public static InitIDB(): any {
+    public static InitIDB(callback: any): any {
         let dbReq = indexedDB.open('localDB', 1);
         dbReq.onupgradeneeded = function (event: any) {
             if (event && event.target) {
@@ -31,6 +31,7 @@ export class IDBHelper {
         dbReq.onsuccess = function (event: any) {
             if (event && event.target) {
                 IDBHelper.LocalIDB = event.target.result;
+                callback.apply();
             }
         }
         dbReq.onerror = function (event) {

@@ -2,7 +2,7 @@ import { ReplayEntity } from './replay_entity.js';
 export var IDBHelper = /** @class */ (function () {
     function IDBHelper() {
     }
-    IDBHelper.InitIDB = function () {
+    IDBHelper.InitIDB = function (callback) {
         var dbReq = indexedDB.open('localDB', 1);
         dbReq.onupgradeneeded = function (event) {
             if (event && event.target) {
@@ -16,6 +16,7 @@ export var IDBHelper = /** @class */ (function () {
         dbReq.onsuccess = function (event) {
             if (event && event.target) {
                 IDBHelper.LocalIDB = event.target.result;
+                callback.apply();
             }
         };
         dbReq.onerror = function (event) {

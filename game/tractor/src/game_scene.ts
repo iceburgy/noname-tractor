@@ -64,7 +64,7 @@ export class GameScene {
     public noDanmu!: string
     public noCutCards!: string
     public yesDragSelect!: string
-    // public yesFirstPersonView: string 
+    public yesFirstPersonView!: string
     public qiangliangMin!: string
     public skinInUse!: string
     // public decadeUICanvas: HTMLElement 
@@ -114,9 +114,7 @@ export class GameScene {
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
-        // // if (this.yesDragSelect === undefined) this.yesDragSelect = 'false'
-        // // this.yesFirstPersonView = cookies.get("yesFirstPersonView");
-        // // if (this.yesFirstPersonView === undefined) this.yesFirstPersonView = 'false'
+        this.yesFirstPersonView = (this.lib && this.lib.config && this.lib.config.yesFirstPersonView) ? this.lib.config.yesFirstPersonView : "false";
         this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
@@ -131,8 +129,7 @@ export class GameScene {
             }
             this.resolveUrl()
         }
-        // // this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
-        // // IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
+        IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
         this.nickNameOverridePass = nickNameOverridePass;
         this.playerEmail = playerEmail;
 
@@ -142,6 +139,7 @@ export class GameScene {
         this.loadAudioFiles()
     }
 
+    // non-replay mode, online
     connect() {
         if (!this.hostName) return;
         try {
@@ -173,7 +171,7 @@ export class GameScene {
                 this.gs.mainForm.drawFrameChat();
                 CommonMethods.BuildCardNumMap()
 
-                // IDBHelper.InitIDB();
+                IDBHelper.InitIDB(() => { void (0); });
                 this.gs.mainForm.LoadUIUponConnect();
 
                 // } catch (e) {
@@ -239,9 +237,9 @@ export class GameScene {
                     case CommonMethods.CutCardShoeCards_RESPONSE:
                         this.gs.handleCutCardShoeCards();
                         break;
-                    // case CommonMethods.NotifyReplayState_RESPONSE:
-                    //     this.gs.handleNotifyReplayState(objList);
-                    //     break;
+                    case CommonMethods.NotifyReplayState_RESPONSE:
+                        this.gs.handleNotifyReplayState(objList);
+                        break;
                     case CommonMethods.NotifyPing_RESPONSE:
                         this.gs.handleNotifyPing_RESPONSE();
                         break;
@@ -281,6 +279,21 @@ export class GameScene {
         }
     }
 
+    // replay mode, offline
+    doReplay() {
+        this.isReplayMode = true;
+        this.mainForm = new MainForm(this)
+        this.mainForm.drawFrameMain();
+        this.mainForm.drawGameRoom();
+        this.mainForm.drawFrameChat();
+        CommonMethods.BuildCardNumMap()
+        this.mainForm.LoadUIUponConnect();
+
+        IDBHelper.InitIDB(() => {
+            this.mainForm.DoReplayMainForm();
+        });
+    }
+
     // public handleNotifyUpdateGobang_RESPONSE(objList) {
     //     var result: SGGBState = objList[0];
     //     this.mainForm.sgDrawingHelper.NotifyUpdateGobang(result);
@@ -318,10 +331,10 @@ export class GameScene {
         this.mainForm.tractorPlayer.NotifyPing()
     }
 
-    // public handleNotifyReplayState(objList: any) {
-    //     var result: ReplayEntity = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyReplayState(result)
-    // }
+    public handleNotifyReplayState(objList: any) {
+        var result: ReplayEntity = objList[0];
+        IDBHelper.SaveReplayEntity(result, () => { void (0); })
+    }
 
     public handleCutCardShoeCards() {
         this.mainForm.CutCardShoeCardsEventHandler()
@@ -471,7 +484,6 @@ export class GameScene {
     }
 
     public saveSettings() {
-        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
         // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
@@ -493,7 +505,7 @@ export class GameScene {
     }
 
     public isInGameRoom() {
-        return this.ui && this.ui.frameGameRoom && this.ui.frameGameRoom;
+        return this.ui && this.ui.roomOwnerText;
     }
 
     // // public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {

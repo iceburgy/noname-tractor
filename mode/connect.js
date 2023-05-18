@@ -92,18 +92,20 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					clearTimeout(event.timeout);
 					game.clearConnect();
 
-					var textEmail = ui.create.div('', '连接中...');
-					textEmail.style.width = '400px';
-					textEmail.style.height = '30px';
-					textEmail.style.lineHeight = '30px';
-					textEmail.style.fontFamily = 'xinwei';
-					textEmail.style.fontSize = '30px';
-					textEmail.style.padding = '10px';
-					textEmail.style.left = 'calc(50% - 200px)';
-					textEmail.style.top = 'calc(56%)';
-					textEmail.style.textAlign = 'center';
-					ui.window.appendChild(textEmail);
-					ui.emailtext = textEmail;
+					if (e.target.innerText === '进入大厅') {
+						var textEmail = ui.create.div('', '连接中...');
+						textEmail.style.width = '400px';
+						textEmail.style.height = '30px';
+						textEmail.style.lineHeight = '30px';
+						textEmail.style.fontFamily = 'xinwei';
+						textEmail.style.fontSize = '30px';
+						textEmail.style.padding = '10px';
+						textEmail.style.left = 'calc(50% - 200px)';
+						textEmail.style.top = 'calc(56%)';
+						textEmail.style.textAlign = 'center';
+						ui.window.appendChild(textEmail);
+						ui.emailtext = textEmail;
+					}
 
 					import('../game/tractor/out/game_scene.js')
 						.then((GameScene) => {
@@ -112,7 +114,11 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							gameScene.lib = lib;
 							gameScene.ui = ui;
 							gameScene.get = get;
-							gameScene.connect();
+							if (e.target.innerText === '进入大厅') {
+								gameScene.connect();
+							} else {
+								gameScene.doReplay();
+							}
 						})
 						.catch(error => {
 							document.body.innerHTML = `<div>!!! 尝试加载页面失败！</div>`
@@ -131,6 +137,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				button.style.top = 'calc(56%)';
 				ui.window.appendChild(button);
 				ui.ipbutton = button;
+
+				var buttonReplay = ui.create.div('.menubutton.highlight.large.pointerdiv', '录像回放', connect);
+				buttonReplay.style.left = 'calc(50% - 70px)';
+				buttonReplay.style.top = 'calc(64%)';
+				ui.window.appendChild(buttonReplay);
+				ui.buttonReplay = buttonReplay;
 
 				updateButtonStatus = function () {
 					if (nodeHostName.value && nodePlayerName.value && nodePassword.value && nodeEmail.value) {
@@ -188,7 +200,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				userNotes.style.fontSize = '20px';
 				userNotes.style.padding = '10px';
 				userNotes.style.width = 'calc(100%)';
-				userNotes.style.top = 'calc(70%)';
+				userNotes.style.top = 'calc(72%)';
 				userNotes.style.textAlign = 'center';
 				ui.userNotes = userNotes;
 

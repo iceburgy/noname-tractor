@@ -141,7 +141,12 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true)
             this.DrawCardsBySuit(allClubsNoRank, 39, true)
             if (this.DrawCardsBySuit(allHeartsNoRank, 0, true)) {
-                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
+                else {
+                    this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
                 didDrawMaster = true;
             }
 
@@ -151,7 +156,12 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allClubsNoRank, 39, true)
             this.DrawCardsBySuit(allHeartsNoRank, 0, true)
             if (this.DrawCardsBySuit(allSpadesNoRank, 13, true)) {
-                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
+                else {
+                    this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
                 didDrawMaster = true
             }
 
@@ -161,7 +171,12 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allHeartsNoRank, 0, true)
             this.DrawCardsBySuit(allSpadesNoRank, 13, true)
             if (this.DrawCardsBySuit(allDiamondsNoRank, 26, true)) {
-                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
+                else {
+                    this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
                 didDrawMaster = true
             }
 
@@ -171,7 +186,12 @@ export class DrawingFormHelper {
             this.DrawCardsBySuit(allSpadesNoRank, 13, true)
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true)
             if (this.DrawCardsBySuit(allClubsNoRank, 39, true)) {
-                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
+                else {
+                    this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
                 didDrawMaster = true
             }
 
@@ -186,7 +206,12 @@ export class DrawingFormHelper {
         primeSolidMasters[52] = currentPoker.Cards[52]
         primeSolidMasters[53] = currentPoker.Cards[53]
         if (this.DrawCardsBySuit(subSolidMasters, 0, !didDrawMaster)) {
-            this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+            if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+            }
+            else {
+                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+            }
             didDrawMaster = true
         }
         this.DrawCardsBySuit(primeSolidMasters, 0, !didDrawMaster)
@@ -199,11 +224,23 @@ export class DrawingFormHelper {
             var cardCount: number = cardsToDraw[i]
             for (let j = 0; j < cardCount; j++) {
                 this.drawCard(this.startX, this.startY, i + offset)
-                this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
+                else {
+                    this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+                }
                 hasDrawn = true
             }
         }
-        if (hasDrawn) this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+        if (hasDrawn) {
+            if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                this.startX = `${this.startX} - ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+            }
+            else {
+                this.startX = `${this.startX} + ${this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale}px`;
+            }
+        }
         return hasDrawn
     }
 
@@ -279,7 +316,7 @@ export class DrawingFormHelper {
         image.node.seqnum.style.position = "absolute";
         image.node.seqnum.style.left = "calc(1px)";
         image.node.seqnum.style.top = "calc(65%)";
-        image.node.seqnum.style.fontSize = '15px';
+        image.node.seqnum.style.fontSize = `${15 * this.handcardScale}px`;
         image.node.seqnum.style.color = 'gray';
         image.node.seqnum.style['font-family'] = 'serif';
         image.node.seqnum.style['text-shadow'] = 'none';
@@ -294,7 +331,7 @@ export class DrawingFormHelper {
                 image.style.bottom = `calc(${y})`;
                 break;
             case 3:
-                image.style.left = `calc(${x})`;
+                image.style.right = `calc(${x})`;
                 image.style.top = `calc(${y})`;
                 break;
             case 4:

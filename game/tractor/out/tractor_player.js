@@ -7,8 +7,7 @@ import { PlayerLocalCache } from './player_local_cache.js';
 import { CommonMethods } from './common_methods.js';
 import { SuitEnums } from './suit_enums.js';
 import { TractorRules } from './tractor_rules.js';
-// import { ReplayEntity } from './replay_entity.js';
-// import { IDBHelper } from './idb_helper.js';
+import { ReplayEntity } from './replay_entity.js';
 var PlayerMakeTrump_REQUEST = "PlayerMakeTrump";
 var UsedShengbi_REQUEST = "UsedShengbi";
 var NotifyPong_REQUEST = "NotifyPong";
@@ -30,8 +29,8 @@ var TractorPlayer = /** @class */ (function () {
         this.CurrentHandState = new CurrentHandState(this.CurrentGameState);
         this.CurrentTrickState = new CurrentTrickState();
         this.playerLocalCache = new PlayerLocalCache();
-        // this.replayEntity = new ReplayEntity()
-        // this.replayedTricks = []
+        this.replayEntity = new ReplayEntity();
+        this.replayedTricks = [];
         this.replayAngle = 0;
     }
     TractorPlayer.prototype.destroyAllClientMessages = function () {

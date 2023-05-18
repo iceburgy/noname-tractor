@@ -35340,6 +35340,10 @@
 				ui.ipbutton.remove();
 				delete ui.ipbutton;
 			}
+			if(ui.buttonReplay){
+				ui.buttonReplay.remove();
+				delete ui.buttonReplay;
+			}
 			if(ui.recentIP){
 				ui.recentIP.remove();
 				delete ui.recentIP;

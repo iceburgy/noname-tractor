@@ -1,6 +1,7 @@
 import { MainForm } from "./main_form.js";
 import { Coordinates } from "./coordinates.js";
 import { CommonMethods } from "./common_methods.js";
+import { IDBHelper } from "./idb_helper.js";
 var dummyValue = "dummyValue";
 var IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 var GameScene = /** @class */ (function () {
@@ -52,9 +53,7 @@ var GameScene = /** @class */ (function () {
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
-        // // if (this.yesDragSelect === undefined) this.yesDragSelect = 'false'
-        // // this.yesFirstPersonView = cookies.get("yesFirstPersonView");
-        // // if (this.yesFirstPersonView === undefined) this.yesFirstPersonView = 'false'
+        this.yesFirstPersonView = (this.lib && this.lib.config && this.lib.config.yesFirstPersonView) ? this.lib.config.yesFirstPersonView : "false";
         this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
         var isIPPort = IPPort.test(this.hostName);
@@ -69,14 +68,14 @@ var GameScene = /** @class */ (function () {
             }
             this.resolveUrl();
         }
-        // // this.joinAudioUrl = cookies.get("joinAudioUrl") ? cookies.get("joinAudioUrl") : "";
-        // // IDBHelper.maxReplays = cookies.get("maxReplays") ? parseInt(cookies.get("maxReplays")) : IDBHelper.maxReplays;
+        IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
         this.nickNameOverridePass = nickNameOverridePass;
         this.playerEmail = playerEmail;
         this.coordinates = new Coordinates(this.isReplayMode);
         this.soundPool = {};
         this.loadAudioFiles();
     }
+    // non-replay mode, online
     GameScene.prototype.connect = function () {
         if (!this.hostName)
             return;
@@ -106,7 +105,7 @@ var GameScene = /** @class */ (function () {
                 this.gs.mainForm.drawFrameMain();
                 this.gs.mainForm.drawFrameChat();
                 CommonMethods.BuildCardNumMap();
-                // IDBHelper.InitIDB();
+                IDBHelper.InitIDB(function () { void (0); });
                 this.gs.mainForm.LoadUIUponConnect();
                 // } catch (e) {
                 //     // alert("error")
@@ -170,9 +169,9 @@ var GameScene = /** @class */ (function () {
                     case CommonMethods.CutCardShoeCards_RESPONSE:
                         this.gs.handleCutCardShoeCards();
                         break;
-                    // case CommonMethods.NotifyReplayState_RESPONSE:
-                    //     this.gs.handleNotifyReplayState(objList);
-                    //     break;
+                    case CommonMethods.NotifyReplayState_RESPONSE:
+                        this.gs.handleNotifyReplayState(objList);
+                        break;
                     case CommonMethods.NotifyPing_RESPONSE:
                         this.gs.handleNotifyPing_RESPONSE();
                         break;
@@ -212,6 +211,20 @@ var GameScene = /** @class */ (function () {
             console.log(e);
         }
     };
+    // replay mode, offline
+    GameScene.prototype.doReplay = function () {
+        var _this = this;
+        this.isReplayMode = true;
+        this.mainForm = new MainForm(this);
+        this.mainForm.drawFrameMain();
+        this.mainForm.drawGameRoom();
+        this.mainForm.drawFrameChat();
+        CommonMethods.BuildCardNumMap();
+        this.mainForm.LoadUIUponConnect();
+        IDBHelper.InitIDB(function () {
+            _this.mainForm.DoReplayMainForm();
+        });
+    };
     // public handleNotifyUpdateGobang_RESPONSE(objList) {
     //     var result: SGGBState = objList[0];
     //     this.mainForm.sgDrawingHelper.NotifyUpdateGobang(result);
@@ -242,10 +255,10 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleNotifyPing_RESPONSE = function () {
         this.mainForm.tractorPlayer.NotifyPing();
     };
-    // public handleNotifyReplayState(objList: any) {
-    //     var result: ReplayEntity = objList[0];
-    //     this.mainForm.tractorPlayer.NotifyReplayState(result)
-    // }
+    GameScene.prototype.handleNotifyReplayState = function (objList) {
+        var result = objList[0];
+        IDBHelper.SaveReplayEntity(result, function () { void (0); });
+    };
     GameScene.prototype.handleCutCardShoeCards = function () {
         this.mainForm.CutCardShoeCardsEventHandler();
     };
@@ -375,7 +388,6 @@ var GameScene = /** @class */ (function () {
         this.soundPool[CommonMethods.audioWin] = ["effect", "win"];
     };
     GameScene.prototype.saveSettings = function () {
-        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
         // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     };
     // [flag, pass, email]
@@ -393,7 +405,7 @@ var GameScene = /** @class */ (function () {
         return this.ui && this.ui.frameGameHall && this.ui.frameGameHall;
     };
     GameScene.prototype.isInGameRoom = function () {
-        return this.ui && this.ui.frameGameRoom && this.ui.frameGameRoom;
+        return this.ui && this.ui.roomOwnerText;
     };
     // // public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {
     // //     if (!window.spine) {

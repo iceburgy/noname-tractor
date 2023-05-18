@@ -122,7 +122,12 @@ var DrawingFormHelper = /** @class */ (function () {
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true);
             this.DrawCardsBySuit(allClubsNoRank, 39, true);
             if (this.DrawCardsBySuit(allHeartsNoRank, 0, true)) {
-                this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
+                else {
+                    this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
                 didDrawMaster = true;
             }
             primeSolidMasters[currentPoker.Rank] = currentPoker.HeartsRankTotal();
@@ -132,7 +137,12 @@ var DrawingFormHelper = /** @class */ (function () {
             this.DrawCardsBySuit(allClubsNoRank, 39, true);
             this.DrawCardsBySuit(allHeartsNoRank, 0, true);
             if (this.DrawCardsBySuit(allSpadesNoRank, 13, true)) {
-                this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
+                else {
+                    this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
                 didDrawMaster = true;
             }
             primeSolidMasters[currentPoker.Rank + 13] = currentPoker.SpadesRankTotal();
@@ -142,7 +152,12 @@ var DrawingFormHelper = /** @class */ (function () {
             this.DrawCardsBySuit(allHeartsNoRank, 0, true);
             this.DrawCardsBySuit(allSpadesNoRank, 13, true);
             if (this.DrawCardsBySuit(allDiamondsNoRank, 26, true)) {
-                this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
+                else {
+                    this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
                 didDrawMaster = true;
             }
             primeSolidMasters[currentPoker.Rank + 26] = currentPoker.DiamondsRankTotal();
@@ -152,7 +167,12 @@ var DrawingFormHelper = /** @class */ (function () {
             this.DrawCardsBySuit(allSpadesNoRank, 13, true);
             this.DrawCardsBySuit(allDiamondsNoRank, 26, true);
             if (this.DrawCardsBySuit(allClubsNoRank, 39, true)) {
-                this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
+                else {
+                    this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
                 didDrawMaster = true;
             }
             primeSolidMasters[currentPoker.Rank + 39] = currentPoker.ClubsRankTotal();
@@ -166,7 +186,12 @@ var DrawingFormHelper = /** @class */ (function () {
         primeSolidMasters[52] = currentPoker.Cards[52];
         primeSolidMasters[53] = currentPoker.Cards[53];
         if (this.DrawCardsBySuit(subSolidMasters, 0, !didDrawMaster)) {
-            this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+            if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+            }
+            else {
+                this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+            }
             didDrawMaster = true;
         }
         this.DrawCardsBySuit(primeSolidMasters, 0, !didDrawMaster);
@@ -179,12 +204,23 @@ var DrawingFormHelper = /** @class */ (function () {
             var cardCount = cardsToDraw[i];
             for (var j = 0; j < cardCount; j++) {
                 this.drawCard(this.startX, this.startY, i + offset);
-                this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                    this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
+                else {
+                    this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+                }
                 hasDrawn = true;
             }
         }
-        if (hasDrawn)
-            this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+        if (hasDrawn) {
+            if (this.handcardPosition === 2 || this.handcardPosition === 3) {
+                this.startX = "".concat(this.startX, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+            }
+            else {
+                this.startX = "".concat(this.startX, " + ").concat(this.mainForm.gameScene.coordinates.handCardOffset * this.handcardScale, "px");
+            }
+        }
         return hasDrawn;
     };
     DrawingFormHelper.prototype.DrawShowedCards = function (serverCardList, x, y, targetImages, scale, pos) {
@@ -255,7 +291,7 @@ var DrawingFormHelper = /** @class */ (function () {
         image.node.seqnum.style.position = "absolute";
         image.node.seqnum.style.left = "calc(1px)";
         image.node.seqnum.style.top = "calc(65%)";
-        image.node.seqnum.style.fontSize = '15px';
+        image.node.seqnum.style.fontSize = "".concat(15 * this.handcardScale, "px");
         image.node.seqnum.style.color = 'gray';
         image.node.seqnum.style['font-family'] = 'serif';
         image.node.seqnum.style['text-shadow'] = 'none';
@@ -269,7 +305,7 @@ var DrawingFormHelper = /** @class */ (function () {
                 image.style.bottom = "calc(".concat(y, ")");
                 break;
             case 3:
-                image.style.left = "calc(".concat(x, ")");
+                image.style.right = "calc(".concat(x, ")");
                 image.style.top = "calc(".concat(y, ")");
                 break;
             case 4:

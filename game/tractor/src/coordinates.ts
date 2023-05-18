@@ -268,7 +268,7 @@ export class Coordinates {
             { x: `50% - ${this.cardWidth / 2}px`, y: "0px" },
             { x: this.last8CardsForStarterPosition.x, y: `${this.showedCardsPositions[0].y}` },
             { x: this.last8CardsForStarterPosition.x, y: `${this.showedCardsPositions[2].y} + ${this.cardHeight * (1 - this.replayHandCardScale)}px` },
-            { x: this.playerSkinPositions[3].x, y: `${this.playerSkinPositions[0].y}` },
+            { x: this.playerSkinPositions[3].x, y: `${this.showedCardsPositions[0].y}` },
         ]
         this.toolbarSize = 50
         this.toolbarPosition = { x: "10px", y: `${this.showedCardsPositions[0].y}` }

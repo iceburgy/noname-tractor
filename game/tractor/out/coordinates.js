@@ -132,7 +132,7 @@ var Coordinates = /** @class */ (function () {
             { x: "50% - ".concat(this.cardWidth / 2, "px"), y: "0px" },
             { x: this.last8CardsForStarterPosition.x, y: "".concat(this.showedCardsPositions[0].y) },
             { x: this.last8CardsForStarterPosition.x, y: "".concat(this.showedCardsPositions[2].y, " + ").concat(this.cardHeight * (1 - this.replayHandCardScale), "px") },
-            { x: this.playerSkinPositions[3].x, y: "".concat(this.playerSkinPositions[0].y) },
+            { x: this.playerSkinPositions[3].x, y: "".concat(this.showedCardsPositions[0].y) },
         ];
         this.toolbarSize = 50;
         this.toolbarPosition = { x: "10px", y: "".concat(this.showedCardsPositions[0].y) };
