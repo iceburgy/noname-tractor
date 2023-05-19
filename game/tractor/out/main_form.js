@@ -32,7 +32,6 @@ var PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve";
 var BUY_USE_SKIN_REQUEST = "BuyUseSkin";
 var UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka";
 var PLAYER_QIANDAO_REQUEST = "PlayerQiandao";
-var gifTff;
 var MainForm = /** @class */ (function () {
     function MainForm(gs) {
         this.firstWinNormal = 1;
@@ -2269,12 +2268,10 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.CreatePlayer = function (pos, playerId, parentNode) {
         var playerDiv = this.gameScene.ui.create.player(parentNode);
-        var img = document.createElement("img");
-        playerDiv.appendChild(img);
-        playerDiv.node.img = img;
         playerDiv.setAttribute('data-position', pos);
-        // playerDiv.node.avatar.style['background-size'] = '100% 100%';
-        // playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
+        playerDiv.node.avatar.style['background-size'] = '100% 100%';
+        playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
+        playerDiv.node.avatar.show();
         playerDiv.node.nameol.innerHTML = playerId;
         return playerDiv;
     };
@@ -2392,20 +2389,7 @@ var MainForm = /** @class */ (function () {
             var hei = e.target.height;
             var skinWid = fixedHeight * wid / hei;
             playerObj.style.width = "calc(".concat(skinWid, "px)");
-            // playerObj.node.avatar.setBackgroundImage(skinURL);
-            playerObj.node.img.width = skinWid;
-            playerObj.node.img.height = fixedHeight;
-            playerObj.node.img.src = skinURL;
-            playerObj.node.img.classList.add("freezeframe");
-            gifTff = new Freezeframe({
-                trigger: "click"
-            });
-            // new Freezeframe();
-            // playerObj.node.avatar.node.img.addEventListener("click", (e: any) => {
-            //     // logo.start(); // start animation
-            //     // logo.stop(); // stop animation
-            //     gifTff.toggle(); // toggle animation
-            // });
+            playerObj.node.avatar.setBackgroundImage(skinURL);
             if (gs && playerObj === gs.ui.gameMe) {
                 gs.ui.handZone.style.left = "calc(".concat(gs.ui.gameMe.clientWidth, "px)");
             }
