@@ -4375,10 +4375,10 @@ div[data-decoration="bronze"]::after{
 	-webkit-animation: game_start 0.5s;
 }
 
-.player {
+/* .player {
 	top: 47px;
 	left: 14px;
-}
+} */
 .card .wunature {
 	top: 74px;
 	right: 6px;

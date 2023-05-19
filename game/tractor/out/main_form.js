@@ -448,19 +448,19 @@ var MainForm = /** @class */ (function () {
                     });
                     // mouseover
                     curPlayerImage.addEventListener("mouseover", function (e) {
-                        var pos = parseInt(e.target.getAttribute('data-position'));
+                        var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
                         if (pos === 2)
-                            e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                            e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
                         else
-                            e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+                            e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
                     });
                     // mouseout
                     curPlayerImage.addEventListener("mouseout", function (e) {
-                        var pos = parseInt(e.target.getAttribute('data-position'));
+                        var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
                         if (pos === 2)
-                            e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                            e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
                         else
-                            e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                            e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
                     });
                 }
                 // // 房主将玩家请出房间

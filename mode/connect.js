@@ -114,10 +114,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							gameScene.lib = lib;
 							gameScene.ui = ui;
 							gameScene.get = get;
-							if (e.target.innerText === '进入大厅') {
-								gameScene.connect();
-							} else {
+							if (e.target.innerText === '录像回放') {
 								gameScene.doReplay();
+							} else {
+								gameScene.connect();
 							}
 						})
 						.catch(error => {

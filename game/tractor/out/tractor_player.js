@@ -94,7 +94,8 @@ var TractorPlayer = /** @class */ (function () {
         for (var i = 0; i < 4; i++) {
             playerChanged = playerChanged || !(!newPositionPlayer[i + 1] && !this.mainForm.PositionPlayer[i + 1] ||
                 newPositionPlayer[i + 1] && this.mainForm.PositionPlayer[i + 1] && newPositionPlayer[i + 1] == this.mainForm.PositionPlayer[i + 1]);
-            observerChanged = observerChanged || !(this.CurrentGameState.Players[i] != null && gameState.Players[i] != null && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
+            observerChanged = observerChanged || !(!this.CurrentGameState.Players[i] && !gameState.Players[i] ||
+                this.CurrentGameState.Players[i] && gameState.Players[i] && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
             if (gameState.Players[i] != null && gameState.Players[i].Team != 0 &&
                 (this.CurrentGameState.Players[i] == null || this.CurrentGameState.Players[i].PlayerId != gameState.Players[i].PlayerId || this.CurrentGameState.Players[i].Team != gameState.Players[i].Team)) {
                 teamMade = true;

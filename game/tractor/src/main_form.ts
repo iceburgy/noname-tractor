@@ -518,15 +518,15 @@ export class MainForm {
                     });
                     // mouseover
                     curPlayerImage.addEventListener("mouseover", (e: any) => {
-                        let pos = parseInt(e.target.getAttribute('data-position'));
-                        if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
-                        else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
+                        let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                        if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
+                        else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
                     });
                     // mouseout
                     curPlayerImage.addEventListener("mouseout", (e: any) => {
-                        let pos = parseInt(e.target.getAttribute('data-position'));
-                        if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                        else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                        let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                        if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                        else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
                     });
                 }
 
