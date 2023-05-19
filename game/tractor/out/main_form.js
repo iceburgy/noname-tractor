@@ -32,6 +32,7 @@ var PLAYER_EXIT_AND_OBSERVE_REQUEST = "ExitAndObserve";
 var BUY_USE_SKIN_REQUEST = "BuyUseSkin";
 var UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka";
 var PLAYER_QIANDAO_REQUEST = "PlayerQiandao";
+var gifTff;
 var MainForm = /** @class */ (function () {
     function MainForm(gs) {
         this.firstWinNormal = 1;
@@ -431,62 +432,46 @@ var MainForm = /** @class */ (function () {
                         var skinURL = "image/tractor/skin/".concat(skinInUseMe, ".").concat(skinExtentionMe);
                         this_1.SetAvatarImage(skinURL, this_1.gameScene.ui.gameMe, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p, i, this_1.gameScene);
                     }
+                    // 旁观玩家切换视角/房主将玩家请出房间
+                    if ((this_1.tractorPlayer.isObserver || this_1.tractorPlayer.CurrentRoomSetting.RoomOwner === this_1.tractorPlayer.MyOwnId) && i !== 0) {
+                        var curPlayerImage = this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                        curPlayerImage.style.cursor = 'pointer';
+                        // click
+                        curPlayerImage.addEventListener("click", function (e) {
+                            var pos = i + 1;
+                            if (_this.tractorPlayer.isObserver) {
+                                _this.destroyImagesChairOrPlayer();
+                                _this.observeByPosition(pos);
+                            }
+                            else if (_this.tractorPlayer.CurrentRoomSetting.RoomOwner === _this.tractorPlayer.MyOwnId) {
+                                var c = window.confirm("是否确定将此玩家请出房间？");
+                                if (c == true) {
+                                    _this.bootPlayerByPosition(pos);
+                                }
+                            }
+                        });
+                        // mouseover
+                        curPlayerImage.addEventListener("mouseover", function (e) {
+                            var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            if (pos === 2)
+                                e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                            else
+                                e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+                        });
+                        // mouseout
+                        curPlayerImage.addEventListener("mouseout", function (e) {
+                            var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            if (pos === 2)
+                                e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                            else
+                                e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                        });
+                    }
                 }
                 else {
                     var playerDiv = i === 0 ? this_1.gameScene.ui.gameMe : this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i];
                     this_1.SetObText(p, i, this_1.gameScene, playerDiv.style.width);
                 }
-                // 旁观玩家切换视角
-                if (this_1.tractorPlayer.isObserver && i !== 0) {
-                    var curPlayerImage = this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i];
-                    curPlayerImage.style.cursor = 'pointer';
-                    // click
-                    curPlayerImage.addEventListener("click", function (e) {
-                        var pos = i + 1;
-                        _this.destroyImagesChairOrPlayer();
-                        _this.observeByPosition(pos);
-                    });
-                    // mouseover
-                    curPlayerImage.addEventListener("mouseover", function (e) {
-                        var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                        if (pos === 2)
-                            e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
-                        else
-                            e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
-                    });
-                    // mouseout
-                    curPlayerImage.addEventListener("mouseout", function (e) {
-                        var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                        if (pos === 2)
-                            e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
-                        else
-                            e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
-                    });
-                }
-                // // 房主将玩家请出房间
-                // if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId && i !== 0) {
-                //     // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
-                //     lblNickName.removeAllListeners();
-                //     lblNickName.setInteractive({ useHandCursor: true })
-                //         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
-                //             if (pointer.rightButtonReleased()) return;
-                //             lblNickName.setColor('white')
-                //                 .setFontSize(30)
-                //             let pos = i + 1;
-                //             var c = window.confirm("是否确定将此玩家请出房间？");
-                //             if (c == true) {
-                //                 this.bootPlayerByPosition(pos);
-                //             }
-                //         })
-                //         .on('pointerover', () => {
-                //             lblNickName.setColor('yellow')
-                //                 .setFontSize(40)
-                //         })
-                //         .on('pointerout', () => {
-                //             lblNickName.setColor('white')
-                //                 .setFontSize(30)
-                //         })
-                // }
             }
             curIndex = (curIndex + 1) % 4;
         };
@@ -494,9 +479,12 @@ var MainForm = /** @class */ (function () {
         for (var i = 0; i < 4; i++) {
             _loop_1(i);
         }
-        // this.loadEmojiForm();
+        window.stop();
     };
     MainForm.prototype.SetObText = function (p, i, gs, skinWid) {
+        // 避免重复加载旁观者信息
+        if (gs.ui.pokerPlayerObGameRoom && gs.ui.pokerPlayerObGameRoom[i])
+            return;
         if (p.Observers && p.Observers.length > 0) {
             var obNameText = "";
             var tempWidOb = 0;
@@ -1102,15 +1090,15 @@ var MainForm = /** @class */ (function () {
             this.gameScene.sendMessageToServer(ObserveNext_REQUEST, this.tractorPlayer.MyOwnId, this.PositionPlayer[pos]);
         }
     };
-    //     // pos is 1-based
-    //     private bootPlayerByPosition(pos: number) {
-    //         if (this.PositionPlayer[pos]) {
-    //             let playerID = this.PositionPlayer[pos];
-    //             let args: (string | number)[] = [-1, -1, `玩家【${playerID}】被房主请出房间`];
-    //             this.sendEmojiWithCheck(args)
-    //             this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "")
-    //         }
-    //     }
+    // pos is 1-based
+    MainForm.prototype.bootPlayerByPosition = function (pos) {
+        if (this.PositionPlayer[pos]) {
+            var playerID = this.PositionPlayer[pos];
+            var args = [-1, -1, "\u73A9\u5BB6\u3010".concat(playerID, "\u3011\u88AB\u623F\u4E3B\u8BF7\u51FA\u623F\u95F4")];
+            this.sendEmojiWithCheck(args);
+            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "");
+        }
+    };
     MainForm.prototype.LoadUIUponConnect = function () {
         var _this = this;
         if (!this.gameScene.isReplayMode) {
@@ -2281,10 +2269,12 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.CreatePlayer = function (pos, playerId, parentNode) {
         var playerDiv = this.gameScene.ui.create.player(parentNode);
+        var img = document.createElement("img");
+        playerDiv.appendChild(img);
+        playerDiv.node.img = img;
         playerDiv.setAttribute('data-position', pos);
-        playerDiv.node.avatar.style['background-size'] = '100% 100%';
-        playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
-        playerDiv.node.avatar.show();
+        // playerDiv.node.avatar.style['background-size'] = '100% 100%';
+        // playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
         playerDiv.node.nameol.innerHTML = playerId;
         return playerDiv;
     };
@@ -2402,7 +2392,20 @@ var MainForm = /** @class */ (function () {
             var hei = e.target.height;
             var skinWid = fixedHeight * wid / hei;
             playerObj.style.width = "calc(".concat(skinWid, "px)");
-            playerObj.node.avatar.setBackgroundImage(skinURL);
+            // playerObj.node.avatar.setBackgroundImage(skinURL);
+            playerObj.node.img.width = skinWid;
+            playerObj.node.img.height = fixedHeight;
+            playerObj.node.img.src = skinURL;
+            playerObj.node.img.classList.add("freezeframe");
+            gifTff = new Freezeframe({
+                trigger: "click"
+            });
+            // new Freezeframe();
+            // playerObj.node.avatar.node.img.addEventListener("click", (e: any) => {
+            //     // logo.start(); // start animation
+            //     // logo.stop(); // stop animation
+            //     gifTff.toggle(); // toggle animation
+            // });
             if (gs && playerObj === gs.ui.gameMe) {
                 gs.ui.handZone.style.left = "calc(".concat(gs.ui.gameMe.clientWidth, "px)");
             }
@@ -2795,19 +2798,19 @@ var MainForm = /** @class */ (function () {
             });
             // mouseover
             playerUI.addEventListener("mouseover", function (e) {
-                var pos = parseInt(e.target.getAttribute('data-position'));
+                var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
                 if (pos === 2)
-                    e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                    e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
                 else
-                    e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+                    e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
             });
             // mouseout
             playerUI.addEventListener("mouseout", function (e) {
-                var pos = parseInt(e.target.getAttribute('data-position'));
+                var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
                 if (pos === 2)
-                    e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                    e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
                 else
-                    e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                    e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
             });
         };
         var this_3 = this;

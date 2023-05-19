@@ -389,7 +389,7 @@ var TractorPlayer = /** @class */ (function () {
         var posY = "".concat(this.mainForm.gameScene.coordinates.clientMessagePosition.y, " - ").concat((msgs.length - 1) / 2 * this.mainForm.gameScene.coordinates.lineOffsetY, "px");
         if (msgs.length >= 2 && msgs[1].includes("获胜！")) {
             posX = this.mainForm.gameScene.coordinates.totalPointsPosition.x;
-            posY = this.mainForm.gameScene.coordinates.totalPointsPosition.y + 30;
+            posY = "".concat(this.mainForm.gameScene.coordinates.totalPointsPosition.y, " + 30px");
         }
         for (var i = 0; i < msgs.length; i++) {
             var m = msgs[i];

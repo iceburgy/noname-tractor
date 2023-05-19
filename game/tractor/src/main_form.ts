@@ -40,6 +40,7 @@ const BUY_USE_SKIN_REQUEST = "BuyUseSkin"
 const UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka"
 const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
 declare let jQuery: any;
+declare let Freezeframe: any;
 
 export class MainForm {
     // public gameScene: GameScene | GameReplayScene
@@ -500,68 +501,53 @@ export class MainForm {
                         let skinURL = `image/tractor/skin/${skinInUseMe}.${skinExtentionMe}`;
                         this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
                     }
+
+                    // 旁观玩家切换视角/房主将玩家请出房间
+                    if ((this.tractorPlayer.isObserver || this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) && i !== 0) {
+                        let curPlayerImage = this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                        curPlayerImage.style.cursor = 'pointer';
+                        // click
+                        curPlayerImage.addEventListener("click", (e: any) => {
+                            let pos = i + 1;
+                            if (this.tractorPlayer.isObserver) {
+                                this.destroyImagesChairOrPlayer();
+                                this.observeByPosition(pos);
+                            }
+                            else if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
+                                var c = window.confirm("是否确定将此玩家请出房间？");
+                                if (c == true) {
+                                    this.bootPlayerByPosition(pos);
+                                }
+                            }
+                        });
+                        // mouseover
+                        curPlayerImage.addEventListener("mouseover", (e: any) => {
+                            let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
+                            else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
+                        });
+                        // mouseout
+                        curPlayerImage.addEventListener("mouseout", (e: any) => {
+                            let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                            else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                        });
+                    }
                 }
                 else {
                     let playerDiv = i === 0 ? this.gameScene.ui.gameMe : this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
                     this.SetObText(p, i, this.gameScene, playerDiv.style.width);
                 }
-
-                // 旁观玩家切换视角
-                if (this.tractorPlayer.isObserver && i !== 0) {
-                    let curPlayerImage = this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
-                    curPlayerImage.style.cursor = 'pointer';
-                    // click
-                    curPlayerImage.addEventListener("click", (e: any) => {
-                        let pos = i + 1;
-                        this.destroyImagesChairOrPlayer();
-                        this.observeByPosition(pos);
-                    });
-                    // mouseover
-                    curPlayerImage.addEventListener("mouseover", (e: any) => {
-                        let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                        if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
-                        else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
-                    });
-                    // mouseout
-                    curPlayerImage.addEventListener("mouseout", (e: any) => {
-                        let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                        if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                        else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                    });
-                }
-
-                // // 房主将玩家请出房间
-                // if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId && i !== 0) {
-                //     // have to clear all listeners, otherwise multiple ones will be added and triggered multiple times
-                //     lblNickName.removeAllListeners();
-                //     lblNickName.setInteractive({ useHandCursor: true })
-                //         .on('pointerup', (pointer: Phaser.Input.Pointer) => {
-                //             if (pointer.rightButtonReleased()) return;
-                //             lblNickName.setColor('white')
-                //                 .setFontSize(30)
-                //             let pos = i + 1;
-                //             var c = window.confirm("是否确定将此玩家请出房间？");
-                //             if (c == true) {
-                //                 this.bootPlayerByPosition(pos);
-                //             }
-                //         })
-                //         .on('pointerover', () => {
-                //             lblNickName.setColor('yellow')
-                //                 .setFontSize(40)
-                //         })
-                //         .on('pointerout', () => {
-                //             lblNickName.setColor('white')
-                //                 .setFontSize(30)
-                //         })
-                // }
             }
 
             curIndex = (curIndex + 1) % 4
         }
-        // this.loadEmojiForm();
+        window.stop();
     }
 
     private SetObText(p: PlayerEntity, i: number, gs: GameScene, skinWid: number) {
+        // 避免重复加载旁观者信息
+        if (gs.ui.pokerPlayerObGameRoom && gs.ui.pokerPlayerObGameRoom[i]) return;
         if (p.Observers && p.Observers.length > 0) {
             var obNameText = "";
             let tempWidOb = 0;
@@ -1226,15 +1212,15 @@ export class MainForm {
         }
     }
 
-    //     // pos is 1-based
-    //     private bootPlayerByPosition(pos: number) {
-    //         if (this.PositionPlayer[pos]) {
-    //             let playerID = this.PositionPlayer[pos];
-    //             let args: (string | number)[] = [-1, -1, `玩家【${playerID}】被房主请出房间`];
-    //             this.sendEmojiWithCheck(args)
-    //             this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "")
-    //         }
-    //     }
+    // pos is 1-based
+    private bootPlayerByPosition(pos: number) {
+        if (this.PositionPlayer[pos]) {
+            let playerID = this.PositionPlayer[pos];
+            let args: (string | number)[] = [-1, -1, `玩家【${playerID}】被房主请出房间`];
+            this.sendEmojiWithCheck(args)
+            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "")
+        }
+    }
 
     public LoadUIUponConnect() {
         if (!this.gameScene.isReplayMode) {
@@ -3027,15 +3013,15 @@ export class MainForm {
             });
             // mouseover
             playerUI.addEventListener("mouseover", (e: any) => {
-                let pos = parseInt(e.target.getAttribute('data-position'));
-                if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
-                else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
+                let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
+                else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
             });
             // mouseout
             playerUI.addEventListener("mouseout", (e: any) => {
-                let pos = parseInt(e.target.getAttribute('data-position'));
-                if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
             });
         }
 
