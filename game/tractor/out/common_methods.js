@@ -530,6 +530,7 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.audioDrawx = "audiodrawx";
     CommonMethods.audioTie = "audiotie";
     CommonMethods.audioWin = "audiowin";
+    CommonMethods.audioGameStart = "audioGameStart";
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
     CommonMethods.ChatPresetMsgs = [
         "这波操作，666！",

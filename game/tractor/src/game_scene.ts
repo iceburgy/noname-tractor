@@ -14,6 +14,7 @@ import { IDBHelper } from "./idb_helper.js";
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 declare let CryptoJS: any;
+declare let decadeUI: any;
 
 export class GameScene {
     public isReplayMode: boolean
@@ -36,7 +37,7 @@ export class GameScene {
     public showedCardImages!: any[]
     public OverridingFlagImage: any
     public overridingLabelImages!: string[]
-    // public overridingLabelAnims: string[] 
+    public overridingLabelAnims: any
     // // public hallPlayerHeader: Phaser.GameObjects.Text
     // // public hallPlayerNames: Phaser.GameObjects.Text[]
     // // public btnJoinAudio: Phaser.GameObjects.Text
@@ -105,7 +106,13 @@ export class GameScene {
             "huosha",
             "leisha",
         ]
-        // this.overridingLabelAnims = [];
+        this.overridingLabelAnims = [
+            ["", ""],
+            ["", ""],
+            ["effect_qinglongyanyuedao", undefined],
+            ["effect_shoujidonghua", "play3"],
+            ["effect_shoujidonghua", "play5"]
+        ]
         // // this.hallPlayerNames = [];
         this.clientMessages = [];
         this.danmuMessages = [];
@@ -481,6 +488,7 @@ export class GameScene {
         this.soundPool[CommonMethods.audioDrawx] = ["effect", "drawx"];
         this.soundPool[CommonMethods.audioTie] = ["effect", "tie"];
         this.soundPool[CommonMethods.audioWin] = ["effect", "win"];
+        this.soundPool[CommonMethods.audioGameStart] = ["effect", "game_start"];
     }
 
     public saveSettings() {

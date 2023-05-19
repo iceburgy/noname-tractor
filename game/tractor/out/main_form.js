@@ -51,7 +51,6 @@ var MainForm = /** @class */ (function () {
         this.IsDebug = false;
         this.SelectedCards = [];
         this.timerIntervalID = [];
-        this.timerCountDown = 0;
         this.isSendEmojiEnabled = true;
         this.DaojuInfo = {};
         /*
@@ -596,6 +595,10 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.destroyGameRoom = function () {
+        if (this.gameScene.ui.handZone) {
+            this.gameScene.ui.handZone.remove();
+            delete this.gameScene.ui.handZone;
+        }
         if (this.gameScene.ui.gameMe) {
             this.gameScene.ui.gameMe.remove();
             delete this.gameScene.ui.gameMe;
@@ -768,7 +771,7 @@ var MainForm = /** @class */ (function () {
         // this.btnSurrender.Visible = false;
         // this.btnRiot.Visible = false;
         this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {};
-        this.timerCountDown = 0;
+        this.gameScene.game.timerCurrent = 0;
         this.gameScene.ui.btnPig.hide();
         this.init();
     };
@@ -2335,6 +2338,10 @@ var MainForm = /** @class */ (function () {
                 if (keyCode === 13) {
                     _this.emojiSubmitEventhandler();
                 }
+                return;
+            }
+            var ccTxtManual = document.getElementById("txtManual");
+            if (e.target === ccTxtManual) {
                 return;
             }
             // 1 - 9: 49 - 57

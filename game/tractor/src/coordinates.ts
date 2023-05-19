@@ -81,6 +81,7 @@ export class Coordinates {
 
     // cards
     public showedCardsPositions
+    public showedCardsPositionsAni
     public trumpMadeCardsPositions
     public trumpMadeCardsScale
 
@@ -243,6 +244,12 @@ export class Coordinates {
 
         // cards
         this.showedCardsPositions = [
+            { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[0].y} + ${this.cardHeight + 40}px` },
+            { x: `${this.playerSkinPositions[1].x} + 180px`, y: `${this.playerSkinPositions[1].y}` },
+            { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + ${(CommonMethods.isMobile() ? 120 : 160)}px` },
+            { x: `${this.playerSkinPositions[3].x} + 180px`, y: `${this.playerSkinPositions[3].y}` },
+        ]
+        this.showedCardsPositionsAni = [
             { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[0].y} + ${this.cardHeight + 40}px` },
             { x: `${this.playerSkinPositions[1].x} + 180px`, y: `${this.playerSkinPositions[1].y}` },
             { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + ${(CommonMethods.isMobile() ? 120 : 160)}px` },

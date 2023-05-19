@@ -8,6 +8,7 @@ import { PokerHelper } from './poker_helper.js';
 import { TrumpState } from './trump_state.js';
 
 const CardsReady_REQUEST = "CardsReady"
+declare let decadeUI: any;
 
 export class DrawingFormHelper {
     public mainForm: MainForm;
@@ -1143,17 +1144,17 @@ export class DrawingFormHelper {
         orImage.style.height = `${this.mainForm.gameScene.coordinates.overridingFlagHeight}px`;
         orImage.style['background-size'] = '100% 100%';
         orImage.style['background-repeat'] = 'no-repeat';
-        orImage.style.cursor = 'pointer';
         this.mainForm.gameScene.OverridingFlagImage = orImage;
-        this.mainForm.gameScene.showedCardImages.push(orImage);
 
-        // TODO: 
-        // if (playAnimation && winType >= 2) {
-        //     this.mainForm.gameScene.decadeUICanvas.style.left = `${x}px`;
-        //     this.mainForm.gameScene.decadeUICanvas.style.top = `${this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y - this.mainForm.gameScene.coordinates.sgsAnimOffsetY}px`;
-        //     this.mainForm.gameScene.drawSgsAni(
-        //         this.mainForm.gameScene.overridingLabelAnims[winType][0], this.mainForm.gameScene.overridingLabelAnims[winType][1], this.mainForm.gameScene.coordinates.sgsAnimWidth, this.mainForm.gameScene.coordinates.sgsAnimHeight);
-        // }
+        if (playAnimation && winType >= 2) {
+            // getting the location of the first showed cards from latest player
+            let showedLength = this.mainForm.gameScene.showedCardImages.length;
+            if (this.mainForm.gameScene.showedCardImages && this.mainForm.gameScene.showedCardImages.length >= cardsCount) {
+                let lastCardImage = this.mainForm.gameScene.showedCardImages[showedLength - cardsCount];
+                var rect = lastCardImage.getBoundingClientRect();
+                decadeUI.animation.playSpine2D(this.mainForm.gameScene.overridingLabelAnims[winType][0], rect.left, document.documentElement.clientHeight - rect.bottom, this.mainForm.gameScene.coordinates.cardWidth, this.mainForm.gameScene.coordinates.cardHeight, this.mainForm.gameScene.overridingLabelAnims[winType][1]);
+            }
+        }
     }
 
     public DrawEmojiByPosition(position: number, emojiType: number, emojiIndex: number, isCenter: boolean) {
@@ -1176,10 +1177,53 @@ export class DrawingFormHelper {
     }
 
     public DrawMovingTractorByPosition(cardsCount: number, position: number) {
+        let height = this.mainForm.gameScene.coordinates.cardHeight - 10;
+        let width = height * 10 / 9;
+
+        var torImage = this.mainForm.gameScene.ui.create.div('.orImage', this.mainForm.gameScene.ui.frameGameRoom);
+        torImage.hide();
+        torImage.setBackgroundImage(`image/tractor/movingtrac4.gif`)
+
+        let posInd = position - 1
+        let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x
+        if (posInd === 0 || posInd === 2) {
+            x = `${x} - ${this.mainForm.gameScene.coordinates.handCardOffset * (cardsCount - 1) / 2}px`;
+        }
+
+        let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y;
+        switch (posInd) {
+            case 1:
+                x = `${x} + ${this.mainForm.gameScene.coordinates.handCardOffset * (cardsCount - 1)}px`;
+                torImage.style.right = `calc(${x} + ${this.mainForm.gameScene.coordinates.cardWidth - width}px)`;
+                torImage.style.bottom = `calc(${y})`;
+                break;
+            case 2:
+                y = `${y} + ${this.mainForm.gameScene.coordinates.cardHeight - height}px`;
+                torImage.style.left = `calc(${x})`;
+                torImage.style.top = `calc(${y})`;
+                break;
+            default:
+                torImage.style.left = `calc(${x})`;
+                torImage.style.bottom = `calc(${y})`;
+                break;
+        }
+
+        torImage.style.width = `${width}px`;
+        torImage.style.height = `${height}px`;
+        torImage.style['background-size'] = '100% 100%';
+        torImage.style['background-repeat'] = 'no-repeat';
+
+        torImage.show();
+        setTimeout(() => {
+            torImage.hide();
+        }, 3000);
+
+
+        // movingtrac3.gif
         // let posInd = position - 1
         // let height = this.mainForm.gameScene.coordinates.cardHeight - 10;
         // let x = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].x;
-        // let y = this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y + this.mainForm.gameScene.coordinates.cardHeight - height;
+        // let y = `${this.mainForm.gameScene.coordinates.showedCardsPositions[posInd].y} + ${this.mainForm.gameScene.coordinates.cardHeight - height}px`;
         // switch (posInd) {
         //     case 0:
         //         x = x - (cardsCount - 1) * this.mainForm.gameScene.coordinates.handCardOffset / 2

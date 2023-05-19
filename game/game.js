@@ -128,902 +128,902 @@
 			}
 		},
 		configMenu:{
-			cungui:{
-				name:'村规',
-				config:{
-					sync_connect_role_lib_to_single:{
-						name:'同步联机武将池到单机',
-						onclick:function(){
-							if(this.innerHTML=='<span>确认同步</span>'){
-								clearTimeout(this.confirmTimeout);
+			// cungui:{
+			// 	name:'村规',
+			// 	config:{
+			// 		sync_connect_role_lib_to_single:{
+			// 			name:'同步联机武将池到单机',
+			// 			onclick:function(){
+			// 				if(this.innerHTML=='<span>确认同步</span>'){
+			// 					clearTimeout(this.confirmTimeout);
 
-								var charactersOLList=get.charactersOL();
-								lib.config.banned=[];
-								for(var craw in lib.character){
-									if(!charactersOLList.contains(craw)) lib.config.banned.push(craw);
-								}
-								game.saveConfig('identity_banned',lib.config.banned);
+			// 					var charactersOLList=get.charactersOL();
+			// 					lib.config.banned=[];
+			// 					for(var craw in lib.character){
+			// 						if(!charactersOLList.contains(craw)) lib.config.banned.push(craw);
+			// 					}
+			// 					game.saveConfig('identity_banned',lib.config.banned);
 
-								this.innerHTML='<span>同步成功</span>';
-								var that=this;
-								setTimeout(function(){
-									that.innerHTML='<span>同步联机武将池到单机</span>';
-								},1000);
-							}
-							else{
-								this.innerHTML='<span>确认同步</span>';
-								var that=this;
-								this.confirmTimeout=setTimeout(function(){
-									that.innerHTML='<span>同步联机武将池到单机</span>';
-								},1000);
-							}
-						},
-						clear:true
-					},
-					import_role_lib_by_key:{
-						name:'导入武将池key',
-						onclick:function(){
-							ui.import_role_lib_by_key_button.classList.toggle('hidden');
-						},
-						clear:true
-					},
-					import_role_lib_by_key_button:{
-						name:'<div style="white-space:nowrap;width:calc(100% - 10px)">'+
-						'<input type="file" style="width:calc(100% - 40px)">'+
-						'<button style="width:40px">确定</button></div>',
-						clear:true,
-					},
-					export_role_lib_key_only:{
-						name:'导出武将池key',
-						onclick:function(){
-							var charactersOLList=get.charactersOL();
-							game.export(JSON.stringify(charactersOLList),'noname-rolelib-keyonly'+(new Date()).toLocaleString()+'-'+charactersOLList.length+'.json');
-						},
-						clear:true
-					},
-					export_role_lib:{
-						name:'导出武将池',
-						onclick:function(){
-							var charactersOLList=get.charactersOL();
-							var data=game.buildRoleLibFromCharacters(charactersOLList);
-							game.export(JSON.stringify(data),'noname-rolelib'+(new Date()).toLocaleString()+'.json');
-						},
-						clear:true
-					},
-					export_banned_role_lib:{
-						name:'导出单禁武将',
-						onclick:function(){
-							var data=[];
-							var libCharacter={};
-							for(var i=0;i<lib.configOL.characterPack.length;i++){
-								var pack=lib.characterPack[lib.configOL.characterPack[i]];
-								for(var j in pack){
-									if(lib.character[j]) libCharacter[j]=pack[j];
-								}
-							}
-							for(i in libCharacter){
-								if(lib.filter.characterDisabled(i,libCharacter)||lib.connectBanned.contains(i)) {
-									data.push(get.translation(i));
-								}
-							}
-							game.export(JSON.stringify(data),'noname-bannedrolelib'+(new Date()).toLocaleString()+'.json');
-						},
-						clear:true
-					},
-					force_update_cungui_version:{
-						name:'强制更新村规游戏版本',
-						onclick:function(){
-							var node=this;
-							if(node._clearing){
-								ui.click.configMenu();
-								lib.version='0';
-								game.checkForUpdate(null);
-								return;
-							}
-							node._clearing=true;
-							node.firstChild.innerHTML='单击以确认 (3)';
-							setTimeout(function(){
-								node.firstChild.innerHTML='单击以确认 (2)';
-								setTimeout(function(){
-									node.firstChild.innerHTML='单击以确认 (1)';
-									setTimeout(function(){
-										node.firstChild.innerHTML='强制更新村规游戏版本';
-										delete node._clearing;
-									},1000);
-								},1000);
-							},1000);
-						},
-						clear:true
-					},
-					ban_attend_topn:{
-						name:'单禁热度榜topN武将',
-						input:true,
-						frequent:true,
-					},
-					hot_degree_degrade_rate:{
-						name:'热度衰减率',
-						input:true,
-						frequent:true,
-					},
-					export_leaderboard:{
-						name:'导出战况',
-						onclick:function(){
-							game.export(lib.init.encode(JSON.stringify(lib.config[lib.statsKeyGame])),'leaderboard-'+(new Date()).toLocaleString());
-						},
-						clear:true
-					},
-					import_leaderboard:{
-						name:'导入战况',
-						onclick:function(){
-							ui.import_leaderboard_button.classList.toggle('hidden');
-						},
-						clear:true
-					},
-					import_leaderboard_button:{
-						name:'<div style="white-space:nowrap;width:calc(100% - 10px)">'+
-						'<input type="file" style="width:calc(100% - 40px)">'+
-						'<button style="width:40px">确定</button></div>',
-						clear:true,
-					},
-					fulibibonus_unit:{
-						name:'杀币发放个数',
-						init:10,
-						item:{
-							'1':'1',
-							'2':'2',
-							'3':'3',
-							'4':'4',
-							'5':'5',
-							'10':'10',
-							'15':'15',
-							'20':'20'
-						},
-						onclick:function(unit){
-							game.saveConfig('fulibibonus_unit',parseInt(unit));
-						},
-					},
-					addfulibibonus_by_seat:{
-						name:'发放杀币',
-						init:'0',
-						item:{
-							'0':'一号位',
-							'1':'二号位',
-							'2':'三号位',
-							'3':'四号位',
-							'4':'五号位',
-							'5':'六号位',
-							'6':'七号位',
-							'7':'八号位',
-							'8':'九号位',
-							'9':'十号位'
-						},
-						frequent:true,
-						restart:false,
-						onclick:function(seat,label){
-							this.innerHTML=this.innerHTML.replace('发放杀币','发放中...');
-							game.saveConfig('addfulibibonus_by_seat',seat);
-							var result=game.addFulibiBonusBySeat(seat);
-							var that=this;
-							if(result){
-								setTimeout(function(){
-									that.innerHTML=that.innerHTML.replace('发放中...','发放成功');
-									setTimeout(function(){
-										that.innerHTML=that.innerHTML.replace('发放成功','发放杀币');
-									},1000);
-								},1000);
-							}
-							else{
-								setTimeout(function(){
-									that.innerHTML=that.innerHTML.replace('发放中...',label.innerHTML+'没有人！');
-									setTimeout(function(){
-										that.innerHTML=that.innerHTML.replace(label.innerHTML+'没有人！','发放杀币');
-									},1000);
-								},1000);
-							}
-						},
-						intro:'按照座位号发放杀币',
-					},
-					addbirthdaybonus_by_seat:{
-						name:'生日福利或者移除',
-						init:'0',
-						item:{
-							'0':'一号位',
-							'1':'二号位',
-							'2':'三号位',
-							'3':'四号位',
-							'4':'五号位',
-							'5':'六号位',
-							'6':'七号位',
-							'7':'八号位',
-							'8':'九号位',
-							'9':'十号位'
-						},
-						frequent:true,
-						restart:true,
-						onclick:function(seat,label){
-							this.innerHTML=this.innerHTML.replace('生日福利或者移除','设置中...');
-							game.saveConfig('addbirthdaybonus_by_seat',seat);
-							var result=game.addBirthdayBonusBySeat(seat);
-							var that=this;
-							if(result){
-								setTimeout(function(){
-									that.innerHTML=that.innerHTML.replace('设置中...','设置成功');
-									setTimeout(function(){
-										that.innerHTML=that.innerHTML.replace('设置成功','生日福利或者移除');
-									},1000);
-								},1000);
-							}
-							else{
-								setTimeout(function(){
-									that.innerHTML=that.innerHTML.replace('设置中...',label.innerHTML+'没有人！');
-									setTimeout(function(){
-										that.innerHTML=that.innerHTML.replace(label.innerHTML+'没有人！','生日福利或者移除');
-									},1000);
-								},1000);
-							}
-						},
-						intro:'按照座位号发生日福利卡，重复发将会移除生日福利卡',
-					},
-					qiandaofuli_cutoff:{
-						name:'早到福利截止时间',
-						init:'19',
-						item:{
-							'-1':'关闭',
-							'6':'早上6点',
-							'18':'晚上6点',
-							'19':'晚上7点',
-							'20':'晚上8点',
-							'24':'开放'
-						},
-						frequent:true,
-						restart:true,
-						intro:'早到福利截止时间',
-						onclick:function(hour,label){
-							this.innerHTML=this.innerHTML.replace('早到福利截止时间','设置中...');
-							game.setQiandaofuliCutoffByHour(hour);
-							game.saveConfig('qiandaofuli_cutoff',hour);
-							var that=this;
-							setTimeout(function(){
-								that.innerHTML=that.innerHTML.replace('设置中...','设置成功');
-								setTimeout(function(){
-									game.reload();
-								},1000);
-							},1000);
-						},
-					},
-					oneclick_reset_server:{
-						name:'一键导入单双禁将表及游戏设置',
-						clear:true,
-						onclick:function(){
-							if(this.innerHTML=='<span>确认导入</span>'){
-								this.innerHTML='<span>导入中...</span>';
-								clearTimeout(this.confirmTimeout);
+			// 					this.innerHTML='<span>同步成功</span>';
+			// 					var that=this;
+			// 					setTimeout(function(){
+			// 						that.innerHTML='<span>同步联机武将池到单机</span>';
+			// 					},1000);
+			// 				}
+			// 				else{
+			// 					this.innerHTML='<span>确认同步</span>';
+			// 					var that=this;
+			// 					this.confirmTimeout=setTimeout(function(){
+			// 						that.innerHTML='<span>同步联机武将池到单机</span>';
+			// 					},1000);
+			// 				}
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		import_role_lib_by_key:{
+			// 			name:'导入武将池key',
+			// 			onclick:function(){
+			// 				ui.import_role_lib_by_key_button.classList.toggle('hidden');
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		import_role_lib_by_key_button:{
+			// 			name:'<div style="white-space:nowrap;width:calc(100% - 10px)">'+
+			// 			'<input type="file" style="width:calc(100% - 40px)">'+
+			// 			'<button style="width:40px">确定</button></div>',
+			// 			clear:true,
+			// 		},
+			// 		export_role_lib_key_only:{
+			// 			name:'导出武将池key',
+			// 			onclick:function(){
+			// 				var charactersOLList=get.charactersOL();
+			// 				game.export(JSON.stringify(charactersOLList),'noname-rolelib-keyonly'+(new Date()).toLocaleString()+'-'+charactersOLList.length+'.json');
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		export_role_lib:{
+			// 			name:'导出武将池',
+			// 			onclick:function(){
+			// 				var charactersOLList=get.charactersOL();
+			// 				var data=game.buildRoleLibFromCharacters(charactersOLList);
+			// 				game.export(JSON.stringify(data),'noname-rolelib'+(new Date()).toLocaleString()+'.json');
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		export_banned_role_lib:{
+			// 			name:'导出单禁武将',
+			// 			onclick:function(){
+			// 				var data=[];
+			// 				var libCharacter={};
+			// 				for(var i=0;i<lib.configOL.characterPack.length;i++){
+			// 					var pack=lib.characterPack[lib.configOL.characterPack[i]];
+			// 					for(var j in pack){
+			// 						if(lib.character[j]) libCharacter[j]=pack[j];
+			// 					}
+			// 				}
+			// 				for(i in libCharacter){
+			// 					if(lib.filter.characterDisabled(i,libCharacter)||lib.connectBanned.contains(i)) {
+			// 						data.push(get.translation(i));
+			// 					}
+			// 				}
+			// 				game.export(JSON.stringify(data),'noname-bannedrolelib'+(new Date()).toLocaleString()+'.json');
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		force_update_cungui_version:{
+			// 			name:'强制更新村规游戏版本',
+			// 			onclick:function(){
+			// 				var node=this;
+			// 				if(node._clearing){
+			// 					ui.click.configMenu();
+			// 					lib.version='0';
+			// 					game.checkForUpdate(null);
+			// 					return;
+			// 				}
+			// 				node._clearing=true;
+			// 				node.firstChild.innerHTML='单击以确认 (3)';
+			// 				setTimeout(function(){
+			// 					node.firstChild.innerHTML='单击以确认 (2)';
+			// 					setTimeout(function(){
+			// 						node.firstChild.innerHTML='单击以确认 (1)';
+			// 						setTimeout(function(){
+			// 							node.firstChild.innerHTML='强制更新村规游戏版本';
+			// 							delete node._clearing;
+			// 						},1000);
+			// 					},1000);
+			// 				},1000);
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		ban_attend_topn:{
+			// 			name:'单禁热度榜topN武将',
+			// 			input:true,
+			// 			frequent:true,
+			// 		},
+			// 		hot_degree_degrade_rate:{
+			// 			name:'热度衰减率',
+			// 			input:true,
+			// 			frequent:true,
+			// 		},
+			// 		export_leaderboard:{
+			// 			name:'导出战况',
+			// 			onclick:function(){
+			// 				game.export(lib.init.encode(JSON.stringify(lib.config[lib.statsKeyGame])),'leaderboard-'+(new Date()).toLocaleString());
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		import_leaderboard:{
+			// 			name:'导入战况',
+			// 			onclick:function(){
+			// 				ui.import_leaderboard_button.classList.toggle('hidden');
+			// 			},
+			// 			clear:true
+			// 		},
+			// 		import_leaderboard_button:{
+			// 			name:'<div style="white-space:nowrap;width:calc(100% - 10px)">'+
+			// 			'<input type="file" style="width:calc(100% - 40px)">'+
+			// 			'<button style="width:40px">确定</button></div>',
+			// 			clear:true,
+			// 		},
+			// 		fulibibonus_unit:{
+			// 			name:'杀币发放个数',
+			// 			init:10,
+			// 			item:{
+			// 				'1':'1',
+			// 				'2':'2',
+			// 				'3':'3',
+			// 				'4':'4',
+			// 				'5':'5',
+			// 				'10':'10',
+			// 				'15':'15',
+			// 				'20':'20'
+			// 			},
+			// 			onclick:function(unit){
+			// 				game.saveConfig('fulibibonus_unit',parseInt(unit));
+			// 			},
+			// 		},
+			// 		addfulibibonus_by_seat:{
+			// 			name:'发放杀币',
+			// 			init:'0',
+			// 			item:{
+			// 				'0':'一号位',
+			// 				'1':'二号位',
+			// 				'2':'三号位',
+			// 				'3':'四号位',
+			// 				'4':'五号位',
+			// 				'5':'六号位',
+			// 				'6':'七号位',
+			// 				'7':'八号位',
+			// 				'8':'九号位',
+			// 				'9':'十号位'
+			// 			},
+			// 			frequent:true,
+			// 			restart:false,
+			// 			onclick:function(seat,label){
+			// 				this.innerHTML=this.innerHTML.replace('发放杀币','发放中...');
+			// 				game.saveConfig('addfulibibonus_by_seat',seat);
+			// 				var result=game.addFulibiBonusBySeat(seat);
+			// 				var that=this;
+			// 				if(result){
+			// 					setTimeout(function(){
+			// 						that.innerHTML=that.innerHTML.replace('发放中...','发放成功');
+			// 						setTimeout(function(){
+			// 							that.innerHTML=that.innerHTML.replace('发放成功','发放杀币');
+			// 						},1000);
+			// 					},1000);
+			// 				}
+			// 				else{
+			// 					setTimeout(function(){
+			// 						that.innerHTML=that.innerHTML.replace('发放中...',label.innerHTML+'没有人！');
+			// 						setTimeout(function(){
+			// 							that.innerHTML=that.innerHTML.replace(label.innerHTML+'没有人！','发放杀币');
+			// 						},1000);
+			// 					},1000);
+			// 				}
+			// 			},
+			// 			intro:'按照座位号发放杀币',
+			// 		},
+			// 		addbirthdaybonus_by_seat:{
+			// 			name:'生日福利或者移除',
+			// 			init:'0',
+			// 			item:{
+			// 				'0':'一号位',
+			// 				'1':'二号位',
+			// 				'2':'三号位',
+			// 				'3':'四号位',
+			// 				'4':'五号位',
+			// 				'5':'六号位',
+			// 				'6':'七号位',
+			// 				'7':'八号位',
+			// 				'8':'九号位',
+			// 				'9':'十号位'
+			// 			},
+			// 			frequent:true,
+			// 			restart:true,
+			// 			onclick:function(seat,label){
+			// 				this.innerHTML=this.innerHTML.replace('生日福利或者移除','设置中...');
+			// 				game.saveConfig('addbirthdaybonus_by_seat',seat);
+			// 				var result=game.addBirthdayBonusBySeat(seat);
+			// 				var that=this;
+			// 				if(result){
+			// 					setTimeout(function(){
+			// 						that.innerHTML=that.innerHTML.replace('设置中...','设置成功');
+			// 						setTimeout(function(){
+			// 							that.innerHTML=that.innerHTML.replace('设置成功','生日福利或者移除');
+			// 						},1000);
+			// 					},1000);
+			// 				}
+			// 				else{
+			// 					setTimeout(function(){
+			// 						that.innerHTML=that.innerHTML.replace('设置中...',label.innerHTML+'没有人！');
+			// 						setTimeout(function(){
+			// 							that.innerHTML=that.innerHTML.replace(label.innerHTML+'没有人！','生日福利或者移除');
+			// 						},1000);
+			// 					},1000);
+			// 				}
+			// 			},
+			// 			intro:'按照座位号发生日福利卡，重复发将会移除生日福利卡',
+			// 		},
+			// 		qiandaofuli_cutoff:{
+			// 			name:'早到福利截止时间',
+			// 			init:'19',
+			// 			item:{
+			// 				'-1':'关闭',
+			// 				'6':'早上6点',
+			// 				'18':'晚上6点',
+			// 				'19':'晚上7点',
+			// 				'20':'晚上8点',
+			// 				'24':'开放'
+			// 			},
+			// 			frequent:true,
+			// 			restart:true,
+			// 			intro:'早到福利截止时间',
+			// 			onclick:function(hour,label){
+			// 				this.innerHTML=this.innerHTML.replace('早到福利截止时间','设置中...');
+			// 				game.setQiandaofuliCutoffByHour(hour);
+			// 				game.saveConfig('qiandaofuli_cutoff',hour);
+			// 				var that=this;
+			// 				setTimeout(function(){
+			// 					that.innerHTML=that.innerHTML.replace('设置中...','设置成功');
+			// 					setTimeout(function(){
+			// 						game.reload();
+			// 					},1000);
+			// 				},1000);
+			// 			},
+			// 		},
+			// 		oneclick_reset_server:{
+			// 			name:'一键导入单双禁将表及游戏设置',
+			// 			clear:true,
+			// 			onclick:function(){
+			// 				if(this.innerHTML=='<span>确认导入</span>'){
+			// 					this.innerHTML='<span>导入中...</span>';
+			// 					clearTimeout(this.confirmTimeout);
 
-								var that=this;
-								setTimeout(function(){
-									// 1. import_dropbox_config
-									game.importDropboxConfig();
+			// 					var that=this;
+			// 					setTimeout(function(){
+			// 						// 1. import_dropbox_config
+			// 						game.importDropboxConfig();
 
-									// 2. import_forbid_lib
-									game.importForbidLib();
+			// 						// 2. import_forbid_lib
+			// 						game.importForbidLib();
 
-									// 3. import_huanleju_lib
-									game.importHuanlejuLib();
+			// 						// 3. import_huanleju_lib
+			// 						game.importHuanlejuLib();
 
-									that.innerHTML='<span>导入成功</span>';
-									setTimeout(function(){
-										game.reload();
-									},1000);
-								},1000);
-							}
-							else{
-								this.innerHTML='<span>确认导入</span>';
-								var that=this;
-								this.confirmTimeout=setTimeout(function(){
-									that.innerHTML='<span>一键导入单双禁将表及游戏设置</span>';
-								},1000);
-							}
-						}
-					},
-					test_all_by_group:{
-						name:'分组测试所有武将',
-						init:'-1',
-						item:{
-							'-1':'关闭',
-							'0':'1-20',
-							'1':'21-40',
-							'2':'41-60',
-							'3':'61-80',
-							'4':'81-100',
-							'5':'101-120',
-							'6':'121-140',
-							'7':'141-160',
-							'8':'161-180',
-							'9':'181-200',
-							'10':'201-220',
-							'11':'221-240',
-							'12':'241-260',
-							'13':'261-280',
-							'14':'281-300'
-						},
-						frequent:true,
-						restart:true,
-						intro:'分组测试所有武将，每组20个',
-						onclick:function(group_id,label){
-							this.innerHTML=this.innerHTML.replace('分组测试所有武将','设置中...');
-							game.saveConfig('test_all_by_group',group_id);
-							var that=this;
-							setTimeout(function(){
-								that.innerHTML=that.innerHTML.replace('设置中...','设置成功');
-								setTimeout(function(){
-									game.reload();
-								},1000);
-							},1000);
-						},
-					},
-					enable_huanleju:{
-						name:'欢乐模式',
-						init:false,
-						intro:'无禁将组合，并开启部分单禁武将',
-						onclick:function(bool){
-							game.saveConfig('enable_huanleju',bool);
-						},
-					},
-					enable_liftcomboban:{
-						name:'解禁组合禁将',
-						init:false,
-						onclick:function(bool){
-							game.saveConfig('enable_liftcomboban',bool);
-						},
-					},
-				}
-			},
-			general:{
-				name:'通用',
-				config:{
-					low_performance:{
-						name:'流畅模式',
-						init:false,
-						intro:'减少部分游戏特效，提高游戏速度',
-						onclick:function(bool){
-							game.saveConfig('low_performance',bool);
-							if(bool){
-								ui.window.classList.add('low_performance');
-							}
-							else{
-								ui.window.classList.remove('low_performance');
-							}
-						}
-					},
-					compatiblemode:{
-						name:'兼容模式',
-						init:false,
-						intro:'开启兼容模式可防止扩展使游戏卡死并提高对旧扩展的兼容性，但对游戏速度有一定影响，若无不稳定或不兼容的扩展建议关闭',
-						onclick:function(bool){
-							game.saveConfig('compatiblemode',bool);
-							if(bool){
-								ui.window.classList.add('compatiblemode');
-							}
-							else{
-								ui.window.classList.remove('compatiblemode');
-							}
-						}
-					},
-					confirm_exit:{
-						name:'确认退出',
-						init:false,
-						unfrequent:true,
-						intro:'离开游戏前弹出确认对话框',
-					},
-					keep_awake:{
-						name:'屏幕常亮',
-						init:false,
-						unfrequent:true,
-						intro:'防止屏幕自动关闭<br>注：旧版本通过NoSleep.js实现的屏幕常亮可能会影响外置音频的音量',
-						onclick:function(bool){
-							game.saveConfig('keep_awake',bool);
-							if(bool){
-								if(window.plugins&&window.plugins.insomnia) window.plugins.insomnia.keepAwake();
-								else if(window.noSleep){
-									document.addEventListener(lib.config.touchscreen?'touchend':'click', function enableNoSleepX() {
-										document.removeEventListener(lib.config.touchscreen?'touchend':'click', enableNoSleepX, false);
-										window.noSleep.enable();
-									}, false);
-								}
-							}
-							else{
-								if(window.plugins&&window.plugins.insomnia) window.plugins.insomnia.allowSleepAgain();
-								else if(window.noSleep) window.noSleep.disable();
-							}
-						}
-					},
-					auto_confirm:{
-						name:'自动确认',
-						init:true,
-						unfrequent:true,
-						intro:'当候选目标只有1个时，点击目标后无需再点击确认',
-					},
-					skip_shan:{
-						name:'无闪自动取消',
-						init:false,
-						unfrequent:true,
-						intro:'当自己需要使用或打出【闪】时，若自己没有【闪】，则跳过该步骤',
-					},
-					unauto_choose:{
-						name:'拆顺手牌选择',
-						init:false,
-						unfrequent:true,
-						intro:'拆牌或者顺牌时，就算只能选择对方的手牌依然手动选择',
-					},
-					wuxie_self:{
-						name:'不无懈自己',
-						init:true,
-						unfrequent:true,
-						intro:'自己使用的单目标普通锦囊即将生效时，不询问无懈',
-					},
-					tao_enemy:{
-						name:'不对敌方出桃',
-						init:false,
-						intro:'双方阵营明确的模式中（如对决），敌方角色濒死时不询问出桃',
-						unfrequent:true,
-					},
-					enable_drag:{
-						name:'启用拖拽',
-						init:true,
-						intro:'按住卡牌后可将卡牌拖至目标',
-						unfrequent:true,
-					},
-					enable_dragline:{
-						name:'拖拽指示线',
-						init:true,
-						unfrequent:true,
-						intro:'拖拽时显示虚线，可能降低游戏速度',
-					},
-					enable_touchdragline:{
-						name:'拖拽指示线',
-						init:false,
-						unfrequent:true,
-						intro:'拖拽时显示虚线，可能降低游戏速度',
-					},
-					// enable_pressure:{
-					// 	name:'启用压感',
-					// 	init:false,
-					// 	intro:'开启后可通过按压执行操作',
-					// 	unfrequent:true,
-					// },
-					// pressure_taptic:{
-					// 	name:'触觉反馈',
-					// 	init:false,
-					// 	intro:'开启后按压操作执行时将产生震动',
-					// 	unfrequent:true,
-					// },
-					// pressure_click:{
-					// 	name:'按压操作',
-					// 	init:'pause',
-					// 	intro:'在空白区域按压时的操作',
-					// 	unfrequent:true,
-					// 	item:{
-					// 		pause:'暂停',
-					// 		config:'选项',
-					// 		auto:'托管',
-					// 	}
-					// },
-					touchscreen:{
-						name:'触屏模式',
-						init:false,
-						restart:true,
-						unfrequent:true,
-						intro:'开启后可使触屏设备反应更快，但无法使用鼠标操作',
-						onclick:function(bool){
-							if(get.is.nomenu('touchscreen',bool)) return false;
-							game.saveConfig('touchscreen',bool);
-						}
-					},
-					swipe:{
-						name:'滑动手势',
-						init:true,
-						unfrequent:true,
-						intro:'在非滚动区域向四个方向滑动可执行对应操作',
-					},
-					swipe_down:{
-						name:'下划操作',
-						init:'menu',
-						unfrequent:true,
-						intro:'向下滑动时执行的操作',
-						item:{
-							system:'显示按钮',
-							menu:'打开菜单',
-							pause:'切换暂停',
-							auto:'切换托管',
-							chat:'显示聊天',
-							off:'关闭',
-						},
-						onclick:function(item){
-							if(get.is.nomenu('swipe_down',item)) return false;
-							game.saveConfig('swipe_down',item);
-						}
-					},
-					swipe_up:{
-						name:'上划操作',
-						intro:'向上滑动时执行的操作',
-						init:'auto',
-						unfrequent:true,
-						item:{
-							system:'显示按钮',
-							menu:'打开菜单',
-							pause:'切换暂停',
-							auto:'切换托管',
-							chat:'显示聊天',
-							off:'关闭',
-						},
-						onclick:function(item){
-							if(get.is.nomenu('swipe_up',item)) return false;
-							game.saveConfig('swipe_up',item);
-						}
-					},
-					swipe_left:{
-						name:'左划操作',
-						intro:'向左滑动时执行的操作',
-						init:'system',
-						unfrequent:true,
-						item:{
-							system:'显示按钮',
-							menu:'打开菜单',
-							pause:'切换暂停',
-							auto:'切换托管',
-							chat:'显示聊天',
-							off:'关闭',
-						},
-						onclick:function(item){
-							if(get.is.nomenu('swipe_left',item)) return false;
-							game.saveConfig('swipe_left',item);
-						}
-					},
-					swipe_right:{
-						name:'右划操作',
-						intro:'向右滑动时执行的操作',
-						init:'system',
-						unfrequent:true,
-						item:{
-							system:'显示按钮',
-							menu:'打开菜单',
-							pause:'切换暂停',
-							auto:'切换托管',
-							chat:'显示聊天',
-							off:'关闭',
-						},
-						onclick:function(item){
-							if(get.is.nomenu('swipe_right',item)) return false;
-							game.saveConfig('swipe_right',item);
-						}
-					},
-					round_menu_func:{
-						name:'触屏按钮操作',
-						intro:'点击屏幕中圆形按钮时执行的操作',
-						init:'system',
-						unfrequent:true,
-						item:{
-							system:'显示按钮',
-							menu:'打开菜单',
-							pause:'切换暂停',
-							auto:'切换托管'
-						},
-						onclick:function(item){
-							if(get.is.nomenu('round_menu_func',item)) return false;
-							game.saveConfig('round_menu_func',item);
-						},
-					},
-					show_splash:{
-						name:'显示开始界面',
-						intro:'游戏开始前进入模式选择画面',
-						init:'off',
-						item:{
-							off:'关闭',
-							init:'首次启动',
-							always:'保持开启',
-						}
-					},
-					game_speed:{
-						name:'游戏速度',
-						init:'mid',
-						item:{
-							vslow:'慢',
-							slow:'较慢',
-							mid:'中',
-							fast:'较快',
-							vfast:'快',
-							vvfast:'很快',
-						},
-						intro:'设置不同游戏操作间的时间间隔'
-					},
-					sync_speed:{
-						name:'限制结算速度',
-						intro:'在动画结算完成前不执行下一步操作，开启后游戏操作的间隔更长但画面更浏畅，在游戏较卡时建议开启',
-						init:true
-					},
-					enable_vibrate:{
-						name:'开启震动',
-						intro:'回合开始时使手机震动',
-						init:false
-					},
-					right_click:{
-						name:'右键操作',
-						init:'pause',
-						intro:'在空白区域点击右键时的操作',
-						unfrequent:true,
-						item:{
-							pause:'暂停',
-							shortcut:'工具',
-							config:'选项',
-							auto:'托管',
-						},
-						onclick:function(item){
-							if(get.is.nomenu('right_click',item)) return false;
-							game.saveConfig('right_click',item);
-						}
-					},
-					longpress_info:{
-						name:'长按显示信息',
-						init:true,
-						unfrequent:true,
-						restart:true,
-						intro:'长按后弹出菜单',
-					},
-					right_info:{
-						name:'右键显示信息',
-						init:true,
-						unfrequent:true,
-						restart:true,
-						intro:'右键点击后弹出菜单',
-					},
-					hover_all:{
-						name:'悬停显示信息',
-						init:true,
-						unfrequent:true,
-						restart:true,
-						intro:'悬停后弹出菜单',
-					},
-					hover_handcard:{
-						name:'悬停手牌显示信息',
-						init:true,
-						unfrequent:true,
-						intro:'悬停手牌后弹出菜单',
-					},
-					hoveration:{
-						name:'悬停菜单弹出时间',
-						unfrequent:true,
-						intro:'鼠标移至目标到弹出菜单的时间间隔',
-						init:'1000',
-						item:{
-							'500':'0.5秒',
-							'700':'0.7秒',
-							'1000':'1秒',
-							'1500':'1.5秒',
-							'2500':'2.5秒',
-						}
-					},
-					doubleclick_intro:{
-						name:'双击显示武将资料',
-						init:true,
-						unfrequent:true,
-						intro:'双击武将头像后显示其资料卡',
-					},
-					video:{
-						name:'保存录像',
-						init:'20',
-						intro:'游戏结束后保存录像在最大条数，超过后将从最早的录像开始删除（已收藏的录像不计入条数）',
-						item:{
-							'0':'关闭',
-							'5':'五局',
-							'10':'十局',
-							'20':'二十局',
-							'50':'五十局',
-							'10000':'无限',
-						},
-						unfrequent:true,
-					},
-					max_loadtime:{
-						name:'最长载入时间',
-						intro:'设置游戏从启动到完成载入所需的最长时间，超过此时间未完成载入会报错，若设备较慢或安装了较多扩展可适当延长此时间',
-						init:'5000',
-						unfrequent:true,
-						item:{
-							5000:'5秒',
-							10000:'10秒',
-							20000:'20秒',
-							60000:'60秒'
-						},
-						onclick:function(item){
-							game.saveConfig('max_loadtime',item);
-							if(item=='5000'){
-								localStorage.removeItem(lib.configprefix+'loadtime');
-							}
-							else{
-								localStorage.setItem(lib.configprefix+'loadtime',item);
-							}
-						}
-					},
-					mousewheel:{
-						name:'滚轮控制手牌',
-						init:true,
-						unfrequent:true,
-						intro:'开启后滚轮可使手牌横向滚动，在mac等可横向滚动的设备上建议关闭',
-						onclick:function(bool){
-							game.saveConfig('mousewheel',bool);
-							if(lib.config.touchscreen) return;
-							if(lib.config.mousewheel){
-								ui.handcards1Container.onmousewheel=ui.click.mousewheel;
-								ui.handcards2Container.onmousewheel=ui.click.mousewheel;
-							}
-							else{
-								ui.handcards1Container.onmousewheel=null;
-								ui.handcards2Container.onmousewheel=null;
-							}
-						}
-					},
-					auto_check_update:{
-						name:'自动检查游戏更新',
-						intro:'进入游戏时检查更新',
-						init:true,
-						unfrequent:true
-					},
-					lucky_star:{
-						name:'幸运星模式',
-						intro:'在涉及随机数等的技能中，必定得到效果最好的结果。（联机模式无效）',
-						init:false,
-						unfrequent:true
-					},
-					dev:{
-						name:'开发者模式',
-						intro:'开启后可使用浏览器控制台控制游戏，同时可更新到开发版',
-						init:false,
-						onclick:function(bool){
-							game.saveConfig('dev',bool);
-							if(_status.connectMode) return;
-							if(bool){
-								lib.cheat.i();
-							}
-							else{
-								delete window.cheat;
-								delete window.game;
-								delete window.ui;
-								delete window.get;
-								delete window.ai;
-								delete window.lib;
-								delete window._status;
-							}
-						},
-						unfrequent:true,
-					},
-					errstop:{
-						name:'出错时停止游戏',
-						init:false,
-						unfrequent:true
-					},
-					update_link:{
-						name:'更新地址',
-						init:'coding',
-						unfrequent:true,
-						item:{
-							coding:'Coding',
-							github:'GitHub',
-						},
-						onclick:function(item){
-							game.saveConfig('update_link',item);
-							lib.updateURL=lib.updateURLS[item]||lib.updateURLS.coding;
-						},
-					},
-					update:function(config,map){
-						if('ontouchstart' in document){
-							map.touchscreen.show();
-						}
-						else{
-							map.touchscreen.hide();
-						}
-						if(lib.device||lib.node){
-							map.auto_check_update.show();
-						}
-						else{
-							map.auto_check_update.hide();
-						}
-						if(lib.device){
-							map.enable_vibrate.show();
-							map.keep_awake.show();
-						}
-						else{
-							map.enable_vibrate.hide();
-							map.keep_awake.hide();
-						}
-						// if(config.enable_pressure){
-						// 	map.pressure_click.show();
-						// 	if(lib.device){
-						// 		map.pressure_taptic.show();
-						// 	}
-						// 	else{
-						// 		map.pressure_taptic.hide();
-						// 	}
-						// }
-						// else{
-						// 	map.pressure_click.hide();
-						// 	map.pressure_taptic.hide();
-						// }
-						if(lib.config.touchscreen){
-							map.mousewheel.hide();
-							map.hover_all.hide();
-							map.hover_handcard.hide();
-							map.hoveration.hide();
-							map.right_info.hide();
-							map.right_click.hide();
-							map.longpress_info.show();
-							map.swipe.show();
-							if(lib.config.swipe){
-								map.swipe_up.show();
-								map.swipe_down.show();
-								map.swipe_left.show();
-								map.swipe_right.show();
-							}
-							else{
-								map.swipe_up.hide();
-								map.swipe_down.hide();
-								map.swipe_left.hide();
-								map.swipe_right.hide();
-							}
-						}
-						else{
-							map.mousewheel.show();
-							map.hover_all.show();
-							map.right_info.show();
-							map.right_click.show();
-							map.longpress_info.hide();
-							if(!config.hover_all){
-								map.hover_handcard.hide();
-								map.hoveration.hide();
-							}
-							else{
-								map.hover_handcard.show();
-								map.hoveration.show();
-							}
-							map.swipe.hide();
-							map.swipe_up.hide();
-							map.swipe_down.hide();
-							map.swipe_left.hide();
-							map.swipe_right.hide();
-						}
-						if(lib.config.enable_drag){
-							if(lib.config.touchscreen){
-								map.enable_dragline.hide();
-								map.enable_touchdragline.show();
-							}
-							else{
-								map.enable_dragline.show();
-								map.enable_touchdragline.hide();
-							}
-						}
-						else{
-							map.enable_dragline.hide();
-							map.enable_touchdragline.hide();
-						}
-						if(!get.is.phoneLayout()){
-							map.round_menu_func.hide();
-						}
-						else{
-							map.round_menu_func.show();
-						}
-						if(!lib.node&&lib.device!='ios'){
-							map.confirm_exit.show();
-						}
-						else{
-							map.confirm_exit.hide();
-						}
-						if(config.dev){
-							map.errstop.show();
-						}
-						else{
-							map.errstop.hide();
-						}
-					}
-				}
-			},
+			// 						that.innerHTML='<span>导入成功</span>';
+			// 						setTimeout(function(){
+			// 							game.reload();
+			// 						},1000);
+			// 					},1000);
+			// 				}
+			// 				else{
+			// 					this.innerHTML='<span>确认导入</span>';
+			// 					var that=this;
+			// 					this.confirmTimeout=setTimeout(function(){
+			// 						that.innerHTML='<span>一键导入单双禁将表及游戏设置</span>';
+			// 					},1000);
+			// 				}
+			// 			}
+			// 		},
+			// 		test_all_by_group:{
+			// 			name:'分组测试所有武将',
+			// 			init:'-1',
+			// 			item:{
+			// 				'-1':'关闭',
+			// 				'0':'1-20',
+			// 				'1':'21-40',
+			// 				'2':'41-60',
+			// 				'3':'61-80',
+			// 				'4':'81-100',
+			// 				'5':'101-120',
+			// 				'6':'121-140',
+			// 				'7':'141-160',
+			// 				'8':'161-180',
+			// 				'9':'181-200',
+			// 				'10':'201-220',
+			// 				'11':'221-240',
+			// 				'12':'241-260',
+			// 				'13':'261-280',
+			// 				'14':'281-300'
+			// 			},
+			// 			frequent:true,
+			// 			restart:true,
+			// 			intro:'分组测试所有武将，每组20个',
+			// 			onclick:function(group_id,label){
+			// 				this.innerHTML=this.innerHTML.replace('分组测试所有武将','设置中...');
+			// 				game.saveConfig('test_all_by_group',group_id);
+			// 				var that=this;
+			// 				setTimeout(function(){
+			// 					that.innerHTML=that.innerHTML.replace('设置中...','设置成功');
+			// 					setTimeout(function(){
+			// 						game.reload();
+			// 					},1000);
+			// 				},1000);
+			// 			},
+			// 		},
+			// 		enable_huanleju:{
+			// 			name:'欢乐模式',
+			// 			init:false,
+			// 			intro:'无禁将组合，并开启部分单禁武将',
+			// 			onclick:function(bool){
+			// 				game.saveConfig('enable_huanleju',bool);
+			// 			},
+			// 		},
+			// 		enable_liftcomboban:{
+			// 			name:'解禁组合禁将',
+			// 			init:false,
+			// 			onclick:function(bool){
+			// 				game.saveConfig('enable_liftcomboban',bool);
+			// 			},
+			// 		},
+			// 	}
+			// },
+			// general:{
+			// 	name:'通用',
+			// 	config:{
+			// 		low_performance:{
+			// 			name:'流畅模式',
+			// 			init:false,
+			// 			intro:'减少部分游戏特效，提高游戏速度',
+			// 			onclick:function(bool){
+			// 				game.saveConfig('low_performance',bool);
+			// 				if(bool){
+			// 					ui.window.classList.add('low_performance');
+			// 				}
+			// 				else{
+			// 					ui.window.classList.remove('low_performance');
+			// 				}
+			// 			}
+			// 		},
+			// 		compatiblemode:{
+			// 			name:'兼容模式',
+			// 			init:false,
+			// 			intro:'开启兼容模式可防止扩展使游戏卡死并提高对旧扩展的兼容性，但对游戏速度有一定影响，若无不稳定或不兼容的扩展建议关闭',
+			// 			onclick:function(bool){
+			// 				game.saveConfig('compatiblemode',bool);
+			// 				if(bool){
+			// 					ui.window.classList.add('compatiblemode');
+			// 				}
+			// 				else{
+			// 					ui.window.classList.remove('compatiblemode');
+			// 				}
+			// 			}
+			// 		},
+			// 		confirm_exit:{
+			// 			name:'确认退出',
+			// 			init:false,
+			// 			unfrequent:true,
+			// 			intro:'离开游戏前弹出确认对话框',
+			// 		},
+			// 		keep_awake:{
+			// 			name:'屏幕常亮',
+			// 			init:false,
+			// 			unfrequent:true,
+			// 			intro:'防止屏幕自动关闭<br>注：旧版本通过NoSleep.js实现的屏幕常亮可能会影响外置音频的音量',
+			// 			onclick:function(bool){
+			// 				game.saveConfig('keep_awake',bool);
+			// 				if(bool){
+			// 					if(window.plugins&&window.plugins.insomnia) window.plugins.insomnia.keepAwake();
+			// 					else if(window.noSleep){
+			// 						document.addEventListener(lib.config.touchscreen?'touchend':'click', function enableNoSleepX() {
+			// 							document.removeEventListener(lib.config.touchscreen?'touchend':'click', enableNoSleepX, false);
+			// 							window.noSleep.enable();
+			// 						}, false);
+			// 					}
+			// 				}
+			// 				else{
+			// 					if(window.plugins&&window.plugins.insomnia) window.plugins.insomnia.allowSleepAgain();
+			// 					else if(window.noSleep) window.noSleep.disable();
+			// 				}
+			// 			}
+			// 		},
+			// 		auto_confirm:{
+			// 			name:'自动确认',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			intro:'当候选目标只有1个时，点击目标后无需再点击确认',
+			// 		},
+			// 		skip_shan:{
+			// 			name:'无闪自动取消',
+			// 			init:false,
+			// 			unfrequent:true,
+			// 			intro:'当自己需要使用或打出【闪】时，若自己没有【闪】，则跳过该步骤',
+			// 		},
+			// 		unauto_choose:{
+			// 			name:'拆顺手牌选择',
+			// 			init:false,
+			// 			unfrequent:true,
+			// 			intro:'拆牌或者顺牌时，就算只能选择对方的手牌依然手动选择',
+			// 		},
+			// 		wuxie_self:{
+			// 			name:'不无懈自己',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			intro:'自己使用的单目标普通锦囊即将生效时，不询问无懈',
+			// 		},
+			// 		tao_enemy:{
+			// 			name:'不对敌方出桃',
+			// 			init:false,
+			// 			intro:'双方阵营明确的模式中（如对决），敌方角色濒死时不询问出桃',
+			// 			unfrequent:true,
+			// 		},
+			// 		enable_drag:{
+			// 			name:'启用拖拽',
+			// 			init:true,
+			// 			intro:'按住卡牌后可将卡牌拖至目标',
+			// 			unfrequent:true,
+			// 		},
+			// 		enable_dragline:{
+			// 			name:'拖拽指示线',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			intro:'拖拽时显示虚线，可能降低游戏速度',
+			// 		},
+			// 		enable_touchdragline:{
+			// 			name:'拖拽指示线',
+			// 			init:false,
+			// 			unfrequent:true,
+			// 			intro:'拖拽时显示虚线，可能降低游戏速度',
+			// 		},
+			// 		// enable_pressure:{
+			// 		// 	name:'启用压感',
+			// 		// 	init:false,
+			// 		// 	intro:'开启后可通过按压执行操作',
+			// 		// 	unfrequent:true,
+			// 		// },
+			// 		// pressure_taptic:{
+			// 		// 	name:'触觉反馈',
+			// 		// 	init:false,
+			// 		// 	intro:'开启后按压操作执行时将产生震动',
+			// 		// 	unfrequent:true,
+			// 		// },
+			// 		// pressure_click:{
+			// 		// 	name:'按压操作',
+			// 		// 	init:'pause',
+			// 		// 	intro:'在空白区域按压时的操作',
+			// 		// 	unfrequent:true,
+			// 		// 	item:{
+			// 		// 		pause:'暂停',
+			// 		// 		config:'选项',
+			// 		// 		auto:'托管',
+			// 		// 	}
+			// 		// },
+			// 		touchscreen:{
+			// 			name:'触屏模式',
+			// 			init:false,
+			// 			restart:true,
+			// 			unfrequent:true,
+			// 			intro:'开启后可使触屏设备反应更快，但无法使用鼠标操作',
+			// 			onclick:function(bool){
+			// 				if(get.is.nomenu('touchscreen',bool)) return false;
+			// 				game.saveConfig('touchscreen',bool);
+			// 			}
+			// 		},
+			// 		swipe:{
+			// 			name:'滑动手势',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			intro:'在非滚动区域向四个方向滑动可执行对应操作',
+			// 		},
+			// 		swipe_down:{
+			// 			name:'下划操作',
+			// 			init:'menu',
+			// 			unfrequent:true,
+			// 			intro:'向下滑动时执行的操作',
+			// 			item:{
+			// 				system:'显示按钮',
+			// 				menu:'打开菜单',
+			// 				pause:'切换暂停',
+			// 				auto:'切换托管',
+			// 				chat:'显示聊天',
+			// 				off:'关闭',
+			// 			},
+			// 			onclick:function(item){
+			// 				if(get.is.nomenu('swipe_down',item)) return false;
+			// 				game.saveConfig('swipe_down',item);
+			// 			}
+			// 		},
+			// 		swipe_up:{
+			// 			name:'上划操作',
+			// 			intro:'向上滑动时执行的操作',
+			// 			init:'auto',
+			// 			unfrequent:true,
+			// 			item:{
+			// 				system:'显示按钮',
+			// 				menu:'打开菜单',
+			// 				pause:'切换暂停',
+			// 				auto:'切换托管',
+			// 				chat:'显示聊天',
+			// 				off:'关闭',
+			// 			},
+			// 			onclick:function(item){
+			// 				if(get.is.nomenu('swipe_up',item)) return false;
+			// 				game.saveConfig('swipe_up',item);
+			// 			}
+			// 		},
+			// 		swipe_left:{
+			// 			name:'左划操作',
+			// 			intro:'向左滑动时执行的操作',
+			// 			init:'system',
+			// 			unfrequent:true,
+			// 			item:{
+			// 				system:'显示按钮',
+			// 				menu:'打开菜单',
+			// 				pause:'切换暂停',
+			// 				auto:'切换托管',
+			// 				chat:'显示聊天',
+			// 				off:'关闭',
+			// 			},
+			// 			onclick:function(item){
+			// 				if(get.is.nomenu('swipe_left',item)) return false;
+			// 				game.saveConfig('swipe_left',item);
+			// 			}
+			// 		},
+			// 		swipe_right:{
+			// 			name:'右划操作',
+			// 			intro:'向右滑动时执行的操作',
+			// 			init:'system',
+			// 			unfrequent:true,
+			// 			item:{
+			// 				system:'显示按钮',
+			// 				menu:'打开菜单',
+			// 				pause:'切换暂停',
+			// 				auto:'切换托管',
+			// 				chat:'显示聊天',
+			// 				off:'关闭',
+			// 			},
+			// 			onclick:function(item){
+			// 				if(get.is.nomenu('swipe_right',item)) return false;
+			// 				game.saveConfig('swipe_right',item);
+			// 			}
+			// 		},
+			// 		round_menu_func:{
+			// 			name:'触屏按钮操作',
+			// 			intro:'点击屏幕中圆形按钮时执行的操作',
+			// 			init:'system',
+			// 			unfrequent:true,
+			// 			item:{
+			// 				system:'显示按钮',
+			// 				menu:'打开菜单',
+			// 				pause:'切换暂停',
+			// 				auto:'切换托管'
+			// 			},
+			// 			onclick:function(item){
+			// 				if(get.is.nomenu('round_menu_func',item)) return false;
+			// 				game.saveConfig('round_menu_func',item);
+			// 			},
+			// 		},
+			// 		show_splash:{
+			// 			name:'显示开始界面',
+			// 			intro:'游戏开始前进入模式选择画面',
+			// 			init:'off',
+			// 			item:{
+			// 				off:'关闭',
+			// 				init:'首次启动',
+			// 				always:'保持开启',
+			// 			}
+			// 		},
+			// 		game_speed:{
+			// 			name:'游戏速度',
+			// 			init:'mid',
+			// 			item:{
+			// 				vslow:'慢',
+			// 				slow:'较慢',
+			// 				mid:'中',
+			// 				fast:'较快',
+			// 				vfast:'快',
+			// 				vvfast:'很快',
+			// 			},
+			// 			intro:'设置不同游戏操作间的时间间隔'
+			// 		},
+			// 		sync_speed:{
+			// 			name:'限制结算速度',
+			// 			intro:'在动画结算完成前不执行下一步操作，开启后游戏操作的间隔更长但画面更浏畅，在游戏较卡时建议开启',
+			// 			init:true
+			// 		},
+			// 		enable_vibrate:{
+			// 			name:'开启震动',
+			// 			intro:'回合开始时使手机震动',
+			// 			init:false
+			// 		},
+			// 		right_click:{
+			// 			name:'右键操作',
+			// 			init:'pause',
+			// 			intro:'在空白区域点击右键时的操作',
+			// 			unfrequent:true,
+			// 			item:{
+			// 				pause:'暂停',
+			// 				shortcut:'工具',
+			// 				config:'选项',
+			// 				auto:'托管',
+			// 			},
+			// 			onclick:function(item){
+			// 				if(get.is.nomenu('right_click',item)) return false;
+			// 				game.saveConfig('right_click',item);
+			// 			}
+			// 		},
+			// 		longpress_info:{
+			// 			name:'长按显示信息',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			restart:true,
+			// 			intro:'长按后弹出菜单',
+			// 		},
+			// 		right_info:{
+			// 			name:'右键显示信息',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			restart:true,
+			// 			intro:'右键点击后弹出菜单',
+			// 		},
+			// 		hover_all:{
+			// 			name:'悬停显示信息',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			restart:true,
+			// 			intro:'悬停后弹出菜单',
+			// 		},
+			// 		hover_handcard:{
+			// 			name:'悬停手牌显示信息',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			intro:'悬停手牌后弹出菜单',
+			// 		},
+			// 		hoveration:{
+			// 			name:'悬停菜单弹出时间',
+			// 			unfrequent:true,
+			// 			intro:'鼠标移至目标到弹出菜单的时间间隔',
+			// 			init:'1000',
+			// 			item:{
+			// 				'500':'0.5秒',
+			// 				'700':'0.7秒',
+			// 				'1000':'1秒',
+			// 				'1500':'1.5秒',
+			// 				'2500':'2.5秒',
+			// 			}
+			// 		},
+			// 		doubleclick_intro:{
+			// 			name:'双击显示武将资料',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			intro:'双击武将头像后显示其资料卡',
+			// 		},
+			// 		video:{
+			// 			name:'保存录像',
+			// 			init:'20',
+			// 			intro:'游戏结束后保存录像在最大条数，超过后将从最早的录像开始删除（已收藏的录像不计入条数）',
+			// 			item:{
+			// 				'0':'关闭',
+			// 				'5':'五局',
+			// 				'10':'十局',
+			// 				'20':'二十局',
+			// 				'50':'五十局',
+			// 				'10000':'无限',
+			// 			},
+			// 			unfrequent:true,
+			// 		},
+			// 		max_loadtime:{
+			// 			name:'最长载入时间',
+			// 			intro:'设置游戏从启动到完成载入所需的最长时间，超过此时间未完成载入会报错，若设备较慢或安装了较多扩展可适当延长此时间',
+			// 			init:'5000',
+			// 			unfrequent:true,
+			// 			item:{
+			// 				5000:'5秒',
+			// 				10000:'10秒',
+			// 				20000:'20秒',
+			// 				60000:'60秒'
+			// 			},
+			// 			onclick:function(item){
+			// 				game.saveConfig('max_loadtime',item);
+			// 				if(item=='5000'){
+			// 					localStorage.removeItem(lib.configprefix+'loadtime');
+			// 				}
+			// 				else{
+			// 					localStorage.setItem(lib.configprefix+'loadtime',item);
+			// 				}
+			// 			}
+			// 		},
+			// 		mousewheel:{
+			// 			name:'滚轮控制手牌',
+			// 			init:true,
+			// 			unfrequent:true,
+			// 			intro:'开启后滚轮可使手牌横向滚动，在mac等可横向滚动的设备上建议关闭',
+			// 			onclick:function(bool){
+			// 				game.saveConfig('mousewheel',bool);
+			// 				if(lib.config.touchscreen) return;
+			// 				if(lib.config.mousewheel){
+			// 					ui.handcards1Container.onmousewheel=ui.click.mousewheel;
+			// 					ui.handcards2Container.onmousewheel=ui.click.mousewheel;
+			// 				}
+			// 				else{
+			// 					ui.handcards1Container.onmousewheel=null;
+			// 					ui.handcards2Container.onmousewheel=null;
+			// 				}
+			// 			}
+			// 		},
+			// 		auto_check_update:{
+			// 			name:'自动检查游戏更新',
+			// 			intro:'进入游戏时检查更新',
+			// 			init:true,
+			// 			unfrequent:true
+			// 		},
+			// 		lucky_star:{
+			// 			name:'幸运星模式',
+			// 			intro:'在涉及随机数等的技能中，必定得到效果最好的结果。（联机模式无效）',
+			// 			init:false,
+			// 			unfrequent:true
+			// 		},
+			// 		dev:{
+			// 			name:'开发者模式',
+			// 			intro:'开启后可使用浏览器控制台控制游戏，同时可更新到开发版',
+			// 			init:false,
+			// 			onclick:function(bool){
+			// 				game.saveConfig('dev',bool);
+			// 				if(_status.connectMode) return;
+			// 				if(bool){
+			// 					lib.cheat.i();
+			// 				}
+			// 				else{
+			// 					delete window.cheat;
+			// 					delete window.game;
+			// 					delete window.ui;
+			// 					delete window.get;
+			// 					delete window.ai;
+			// 					delete window.lib;
+			// 					delete window._status;
+			// 				}
+			// 			},
+			// 			unfrequent:true,
+			// 		},
+			// 		errstop:{
+			// 			name:'出错时停止游戏',
+			// 			init:false,
+			// 			unfrequent:true
+			// 		},
+			// 		update_link:{
+			// 			name:'更新地址',
+			// 			init:'coding',
+			// 			unfrequent:true,
+			// 			item:{
+			// 				coding:'Coding',
+			// 				github:'GitHub',
+			// 			},
+			// 			onclick:function(item){
+			// 				game.saveConfig('update_link',item);
+			// 				lib.updateURL=lib.updateURLS[item]||lib.updateURLS.coding;
+			// 			},
+			// 		},
+			// 		update:function(config,map){
+			// 			if('ontouchstart' in document){
+			// 				map.touchscreen.show();
+			// 			}
+			// 			else{
+			// 				map.touchscreen.hide();
+			// 			}
+			// 			if(lib.device||lib.node){
+			// 				map.auto_check_update.show();
+			// 			}
+			// 			else{
+			// 				map.auto_check_update.hide();
+			// 			}
+			// 			if(lib.device){
+			// 				map.enable_vibrate.show();
+			// 				map.keep_awake.show();
+			// 			}
+			// 			else{
+			// 				map.enable_vibrate.hide();
+			// 				map.keep_awake.hide();
+			// 			}
+			// 			// if(config.enable_pressure){
+			// 			// 	map.pressure_click.show();
+			// 			// 	if(lib.device){
+			// 			// 		map.pressure_taptic.show();
+			// 			// 	}
+			// 			// 	else{
+			// 			// 		map.pressure_taptic.hide();
+			// 			// 	}
+			// 			// }
+			// 			// else{
+			// 			// 	map.pressure_click.hide();
+			// 			// 	map.pressure_taptic.hide();
+			// 			// }
+			// 			if(lib.config.touchscreen){
+			// 				map.mousewheel.hide();
+			// 				map.hover_all.hide();
+			// 				map.hover_handcard.hide();
+			// 				map.hoveration.hide();
+			// 				map.right_info.hide();
+			// 				map.right_click.hide();
+			// 				map.longpress_info.show();
+			// 				map.swipe.show();
+			// 				if(lib.config.swipe){
+			// 					map.swipe_up.show();
+			// 					map.swipe_down.show();
+			// 					map.swipe_left.show();
+			// 					map.swipe_right.show();
+			// 				}
+			// 				else{
+			// 					map.swipe_up.hide();
+			// 					map.swipe_down.hide();
+			// 					map.swipe_left.hide();
+			// 					map.swipe_right.hide();
+			// 				}
+			// 			}
+			// 			else{
+			// 				map.mousewheel.show();
+			// 				map.hover_all.show();
+			// 				map.right_info.show();
+			// 				map.right_click.show();
+			// 				map.longpress_info.hide();
+			// 				if(!config.hover_all){
+			// 					map.hover_handcard.hide();
+			// 					map.hoveration.hide();
+			// 				}
+			// 				else{
+			// 					map.hover_handcard.show();
+			// 					map.hoveration.show();
+			// 				}
+			// 				map.swipe.hide();
+			// 				map.swipe_up.hide();
+			// 				map.swipe_down.hide();
+			// 				map.swipe_left.hide();
+			// 				map.swipe_right.hide();
+			// 			}
+			// 			if(lib.config.enable_drag){
+			// 				if(lib.config.touchscreen){
+			// 					map.enable_dragline.hide();
+			// 					map.enable_touchdragline.show();
+			// 				}
+			// 				else{
+			// 					map.enable_dragline.show();
+			// 					map.enable_touchdragline.hide();
+			// 				}
+			// 			}
+			// 			else{
+			// 				map.enable_dragline.hide();
+			// 				map.enable_touchdragline.hide();
+			// 			}
+			// 			if(!get.is.phoneLayout()){
+			// 				map.round_menu_func.hide();
+			// 			}
+			// 			else{
+			// 				map.round_menu_func.show();
+			// 			}
+			// 			if(!lib.node&&lib.device!='ios'){
+			// 				map.confirm_exit.show();
+			// 			}
+			// 			else{
+			// 				map.confirm_exit.hide();
+			// 			}
+			// 			if(config.dev){
+			// 				map.errstop.show();
+			// 			}
+			// 			else{
+			// 				map.errstop.hide();
+			// 			}
+			// 		}
+			// 	}
+			// },
 			appearence:{
 				name:'外观',
 				config:{
@@ -3918,31 +3918,31 @@
 					},
 				}
 			},
-			skill:{
-				name:'技能',
-				config:{
-					update:function(config,map){
-						for(var i in map){
-							if(map[i]._link.config.type=='autoskill'){
-								if(!lib.config.autoskilllist.contains(i)){
-									map[i].classList.add('on');
-								}
-								else{
-									map[i].classList.remove('on');
-								}
-							}
-							else if(map[i]._link.config.type=='banskill'){
-								if(!lib.config.forbidlist.contains(i)){
-									map[i].classList.add('on');
-								}
-								else{
-									map[i].classList.remove('on');
-								}
-							}
-						}
-					}
-				}
-			},
+			// skill:{
+			// 	name:'技能',
+			// 	config:{
+			// 		update:function(config,map){
+			// 			for(var i in map){
+			// 				if(map[i]._link.config.type=='autoskill'){
+			// 					if(!lib.config.autoskilllist.contains(i)){
+			// 						map[i].classList.add('on');
+			// 					}
+			// 					else{
+			// 						map[i].classList.remove('on');
+			// 					}
+			// 				}
+			// 				else if(map[i]._link.config.type=='banskill'){
+			// 					if(!lib.config.forbidlist.contains(i)){
+			// 						map[i].classList.add('on');
+			// 					}
+			// 					else{
+			// 						map[i].classList.remove('on');
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// },
 			others:{
 				name:'其它',
 				config:{
@@ -43422,712 +43422,713 @@
 							span1.toggle();
 						}
 					}());
-					(function(){
-						var norow2=function(){
-							var node=currentrow1;
-							if(!node) return false;
-							return node.innerHTML=='横置'||node.innerHTML=='翻面'||node.innerHTML=='换人'||node.innerHTML=='复活';
-						};
-						var checkCheat=function(){
-							if(norow2()){
-								for(var i=0;i<row2.childElementCount;i++){
-									row2.childNodes[i].classList.remove('selectedx');
-									row2.childNodes[i].classList.add('unselectable');
-								}
-							}
-							else{
-								for(var i=0;i<row2.childElementCount;i++){
-									row2.childNodes[i].classList.remove('unselectable');
-								}
-							}
-							if(currentrow1&&currentrow1.innerHTML=='复活'){
-								for(var i=0;i<row3.childNodes.length;i++){
-									if(row3.childNodes[i].dead){
-										row3.childNodes[i].style.display='';
-									}
-									else{
-										row3.childNodes[i].style.display='none';
-										row3.childNodes[i].classList.remove('glow');
-									}
-									row3.childNodes[i].classList.remove('unselectable');
-								}
-							}
-							else{
-								for(var i=0;i<row3.childElementCount;i++){
-									if(currentrow1&&currentrow1.innerHTML=='换人'&&row3.childNodes[i].link==game.me){
-										row3.childNodes[i].classList.add('unselectable');
-									}
-									else{
-										row3.childNodes[i].classList.remove('unselectable');
-									}
-									if(!row3.childNodes[i].dead){
-										row3.childNodes[i].style.display='';
-									}
-									else{
-										row3.childNodes[i].style.display='none';
-										row3.childNodes[i].classList.remove('glow');
-									}
-								}
-							}
-							if(currentrow1&&(currentrow2||norow2())&&row3.querySelector('.glow')){
-								cheatButton.classList.add('glowing');
-								return true;
-							}
-							else{
-								cheatButton.classList.remove('glowing');
-								return false;
-							}
-						}
-						cheatButton.listen(function(){
-							if(checkCheat()){
-								var num;
-								if(currentrow2){
-									switch(currentrow2.innerHTML){
-										case '一':num=1;break;
-										case '二':num=2;break;
-										case '三':num=3;break;
-										case '四':num=4;break;
-										case '五':num=5;break;
-									}
-								}
-								var targets=[];
-								var buttons=row3.querySelectorAll('.glow');
-								for(var i=0;i<buttons.length;i++){
-									targets.push(buttons[i].link);
-								}
-								while(targets.length){
-									var target=targets.shift();
-									switch(currentrow1.innerHTML){
-										case '伤害':target.damage(num,'nosource');break;
-										case '回复':target.recover(num,'nosource');break;
-										case '摸牌':target.draw(num);break;
-										case '弃牌':target.discard(target.getCards('he').randomGets(num));break;
-										case '横置':target.link();break;
-										case '翻面':target.turnOver();break;
-										case '复活':target.revive(target.maxHp);break;
-										case '换人':{
-											if(_status.event.isMine()){
-												if(!ui.auto.classList.contains('hidden')){
-													setTimeout(function(){
-														ui.click.auto();
-														setTimeout(function(){
-															ui.click.auto();
-															game.swapPlayer(target);
-														},500);
-													});
-												}
-											}
-											else{
-												game.swapPlayer(target);
-											}
-											break;
-										}
-									}
-								}
-								if(ui.coin){
-									game.changeCoin(-20);
-								}
-								clickContainer.call(menuContainer);
-							}
-						});
+					
+					// (function(){
+					// 	var norow2=function(){
+					// 		var node=currentrow1;
+					// 		if(!node) return false;
+					// 		return node.innerHTML=='横置'||node.innerHTML=='翻面'||node.innerHTML=='换人'||node.innerHTML=='复活';
+					// 	};
+					// 	var checkCheat=function(){
+					// 		if(norow2()){
+					// 			for(var i=0;i<row2.childElementCount;i++){
+					// 				row2.childNodes[i].classList.remove('selectedx');
+					// 				row2.childNodes[i].classList.add('unselectable');
+					// 			}
+					// 		}
+					// 		else{
+					// 			for(var i=0;i<row2.childElementCount;i++){
+					// 				row2.childNodes[i].classList.remove('unselectable');
+					// 			}
+					// 		}
+					// 		if(currentrow1&&currentrow1.innerHTML=='复活'){
+					// 			for(var i=0;i<row3.childNodes.length;i++){
+					// 				if(row3.childNodes[i].dead){
+					// 					row3.childNodes[i].style.display='';
+					// 				}
+					// 				else{
+					// 					row3.childNodes[i].style.display='none';
+					// 					row3.childNodes[i].classList.remove('glow');
+					// 				}
+					// 				row3.childNodes[i].classList.remove('unselectable');
+					// 			}
+					// 		}
+					// 		else{
+					// 			for(var i=0;i<row3.childElementCount;i++){
+					// 				if(currentrow1&&currentrow1.innerHTML=='换人'&&row3.childNodes[i].link==game.me){
+					// 					row3.childNodes[i].classList.add('unselectable');
+					// 				}
+					// 				else{
+					// 					row3.childNodes[i].classList.remove('unselectable');
+					// 				}
+					// 				if(!row3.childNodes[i].dead){
+					// 					row3.childNodes[i].style.display='';
+					// 				}
+					// 				else{
+					// 					row3.childNodes[i].style.display='none';
+					// 					row3.childNodes[i].classList.remove('glow');
+					// 				}
+					// 			}
+					// 		}
+					// 		if(currentrow1&&(currentrow2||norow2())&&row3.querySelector('.glow')){
+					// 			cheatButton.classList.add('glowing');
+					// 			return true;
+					// 		}
+					// 		else{
+					// 			cheatButton.classList.remove('glowing');
+					// 			return false;
+					// 		}
+					// 	}
+					// 	cheatButton.listen(function(){
+					// 		if(checkCheat()){
+					// 			var num;
+					// 			if(currentrow2){
+					// 				switch(currentrow2.innerHTML){
+					// 					case '一':num=1;break;
+					// 					case '二':num=2;break;
+					// 					case '三':num=3;break;
+					// 					case '四':num=4;break;
+					// 					case '五':num=5;break;
+					// 				}
+					// 			}
+					// 			var targets=[];
+					// 			var buttons=row3.querySelectorAll('.glow');
+					// 			for(var i=0;i<buttons.length;i++){
+					// 				targets.push(buttons[i].link);
+					// 			}
+					// 			while(targets.length){
+					// 				var target=targets.shift();
+					// 				switch(currentrow1.innerHTML){
+					// 					case '伤害':target.damage(num,'nosource');break;
+					// 					case '回复':target.recover(num,'nosource');break;
+					// 					case '摸牌':target.draw(num);break;
+					// 					case '弃牌':target.discard(target.getCards('he').randomGets(num));break;
+					// 					case '横置':target.link();break;
+					// 					case '翻面':target.turnOver();break;
+					// 					case '复活':target.revive(target.maxHp);break;
+					// 					case '换人':{
+					// 						if(_status.event.isMine()){
+					// 							if(!ui.auto.classList.contains('hidden')){
+					// 								setTimeout(function(){
+					// 									ui.click.auto();
+					// 									setTimeout(function(){
+					// 										ui.click.auto();
+					// 										game.swapPlayer(target);
+					// 									},500);
+					// 								});
+					// 							}
+					// 						}
+					// 						else{
+					// 							game.swapPlayer(target);
+					// 						}
+					// 						break;
+					// 					}
+					// 				}
+					// 			}
+					// 			if(ui.coin){
+					// 				game.changeCoin(-20);
+					// 			}
+					// 			clickContainer.call(menuContainer);
+					// 		}
+					// 	});
 
-						var page=ui.create.div('');
-						var node=ui.create.div('.menubutton.large','控制',start.firstChild,clickMode);
-						node.link=page;
-						node.type='cheat';
-						page.classList.add('menu-sym');
+					// 	var page=ui.create.div('');
+					// 	var node=ui.create.div('.menubutton.large','控制',start.firstChild,clickMode);
+					// 	node.link=page;
+					// 	node.type='cheat';
+					// 	page.classList.add('menu-sym');
 
-						var currentrow1=null;
-						var row1=ui.create.div('.menu-cheat',page);
-						var clickrow1=function(){
-							if(this.classList.contains('unselectable')) return;
-							if(currentrow1==this){
-								this.classList.remove('selectedx');
-								currentrow1=null;
-							}
-							else{
-								this.classList.add('selectedx');
-								if(currentrow1){
-									currentrow1.classList.remove('selectedx');
-								}
-								currentrow1=this;
-								if(this.innerHTML=='换人'){
-									for(var i=0;i<row3.childNodes.length;i++){
-										row3.childNodes[i].classList.remove('glow');
-									}
-								}
-							}
-							checkCheat();
-						};
-						var nodedamage=ui.create.div('.menubutton','伤害',row1,clickrow1);
-						var noderecover=ui.create.div('.menubutton','回复',row1,clickrow1);
-						var nodedraw=ui.create.div('.menubutton','摸牌',row1,clickrow1);
-						var nodediscard=ui.create.div('.menubutton','弃牌',row1,clickrow1);
-						var nodelink=ui.create.div('.menubutton','横置',row1,clickrow1);
-						var nodeturnover=ui.create.div('.menubutton','翻面',row1,clickrow1);
-						var noderevive=ui.create.div('.menubutton','复活',row1,clickrow1);
-						var nodereplace=ui.create.div('.menubutton','换人',row1,clickrow1);
-						if(lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'){
-							nodereplace.classList.add('unselectable');
-						}
+					// 	var currentrow1=null;
+					// 	var row1=ui.create.div('.menu-cheat',page);
+					// 	var clickrow1=function(){
+					// 		if(this.classList.contains('unselectable')) return;
+					// 		if(currentrow1==this){
+					// 			this.classList.remove('selectedx');
+					// 			currentrow1=null;
+					// 		}
+					// 		else{
+					// 			this.classList.add('selectedx');
+					// 			if(currentrow1){
+					// 				currentrow1.classList.remove('selectedx');
+					// 			}
+					// 			currentrow1=this;
+					// 			if(this.innerHTML=='换人'){
+					// 				for(var i=0;i<row3.childNodes.length;i++){
+					// 					row3.childNodes[i].classList.remove('glow');
+					// 				}
+					// 			}
+					// 		}
+					// 		checkCheat();
+					// 	};
+					// 	var nodedamage=ui.create.div('.menubutton','伤害',row1,clickrow1);
+					// 	var noderecover=ui.create.div('.menubutton','回复',row1,clickrow1);
+					// 	var nodedraw=ui.create.div('.menubutton','摸牌',row1,clickrow1);
+					// 	var nodediscard=ui.create.div('.menubutton','弃牌',row1,clickrow1);
+					// 	var nodelink=ui.create.div('.menubutton','横置',row1,clickrow1);
+					// 	var nodeturnover=ui.create.div('.menubutton','翻面',row1,clickrow1);
+					// 	var noderevive=ui.create.div('.menubutton','复活',row1,clickrow1);
+					// 	var nodereplace=ui.create.div('.menubutton','换人',row1,clickrow1);
+					// 	if(lib.config.mode!='identity'&&lib.config.mode!='guozhan'&&lib.config.mode!='doudizhu'){
+					// 		nodereplace.classList.add('unselectable');
+					// 	}
 
-						var currentrow2=null;
-						var row2=ui.create.div('.menu-cheat',page);
-						var clickrow2=function(){
-							if(this.classList.contains('unselectable')) return;
-							if(currentrow2==this){
-								this.classList.remove('selectedx');
-								currentrow2=null;
-							}
-							else{
-								this.classList.add('selectedx');
-								if(currentrow2){
-									currentrow2.classList.remove('selectedx');
-								}
-								currentrow2=this;
-							}
-							checkCheat();
-						};
-						var nodex1=ui.create.div('.menubutton','一',row2,clickrow2);
-						var nodex2=ui.create.div('.menubutton','二',row2,clickrow2);
-						var nodex3=ui.create.div('.menubutton','三',row2,clickrow2);
-						var nodex4=ui.create.div('.menubutton','四',row2,clickrow2);
-						var nodex5=ui.create.div('.menubutton','五',row2,clickrow2);
+					// 	var currentrow2=null;
+					// 	var row2=ui.create.div('.menu-cheat',page);
+					// 	var clickrow2=function(){
+					// 		if(this.classList.contains('unselectable')) return;
+					// 		if(currentrow2==this){
+					// 			this.classList.remove('selectedx');
+					// 			currentrow2=null;
+					// 		}
+					// 		else{
+					// 			this.classList.add('selectedx');
+					// 			if(currentrow2){
+					// 				currentrow2.classList.remove('selectedx');
+					// 			}
+					// 			currentrow2=this;
+					// 		}
+					// 		checkCheat();
+					// 	};
+					// 	var nodex1=ui.create.div('.menubutton','一',row2,clickrow2);
+					// 	var nodex2=ui.create.div('.menubutton','二',row2,clickrow2);
+					// 	var nodex3=ui.create.div('.menubutton','三',row2,clickrow2);
+					// 	var nodex4=ui.create.div('.menubutton','四',row2,clickrow2);
+					// 	var nodex5=ui.create.div('.menubutton','五',row2,clickrow2);
 
-						var row3=ui.create.div('.menu-buttons.leftbutton.commandbutton',page);
-						row3.style.marginTop='3px';
-						var clickrow3=function(){
-							if(this.classList.contains('unselectable')) return;
-							this.classList.toggle('glow');
-							if(currentrow1&&currentrow1.innerHTML=='换人'&&this.classList.contains('glow')){
-								if(this.link==game.me){
-									this.classList.remove('glow');
-								}
-								for(var i=0;i<row3.childElementCount;i++){
-									if(row3.childNodes[i]!=this){
-										row3.childNodes[i].classList.remove('glow');
-									}
-								}
-							}
-							checkCheat();
-						};
-						menuUpdates.push(function(){
-							if(_status.video||_status.connectMode){
-								node.classList.add('off');
-								if(node.classList.contains('active')){
-									node.classList.remove('active');
-									node.link.remove();
-									active=start.firstChild.firstChild;
-									active.classList.add('active');
-									rightPane.appendChild(active.link);
-								}
+					// 	var row3=ui.create.div('.menu-buttons.leftbutton.commandbutton',page);
+					// 	row3.style.marginTop='3px';
+					// 	var clickrow3=function(){
+					// 		if(this.classList.contains('unselectable')) return;
+					// 		this.classList.toggle('glow');
+					// 		if(currentrow1&&currentrow1.innerHTML=='换人'&&this.classList.contains('glow')){
+					// 			if(this.link==game.me){
+					// 				this.classList.remove('glow');
+					// 			}
+					// 			for(var i=0;i<row3.childElementCount;i++){
+					// 				if(row3.childNodes[i]!=this){
+					// 					row3.childNodes[i].classList.remove('glow');
+					// 				}
+					// 			}
+					// 		}
+					// 		checkCheat();
+					// 	};
+					// 	menuUpdates.push(function(){
+					// 		if(_status.video||_status.connectMode){
+					// 			node.classList.add('off');
+					// 			if(node.classList.contains('active')){
+					// 				node.classList.remove('active');
+					// 				node.link.remove();
+					// 				active=start.firstChild.firstChild;
+					// 				active.classList.add('active');
+					// 				rightPane.appendChild(active.link);
+					// 			}
 
-								page.remove();
-								cheatButton.remove();
-								if(_status.video) node.remove();
-								return;
-							}
-							var list=[];
-							for(var i=0;i<game.players.length;i++){
-								if(lib.character[game.players[i].name]||game.players[i].name1){
-									list.push(game.players[i]);
-								}
-							}
-							for(var i=0;i<game.dead.length;i++){
-								if(lib.character[game.dead[i].name]||game.dead[i].name1){
-									list.push(game.dead[i]);
-								}
-							}
-							if(list.length){
-								row1.show();
-								row2.show();
-								row3.innerHTML='';
-								var buttons=ui.create.buttons(list,'player',row3,true);
-								for(var i=0;i<buttons.length;i++){
-									buttons[i].listen(clickrow3);
-									if(game.dead.contains(buttons[i].link)){
-										buttons[i].dead=true;
-									}
-								}
-								checkCheat();
-							}
-							else{
-								row1.hide();
-								row2.hide();
-							}
-							if(lib.config.mode=='identity'||lib.config.mode=='guozhan'||lib.config.mode=='doudizhu'){
-								if(game.notMe||(game.me&&(game.me._trueMe||game.hasPlayer(function(current){
-									return current._trueMe==game.me;
-								})))||!game.phaseNumber||_status.qianlidanji){
-									nodereplace.classList.add('unselectable');
-								}
-								else if(_status.event.isMine()&&ui.auto.classList.contains('hidden')){
-									nodereplace.classList.add('unselectable');
-								}
-								else{
-									nodereplace.classList.remove('unselectable');
-								}
-							}
-							if(game.dead.length==0){
-								noderevive.classList.add('unselectable');
-							}
-							else{
-								noderevive.classList.remove('unselectable');
-							}
-							checkCheat();
-						});
-					}());
-					(function(){
-						var page=ui.create.div('');
-						var node=ui.create.div('.menubutton.large','命令',start.firstChild,clickMode);
-						ui.commandnode=node;
-						node.type='cmd';
-						node.link=page;
-						page.classList.add('menu-sym');
-						menuUpdates.push(function(){
-							if(_status.connectMode){
-								node.classList.add('off');
-								if(node.classList.contains('active')){
-									node.classList.remove('active');
-									node.link.remove();
-									active=start.firstChild.firstChild;
-									active.classList.add('active');
-									rightPane.appendChild(active.link);
-								}
-							}
-						});
-						var text=document.createElement('div');
-						text.style.width='194px';
-						text.style.height='124px';
-						text.style.padding='3px';
-						text.style.borderRadius='2px';
-						text.style.boxShadow='rgba(0, 0, 0, 0.2) 0 0 0 1px';
-						text.style.textAlign='left';
-						text.style.webkitUserSelect='initial';
-						text.style.overflow='scroll';
-						text.style.position='absolute';
-						text.style.left='30px';
-						text.style.top='50px';
-						text.style.wordBreak='break-all';
-						var pre=ui.create.node('pre.fullsize',text);
-						pre.style.margin=0;
-						pre.style.padding=0;
-						pre.style.position='relative';
-						lib.setScroll(pre);
-						page.appendChild(text);
+					// 			page.remove();
+					// 			cheatButton.remove();
+					// 			if(_status.video) node.remove();
+					// 			return;
+					// 		}
+					// 		var list=[];
+					// 		for(var i=0;i<game.players.length;i++){
+					// 			if(lib.character[game.players[i].name]||game.players[i].name1){
+					// 				list.push(game.players[i]);
+					// 			}
+					// 		}
+					// 		for(var i=0;i<game.dead.length;i++){
+					// 			if(lib.character[game.dead[i].name]||game.dead[i].name1){
+					// 				list.push(game.dead[i]);
+					// 			}
+					// 		}
+					// 		if(list.length){
+					// 			row1.show();
+					// 			row2.show();
+					// 			row3.innerHTML='';
+					// 			var buttons=ui.create.buttons(list,'player',row3,true);
+					// 			for(var i=0;i<buttons.length;i++){
+					// 				buttons[i].listen(clickrow3);
+					// 				if(game.dead.contains(buttons[i].link)){
+					// 					buttons[i].dead=true;
+					// 				}
+					// 			}
+					// 			checkCheat();
+					// 		}
+					// 		else{
+					// 			row1.hide();
+					// 			row2.hide();
+					// 		}
+					// 		if(lib.config.mode=='identity'||lib.config.mode=='guozhan'||lib.config.mode=='doudizhu'){
+					// 			if(game.notMe||(game.me&&(game.me._trueMe||game.hasPlayer(function(current){
+					// 				return current._trueMe==game.me;
+					// 			})))||!game.phaseNumber||_status.qianlidanji){
+					// 				nodereplace.classList.add('unselectable');
+					// 			}
+					// 			else if(_status.event.isMine()&&ui.auto.classList.contains('hidden')){
+					// 				nodereplace.classList.add('unselectable');
+					// 			}
+					// 			else{
+					// 				nodereplace.classList.remove('unselectable');
+					// 			}
+					// 		}
+					// 		if(game.dead.length==0){
+					// 			noderevive.classList.add('unselectable');
+					// 		}
+					// 		else{
+					// 			noderevive.classList.remove('unselectable');
+					// 		}
+					// 		checkCheat();
+					// 	});
+					// }());
+					// (function(){
+					// 	var page=ui.create.div('');
+					// 	var node=ui.create.div('.menubutton.large','命令',start.firstChild,clickMode);
+					// 	ui.commandnode=node;
+					// 	node.type='cmd';
+					// 	node.link=page;
+					// 	page.classList.add('menu-sym');
+					// 	menuUpdates.push(function(){
+					// 		if(_status.connectMode){
+					// 			node.classList.add('off');
+					// 			if(node.classList.contains('active')){
+					// 				node.classList.remove('active');
+					// 				node.link.remove();
+					// 				active=start.firstChild.firstChild;
+					// 				active.classList.add('active');
+					// 				rightPane.appendChild(active.link);
+					// 			}
+					// 		}
+					// 	});
+					// 	var text=document.createElement('div');
+					// 	text.style.width='194px';
+					// 	text.style.height='124px';
+					// 	text.style.padding='3px';
+					// 	text.style.borderRadius='2px';
+					// 	text.style.boxShadow='rgba(0, 0, 0, 0.2) 0 0 0 1px';
+					// 	text.style.textAlign='left';
+					// 	text.style.webkitUserSelect='initial';
+					// 	text.style.overflow='scroll';
+					// 	text.style.position='absolute';
+					// 	text.style.left='30px';
+					// 	text.style.top='50px';
+					// 	text.style.wordBreak='break-all';
+					// 	var pre=ui.create.node('pre.fullsize',text);
+					// 	pre.style.margin=0;
+					// 	pre.style.padding=0;
+					// 	pre.style.position='relative';
+					// 	lib.setScroll(pre);
+					// 	page.appendChild(text);
 
-						// var caption=ui.create.div('','输入命令',page);
-						// caption.style.margin='6px';
-						// caption.style.position='absolute';
-						// caption.style.width='120px';
-						// caption.style.top='129px';
-						// caption.style.left='64px';
-						var text2=document.createElement('input');
-						text2.style.width='200px';
-						text2.style.height='20px';
-						text2.style.padding='0';
-						text2.style.position='absolute';
-						text2.style.top='15px';
-						text2.style.left='30px';
-						text2.style.resize='none';
-						text2.style.border='none';
-						text2.style.borderRadius='2px';
-						text2.style.boxShadow='rgba(0, 0, 0, 0.2) 0 0 0 1px';
-						var g={};
-						var logs=[];
-						var logindex=-1;
-						var cheat=lib.cheat;
-						var runCommand=function(e){
-							if(text2.value&&!['up','down'].contains(text2.value)){
-								logindex=-1;
-								logs.unshift(text2.value);
-							}
-							if(text2.value=='cls'){
-								pre.innerHTML='';
-								text2.value='';
-							}
-							else if(text2.value=='up'){
-								if(logindex+1<logs.length){
-									text2.value=logs[++logindex];
-								}
-								else{
-									text2.value='';
-								}
-							}
-							else if(text2.value=='down'){
-								if(logindex>=0){
-									logindex--;
-									if(logindex<0){
-										text2.value='';
-									}
-									else{
-										text2.value=logs[logindex];
-									}
-								}
-								else{
-									text2.value='';
-								}
-							}
-							else if(text2.value.indexOf('无天使')!=-1&&(text2.value.indexOf('无神佛')!=-1||text2.value.indexOf('无神')!=-1&&text2.value.indexOf('无佛')!=-1)){
-								game.print('密码正确！欢迎来到死后世界战线！');
-								_status.keyVerified=true;
-								text2.value='';
-							}
-							else{
-								if(!game.observe&&!game.online){
-									try{
-										var result=eval(text2.value);
-										game.print(result);
-									}
-									catch(e){
-										game.print(e);
-									}
-								}
-								text2.value='';
-							}
-						}
-						text2.addEventListener('keydown',function(e){
-							if(e.keyCode==13){
-								runCommand();
-							}
-							else if(e.keyCode==38){
-								if(logindex+1<logs.length){
-									text2.value=logs[++logindex];
-								}
-							}
-							else if(e.keyCode==40){
-								if(logindex>=0){
-									logindex--;
-									if(logindex<0){
-										text2.value='';
-									}
-									else{
-										text2.value=logs[logindex];
-									}
-								}
-							}
-						});
-						page.appendChild(text2);
-						game.print=function(){
-							var textstr='';
-							for(var i=0;i<arguments.length;i++){
-								if(get.is.object(arguments[i])){
-									var argi=get.stringify(arguments[i]);
-									if(argi&&argi.length<5000){
-										textstr+=argi;
-									}
-									else{
-										textstr+=arguments[i].toString();
-									}
-								}
-								else{
-									textstr+=arguments[i];
-								}
-								if(i<arguments.length-1){
-									textstr+=' ';
-								}
-							}
-							textstr+='<br>';
-							pre.innerHTML+=textstr;
-							text.scrollTop=text.scrollHeight;
-						}
-						if(_status.toprint){
-							for(var i=0;i<_status.toprint.length;i++){
-								game.print.apply(this,_status.toprint[i]);
-							}
-							delete _status.toprint;
-						}
-						runButton.listen(runCommand);
-						clearButton.listen(function(){
-							pre.innerHTML='';
-						});
-					}());
-					(function(){
-						var page=ui.create.div('');
-						var node=ui.create.div('.menubutton.large','战绩',start.firstChild,clickMode);
-						node.type='rec';
-						node.link=page;
-						page.style.paddingBottom='10px';
-						var reset=function(){
-							if(this.innerHTML=='重置'){
-								this.innerHTML='确定';
-								var that=this;
-								setTimeout(function(){
-									that.innerHTML='重置';
-								},1000);
-							}
-							else{
-								this.parentNode.previousSibling.remove();
-								this.parentNode.remove();
-								lib.config.gameRecord[this.parentNode.link]={data:{}};
-								game.saveConfig('gameRecord',lib.config.gameRecord);
-							}
-						}
-						for(var i=0;i<lib.config.all.mode.length;i++){
-							if(!lib.config.gameRecord[lib.config.all.mode[i]]) continue;
-							if(lib.config.gameRecord[lib.config.all.mode[i]].str){
-								ui.create.div('.config.indent',lib.translate[lib.config.all.mode[i]],page).style.marginBottom='-5px';
-								var item=ui.create.div('.config.indent',lib.config.gameRecord[lib.config.all.mode[i]].str+'<span>重置</span>',page);
-								item.style.height='auto';
-								item.lastChild.addEventListener('click',reset);
-								item.lastChild.classList.add('pointerdiv');
-								item.link=lib.config.all.mode[i];
-							}
-						}
-					}());
-					(function(){
-						if(!window.indexedDB||window.nodb) return;
-						var page=ui.create.div('');
-						var node=ui.create.div('.menubutton.large','录像',start.firstChild,clickMode);
-						node.type='video';
-						node.link=page;
+					// 	// var caption=ui.create.div('','输入命令',page);
+					// 	// caption.style.margin='6px';
+					// 	// caption.style.position='absolute';
+					// 	// caption.style.width='120px';
+					// 	// caption.style.top='129px';
+					// 	// caption.style.left='64px';
+					// 	var text2=document.createElement('input');
+					// 	text2.style.width='200px';
+					// 	text2.style.height='20px';
+					// 	text2.style.padding='0';
+					// 	text2.style.position='absolute';
+					// 	text2.style.top='15px';
+					// 	text2.style.left='30px';
+					// 	text2.style.resize='none';
+					// 	text2.style.border='none';
+					// 	text2.style.borderRadius='2px';
+					// 	text2.style.boxShadow='rgba(0, 0, 0, 0.2) 0 0 0 1px';
+					// 	var g={};
+					// 	var logs=[];
+					// 	var logindex=-1;
+					// 	var cheat=lib.cheat;
+					// 	var runCommand=function(e){
+					// 		if(text2.value&&!['up','down'].contains(text2.value)){
+					// 			logindex=-1;
+					// 			logs.unshift(text2.value);
+					// 		}
+					// 		if(text2.value=='cls'){
+					// 			pre.innerHTML='';
+					// 			text2.value='';
+					// 		}
+					// 		else if(text2.value=='up'){
+					// 			if(logindex+1<logs.length){
+					// 				text2.value=logs[++logindex];
+					// 			}
+					// 			else{
+					// 				text2.value='';
+					// 			}
+					// 		}
+					// 		else if(text2.value=='down'){
+					// 			if(logindex>=0){
+					// 				logindex--;
+					// 				if(logindex<0){
+					// 					text2.value='';
+					// 				}
+					// 				else{
+					// 					text2.value=logs[logindex];
+					// 				}
+					// 			}
+					// 			else{
+					// 				text2.value='';
+					// 			}
+					// 		}
+					// 		else if(text2.value.indexOf('无天使')!=-1&&(text2.value.indexOf('无神佛')!=-1||text2.value.indexOf('无神')!=-1&&text2.value.indexOf('无佛')!=-1)){
+					// 			game.print('密码正确！欢迎来到死后世界战线！');
+					// 			_status.keyVerified=true;
+					// 			text2.value='';
+					// 		}
+					// 		else{
+					// 			if(!game.observe&&!game.online){
+					// 				try{
+					// 					var result=eval(text2.value);
+					// 					game.print(result);
+					// 				}
+					// 				catch(e){
+					// 					game.print(e);
+					// 				}
+					// 			}
+					// 			text2.value='';
+					// 		}
+					// 	}
+					// 	text2.addEventListener('keydown',function(e){
+					// 		if(e.keyCode==13){
+					// 			runCommand();
+					// 		}
+					// 		else if(e.keyCode==38){
+					// 			if(logindex+1<logs.length){
+					// 				text2.value=logs[++logindex];
+					// 			}
+					// 		}
+					// 		else if(e.keyCode==40){
+					// 			if(logindex>=0){
+					// 				logindex--;
+					// 				if(logindex<0){
+					// 					text2.value='';
+					// 				}
+					// 				else{
+					// 					text2.value=logs[logindex];
+					// 				}
+					// 			}
+					// 		}
+					// 	});
+					// 	page.appendChild(text2);
+					// 	game.print=function(){
+					// 		var textstr='';
+					// 		for(var i=0;i<arguments.length;i++){
+					// 			if(get.is.object(arguments[i])){
+					// 				var argi=get.stringify(arguments[i]);
+					// 				if(argi&&argi.length<5000){
+					// 					textstr+=argi;
+					// 				}
+					// 				else{
+					// 					textstr+=arguments[i].toString();
+					// 				}
+					// 			}
+					// 			else{
+					// 				textstr+=arguments[i];
+					// 			}
+					// 			if(i<arguments.length-1){
+					// 				textstr+=' ';
+					// 			}
+					// 		}
+					// 		textstr+='<br>';
+					// 		pre.innerHTML+=textstr;
+					// 		text.scrollTop=text.scrollHeight;
+					// 	}
+					// 	if(_status.toprint){
+					// 		for(var i=0;i<_status.toprint.length;i++){
+					// 			game.print.apply(this,_status.toprint[i]);
+					// 		}
+					// 		delete _status.toprint;
+					// 	}
+					// 	runButton.listen(runCommand);
+					// 	clearButton.listen(function(){
+					// 		pre.innerHTML='';
+					// 	});
+					// }());
+					// (function(){
+					// 	var page=ui.create.div('');
+					// 	var node=ui.create.div('.menubutton.large','战绩',start.firstChild,clickMode);
+					// 	node.type='rec';
+					// 	node.link=page;
+					// 	page.style.paddingBottom='10px';
+					// 	var reset=function(){
+					// 		if(this.innerHTML=='重置'){
+					// 			this.innerHTML='确定';
+					// 			var that=this;
+					// 			setTimeout(function(){
+					// 				that.innerHTML='重置';
+					// 			},1000);
+					// 		}
+					// 		else{
+					// 			this.parentNode.previousSibling.remove();
+					// 			this.parentNode.remove();
+					// 			lib.config.gameRecord[this.parentNode.link]={data:{}};
+					// 			game.saveConfig('gameRecord',lib.config.gameRecord);
+					// 		}
+					// 	}
+					// 	for(var i=0;i<lib.config.all.mode.length;i++){
+					// 		if(!lib.config.gameRecord[lib.config.all.mode[i]]) continue;
+					// 		if(lib.config.gameRecord[lib.config.all.mode[i]].str){
+					// 			ui.create.div('.config.indent',lib.translate[lib.config.all.mode[i]],page).style.marginBottom='-5px';
+					// 			var item=ui.create.div('.config.indent',lib.config.gameRecord[lib.config.all.mode[i]].str+'<span>重置</span>',page);
+					// 			item.style.height='auto';
+					// 			item.lastChild.addEventListener('click',reset);
+					// 			item.lastChild.classList.add('pointerdiv');
+					// 			item.link=lib.config.all.mode[i];
+					// 		}
+					// 	}
+					// }());
+					// (function(){
+					// 	if(!window.indexedDB||window.nodb) return;
+					// 	var page=ui.create.div('');
+					// 	var node=ui.create.div('.menubutton.large','录像',start.firstChild,clickMode);
+					// 	node.type='video';
+					// 	node.link=page;
 
-						var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
-						lib.videos=[];
-						store.openCursor().onsuccess=function(e){
-							var cursor=e.target.result;
-							if(cursor){
-								lib.videos.push(cursor.value);
-								cursor.continue();
-							}
-							else{
-								lib.videos.sort(function(a,b){
-									return parseInt(b.time)-parseInt(a.time);
-								});
-								var clickcapt=function(){
-									var current=this.parentNode.querySelector('.videonode.active');
-									if(current&&current!=this){
-										current.classList.remove('active');
-									}
-									if(this.classList.toggle('active')){
-										playButton.show();
-										deleteButton.show();
-										saveButton.show();
-									}
-									else{
-										playButton.hide();
-										deleteButton.hide();
-										saveButton.hide();
-									}
-								};
-								var staritem=function(){
-									this.parentNode.classList.toggle('starred');
-									var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
-									if(this.parentNode.classList.contains('starred')){
-										this.parentNode.link.starred=true;
-									}
-									else{
-										this.parentNode.link.starred=false;
-									}
-									store.put(this.parentNode.link);
-								}
-								var createNode=function(video,before){
-									var node=ui.create.div('.videonode.menubutton.large',clickcapt);
-									node.link=video;
-									var nodename1=ui.create.div('.menubutton.videoavatar',node);
-									nodename1.setBackground(video.name1,'character');
-									if(video.name2){
-										var nodename2=ui.create.div('.menubutton.videoavatar2',node);
-										nodename2.setBackground(video.name2,'character');
-									}
-									var date=new Date(video.time);
-									var str=date.getFullYear()+'.'+(date.getMonth()+2)+'.'+(date.getDay()+1)+' '+
-										date.getHours()+':';
-									var minutes=date.getMinutes();
-									if(minutes<10){
-										str+='0';
-									}
-									str+=minutes;
-									ui.create.div('.caption',video.name[0],node);
-									ui.create.div('.text',str+'<br>'+video.name[1],node);
-									if(video.win){
-										ui.create.div('.victory','胜',node);
-									}
+					// 	var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
+					// 	lib.videos=[];
+					// 	store.openCursor().onsuccess=function(e){
+					// 		var cursor=e.target.result;
+					// 		if(cursor){
+					// 			lib.videos.push(cursor.value);
+					// 			cursor.continue();
+					// 		}
+					// 		else{
+					// 			lib.videos.sort(function(a,b){
+					// 				return parseInt(b.time)-parseInt(a.time);
+					// 			});
+					// 			var clickcapt=function(){
+					// 				var current=this.parentNode.querySelector('.videonode.active');
+					// 				if(current&&current!=this){
+					// 					current.classList.remove('active');
+					// 				}
+					// 				if(this.classList.toggle('active')){
+					// 					playButton.show();
+					// 					deleteButton.show();
+					// 					saveButton.show();
+					// 				}
+					// 				else{
+					// 					playButton.hide();
+					// 					deleteButton.hide();
+					// 					saveButton.hide();
+					// 				}
+					// 			};
+					// 			var staritem=function(){
+					// 				this.parentNode.classList.toggle('starred');
+					// 				var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
+					// 				if(this.parentNode.classList.contains('starred')){
+					// 					this.parentNode.link.starred=true;
+					// 				}
+					// 				else{
+					// 					this.parentNode.link.starred=false;
+					// 				}
+					// 				store.put(this.parentNode.link);
+					// 			}
+					// 			var createNode=function(video,before){
+					// 				var node=ui.create.div('.videonode.menubutton.large',clickcapt);
+					// 				node.link=video;
+					// 				var nodename1=ui.create.div('.menubutton.videoavatar',node);
+					// 				nodename1.setBackground(video.name1,'character');
+					// 				if(video.name2){
+					// 					var nodename2=ui.create.div('.menubutton.videoavatar2',node);
+					// 					nodename2.setBackground(video.name2,'character');
+					// 				}
+					// 				var date=new Date(video.time);
+					// 				var str=date.getFullYear()+'.'+(date.getMonth()+2)+'.'+(date.getDay()+1)+' '+
+					// 					date.getHours()+':';
+					// 				var minutes=date.getMinutes();
+					// 				if(minutes<10){
+					// 					str+='0';
+					// 				}
+					// 				str+=minutes;
+					// 				ui.create.div('.caption',video.name[0],node);
+					// 				ui.create.div('.text',str+'<br>'+video.name[1],node);
+					// 				if(video.win){
+					// 					ui.create.div('.victory','胜',node);
+					// 				}
 
-									if(before){
-										page.insertBefore(node,page.firstChild);
-									}
-									else{
-										page.appendChild(node);
-									}
-									ui.create.div('.video_star','★',node,staritem);
-									if(video.starred){
-										node.classList.add('starred');
-									}
-								}
-								for(var i=0;i<lib.videos.length;i++){
-									createNode(lib.videos[i]);
-								}
-								ui.create.videoNode=createNode;
-								var importVideoNode=ui.create.div('.config.switcher.pointerspan',
-								'<span class="underlinenode slim ">导入录像...</span>',function(){
-									this.nextSibling.classList.toggle('hidden');
-								},page);
-								importVideoNode.style.marginLeft='12px';
-								importVideoNode.style.marginTop='3px';
-								var importVideo=ui.create.div('.config.hidden',page);
-								importVideo.style.whiteSpace='nowrap';
-								importVideo.style.marginBottom='80px';
-								importVideo.style.marginLeft='13px';
-								importVideo.style.width='calc(100% - 30px)';
-								importVideo.innerHTML='<input type="file" style="width:calc(100% - 40px)">'+
-								'<button style="width:40px">确定</button>';
-								importVideo.lastChild.onclick=function(){
-									var fileToLoad = importVideo.firstChild.files[0];
-									var fileReader = new FileReader();
-									fileReader.onload = function(fileLoadedEvent)
-									{
-										var data = fileLoadedEvent.target.result;
-										if(!data) return;
-										try{
-											data=JSON.parse(lib.init.decode(data));
-										}
-										catch(e){
-											console.log(e);
-											alert('导入失败');
-											return;
-										}
-										var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
-										var videos=lib.videos.slice(0);
-										for(var i=0;i<videos.length;i++){
-											if(videos[i].starred){
-												videos.splice(i--,1);
-											}
-										}
-										for(var deletei=0;deletei<5;deletei++){
-											if(videos.length>=parseInt(lib.config.video)&&videos.length){
-												var toremove=videos.pop();
-												lib.videos.remove(toremove);
-												store.delete(toremove.time);
-												for(var i=0;i<page.childNodes.length;i++){
-													if(page.childNodes[i].link==toremove){
-														page.childNodes[i].remove();
-														break;
-													}
-												}
-											}
-											else{
-												break;
-											}
-										}
-										for(var i=0;i<lib.videos.length;i++){
-											if(lib.videos[i].time==data.time){
-												alert('录像已存在');
-												return;
-											}
-										}
-										lib.videos.unshift(data);
-										store.put(data);
-										createNode(data,true);
-									};
-									fileReader.readAsText(fileToLoad, "UTF-8");
-								}
+					// 				if(before){
+					// 					page.insertBefore(node,page.firstChild);
+					// 				}
+					// 				else{
+					// 					page.appendChild(node);
+					// 				}
+					// 				ui.create.div('.video_star','★',node,staritem);
+					// 				if(video.starred){
+					// 					node.classList.add('starred');
+					// 				}
+					// 			}
+					// 			for(var i=0;i<lib.videos.length;i++){
+					// 				createNode(lib.videos[i]);
+					// 			}
+					// 			ui.create.videoNode=createNode;
+					// 			var importVideoNode=ui.create.div('.config.switcher.pointerspan',
+					// 			'<span class="underlinenode slim ">导入录像...</span>',function(){
+					// 				this.nextSibling.classList.toggle('hidden');
+					// 			},page);
+					// 			importVideoNode.style.marginLeft='12px';
+					// 			importVideoNode.style.marginTop='3px';
+					// 			var importVideo=ui.create.div('.config.hidden',page);
+					// 			importVideo.style.whiteSpace='nowrap';
+					// 			importVideo.style.marginBottom='80px';
+					// 			importVideo.style.marginLeft='13px';
+					// 			importVideo.style.width='calc(100% - 30px)';
+					// 			importVideo.innerHTML='<input type="file" style="width:calc(100% - 40px)">'+
+					// 			'<button style="width:40px">确定</button>';
+					// 			importVideo.lastChild.onclick=function(){
+					// 				var fileToLoad = importVideo.firstChild.files[0];
+					// 				var fileReader = new FileReader();
+					// 				fileReader.onload = function(fileLoadedEvent)
+					// 				{
+					// 					var data = fileLoadedEvent.target.result;
+					// 					if(!data) return;
+					// 					try{
+					// 						data=JSON.parse(lib.init.decode(data));
+					// 					}
+					// 					catch(e){
+					// 						console.log(e);
+					// 						alert('导入失败');
+					// 						return;
+					// 					}
+					// 					var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
+					// 					var videos=lib.videos.slice(0);
+					// 					for(var i=0;i<videos.length;i++){
+					// 						if(videos[i].starred){
+					// 							videos.splice(i--,1);
+					// 						}
+					// 					}
+					// 					for(var deletei=0;deletei<5;deletei++){
+					// 						if(videos.length>=parseInt(lib.config.video)&&videos.length){
+					// 							var toremove=videos.pop();
+					// 							lib.videos.remove(toremove);
+					// 							store.delete(toremove.time);
+					// 							for(var i=0;i<page.childNodes.length;i++){
+					// 								if(page.childNodes[i].link==toremove){
+					// 									page.childNodes[i].remove();
+					// 									break;
+					// 								}
+					// 							}
+					// 						}
+					// 						else{
+					// 							break;
+					// 						}
+					// 					}
+					// 					for(var i=0;i<lib.videos.length;i++){
+					// 						if(lib.videos[i].time==data.time){
+					// 							alert('录像已存在');
+					// 							return;
+					// 						}
+					// 					}
+					// 					lib.videos.unshift(data);
+					// 					store.put(data);
+					// 					createNode(data,true);
+					// 				};
+					// 				fileReader.readAsText(fileToLoad, "UTF-8");
+					// 			}
 
-								playButton.listen(function(){
-									var current=this.parentNode.querySelector('.videonode.active');
-									if(current){
-										var mode=current.link.mode;
-										if(mode=='identity'){
-											mode='guozhan';
-										}
-										game.playVideo(current.link.time,mode);
-									}
-								});
-								deleteButton.listen(function(){
-									var current=this.parentNode.querySelector('.videonode.active');
-									if(current){
-										lib.videos.remove(current.link);
-										var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
-										store.delete(current.link.time);
-										current.remove();
-									}
-								});
-								saveButton.listen(function(){
-									var current=this.parentNode.querySelector('.videonode.active');
-									if(current){
-										game.export(lib.init.encode(JSON.stringify(current.link)),
-										'无名杀 - 录像 - '+current.link.name[0]+' - '+current.link.name[1]);
-									}
-								});
+					// 			playButton.listen(function(){
+					// 				var current=this.parentNode.querySelector('.videonode.active');
+					// 				if(current){
+					// 					var mode=current.link.mode;
+					// 					if(mode=='identity'){
+					// 						mode='guozhan';
+					// 					}
+					// 					game.playVideo(current.link.time,mode);
+					// 				}
+					// 			});
+					// 			deleteButton.listen(function(){
+					// 				var current=this.parentNode.querySelector('.videonode.active');
+					// 				if(current){
+					// 					lib.videos.remove(current.link);
+					// 					var store=lib.db.transaction(['video'],'readwrite').objectStore('video');
+					// 					store.delete(current.link.time);
+					// 					current.remove();
+					// 				}
+					// 			});
+					// 			saveButton.listen(function(){
+					// 				var current=this.parentNode.querySelector('.videonode.active');
+					// 				if(current){
+					// 					game.export(lib.init.encode(JSON.stringify(current.link)),
+					// 					'无名杀 - 录像 - '+current.link.name[0]+' - '+current.link.name[1]);
+					// 				}
+					// 			});
 
-								ui.updateVideoMenu=function(){
-									var active=start.firstChild.querySelector('.active');
-									if(active){
-										active.classList.remove('active');
-										active.link.remove();
-									}
-									node.classList.add('active');
-									rightPane.appendChild(page);
-									playButton.style.display='';
-									deleteButton.style.display='';
-									saveButton.style.display='';
-								}
-							}
-						};
-					}());
+					// 			ui.updateVideoMenu=function(){
+					// 				var active=start.firstChild.querySelector('.active');
+					// 				if(active){
+					// 					active.classList.remove('active');
+					// 					active.link.remove();
+					// 				}
+					// 				node.classList.add('active');
+					// 				rightPane.appendChild(page);
+					// 				playButton.style.display='';
+					// 				deleteButton.style.display='';
+					// 				saveButton.style.display='';
+					// 			}
+					// 		}
+					// 	};
+					// }());
 
 
-					for(var i in lib.help){
-						var page=ui.create.div('');
-						var node=ui.create.div('.menubutton.large',i,start.firstChild,clickMode);
-						node.type='help';
-						node.link=page;
-						node.style.display='none';
-						page.classList.add('menu-help');
-						page.innerHTML=lib.help[i];
-					}
+					// for(var i in lib.help){
+					// 	var page=ui.create.div('');
+					// 	var node=ui.create.div('.menubutton.large',i,start.firstChild,clickMode);
+					// 	node.type='help';
+					// 	node.link=page;
+					// 	node.style.display='none';
+					// 	page.classList.add('menu-help');
+					// 	page.innerHTML=lib.help[i];
+					// }
 
-					if(!connectMenu){
-						var node=ui.create.div('.menubutton.large','帮助',start.firstChild,function(){
-							var activex=start.firstChild.querySelector('.active');
-							if(this.innerHTML=='帮助'){
-								cheatButton.style.display='none';
-								runButton.style.display='none';
-								clearButton.style.display='none';
-								playButton.style.display='none';
-								saveButton.style.display='none';
-								deleteButton.style.display='none';
+					// if(!connectMenu){
+					// 	var node=ui.create.div('.menubutton.large','帮助',start.firstChild,function(){
+					// 		var activex=start.firstChild.querySelector('.active');
+					// 		if(this.innerHTML=='帮助'){
+					// 			cheatButton.style.display='none';
+					// 			runButton.style.display='none';
+					// 			clearButton.style.display='none';
+					// 			playButton.style.display='none';
+					// 			saveButton.style.display='none';
+					// 			deleteButton.style.display='none';
 
-								this.innerHTML='返回';
-								for(var i=0;i<start.firstChild.childElementCount;i++){
-									var nodex=start.firstChild.childNodes[i];
-									if(nodex==node) continue;
-									if(nodex.type=='help'){
-										nodex.style.display='';
-										if(activex&&activex.type!='help'){
-											activex.classList.remove('active');
-											activex.link.remove();
-											activex=null;
-											nodex.classList.add('active');
-											rightPane.appendChild(nodex.link);
-										}
-									}
-									else{
-										nodex.style.display='none';
-									}
-								}
-							}
-							else{
-								this.innerHTML='帮助';
-								for(var i=0;i<start.firstChild.childElementCount;i++){
-									var nodex=start.firstChild.childNodes[i];
-									if(nodex==node) continue;
-									if(nodex.type!='help'){
-										nodex.style.display='';
-										if(activex&&activex.type=='help'){
-											activex.classList.remove('active');
-											activex.link.remove();
-											activex=null;
-											clickMode.call(nodex);
-										}
-									}
-									else{
-										nodex.style.display='none';
-									}
-								}
-							}
-						});
-					}
+					// 			this.innerHTML='返回';
+					// 			for(var i=0;i<start.firstChild.childElementCount;i++){
+					// 				var nodex=start.firstChild.childNodes[i];
+					// 				if(nodex==node) continue;
+					// 				if(nodex.type=='help'){
+					// 					nodex.style.display='';
+					// 					if(activex&&activex.type!='help'){
+					// 						activex.classList.remove('active');
+					// 						activex.link.remove();
+					// 						activex=null;
+					// 						nodex.classList.add('active');
+					// 						rightPane.appendChild(nodex.link);
+					// 					}
+					// 				}
+					// 				else{
+					// 					nodex.style.display='none';
+					// 				}
+					// 			}
+					// 		}
+					// 		else{
+					// 			this.innerHTML='帮助';
+					// 			for(var i=0;i<start.firstChild.childElementCount;i++){
+					// 				var nodex=start.firstChild.childNodes[i];
+					// 				if(nodex==node) continue;
+					// 				if(nodex.type!='help'){
+					// 					nodex.style.display='';
+					// 					if(activex&&activex.type=='help'){
+					// 						activex.classList.remove('active');
+					// 						activex.link.remove();
+					// 						activex=null;
+					// 						clickMode.call(nodex);
+					// 					}
+					// 				}
+					// 				else{
+					// 					nodex.style.display='none';
+					// 				}
+					// 			}
+					// 		}
+					// 	});
+					// }
 
 					var active=start.firstChild.querySelector('.active');
 					if(!active){

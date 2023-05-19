@@ -114,6 +114,12 @@ var Coordinates = /** @class */ (function () {
             { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + ").concat((CommonMethods.isMobile() ? 120 : 160), "px") },
             { x: "".concat(this.playerSkinPositions[3].x, " + 180px"), y: "".concat(this.playerSkinPositions[3].y) },
         ];
+        this.showedCardsPositionsAni = [
+            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[0].y, " + ").concat(this.cardHeight + 40, "px") },
+            { x: "".concat(this.playerSkinPositions[1].x, " + 180px"), y: "".concat(this.playerSkinPositions[1].y) },
+            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + ").concat((CommonMethods.isMobile() ? 120 : 160), "px") },
+            { x: "".concat(this.playerSkinPositions[3].x, " + 180px"), y: "".concat(this.playerSkinPositions[3].y) },
+        ];
         this.trumpMadeCardsScale = 2 / 3;
         // from last trick
         this.trumpMadeCardsPositions = [

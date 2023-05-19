@@ -89,6 +89,7 @@ export class CommonMethods {
     public static audioDrawx = "audiodrawx";
     public static audioTie = "audiotie";
     public static audioWin = "audiowin";
+    public static audioGameStart = "audioGameStart";
 
     public static NotifyStateType_ObservePlayerById = "ObservePlayerById";
 

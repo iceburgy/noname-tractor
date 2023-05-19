@@ -78,7 +78,6 @@ export class MainForm {
     // public sgDrawingHelper: SGDrawingHelper
     public IsDebug: boolean
     public timerIntervalID: any[]
-    public timerCountDown: number
     // public timerImage: Phaser.GameObjects.Text
     public modalForm: any
     public firstWinNormal = 1;
@@ -115,7 +114,6 @@ export class MainForm {
         this.IsDebug = false
         this.SelectedCards = []
         this.timerIntervalID = []
-        this.timerCountDown = 0
         this.isSendEmojiEnabled = true;
         this.DaojuInfo = {};
         /*
@@ -671,6 +669,10 @@ export class MainForm {
     }
 
     public destroyGameRoom() {
+        if (this.gameScene.ui.handZone) {
+            this.gameScene.ui.handZone.remove();
+            delete this.gameScene.ui.handZone
+        }
         if (this.gameScene.ui.gameMe) {
             this.gameScene.ui.gameMe.remove();
             delete this.gameScene.ui.gameMe
@@ -868,7 +870,7 @@ export class MainForm {
         // this.btnSurrender.Visible = false;
         // this.btnRiot.Visible = false;
         this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {}
-        this.timerCountDown = 0;
+        this.gameScene.game.timerCurrent = 0;
         this.gameScene.ui.btnPig.hide();
 
         this.init();
@@ -2531,6 +2533,11 @@ export class MainForm {
                 if (keyCode === 13) {
                     this.emojiSubmitEventhandler();
                 }
+                return;
+            }
+
+            let ccTxtManual: any = document.getElementById("txtManual");
+            if (e.target === ccTxtManual) {
                 return;
             }
 

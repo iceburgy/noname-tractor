@@ -17,6 +17,8 @@ const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
 const UsedShengbi_REQUEST = "UsedShengbi"
 const NotifyPong_REQUEST = "NotifyPong"
 
+declare let decadeUI: any;
+
 export class TractorPlayer {
     public mainForm: MainForm
     public CurrentRoomSetting: RoomSetting
@@ -480,7 +482,8 @@ export class TractorPlayer {
             }
             else if (m.includes("新游戏即将开始")) {
                 //新游戏开始前播放提示音，告诉玩家要抢庄
-                this.mainForm.gameScene.playAudio(CommonMethods.audioWin);
+                this.mainForm.gameScene.playAudio(CommonMethods.audioGameStart);
+                decadeUI.animation.playSpine2D('effect_youxikaishi', void 0, void 0, decadeUI.animation.canvas.width * 0.8, decadeUI.animation.canvas.height * 0.8);
             }
             else if (m.includes("罚分") && !this.mainForm.gameScene.isReplayMode) {
                 //甩牌失败播放提示音

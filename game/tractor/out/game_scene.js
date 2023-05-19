@@ -6,7 +6,6 @@ var dummyValue = "dummyValue";
 var IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 var GameScene = /** @class */ (function () {
     function GameScene(hostName, playerName, nickNameOverridePass, playerEmail) {
-        // public overridingLabelAnims: string[] 
         // // public hallPlayerHeader: Phaser.GameObjects.Text
         // // public hallPlayerNames: Phaser.GameObjects.Text[]
         // // public btnJoinAudio: Phaser.GameObjects.Text
@@ -44,7 +43,13 @@ var GameScene = /** @class */ (function () {
             "huosha",
             "leisha",
         ];
-        // this.overridingLabelAnims = [];
+        this.overridingLabelAnims = [
+            ["", ""],
+            ["", ""],
+            ["effect_qinglongyanyuedao", undefined],
+            ["effect_shoujidonghua", "play3"],
+            ["effect_shoujidonghua", "play5"]
+        ];
         // // this.hallPlayerNames = [];
         this.clientMessages = [];
         this.danmuMessages = [];
@@ -386,6 +391,7 @@ var GameScene = /** @class */ (function () {
         this.soundPool[CommonMethods.audioDrawx] = ["effect", "drawx"];
         this.soundPool[CommonMethods.audioTie] = ["effect", "tie"];
         this.soundPool[CommonMethods.audioWin] = ["effect", "win"];
+        this.soundPool[CommonMethods.audioGameStart] = ["effect", "game_start"];
     };
     GameScene.prototype.saveSettings = function () {
         // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
