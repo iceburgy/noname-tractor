@@ -994,12 +994,6 @@ var MainForm = /** @class */ (function () {
             }
             _this.resetGameRoomUI();
         };
-        var noDongtu = document.getElementById("cbxNoDongtu");
-        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
-        noDongtu.onchange = function () {
-            gs.noDongtu = noDongtu.checked.toString();
-            gs.game.saveConfig("noDongtu", gs.noDongtu);
-        };
         var noDanmu = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = function () {

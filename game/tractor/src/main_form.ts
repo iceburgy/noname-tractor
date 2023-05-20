@@ -1120,13 +1120,6 @@ export class MainForm {
             this.resetGameRoomUI();
         }
 
-        let noDongtu: any = document.getElementById("cbxNoDongtu");
-        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
-        noDongtu.onchange = () => {
-            gs.noDongtu = noDongtu.checked.toString();
-            gs.game.saveConfig("noDongtu", gs.noDongtu);
-        }
-
         let noDanmu: any = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = () => {
