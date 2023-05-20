@@ -1,15 +1,14 @@
-import { RoomState } from './room_state.js';
 import { RoomSetting } from "./room_setting.js";
 import { GameState } from "./game_state.js";
 import { CurrentHandState } from "./current_hand_state.js";
 import { CurrentTrickState } from "./current_trick_state.js";
-import { TractorPlayer } from "./tractor_player.js";
 import { MainForm } from "./main_form.js";
 import { Coordinates } from "./coordinates.js";
 import { CommonMethods } from "./common_methods.js";
 import { ShowingCardsValidationResult } from "./showing_cards_validation_result.js";
 import { ReplayEntity } from "./replay_entity.js";
 import { IDBHelper } from "./idb_helper.js";
+import { EnterHallInfo } from './enter_hall_info.js';
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
@@ -176,8 +175,8 @@ export class GameScene {
                         this.gs.playerName = "";
                     }
                 }
-                this.gs.sendMessageToServer(CommonMethods.PLAYER_CLIENT_TYPE_REQUEST, this.gs.playerName, CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP);
-                this.gs.sendMessageToServer(CommonMethods.PLAYER_ENTER_HALL_REQUEST, this.gs.playerName, JSON.stringify([this.gs.nickNameOverridePass, this.gs.playerEmail]));
+                let enterHallInfo: EnterHallInfo = new EnterHallInfo(this.gs.nickNameOverridePass, this.gs.playerEmail, CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP);
+                this.gs.sendMessageToServer(CommonMethods.PLAYER_ENTER_HALL_REQUEST, this.gs.playerName, JSON.stringify(enterHallInfo));
 
                 this.gs.mainForm = new MainForm(this.gs)
                 this.gs.mainForm.drawFrameMain();

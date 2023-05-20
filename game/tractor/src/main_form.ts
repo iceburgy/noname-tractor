@@ -46,11 +46,6 @@ export class MainForm {
     public skinPreviewTimer: any
     public gameScene: GameScene
     public tractorPlayer!: TractorPlayer
-    // public btnShowLastTrick: Phaser.GameObjects.Text
-    // public btnReady: Phaser.GameObjects.Text
-    // public btnRobot: Phaser.GameObjects.Text
-    // public btnExitRoom: Phaser.GameObjects.Text
-    // public btnExitAndObserve: Phaser.GameObjects.Text
 
     // gobang
     // public btnSmallGames: Phaser.GameObjects.Text
@@ -60,13 +55,6 @@ export class MainForm {
     // public btnCollectStar: Phaser.GameObjects.Text
 
     public isSendEmojiEnabled: boolean
-    // public btnPig: Phaser.GameObjects.Text
-
-    // public lblNickNames: Phaser.GameObjects.Text[]
-    // public lblStarters: Phaser.GameObjects.Text[]
-    // public lblObservers: Phaser.GameObjects.Text[];
-    // public roomNameText: Phaser.GameObjects.Text;
-    // public roomOwnerText: Phaser.GameObjects.Text;
 
     public PlayerPosition: any
     public PositionPlayer: any
@@ -145,19 +133,17 @@ export class MainForm {
 
     public NewPlayerReadyToStart(readyToStart: boolean) {
         if (CommonMethods.GetReadyCount(this.tractorPlayer.CurrentGameState.Players) < 4) {
-            this.gameScene.ui.btnReady.show();
-
-            // this.btnExitAndObserve.setInteractive({ useHandCursor: true })
-            // this.btnExitAndObserve.setColor('white')
+            if (!this.tractorPlayer.isObserver) {
+                this.gameScene.ui.btnReady.show();
+                this.gameScene.ui.btnExitAndObserve.show();
+            }
 
             // small games
             // this.btnSmallGames.setInteractive({ useHandCursor: true })
             // this.btnSmallGames.setColor('white')
         } else {
             this.gameScene.ui.btnReady.hide();
-
-            // this.btnExitAndObserve.disableInteractive()
-            // this.btnExitAndObserve.setColor('gray')
+            this.gameScene.ui.btnExitAndObserve.hide();
 
             // small games
             // this.btnSmallGames.disableInteractive()
@@ -225,7 +211,11 @@ export class MainForm {
             this.gameScene.ui.btnRobot.show();
         }
 
-        // this.btnExitAndObserve.setVisible(!this.tractorPlayer.isObserver)
+        if (this.tractorPlayer.isObserver) {
+            this.gameScene.ui.btnExitAndObserve.hide();
+        } else {
+            this.gameScene.ui.btnExitAndObserve.show();
+        }
 
         // // small games
         // this.btnSmallGames.setVisible(!this.tractorPlayer.isObserver);
@@ -405,19 +395,18 @@ export class MainForm {
         }))
     }
 
-    //     public ExitAndObserve() {
-    //         if (!this.btnExitAndObserve || !this.btnExitAndObserve.input.enabled) return;
-    //         this.btnExitAndObserve.disableInteractive()
-    //         this.btnExitAndObserve.setColor('gray')
+    public ExitAndObserve() {
+        if (!this.gameScene.ui.btnExitAndObserve || this.gameScene.ui.btnExitAndObserve.classList.contains('hidden') || this.gameScene.ui.btnExitAndObserve.classList.contains('disabled')) return;
+        this.gameScene.ui.btnExitAndObserve.show();
 
-    //         // small games
-    //         this.btnSmallGames.disableInteractive()
-    //         this.btnSmallGames.setColor('gray')
-    //         this.groupSmallGames.setVisible(false);
+        // small games
+        // this.btnSmallGames.disableInteractive()
+        // this.btnSmallGames.setColor('gray')
+        // this.groupSmallGames.setVisible(false);
 
-    //         this.destroyGameRoom();
-    //         this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
-    //     }
+        this.destroyGameRoom();
+        this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
+    }
 
     //     public SmallGamesHandler() {
     //         this.groupSmallGames.toggleVisible();
@@ -481,6 +470,10 @@ export class MainForm {
         if (this.gameScene.ui.btnShowLastTrick) {
             this.gameScene.ui.btnShowLastTrick.remove();
             delete this.gameScene.ui.btnShowLastTrick;
+        }
+        if (this.gameScene.ui.btnExitAndObserve) {
+            this.gameScene.ui.btnExitAndObserve.remove();
+            delete this.gameScene.ui.btnExitAndObserve;
         }
 
         if (this.gameScene.ui.frameGameRoom) {
@@ -993,7 +986,7 @@ export class MainForm {
     }
 
     private btnReady_Click() {
-        if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden')) return;
+        if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden') || this.gameScene.ui.btnReady.classList.contains('disabled')) return;
         //为防止以外连续点两下就绪按钮，造成重复发牌，点完一下就立即disable就绪按钮
         this.gameScene.ui.btnReady.hide()
 
@@ -1003,6 +996,11 @@ export class MainForm {
     private btnRobot_Click() {
         if (!this.gameScene.ui.btnRobot || this.gameScene.ui.btnRobot.classList.contains('hidden') || this.gameScene.ui.btnRobot.classList.contains('disabled')) return;
         this.gameScene.sendMessageToServer(ToggleIsRobot_REQUEST, this.tractorPlayer.PlayerId, "")
+    }
+
+    private btnQiandao_Click() {
+        if (!this.gameScene.ui.btnQiandao || this.gameScene.ui.btnQiandao.classList.contains('hidden') || this.gameScene.ui.btnQiandao.classList.contains('disabled')) return;
+        this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.gameScene.playerName, "");
     }
 
     // pos is 1-based
@@ -1024,7 +1022,7 @@ export class MainForm {
 
     public LoadUIUponConnect() {
         if (!this.gameScene.isReplayMode) {
-            this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', () => { this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.gameScene.playerName, "") }, true);
+            this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', () => { this.btnQiandao_Click(); }, true);
             this.gameScene.ui.btnQiandao.hide();
         }
         this.EnableShortcutKeys();
@@ -2025,6 +2023,11 @@ export class MainForm {
             this.gameScene.ui.btnShowLastTrick = this.gameScene.ui.create.system('上轮', () => this.HandleRightClickEmptyArea());
             this.gameScene.ui.btnShowLastTrick.hide();
         }
+        // btnExitAndObserve
+        if (!this.gameScene.ui.btnExitAndObserve) {
+            this.gameScene.ui.btnExitAndObserve = this.gameScene.ui.create.system('上树', () => this.ExitAndObserve(), true, true);
+            this.gameScene.ui.btnExitAndObserve.hide();
+        }
     }
 
     public drawGameHall(roomStateList: RoomState[], playerList: string[]) {
@@ -2261,6 +2264,7 @@ export class MainForm {
 
     private CreatePlayer(pos: number, playerId: string, parentNode: any) {
         let playerDiv = this.gameScene.ui.create.player(parentNode);
+        playerDiv.style.zIndex = CommonMethods.zIndexSkin;
         playerDiv.setAttribute('data-position', pos);
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
@@ -2523,7 +2527,8 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = playersInGameHall[i];
-                d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
+                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : ""}`;
+                d.innerText = `【${pidInfo}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2542,7 +2547,8 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = players[i];
-                d.innerText = `【${pid}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
+                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : ""}`;
+                d.innerText = `【${pidInfo}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
 
@@ -2556,7 +2562,8 @@ export class MainForm {
                     d.style.position = 'static';
                     d.style.display = 'block';
                     let oid = obs[i];
-                    d.innerText = `【${oid}】积分：${this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal}`;
+                    let oidInfo = `${oid}${this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : ""}`;
+                    d.innerText = `【${oidInfo}】积分：${this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal}`;
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }

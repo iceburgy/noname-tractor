@@ -4,7 +4,7 @@ import { PlayerEntity } from './player_entity.js';
 import { SuitEnums } from './suit_enums.js';
 export class CommonMethods {
     public static SET_PLAYER_NAME_REQUEST = "set_player_name"
-    public static PLAYER_CLIENT_TYPE_REQUEST = "PlayerClientType"
+    public static PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb"
     public static PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp"
     public static PLAYER_ENTER_HALL_REQUEST = "PlayerEnterHall"
     public static JOIN_ROOM_REQUEST = "join_room"
@@ -46,9 +46,10 @@ export class CommonMethods {
     public static wsErrorType_Insecure = "insecure";
     public static chatMaxLength = 100;
     public static danmuMaxLength = 30;
-    public static zIndexDanmu = 10
-    public static zIndexLast8 = 10
-    public static zIndexFrameChat = 11
+    public static zIndexSkin = -1;
+    public static zIndexDanmu = 10;
+    public static zIndexLast8 = 10;
+    public static zIndexFrameChat = 11;
     public static zIndexSettingsForm = 100;
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6

@@ -81,17 +81,17 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.NewPlayerReadyToStart = function (readyToStart) {
         if (CommonMethods.GetReadyCount(this.tractorPlayer.CurrentGameState.Players) < 4) {
-            this.gameScene.ui.btnReady.show();
-            // this.btnExitAndObserve.setInteractive({ useHandCursor: true })
-            // this.btnExitAndObserve.setColor('white')
+            if (!this.tractorPlayer.isObserver) {
+                this.gameScene.ui.btnReady.show();
+                this.gameScene.ui.btnExitAndObserve.show();
+            }
             // small games
             // this.btnSmallGames.setInteractive({ useHandCursor: true })
             // this.btnSmallGames.setColor('white')
         }
         else {
             this.gameScene.ui.btnReady.hide();
-            // this.btnExitAndObserve.disableInteractive()
-            // this.btnExitAndObserve.setColor('gray')
+            this.gameScene.ui.btnExitAndObserve.hide();
             // small games
             // this.btnSmallGames.disableInteractive()
             // this.btnSmallGames.setColor('gray')
@@ -151,7 +151,12 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnReady.show();
             this.gameScene.ui.btnRobot.show();
         }
-        // this.btnExitAndObserve.setVisible(!this.tractorPlayer.isObserver)
+        if (this.tractorPlayer.isObserver) {
+            this.gameScene.ui.btnExitAndObserve.hide();
+        }
+        else {
+            this.gameScene.ui.btnExitAndObserve.show();
+        }
         // // small games
         // this.btnSmallGames.setVisible(!this.tractorPlayer.isObserver);
         // if (this.tractorPlayer.isObserver) {
@@ -339,17 +344,17 @@ var MainForm = /** @class */ (function () {
             posID: posID,
         }));
     };
-    //     public ExitAndObserve() {
-    //         if (!this.btnExitAndObserve || !this.btnExitAndObserve.input.enabled) return;
-    //         this.btnExitAndObserve.disableInteractive()
-    //         this.btnExitAndObserve.setColor('gray')
-    //         // small games
-    //         this.btnSmallGames.disableInteractive()
-    //         this.btnSmallGames.setColor('gray')
-    //         this.groupSmallGames.setVisible(false);
-    //         this.destroyGameRoom();
-    //         this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
-    //     }
+    MainForm.prototype.ExitAndObserve = function () {
+        if (!this.gameScene.ui.btnExitAndObserve || this.gameScene.ui.btnExitAndObserve.classList.contains('hidden') || this.gameScene.ui.btnExitAndObserve.classList.contains('disabled'))
+            return;
+        this.gameScene.ui.btnExitAndObserve.show();
+        // small games
+        // this.btnSmallGames.disableInteractive()
+        // this.btnSmallGames.setColor('gray')
+        // this.groupSmallGames.setVisible(false);
+        this.destroyGameRoom();
+        this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
+    };
     //     public SmallGamesHandler() {
     //         this.groupSmallGames.toggleVisible();
     //     }
@@ -407,6 +412,10 @@ var MainForm = /** @class */ (function () {
         if (this.gameScene.ui.btnShowLastTrick) {
             this.gameScene.ui.btnShowLastTrick.remove();
             delete this.gameScene.ui.btnShowLastTrick;
+        }
+        if (this.gameScene.ui.btnExitAndObserve) {
+            this.gameScene.ui.btnExitAndObserve.remove();
+            delete this.gameScene.ui.btnExitAndObserve;
         }
         if (this.gameScene.ui.frameGameRoom) {
             this.gameScene.ui.frameGameRoom.remove();
@@ -873,7 +882,7 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.btnReady_Click = function () {
-        if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden'))
+        if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden') || this.gameScene.ui.btnReady.classList.contains('disabled'))
             return;
         //为防止以外连续点两下就绪按钮，造成重复发牌，点完一下就立即disable就绪按钮
         this.gameScene.ui.btnReady.hide();
@@ -883,6 +892,11 @@ var MainForm = /** @class */ (function () {
         if (!this.gameScene.ui.btnRobot || this.gameScene.ui.btnRobot.classList.contains('hidden') || this.gameScene.ui.btnRobot.classList.contains('disabled'))
             return;
         this.gameScene.sendMessageToServer(ToggleIsRobot_REQUEST, this.tractorPlayer.PlayerId, "");
+    };
+    MainForm.prototype.btnQiandao_Click = function () {
+        if (!this.gameScene.ui.btnQiandao || this.gameScene.ui.btnQiandao.classList.contains('hidden') || this.gameScene.ui.btnQiandao.classList.contains('disabled'))
+            return;
+        this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, this.gameScene.playerName, "");
     };
     // pos is 1-based
     MainForm.prototype.observeByPosition = function (pos) {
@@ -902,7 +916,7 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.LoadUIUponConnect = function () {
         var _this = this;
         if (!this.gameScene.isReplayMode) {
-            this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', function () { _this.gameScene.sendMessageToServer(PLAYER_QIANDAO_REQUEST, _this.gameScene.playerName, ""); }, true);
+            this.gameScene.ui.btnQiandao = this.gameScene.ui.create.system('签到领福利', function () { _this.btnQiandao_Click(); }, true);
             this.gameScene.ui.btnQiandao.hide();
         }
         this.EnableShortcutKeys();
@@ -1843,6 +1857,11 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnShowLastTrick = this.gameScene.ui.create.system('上轮', function () { return _this.HandleRightClickEmptyArea(); });
             this.gameScene.ui.btnShowLastTrick.hide();
         }
+        // btnExitAndObserve
+        if (!this.gameScene.ui.btnExitAndObserve) {
+            this.gameScene.ui.btnExitAndObserve = this.gameScene.ui.create.system('上树', function () { return _this.ExitAndObserve(); }, true, true);
+            this.gameScene.ui.btnExitAndObserve.hide();
+        }
     };
     MainForm.prototype.drawGameHall = function (roomStateList, playerList) {
         var _this = this;
@@ -2071,6 +2090,7 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.CreatePlayer = function (pos, playerId, parentNode) {
         var playerDiv = this.gameScene.ui.create.player(parentNode);
+        playerDiv.style.zIndex = CommonMethods.zIndexSkin;
         playerDiv.setAttribute('data-position', pos);
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
@@ -2320,7 +2340,8 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = playersInGameHall[i];
-                d.innerText = "\u3010".concat(pid, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal);
+                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : "");
+                d.innerText = "\u3010".concat(pidInfo, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2338,7 +2359,8 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = players[i];
-                d.innerText = "\u3010".concat(pid, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal);
+                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : "");
+                d.innerText = "\u3010".concat(pidInfo, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
             if (obs && obs.length > 0) {
@@ -2351,7 +2373,8 @@ var MainForm = /** @class */ (function () {
                     d.style.position = 'static';
                     d.style.display = 'block';
                     var oid = obs[i];
-                    d.innerText = "\u3010".concat(oid, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal);
+                    var oidInfo = "".concat(oid).concat(this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : "");
+                    d.innerText = "\u3010".concat(oidInfo, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal);
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }
