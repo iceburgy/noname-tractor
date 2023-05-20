@@ -75,7 +75,7 @@ var Coordinates = /** @class */ (function () {
         this.playerSkinPositions = [
             { x: "0px", y: "0px" },
             { x: "0px", y: "50% - 60px" },
-            { x: "50% - 45px", y: "1%" },
+            { x: "50% - 45px", y: "0px" },
             { x: "0px", y: "50% - 60px" },
         ];
         this.playerChairPositions = [

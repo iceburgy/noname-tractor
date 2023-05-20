@@ -62,6 +62,7 @@ export class GameScene {
     // public soundclickwa!: string;
     public soundwin!: string[];
     // public soundVolume!: number
+    public noDongtu!: string
     public noDanmu!: string
     public noCutCards!: string
     public yesDragSelect!: string
@@ -76,7 +77,11 @@ export class GameScene {
     public ui: any
     public get: any
 
-    constructor(hostName: string, playerName: string, nickNameOverridePass: string, playerEmail: string) {
+    constructor(hostName: string, playerName: string, nickNameOverridePass: string, playerEmail: string, gameIn: any, libIn: any, uiIn: any, getIn: any) {
+        this.game = gameIn;
+        this.lib = libIn;
+        this.ui = uiIn;
+        this.get = getIn;
         this.isReplayMode = false;
         this.hostName = hostName.trim()
         this.hostNameOriginal = this.hostName
@@ -118,6 +123,7 @@ export class GameScene {
         this.danmuMessages = [];
         // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
         // this.soundVolume = (this.lib && this.lib.config && this.lib.config.soundVolume) ? this.lib.config.noDanmu : 0.5;
+        this.noDongtu = (this.lib && this.lib.config && this.lib.config.noDongtu) ? this.lib.config.noDongtu : "false";
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";

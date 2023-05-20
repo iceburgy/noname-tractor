@@ -109,11 +109,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 					import('../game/tractor/out/game_scene.js')
 						.then((GameScene) => {
-							var gameScene = new GameScene.GameScene(nodeHostName.value, nodePlayerName.value, nodePassword.value, nodeEmail.value);
-							gameScene.game = game;
-							gameScene.lib = lib;
-							gameScene.ui = ui;
-							gameScene.get = get;
+							var gameScene = new GameScene.GameScene(nodeHostName.value, nodePlayerName.value, nodePassword.value, nodeEmail.value, game, lib, ui, get);
 							if (e.target.innerText === '录像回放') {
 								gameScene.doReplay();
 							} else {

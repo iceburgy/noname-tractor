@@ -5,7 +5,7 @@ import { IDBHelper } from "./idb_helper.js";
 var dummyValue = "dummyValue";
 var IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 var GameScene = /** @class */ (function () {
-    function GameScene(hostName, playerName, nickNameOverridePass, playerEmail) {
+    function GameScene(hostName, playerName, nickNameOverridePass, playerEmail, gameIn, libIn, uiIn, getIn) {
         // // public hallPlayerHeader: Phaser.GameObjects.Text
         // // public hallPlayerNames: Phaser.GameObjects.Text[]
         // // public btnJoinAudio: Phaser.GameObjects.Text
@@ -14,6 +14,10 @@ var GameScene = /** @class */ (function () {
         this.nickNameOverridePass = "";
         this.playerEmail = "";
         this.wsprotocal = "wss";
+        this.game = gameIn;
+        this.lib = libIn;
+        this.ui = uiIn;
+        this.get = getIn;
         this.isReplayMode = false;
         this.hostName = hostName.trim();
         this.hostNameOriginal = this.hostName;
@@ -55,6 +59,7 @@ var GameScene = /** @class */ (function () {
         this.danmuMessages = [];
         // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
         // this.soundVolume = (this.lib && this.lib.config && this.lib.config.soundVolume) ? this.lib.config.noDanmu : 0.5;
+        this.noDongtu = (this.lib && this.lib.config && this.lib.config.noDongtu) ? this.lib.config.noDongtu : "false";
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";

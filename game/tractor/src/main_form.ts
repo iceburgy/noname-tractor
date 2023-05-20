@@ -40,7 +40,6 @@ const BUY_USE_SKIN_REQUEST = "BuyUseSkin"
 const UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka"
 const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
 declare let jQuery: any;
-declare let Freezeframe: any;
 
 export class MainForm {
     // public gameScene: GameScene | GameReplayScene
@@ -117,205 +116,6 @@ export class MainForm {
         this.timerIntervalID = []
         this.isSendEmojiEnabled = true;
         this.DaojuInfo = {};
-        /*
-        /*
-                // 房间信息
-                this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "")
-                    .setVisible(false)
-                    .setColor("orange")
-                    .setFontSize(20)
-                    .setShadow(2, 2, "#333333", 2, true, true);
-                this.roomOwnerText = this.gameScene.add.text(this.gameScene.coordinates.roomOwnerTextPosition.x, this.gameScene.coordinates.roomOwnerTextPosition.y, "")
-                    .setVisible(false)
-                    .setColor("orange")
-                    .setFontSize(20)
-                    .setShadow(2, 2, "#333333", 2, true, true);
-                this.gameScene.roomUIControls.texts.push(this.roomNameText)
-                this.gameScene.roomUIControls.texts.push(this.roomOwnerText)
-        
-                // 回看上轮按钮
-                this.btnShowLastTrick = this.gameScene.add.text(this.gameScene.coordinates.btnShowLastTrickPosition.x, this.gameScene.coordinates.btnShowLastTrickPosition.y, '上轮')
-                    .setDepth(this.rightSideButtonDepth)
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setVisible(false)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.HandleRightClickEmptyArea())
-                    .on('pointerover', () => {
-                        this.btnShowLastTrick.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnShowLastTrick.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnShowLastTrick)
-        
-                // 就绪按钮
-                this.btnReady = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '就绪')
-                    .setDepth(this.rightSideButtonDepth)
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setVisible(false)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.btnReady_Click())
-                    .on('pointerover', () => {
-                        this.btnReady.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnReady.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnReady)
-        
-                // 托管按钮
-                this.btnRobot = this.gameScene.add.text(this.gameScene.coordinates.btnRobotPosition.x, this.gameScene.coordinates.btnRobotPosition.y, '托管')
-                    .setDepth(this.rightSideButtonDepth)
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setVisible(false)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.btnRobot_Click())
-                    .on('pointerover', () => {
-                        this.btnRobot.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnRobot.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnRobot)
-        
-                // 退出按钮
-                this.btnExitRoom = this.gameScene.add.text(this.gameScene.coordinates.btnExitRoomPosition.x, this.gameScene.coordinates.btnExitRoomPosition.y, '退出')
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.btnExitRoom_Click())
-                    .on('pointerover', () => {
-                        this.btnExitRoom.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnExitRoom.setStyle({ backgroundColor: 'gray' })
-                    })
-        
-        /*      
-                // 房间信息
-                this.roomNameText = this.gameScene.add.text(this.gameScene.coordinates.roomNameTextPosition.x, this.gameScene.coordinates.roomNameTextPosition.y, "")
-                    .setVisible(false)
-                    .setColor("orange")
-                    .setFontSize(20)
-                    .setShadow(2, 2, "#333333", 2, true, true);
-                this.roomOwnerText = this.gameScene.add.text(this.gameScene.coordinates.roomOwnerTextPosition.x, this.gameScene.coordinates.roomOwnerTextPosition.y, "")
-                    .setVisible(false)
-                    .setColor("orange")
-                    .setFontSize(20)
-                    .setShadow(2, 2, "#333333", 2, true, true);
-                this.gameScene.roomUIControls.texts.push(this.roomNameText)
-                this.gameScene.roomUIControls.texts.push(this.roomOwnerText)
-        
-                // 回看上轮按钮
-                this.btnShowLastTrick = this.gameScene.add.text(this.gameScene.coordinates.btnShowLastTrickPosition.x, this.gameScene.coordinates.btnShowLastTrickPosition.y, '上轮')
-                    .setDepth(this.rightSideButtonDepth)
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setVisible(false)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.HandleRightClickEmptyArea())
-                    .on('pointerover', () => {
-                        this.btnShowLastTrick.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnShowLastTrick.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnShowLastTrick)
-        
-                // 就绪按钮
-                this.btnReady = this.gameScene.add.text(this.gameScene.coordinates.btnReadyPosition.x, this.gameScene.coordinates.btnReadyPosition.y, '就绪')
-                    .setDepth(this.rightSideButtonDepth)
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setVisible(false)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.btnReady_Click())
-                    .on('pointerover', () => {
-                        this.btnReady.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnReady.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnReady)
-        
-                // 托管按钮
-                this.btnRobot = this.gameScene.add.text(this.gameScene.coordinates.btnRobotPosition.x, this.gameScene.coordinates.btnRobotPosition.y, '托管')
-                    .setDepth(this.rightSideButtonDepth)
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setVisible(false)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.btnRobot_Click())
-                    .on('pointerover', () => {
-                        this.btnRobot.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnRobot.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnRobot)
-        
-                // 退出按钮
-                this.btnExitRoom = this.gameScene.add.text(this.gameScene.coordinates.btnExitRoomPosition.x, this.gameScene.coordinates.btnExitRoomPosition.y, '退出')
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.btnExitRoom_Click())
-                    .on('pointerover', () => {
-                        this.btnExitRoom.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnExitRoom.setStyle({ backgroundColor: 'gray' })
-                    })
-        
-                // 上树按钮
-                this.btnExitAndObserve = this.gameScene.add.text(this.gameScene.coordinates.btnExitAndObservePosition.x, this.gameScene.coordinates.btnExitAndObservePosition.y, '上树')
-                    .setColor('white')
-                    .setFontSize(30)
-                    .setPadding(10)
-                    .setVisible(false)
-                    .setShadow(2, 2, "#333333", 2, true, true)
-                    .setStyle({ backgroundColor: 'gray' })
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerup', () => this.ExitAndObserve())
-                    .on('pointerover', () => {
-                        this.btnExitAndObserve.setStyle({ backgroundColor: 'lightblue' })
-                    })
-                    .on('pointerout', () => {
-                        this.btnExitAndObserve.setStyle({ backgroundColor: 'gray' })
-                    })
-                this.gameScene.roomUIControls.texts.push(this.btnExitAndObserve)
-        
-                // 快捷键
-                this.gameScene.input.keyboard.on('keydown', this.shortcutKeyDownEventhandler, this)
-                this.gameScene.input.keyboard.on('keyup', this.shortcutKeyUpEventhandler, this)
-                */
     }
 
     public HandleRightClickEmptyArea() {
@@ -1233,6 +1033,8 @@ export class MainForm {
     }
 
     private btnGameSettings_Click() {
+        if (this.gameScene.ui.inputFormWrapper) return;
+
         var inputFormWrapper = this.gameScene.ui.create.div(this.gameScene.ui.frameMain);
         inputFormWrapper.id = "inputFormWrapper";
         inputFormWrapper.style.position = 'absolute';
@@ -1270,7 +1072,7 @@ export class MainForm {
                 maxInt = Math.max(maxInt, parseInt(maxString));
             }
             IDBHelper.maxReplays = maxInt
-            gs.lib.config.maxReplays = maxInt;
+            gs.game.saveConfig("maxReplays", maxInt);
         }
 
         let btnCleanupReplays: any = document.getElementById("btnCleanupReplays")
@@ -1318,25 +1120,32 @@ export class MainForm {
             this.resetGameRoomUI();
         }
 
+        let noDongtu: any = document.getElementById("cbxNoDongtu");
+        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
+        noDongtu.onchange = () => {
+            gs.noDongtu = noDongtu.checked.toString();
+            gs.game.saveConfig("noDongtu", gs.noDongtu);
+        }
+
         let noDanmu: any = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = () => {
             gs.noDanmu = noDanmu.checked.toString();
-            gs.lib.config.noDanmu = gs.noDanmu;
+            gs.game.saveConfig("noDanmu", gs.noDanmu);
         }
 
         let cbxCutCards: any = document.getElementById("cbxCutCards")
         cbxCutCards.checked = gs.noCutCards.toLowerCase() === "true"
         cbxCutCards.onchange = () => {
             gs.noCutCards = cbxCutCards.checked.toString();
-            gs.lib.config.noCutCards = gs.noCutCards;
+            gs.game.saveConfig("noCutCards", gs.noCutCards);
         }
 
         let cbxYesDragSelect: any = document.getElementById("cbxYesDragSelect")
         cbxYesDragSelect.checked = gs.yesDragSelect.toLowerCase() === "true"
         cbxYesDragSelect.onchange = () => {
             gs.yesDragSelect = cbxYesDragSelect.checked.toString();
-            gs.lib.config.yesDragSelect = gs.yesDragSelect;
+            gs.game.saveConfig("yesDragSelect", gs.yesDragSelect);
         }
 
         if (gs.isReplayMode) return;
@@ -1384,7 +1193,7 @@ export class MainForm {
         selectQiangliangMin.value = gs.qiangliangMin;
         selectQiangliangMin.onchange = () => {
             gs.qiangliangMin = selectQiangliangMin.value;
-            gs.lib.config.qiangliangMin = gs.qiangliangMin;
+            gs.game.saveConfig("qiangliangMin", gs.qiangliangMin);
         }
         // 皮肤
         let selectFullSkinInfo: any = document.getElementById("selectFullSkinInfo")
@@ -1469,7 +1278,6 @@ export class MainForm {
                 }
             }
         }
-
     }
 
     private btnExitRoom_Click() {
@@ -2585,7 +2393,7 @@ export class MainForm {
             let skinWid = fixedHeight * wid / hei;
             playerObj.style.width = `calc(${skinWid}px)`;
             playerObj.node.avatar.setBackgroundImage(skinURL);
-            if (gs && playerObj === gs.ui.gameMe) {
+            if (gs && gs.ui.handZone && playerObj === gs.ui.gameMe) {
                 gs.ui.handZone.style.left = `calc(${gs.ui.gameMe.clientWidth}px)`;
             }
 
