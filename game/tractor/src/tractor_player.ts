@@ -224,7 +224,7 @@ export class TractorPlayer {
             this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId] as CurrentPoker)
             this.CurrentPoker.Rank = this.CurrentHandState.Rank;
             this.CurrentPoker.Trump = this.CurrentHandState.Trump;
-            this.mainForm.drawingFormHelper.ResortMyHandCards();
+            if (!this.IsTryingReenter) this.mainForm.drawingFormHelper.ResortMyHandCards();
             return;
         }
 

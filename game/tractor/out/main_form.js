@@ -1762,11 +1762,8 @@ var MainForm = /** @class */ (function () {
         frameGameRoom.style.bottom = '0px';
         frameGameRoom.style.right = '0px';
         this.gameScene.ui.frameGameRoom = frameGameRoom;
-        if (this.gameScene.isReplayMode) {
-            this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
-            this.drawHandZone();
+        if (this.gameScene.isReplayMode)
             return;
-        }
         if (!this.gameScene.ui.gameMe) {
             this.drawGameMe();
         }
@@ -2082,8 +2079,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.create.me(); // creates ui.me, which is hand zone
         this.gameScene.ui.handZone = this.gameScene.ui.me;
         this.gameScene.ui.handZone.style.position = "absolute";
-        this.gameScene.ui.handZone.style.left = "0px";
-        // this.gameScene.ui.handZone.style.left = `calc(${this.gameScene.ui.gameMe.clientWidth}px)`;
+        this.gameScene.ui.handZone.style.left = "calc(".concat(this.gameScene.ui.gameMe.clientWidth, "px)");
         // this.gameScene.ui.handZone.style.left will be re-adjusted via callback of drawGameMe
         this.gameScene.ui.handZone.style.right = "calc(0px)";
         this.gameScene.ui.handZone.style.width = "auto";
@@ -2587,17 +2583,17 @@ var MainForm = /** @class */ (function () {
         var _loop_4 = function (i) {
             var starterText = players[i] === this_3.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "".concat(i + 1);
             this_3.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = starterText;
-            var playerUI = void 0;
+            var playerUI = this_3.CreatePlayer(i, players[i], this_3.gameScene.ui.frameGameRoom);
+            this_3.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
             if (i === 0) {
-                playerUI = this_3.gameScene.ui.gameMe;
-                playerUI.node.nameol.innerHTML = players[i];
-            }
-            else {
-                playerUI = this_3.CreatePlayer(i, players[i], this_3.gameScene.ui.frameGameRoom);
-                this_3.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
-            }
-            if (i === 0)
+                this_3.gameScene.ui.gameMe = playerUI;
+                if (this_3.gameScene.ui.handZone) {
+                    this_3.gameScene.ui.handZone.remove();
+                    delete this_3.gameScene.ui.handZone;
+                }
+                this_3.drawHandZone();
                 return "continue";
+            }
             // 切换视角
             playerUI.style.cursor = 'pointer';
             // click

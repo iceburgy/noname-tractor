@@ -1918,11 +1918,7 @@ export class MainForm {
         frameGameRoom.style.right = '0px';
         this.gameScene.ui.frameGameRoom = frameGameRoom;
 
-        if (this.gameScene.isReplayMode) {
-            this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
-            this.drawHandZone();
-            return;
-        }
+        if (this.gameScene.isReplayMode) return;
 
         if (!this.gameScene.ui.gameMe) {
             this.drawGameMe();
@@ -2798,17 +2794,17 @@ export class MainForm {
             let starterText = players[i] === this.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : `${i + 1}`;
             this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = starterText
 
-            let playerUI;
+            let playerUI = this.CreatePlayer(i, players[i], this.gameScene.ui.frameGameRoom);
+            this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
             if (i === 0) {
-                playerUI = this.gameScene.ui.gameMe;
-                playerUI.node.nameol.innerHTML = players[i];
+                this.gameScene.ui.gameMe = playerUI
+                if (this.gameScene.ui.handZone) {
+                    this.gameScene.ui.handZone.remove();
+                    delete this.gameScene.ui.handZone;
+                }
+                this.drawHandZone();
+                continue;
             }
-            else {
-                playerUI = this.CreatePlayer(i, players[i], this.gameScene.ui.frameGameRoom);
-                this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
-            }
-
-            if (i === 0) continue;
 
             // 切换视角
             playerUI.style.cursor = 'pointer';

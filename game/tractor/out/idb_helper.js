@@ -96,16 +96,6 @@ export var IDBHelper = /** @class */ (function () {
             callback.apply();
             console.log("attemped to save replay record: ".concat(replayState.ReplayId));
         };
-        // test
-        // store.add({ datetime: "2022-06-26===20-18-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-26===20-19-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-26===20-20-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-28===20-18-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-28===20-19-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-28===20-20-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-27===20-15-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-27===20-16-54-test-33-4", text: JSON.stringify(replayState) });
-        // store.add({ datetime: "2022-06-27===20-17-54-test-33-4", text: JSON.stringify(replayState) });
     };
     IDBHelper.ReadReplayEntityAll = function (callback) {
         var tx = IDBHelper.LocalIDB.transaction([IDBHelper.ReplayEntityStore], 'readonly');
