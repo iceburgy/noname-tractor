@@ -313,7 +313,6 @@ export class DrawingFormHelper {
         if (this.handcardPosition === 1) parent = this.mainForm.gameScene.ui.handZone;
 
         let image = this.createCard(parent, uiCardNumber, this.handcardScale);
-        image.style.zIndex = CommonMethods.zIndexHandCards;
         image.setAttribute('serverCardNumber', serverCardNumber);
         image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
         image.node.seqnum.innerHTML = `${this.suitSequence}`;
@@ -418,7 +417,6 @@ export class DrawingFormHelper {
 
     private createCard(position: any, uiCardNumber: number, hcs: number): any {
         var tractorCard = this.mainForm.gameScene.ui.create.div('.tractorCard', position);
-        tractorCard.style.zIndex = CommonMethods.zIndexOtherCards;
         tractorCard.node = {
             seqnum: this.mainForm.gameScene.ui.create.div('.seqnum', tractorCard),
             cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),
@@ -1158,7 +1156,6 @@ export class DrawingFormHelper {
             let cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
             cardImage.style.left = `calc(${x})`;
             cardImage.style.bottom = `calc(${y})`;
-            cardImage.style['z-index'] = CommonMethods.zIndexLast8;
             cardImage.style.transition = `left ${CommonMethods.distributeLast8Duration}s, bottom ${CommonMethods.distributeLast8Duration}s`;
             cardImage.style['transition-delay'] = `${CommonMethods.distributeLast8Interval * (7 - i)}s`;
             x = `${x} + ${this.mainForm.gameScene.coordinates.distributingLast8PositionOffset}px`;
@@ -1328,7 +1325,7 @@ export class DrawingFormHelper {
         if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
 
         // truncate danmu message to certain length
-        if (msgString && msgString.length > CommonMethods.danmuMaxLength) {
+        if (msgString && !msgString.startsWith(CommonMethods.systemMsgPrefix) && msgString.length > CommonMethods.danmuMaxLength) {
             msgString = `${msgString.slice(0, CommonMethods.danmuMaxLength)}...(略)`;
         }
 

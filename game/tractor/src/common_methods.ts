@@ -42,16 +42,16 @@ export class CommonMethods {
     public static cardNumToValue: string[] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     public static reenterRoomSignal = "断线重连中,请稍后...";
     public static resumeGameSignal = "牌局加载中,请稍后...";
+    public static systemMsgPrefix = "【系统消息】：";
 
     public static wsErrorType_Insecure = "insecure";
     public static chatMaxLength = 100;
     public static danmuMaxLength = 30;
-    public static zIndexLast8 = 9;
-    public static zIndexOtherCards = 9;
+    
     public static zIndexDanmu = 10;
     public static zIndexFrameChat = 11;
-    public static zIndexHandCards = 20;
     public static zIndexSettingsForm = 100;
+
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
     public static danmuDuration = 8

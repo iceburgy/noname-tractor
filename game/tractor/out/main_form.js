@@ -2082,7 +2082,8 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.create.me(); // creates ui.me, which is hand zone
         this.gameScene.ui.handZone = this.gameScene.ui.me;
         this.gameScene.ui.handZone.style.position = "absolute";
-        this.gameScene.ui.handZone.style.left = "calc(".concat(this.gameScene.ui.gameMe.clientWidth, "px)");
+        this.gameScene.ui.handZone.style.left = "0px";
+        // this.gameScene.ui.handZone.style.left = `calc(${this.gameScene.ui.gameMe.clientWidth}px)`;
         // this.gameScene.ui.handZone.style.left will be re-adjusted via callback of drawGameMe
         this.gameScene.ui.handZone.style.right = "calc(0px)";
         this.gameScene.ui.handZone.style.width = "auto";
@@ -2283,7 +2284,7 @@ var MainForm = /** @class */ (function () {
         //         if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
         //     }
         // } else {
-        var prefix = "【系统消息】：";
+        var prefix = CommonMethods.systemMsgPrefix;
         if (playerID && !noSpeaker) {
             prefix = "\u3010".concat(playerID, "\u3011\u8BF4\uFF1A");
         }

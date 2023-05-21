@@ -2463,7 +2463,7 @@ export class MainForm {
         //         if (this.tractorPlayer.MyOwnId === playerID) this.sgDrawingHelper.hiddenGames[msgString].apply(this.sgDrawingHelper, [true, playerID]);
         //     }
         // } else {
-        let prefix = "【系统消息】：";
+        let prefix = CommonMethods.systemMsgPrefix;
         if (playerID && !noSpeaker) {
             prefix = `【${playerID}】说：`;
         }

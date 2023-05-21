@@ -2101,7 +2101,7 @@ div:not(.handcards)>.card>.info>span,
 	top: 0
 }
 .player {
-	z-index: 2;
+	/* z-index: 2; */
 	width: 240px;
 	height: 120px;
 }
@@ -2117,9 +2117,9 @@ div:not(.handcards)>.card>.info>span,
 	-webkit-animation: replaceenemy 0.5s
 }
 
-.player>div {
+/* .player>div {
 	z-index: 2;
-}
+} */
 .player.dead,.player.likedead,.grayscale1 {
 	z-index: 1;
 	filter: grayscale(1);

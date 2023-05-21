@@ -287,7 +287,6 @@ var DrawingFormHelper = /** @class */ (function () {
         if (this.handcardPosition === 1)
             parent = this.mainForm.gameScene.ui.handZone;
         var image = this.createCard(parent, uiCardNumber, this.handcardScale);
-        image.style.zIndex = CommonMethods.zIndexHandCards;
         image.setAttribute('serverCardNumber', serverCardNumber);
         image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
         image.node.seqnum.innerHTML = "".concat(this.suitSequence);
@@ -387,7 +386,6 @@ var DrawingFormHelper = /** @class */ (function () {
     };
     DrawingFormHelper.prototype.createCard = function (position, uiCardNumber, hcs) {
         var tractorCard = this.mainForm.gameScene.ui.create.div('.tractorCard', position);
-        tractorCard.style.zIndex = CommonMethods.zIndexOtherCards;
         tractorCard.node = {
             seqnum: this.mainForm.gameScene.ui.create.div('.seqnum', tractorCard),
             cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),
@@ -1079,7 +1077,6 @@ var DrawingFormHelper = /** @class */ (function () {
             var cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
             cardImage.style.left = "calc(".concat(x, ")");
             cardImage.style.bottom = "calc(".concat(y, ")");
-            cardImage.style['z-index'] = CommonMethods.zIndexLast8;
             cardImage.style.transition = "left ".concat(CommonMethods.distributeLast8Duration, "s, bottom ").concat(CommonMethods.distributeLast8Duration, "s");
             cardImage.style['transition-delay'] = "".concat(CommonMethods.distributeLast8Interval * (7 - i), "s");
             x = "".concat(x, " + ").concat(this.mainForm.gameScene.coordinates.distributingLast8PositionOffset, "px");
@@ -1237,7 +1234,7 @@ var DrawingFormHelper = /** @class */ (function () {
         if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true')
             return;
         // truncate danmu message to certain length
-        if (msgString && msgString.length > CommonMethods.danmuMaxLength) {
+        if (msgString && !msgString.startsWith(CommonMethods.systemMsgPrefix) && msgString.length > CommonMethods.danmuMaxLength) {
             msgString = "".concat(msgString.slice(0, CommonMethods.danmuMaxLength), "...(\u7565)");
         }
         var danmuIndex = 0;
