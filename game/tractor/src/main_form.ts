@@ -332,7 +332,6 @@ export class MainForm {
 
             curIndex = (curIndex + 1) % 4
         }
-        window.stop();
     }
 
     private SetObText(p: PlayerEntity, i: number, gs: GameScene, skinWid: number) {

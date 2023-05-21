@@ -284,7 +284,6 @@ var MainForm = /** @class */ (function () {
         for (var i = 0; i < 4; i++) {
             _loop_1(i);
         }
-        window.stop();
     };
     MainForm.prototype.SetObText = function (p, i, gs, skinWid) {
         // 避免重复加载旁观者信息
