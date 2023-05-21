@@ -2089,7 +2089,6 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.CreatePlayer = function (pos, playerId, parentNode) {
         var playerDiv = this.gameScene.ui.create.player(parentNode);
-        playerDiv.style.zIndex = CommonMethods.zIndexSkin;
         playerDiv.setAttribute('data-position', pos);
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';

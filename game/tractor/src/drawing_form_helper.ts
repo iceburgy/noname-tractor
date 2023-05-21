@@ -313,6 +313,7 @@ export class DrawingFormHelper {
         if (this.handcardPosition === 1) parent = this.mainForm.gameScene.ui.handZone;
 
         let image = this.createCard(parent, uiCardNumber, this.handcardScale);
+        image.style.zIndex = CommonMethods.zIndexHandCards;
         image.setAttribute('serverCardNumber', serverCardNumber);
         image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
         image.node.seqnum.innerHTML = `${this.suitSequence}`;
@@ -417,6 +418,7 @@ export class DrawingFormHelper {
 
     private createCard(position: any, uiCardNumber: number, hcs: number): any {
         var tractorCard = this.mainForm.gameScene.ui.create.div('.tractorCard', position);
+        tractorCard.style.zIndex = CommonMethods.zIndexOtherCards;
         tractorCard.node = {
             seqnum: this.mainForm.gameScene.ui.create.div('.seqnum', tractorCard),
             cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),

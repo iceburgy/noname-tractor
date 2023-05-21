@@ -2263,7 +2263,6 @@ export class MainForm {
 
     private CreatePlayer(pos: number, playerId: string, parentNode: any) {
         let playerDiv = this.gameScene.ui.create.player(parentNode);
-        playerDiv.style.zIndex = CommonMethods.zIndexSkin;
         playerDiv.setAttribute('data-position', pos);
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';

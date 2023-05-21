@@ -46,10 +46,11 @@ export class CommonMethods {
     public static wsErrorType_Insecure = "insecure";
     public static chatMaxLength = 100;
     public static danmuMaxLength = 30;
-    public static zIndexSkin = -1;
+    public static zIndexLast8 = 9;
+    public static zIndexOtherCards = 9;
     public static zIndexDanmu = 10;
-    public static zIndexLast8 = 10;
     public static zIndexFrameChat = 11;
+    public static zIndexHandCards = 20;
     public static zIndexSettingsForm = 100;
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
