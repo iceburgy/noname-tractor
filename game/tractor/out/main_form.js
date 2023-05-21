@@ -430,13 +430,13 @@ var MainForm = /** @class */ (function () {
             var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
             this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
         }
-        // this.drawingFormHelper.destroyAllCards()
-        // this.drawingFormHelper.destroyAllShowedCards()
-        // this.tractorPlayer.destroyAllClientMessages()
-        // this.drawingFormHelper.destroyToolbar()
-        // this.drawingFormHelper.destroySidebar()
-        // this.drawingFormHelper.destroyScoreImageAndCards()
-        // this.drawingFormHelper.destroyLast8Cards()
+        this.drawingFormHelper.destroyAllCards();
+        this.drawingFormHelper.destroyAllShowedCards();
+        this.tractorPlayer.destroyAllClientMessages();
+        this.drawingFormHelper.destroyToolbar();
+        this.drawingFormHelper.destroySidebar();
+        this.drawingFormHelper.destroyScoreImageAndCards();
+        this.drawingFormHelper.destroyLast8Cards();
         this.PlayerPosition = {};
         this.PositionPlayer = {};
         //重置状态

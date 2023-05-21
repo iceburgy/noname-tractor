@@ -236,6 +236,7 @@ var DrawingFormHelper = /** @class */ (function () {
         for (var i = 0; i < serverCardList.length; i++) {
             var uiCardNumber = CommonMethods.ServerToUICardMap[serverCardList[i]];
             var image = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+            image.setAttribute('serverCardNumber', serverCardList[i]);
             switch (pos) {
                 case 1:
                     image.style.left = "calc(".concat(x, ")");
@@ -262,6 +263,7 @@ var DrawingFormHelper = /** @class */ (function () {
         for (var i = 0; i < serverCardList.length; i++) {
             var uiCardNumber = CommonMethods.ServerToUICardMap[serverCardList[i]];
             var image = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+            image.setAttribute('serverCardNumber', serverCardList[i]);
             switch (pos) {
                 case 2:
                     image.style.right = "calc(".concat(x, ")");
@@ -932,14 +934,23 @@ var DrawingFormHelper = /** @class */ (function () {
         totalPointsImage.style.top = "calc(".concat(posY, ")");
         this.mainForm.gameScene.showedCardImages.push(totalPointsImage);
     };
+    DrawingFormHelper.prototype.destroyScoreTotalText = function () {
+        if (this.mainForm.gameScene.scoreTotalText) {
+            this.mainForm.gameScene.scoreTotalText.remove();
+            delete this.mainForm.gameScene.scoreTotalText;
+        }
+    };
     DrawingFormHelper.prototype.destroyScoreImageAndCards = function () {
         this.mainForm.gameScene.scoreCardsImages.forEach(function (image) {
             image.remove();
         });
         this.mainForm.gameScene.scoreCardsImages = [];
+        this.destroyScoreTotalText();
+        this.mainForm.gameScene.scoreCardsIntsDrawn = [];
     };
     DrawingFormHelper.prototype.DrawScoreImageAndCards = function () {
-        this.destroyScoreImageAndCards();
+        var _this = this;
+        this.destroyScoreTotalText();
         //画得分图标
         var scores = this.mainForm.tractorPlayer.CurrentHandState.Score;
         var currentPointsText = this.mainForm.gameScene.ui.create.div('.currentPointsText', "\u4E0A\u5206\uFF1A".concat(scores), this.mainForm.gameScene.ui.frameGameRoom);
@@ -949,9 +960,74 @@ var DrawingFormHelper = /** @class */ (function () {
         currentPointsText.style.textAlign = 'left';
         currentPointsText.style.left = "calc(0px)";
         currentPointsText.style.top = "calc(150px)";
-        this.mainForm.gameScene.scoreCardsImages.push(currentPointsText);
+        this.mainForm.gameScene.scoreTotalText = currentPointsText;
         //画得分牌，画在得分图标的下边
-        this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, 1 / 2, 6);
+        //静态
+        if (this.mainForm.gameScene.isReplayMode) {
+            this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, 1 / 2, 6);
+            return;
+        }
+        //动画
+        var scale = 1 / 2;
+        var scoreCardsIntsTotal = CommonMethods.deepCopy(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards);
+        var scIntsToDraw = CommonMethods.ArrayMinus(scoreCardsIntsTotal, this.mainForm.gameScene.scoreCardsIntsDrawn);
+        var sciToDrawLocked = CommonMethods.deepCopy(scIntsToDraw);
+        var showedCardImagesIdentifiedIndex = [];
+        var scoreCardsImagesToAnimate = [];
+        for (var i = 0; i < sciToDrawLocked.length; i++) {
+            var curServerCardNum = sciToDrawLocked[i];
+            for (var j = 0; j < this.mainForm.gameScene.showedCardImages.length; j++) {
+                if (showedCardImagesIdentifiedIndex.includes(j))
+                    continue;
+                var cardImageShowed = this.mainForm.gameScene.showedCardImages[j];
+                var serverCardNumFromImage = parseInt(cardImageShowed.getAttribute("serverCardNumber"));
+                if (serverCardNumFromImage === curServerCardNum) {
+                    scoreCardsImagesToAnimate.push(cardImageShowed);
+                    scIntsToDraw = CommonMethods.ArrayRemoveOneByValue(scIntsToDraw, serverCardNumFromImage);
+                    showedCardImagesIdentifiedIndex.push(j);
+                    break;
+                }
+            }
+        }
+        this.DrawShowedCards(scIntsToDraw, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, scale, 6);
+        this.mainForm.gameScene.scoreCardsIntsDrawn = this.mainForm.gameScene.scoreCardsIntsDrawn.concat(scIntsToDraw);
+        var IntsDrawnLen = this.mainForm.gameScene.scoreCardsIntsDrawn.length;
+        var scitaLen = scoreCardsImagesToAnimate.length;
+        if (scitaLen === 0)
+            return;
+        var scitaCopy = [];
+        for (var i = 0; i < scitaLen; i++) {
+            var cardImageOriginal = scoreCardsImagesToAnimate[i];
+            var serverCardNumFromImage = parseInt(cardImageOriginal.getAttribute("serverCardNumber"));
+            var uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumFromImage];
+            var cardImageClone = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+            cardImageClone.style.opacity = 0;
+            cardImageClone.style.left = "".concat(cardImageOriginal.offsetLeft, "px");
+            cardImageClone.style.top = "".concat(cardImageOriginal.offsetTop, "px");
+            cardImageClone.style.width = "".concat(cardImageOriginal.clientWidth, "px");
+            cardImageClone.style.height = "".concat(cardImageOriginal.clientHeight, "px");
+            cardImageClone.style.transition = "".concat(CommonMethods.distributeLast8Duration, "s");
+            cardImageClone.style['transition-delay'] = "".concat(CommonMethods.distributeLast8Interval * (i + 1), "s");
+            scitaCopy.push(cardImageClone);
+            this.mainForm.gameScene.scoreCardsImages.push(cardImageClone);
+            this.mainForm.gameScene.ui.frameGameRoom.appendChild(cardImageClone);
+            this.mainForm.gameScene.scoreCardsIntsDrawn.push(serverCardNumFromImage);
+        }
+        setTimeout(function (scitaCp) {
+            var startX = _this.mainForm.gameScene.coordinates.handCardOffset * scale * IntsDrawnLen;
+            var startY = 180;
+            var wid = _this.mainForm.gameScene.coordinates.cardWidth * scale;
+            var hei = _this.mainForm.gameScene.coordinates.cardHeight * scale;
+            for (var i = 0; i < scitaLen; i++) {
+                var curImage = scitaCp[i];
+                curImage.style.opacity = 1;
+                curImage.style.left = "calc(".concat(startX, "px)");
+                curImage.style.top = "calc(".concat(startY, "px)");
+                curImage.style.width = "calc(".concat(wid, "px)");
+                curImage.style.height = "calc(".concat(hei, "px)");
+                startX += _this.mainForm.gameScene.coordinates.handCardOffset * (scale);
+            }
+        }, 1000 * CommonMethods.distributeLast8Delay, scitaCopy);
     };
     DrawingFormHelper.prototype.destroyLast8Cards = function () {
         this.mainForm.gameScene.last8CardsImages.forEach(function (image) {
@@ -1003,7 +1079,7 @@ var DrawingFormHelper = /** @class */ (function () {
             cardImage.style.bottom = "calc(".concat(y, ")");
             cardImage.style['z-index'] = CommonMethods.zIndexLast8;
             cardImage.style.transition = "left ".concat(CommonMethods.distributeLast8Duration, "s, bottom ").concat(CommonMethods.distributeLast8Duration, "s");
-            cardImage.style['transition-delay'] = "".concat(0.1 * (7 - i), "s");
+            cardImage.style['transition-delay'] = "".concat(CommonMethods.distributeLast8Interval * (7 - i), "s");
             x = "".concat(x, " + ").concat(this.mainForm.gameScene.coordinates.distributingLast8PositionOffset, "px");
             last8Images.push(cardImage);
         }
@@ -1021,7 +1097,7 @@ var DrawingFormHelper = /** @class */ (function () {
                 else
                     curImage.style.bottom = "calc(".concat(_this.mainForm.gameScene.coordinates.playerSkinPositions[posInd].y, ")");
             }
-        }, 200);
+        }, 1000 * CommonMethods.distributeLast8Delay);
         //隐藏
         setTimeout(function () {
             last8Images.forEach(function (image) {
@@ -1068,7 +1144,7 @@ var DrawingFormHelper = /** @class */ (function () {
         if (playAnimation && winType >= 2) {
             // getting the location of the first showed cards from latest player
             var showedLength = this.mainForm.gameScene.showedCardImages.length;
-            if (this.mainForm.gameScene.showedCardImages && this.mainForm.gameScene.showedCardImages.length >= cardsCount) {
+            if (this.mainForm.gameScene.showedCardImages && showedLength >= cardsCount) {
                 var lastCardImage = this.mainForm.gameScene.showedCardImages[showedLength - cardsCount];
                 var rect = lastCardImage.getBoundingClientRect();
                 decadeUI.animation.playSpine2D(this.mainForm.gameScene.overridingLabelAnims[winType][0], rect.left, document.documentElement.clientHeight - rect.bottom, this.mainForm.gameScene.coordinates.cardWidth, this.mainForm.gameScene.coordinates.cardHeight, this.mainForm.gameScene.overridingLabelAnims[winType][1]);

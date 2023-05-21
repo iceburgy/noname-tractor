@@ -32,6 +32,8 @@ export class GameScene {
     public toolbarImages!: any[]
     public sidebarImages!: any[]
     public scoreCardsImages!: any[]
+    public scoreTotalText!: any
+    public scoreCardsIntsDrawn!: number[]
     public last8CardsImages!: any[]
     public showedCardImages!: any[]
     public OverridingFlagImage: any
@@ -101,6 +103,7 @@ export class GameScene {
         this.toolbarImages = [];
         this.sidebarImages = [];
         this.scoreCardsImages = [];
+        this.scoreCardsIntsDrawn = [];
         this.last8CardsImages = [];
         this.showedCardImages = [];
         this.overridingLabelImages = [

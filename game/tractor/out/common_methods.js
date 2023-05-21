@@ -208,6 +208,14 @@ export var CommonMethods = /** @class */ (function () {
         }
         return to;
     };
+    CommonMethods.ArrayMinus = function (arr1, arr2) {
+        var res = this.deepCopy(arr1);
+        for (var i = 0; i < arr2.length; i++) {
+            if (res.includes(arr2[i]))
+                res = this.ArrayRemoveOneByValue(res, arr2[i]);
+        }
+        return res;
+    };
     // public static string GetSuitString(int a)
     // {
     //     int suitInt = GetSuit(a);
@@ -497,6 +505,8 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.winEmojiLength = 4;
     CommonMethods.winEmojiTypeLength = 6;
     CommonMethods.danmuDuration = 8;
+    CommonMethods.distributeLast8Delay = 0.2;
+    CommonMethods.distributeLast8Interval = 0.1;
     CommonMethods.distributeLast8Duration = 0.5;
     CommonMethods.emojiMsgs = [
         "这波操作，666！",

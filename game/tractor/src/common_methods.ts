@@ -54,6 +54,8 @@ export class CommonMethods {
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
     public static danmuDuration = 8
+    public static distributeLast8Delay = 0.2;
+    public static distributeLast8Interval = 0.1;
     public static distributeLast8Duration = 0.5;
     public static emojiMsgs: string[] = [
         "这波操作，666！",
@@ -303,6 +305,14 @@ export class CommonMethods {
             else found = true
         }
         return to
+    }
+
+    public static ArrayMinus(arr1: number[], arr2: number[]): number[] {
+        let res = this.deepCopy<number[]>(arr1);
+        for (let i = 0; i < arr2.length; i++) {
+            if (res.includes(arr2[i])) res = this.ArrayRemoveOneByValue(res, arr2[i]);
+        }
+        return res;
     }
 
     // public static string GetSuitString(int a)

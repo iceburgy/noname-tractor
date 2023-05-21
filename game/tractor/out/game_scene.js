@@ -39,6 +39,7 @@ var GameScene = /** @class */ (function () {
         this.toolbarImages = [];
         this.sidebarImages = [];
         this.scoreCardsImages = [];
+        this.scoreCardsIntsDrawn = [];
         this.last8CardsImages = [];
         this.showedCardImages = [];
         this.overridingLabelImages = [

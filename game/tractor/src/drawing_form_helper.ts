@@ -259,6 +259,7 @@ export class DrawingFormHelper {
         for (let i = 0; i < serverCardList.length; i++) {
             let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardList[i]]
             let image = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+            image.setAttribute('serverCardNumber', serverCardList[i]);
 
             switch (pos) {
                 case 1:
@@ -287,6 +288,7 @@ export class DrawingFormHelper {
         for (let i = 0; i < serverCardList.length; i++) {
             let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardList[i]]
             let image = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+            image.setAttribute('serverCardNumber', serverCardList[i]);
 
             switch (pos) {
                 case 2:
@@ -1002,15 +1004,24 @@ export class DrawingFormHelper {
         this.mainForm.gameScene.showedCardImages.push(totalPointsImage);
     }
 
+    public destroyScoreTotalText() {
+        if (this.mainForm.gameScene.scoreTotalText) {
+            this.mainForm.gameScene.scoreTotalText.remove();
+            delete this.mainForm.gameScene.scoreTotalText;
+        }
+    }
+
     public destroyScoreImageAndCards() {
         this.mainForm.gameScene.scoreCardsImages.forEach(image => {
             image.remove();
         })
         this.mainForm.gameScene.scoreCardsImages = []
+        this.destroyScoreTotalText();
+        this.mainForm.gameScene.scoreCardsIntsDrawn = []
     }
 
     public DrawScoreImageAndCards() {
-        this.destroyScoreImageAndCards()
+        this.destroyScoreTotalText();
         //画得分图标
         let scores = this.mainForm.tractorPlayer.CurrentHandState.Score;
         var currentPointsText = this.mainForm.gameScene.ui.create.div('.currentPointsText', `上分：${scores}`, this.mainForm.gameScene.ui.frameGameRoom);
@@ -1020,10 +1031,76 @@ export class DrawingFormHelper {
         currentPointsText.style.textAlign = 'left';
         currentPointsText.style.left = `calc(0px)`;
         currentPointsText.style.top = `calc(150px)`;
-        this.mainForm.gameScene.scoreCardsImages.push(currentPointsText)
+        this.mainForm.gameScene.scoreTotalText = currentPointsText;
 
         //画得分牌，画在得分图标的下边
-        this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, 1 / 2, 6);
+        //静态
+        if (this.mainForm.gameScene.isReplayMode) {
+            this.DrawShowedCards(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, 1 / 2, 6);
+            return;
+        }
+
+        //动画
+        let scale = 1 / 2;
+        let scoreCardsIntsTotal: number[] = CommonMethods.deepCopy<number[]>(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards);
+        let scIntsToDraw = CommonMethods.ArrayMinus(scoreCardsIntsTotal, this.mainForm.gameScene.scoreCardsIntsDrawn);
+        let sciToDrawLocked = CommonMethods.deepCopy<number[]>(scIntsToDraw);
+        let showedCardImagesIdentifiedIndex: number[] = [];
+        let scoreCardsImagesToAnimate: any[] = [];
+        for (let i = 0; i < sciToDrawLocked.length; i++) {
+            let curServerCardNum = sciToDrawLocked[i];
+            for (let j = 0; j < this.mainForm.gameScene.showedCardImages.length; j++) {
+                if (showedCardImagesIdentifiedIndex.includes(j)) continue;
+                let cardImageShowed = this.mainForm.gameScene.showedCardImages[j];
+                let serverCardNumFromImage: number = parseInt(cardImageShowed.getAttribute("serverCardNumber"));
+                if (serverCardNumFromImage === curServerCardNum) {
+                    scoreCardsImagesToAnimate.push(cardImageShowed);
+                    scIntsToDraw = CommonMethods.ArrayRemoveOneByValue(scIntsToDraw, serverCardNumFromImage);
+                    showedCardImagesIdentifiedIndex.push(j);
+                    break;
+                }
+            }
+        }
+        this.DrawShowedCards(scIntsToDraw, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, scale, 6);
+        this.mainForm.gameScene.scoreCardsIntsDrawn = this.mainForm.gameScene.scoreCardsIntsDrawn.concat(scIntsToDraw);
+        let IntsDrawnLen = this.mainForm.gameScene.scoreCardsIntsDrawn.length;
+
+        let scitaLen = scoreCardsImagesToAnimate.length;
+        if (scitaLen === 0) return;
+        let scitaCopy: any[] = [];
+        for (let i = 0; i < scitaLen; i++) {
+            let cardImageOriginal = scoreCardsImagesToAnimate[i];
+            let serverCardNumFromImage: number = parseInt(cardImageOriginal.getAttribute("serverCardNumber"));
+            let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumFromImage];
+            let cardImageClone = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, uiCardNumber, scale);
+            cardImageClone.style.opacity = 0;
+            cardImageClone.style.left = `${cardImageOriginal.offsetLeft}px`;
+            cardImageClone.style.top = `${cardImageOriginal.offsetTop}px`;
+            cardImageClone.style.width = `${cardImageOriginal.clientWidth}px`;
+            cardImageClone.style.height = `${cardImageOriginal.clientHeight}px`;
+            cardImageClone.style.transition = `${CommonMethods.distributeLast8Duration}s`;
+            cardImageClone.style['transition-delay'] = `${CommonMethods.distributeLast8Interval * (i + 1)}s`;
+            scitaCopy.push(cardImageClone);
+            this.mainForm.gameScene.scoreCardsImages.push(cardImageClone);
+            this.mainForm.gameScene.ui.frameGameRoom.appendChild(cardImageClone);
+            this.mainForm.gameScene.scoreCardsIntsDrawn.push(serverCardNumFromImage);
+        }
+
+        setTimeout((scitaCp: any[]) => {
+            let startX = this.mainForm.gameScene.coordinates.handCardOffset * scale * IntsDrawnLen;
+            let startY = 180;
+            let wid = this.mainForm.gameScene.coordinates.cardWidth * scale;
+            let hei = this.mainForm.gameScene.coordinates.cardHeight * scale;
+            for (let i = 0; i < scitaLen; i++) {
+                let curImage: any = scitaCp[i]
+                curImage.style.opacity = 1;
+                curImage.style.left = `calc(${startX}px)`;
+                curImage.style.top = `calc(${startY}px)`;
+                curImage.style.width = `calc(${wid}px)`;
+                curImage.style.height = `calc(${hei}px)`;
+                startX += this.mainForm.gameScene.coordinates.handCardOffset * (scale);
+            }
+        }, 1000 * CommonMethods.distributeLast8Delay, scitaCopy);
     }
 
     public destroyLast8Cards() {
@@ -1081,7 +1158,7 @@ export class DrawingFormHelper {
             cardImage.style.bottom = `calc(${y})`;
             cardImage.style['z-index'] = CommonMethods.zIndexLast8;
             cardImage.style.transition = `left ${CommonMethods.distributeLast8Duration}s, bottom ${CommonMethods.distributeLast8Duration}s`;
-            cardImage.style['transition-delay'] = `${0.1 * (7 - i)}s`;
+            cardImage.style['transition-delay'] = `${CommonMethods.distributeLast8Interval * (7 - i)}s`;
             x = `${x} + ${this.mainForm.gameScene.coordinates.distributingLast8PositionOffset}px`;
             last8Images.push(cardImage);
         }
@@ -1096,7 +1173,7 @@ export class DrawingFormHelper {
                 if (posInd === 2) curImage.style.bottom = `calc(99% - ${this.mainForm.gameScene.coordinates.cardHeight}px)`;
                 else curImage.style.bottom = `calc(${this.mainForm.gameScene.coordinates.playerSkinPositions[posInd].y})`;
             }
-        }, 200);
+        }, 1000 * CommonMethods.distributeLast8Delay);
         //隐藏
         setTimeout(() => {
             last8Images.forEach(image => {
@@ -1149,7 +1226,7 @@ export class DrawingFormHelper {
         if (playAnimation && winType >= 2) {
             // getting the location of the first showed cards from latest player
             let showedLength = this.mainForm.gameScene.showedCardImages.length;
-            if (this.mainForm.gameScene.showedCardImages && this.mainForm.gameScene.showedCardImages.length >= cardsCount) {
+            if (this.mainForm.gameScene.showedCardImages && showedLength >= cardsCount) {
                 let lastCardImage = this.mainForm.gameScene.showedCardImages[showedLength - cardsCount];
                 var rect = lastCardImage.getBoundingClientRect();
                 decadeUI.animation.playSpine2D(this.mainForm.gameScene.overridingLabelAnims[winType][0], rect.left, document.documentElement.clientHeight - rect.bottom, this.mainForm.gameScene.coordinates.cardWidth, this.mainForm.gameScene.coordinates.cardHeight, this.mainForm.gameScene.overridingLabelAnims[winType][1]);
