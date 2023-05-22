@@ -64,6 +64,7 @@ export class GameScene {
     public soundwin!: string[];
     // public soundVolume!: number
     public noDongtu!: string
+    public noDongtuUntil!: string
     public noDanmu!: string
     public noCutCards!: string
     public yesDragSelect!: string
@@ -125,7 +126,8 @@ export class GameScene {
         this.danmuMessages = [];
         // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
         // this.soundVolume = (this.lib && this.lib.config && this.lib.config.soundVolume) ? this.lib.config.noDanmu : 0.5;
-        this.noDongtu = (this.lib && this.lib.config && this.lib.config.noDongtu) ? this.lib.config.noDongtu : "false";
+        this.noDongtu = "false";
+        this.noDongtuUntil = (this.lib && this.lib.config && this.lib.config.noDongtuUntil) ? this.lib.config.noDongtuUntil : "";
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
@@ -151,7 +153,7 @@ export class GameScene {
         this.coordinates = new Coordinates(this.isReplayMode);
 
         this.soundPool = {};
-        this.loadAudioFiles()
+        this.loadAudioFiles();
     }
 
     // non-replay mode, online

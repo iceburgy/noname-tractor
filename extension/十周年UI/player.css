@@ -307,7 +307,7 @@
     font-family: 'shousha';
     text-shadow: 0 0 2px black;
     background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0.4) 60%, transparent 100%);
-    /* z-index: 89; */
+    z-index: 89;
 	pointer-events: none;
 }
 

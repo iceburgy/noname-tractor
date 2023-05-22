@@ -227,7 +227,7 @@ var MainForm = /** @class */ (function () {
                         var skinType = this_1.GetSkinType(skinInUse);
                         var skinExtention = skinType === 0 ? "webp" : "gif";
                         var skinURL = "image/tractor/skin/".concat(skinInUse, ".").concat(skinExtention);
-                        this_1.SetAvatarImage(skinURL, playerUI, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p, i, this_1.gameScene);
+                        this_1.SetAvatarImage(false, this_1.gameScene, i, skinType, skinURL, playerUI, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p);
                     }
                     else {
                         this_1.gameScene.ui.gameMe.node.nameol.innerHTML = this_1.tractorPlayer.PlayerId;
@@ -235,7 +235,7 @@ var MainForm = /** @class */ (function () {
                         var skinTypeMe = this_1.GetSkinType(skinInUseMe);
                         var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
                         var skinURL = "image/tractor/skin/".concat(skinInUseMe, ".").concat(skinExtentionMe);
-                        this_1.SetAvatarImage(skinURL, this_1.gameScene.ui.gameMe, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p, i, this_1.gameScene);
+                        this_1.SetAvatarImage(false, this_1.gameScene, i, skinTypeMe, skinURL, this_1.gameScene.ui.gameMe, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p);
                     }
                     // 旁观玩家切换视角/房主将玩家请出房间
                     if ((this_1.tractorPlayer.isObserver || this_1.tractorPlayer.CurrentRoomSetting.RoomOwner === this_1.tractorPlayer.MyOwnId) && i !== 0) {
@@ -427,7 +427,7 @@ var MainForm = /** @class */ (function () {
             var skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
             var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
             var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
-            this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+            this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
         }
         this.drawingFormHelper.destroyAllCards();
         this.drawingFormHelper.destroyAllShowedCards();
@@ -1007,6 +1007,24 @@ var MainForm = /** @class */ (function () {
             }
             _this.resetGameRoomUI();
         };
+        var noDongtuUntilExpDate = document.getElementById("lblNoDongtuUntilExpDate");
+        if (!this.isNoDongtuUntilExpired()) {
+            noDongtuUntilExpDate.style.display = "block";
+            noDongtuUntilExpDate.innerHTML = "\u6709\u6548\u671F\u81F3".concat(this.gameScene.noDongtuUntil);
+        }
+        var noDongtu = document.getElementById("cbxNoDongtu");
+        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
+        noDongtu.onchange = function () {
+            if (noDongtu.checked && _this.isNoDongtuUntilExpired()) {
+                noDongtu.checked = false;
+                _this.buyNoDongtuUntil();
+            }
+            else {
+                gs.noDongtu = noDongtu.checked.toString();
+                gs.game.saveConfig("noDongtu", gs.noDongtu);
+                _this.UpdateSkinStatus();
+            }
+        };
         var noDanmu = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = function () {
@@ -1153,6 +1171,13 @@ var MainForm = /** @class */ (function () {
             }
         }
     };
+    MainForm.prototype.isNoDongtuUntilExpired = function () {
+        if (!this.gameScene.noDongtuUntil)
+            return true;
+        var dExp = new Date(this.gameScene.noDongtuUntil);
+        var dNow = new Date();
+        return dExp < dNow;
+    };
     MainForm.prototype.btnExitRoom_Click = function () {
         if (this.gameScene.isReplayMode) {
             window.location.reload();
@@ -1216,6 +1241,22 @@ var MainForm = /** @class */ (function () {
             return;
         }
         this.gameScene.sendMessageToServer(CommonMethods.SendBroadcast_REQUEST, this.tractorPlayer.MyOwnId, msg);
+    };
+    MainForm.prototype.buyNoDongtuUntil = function () {
+        var shengbi = 0;
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
+        }
+        if (shengbi < CommonMethods.buyNoDongtuUntilCost) {
+            alert("升币余额不足，无法关闭动图");
+            return;
+        }
+        var msg = "\u6B64\u6B21\u8D2D\u4E70\u5C06\u6D88\u8017\u5347\u5E01\u3010".concat(CommonMethods.buyNoDongtuUntilCost, "\u3011\uFF0C\u8D2D\u4E70\u524D\u4F59\u989D\uFF1A\u3010").concat(shengbi, "\u3011\uFF0C\u8D2D\u4E70\u540E\u4F59\u989D\uFF1A\u3010").concat(shengbi - CommonMethods.buyNoDongtuUntilCost, "\u3011\uFF0C\u662F\u5426\u786E\u5B9A\uFF1F");
+        var c = window.confirm(msg);
+        if (!c)
+            return;
+        this.gameScene.sendMessageToServer(CommonMethods.BuyNoDongtuUntil_REQUEST, this.tractorPlayer.MyOwnId, "");
+        this.resetGameRoomUI();
     };
     MainForm.prototype.blurChat = function () {
         if (!this.gameScene.ui.textAreaChatMsg)
@@ -1477,14 +1518,14 @@ var MainForm = /** @class */ (function () {
             if (curSkinInfo) {
                 var skinExtention = curSkinInfo.skinType === 0 ? "webp" : "gif";
                 var skinURL = "image/tractor/skin/".concat(curSkinInfo.skinName, ".").concat(skinExtention);
-                this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                this.SetAvatarImage(true, this.gameScene, 0, curSkinInfo.skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
                 if (this.skinPreviewTimer)
                     clearTimeout(this.skinPreviewTimer);
                 this.skinPreviewTimer = setTimeout(function () {
                     var skinTypeMe = _this.GetSkinType(_this.gameScene.skinInUse);
                     var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
                     var skinURL = "image/tractor/skin/".concat(_this.gameScene.skinInUse, ".").concat(skinExtentionMe);
-                    _this.SetAvatarImage(skinURL, _this.gameScene.ui.gameMe, _this.gameScene.coordinates.cardHeight);
+                    _this.SetAvatarImage(false, _this.gameScene, 0, skinTypeMe, skinURL, _this.gameScene.ui.gameMe, _this.gameScene.coordinates.cardHeight);
                     delete _this.skinPreviewTimer;
                 }, 3000);
             }
@@ -2073,7 +2114,7 @@ var MainForm = /** @class */ (function () {
         var skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
         var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
         var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
-        this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+        this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
     };
     MainForm.prototype.drawHandZone = function () {
         this.gameScene.ui.create.me(); // creates ui.me, which is hand zone
@@ -2200,19 +2241,70 @@ var MainForm = /** @class */ (function () {
         var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
         return daojuInfoByPlayer && daojuInfoByPlayer.isRenewed;
     };
-    MainForm.prototype.SetAvatarImage = function (skinURL, playerObj, fixedHeight, callback, p, i, gs) {
+    MainForm.prototype.SetAvatarImage = function (isPreview, gs, pos, skinType, skinURL, playerObj, fixedHeight, callback, p) {
         var img = new Image();
         img.onload = function (e) {
             var wid = e.target.width;
             var hei = e.target.height;
             var skinWid = fixedHeight * wid / hei;
             playerObj.style.width = "calc(".concat(skinWid, "px)");
-            playerObj.node.avatar.setBackgroundImage(skinURL);
+            if (!isPreview && gs.noDongtu.toLowerCase() === "true" && skinType === 1) {
+                // clean up static and animation elements first
+                jQuery(playerObj.node.avatar).removeAttr('background-image');
+                // giffer
+                if (playerObj.node.avatarImg) {
+                    playerObj.node.avatarImg.remove();
+                    delete playerObj.node.avatarImg;
+                }
+                var playerGiffers = jQuery("#".concat(CommonMethods.gifferPrefix).concat(pos));
+                if (playerGiffers && playerGiffers.length > 0) {
+                    var pg = playerGiffers[0];
+                    pg.remove();
+                }
+                // build giffer
+                var avatarImg = document.createElement("img");
+                playerObj.node.avatarImg = avatarImg;
+                playerObj.appendChild(avatarImg);
+                playerObj.node.avatarImg.setAttribute("id", "".concat(CommonMethods.gifferPrefix).concat(pos));
+                playerObj.node.avatarImg.setAttribute("data-gifffer", skinURL);
+                playerObj.node.avatarImg.style.width = "calc(".concat(skinWid, "px)");
+                playerObj.node.avatarImg.style.height = "calc(".concat(fixedHeight, "px)");
+                Gifffer({
+                    playButtonStyles: {
+                        'display': 'none'
+                    },
+                    playButtonIconStyles: {
+                        'display': 'none'
+                    }
+                });
+                setTimeout(function () {
+                    var playerGiffersNew = jQuery("#".concat(CommonMethods.gifferPrefix).concat(pos));
+                    if (playerGiffersNew && playerGiffersNew.length > 0) {
+                        playerGiffersNew.prop("disabled", true);
+                        playerGiffersNew.css('cursor', 'default');
+                        playerGiffersNew.children('canvas').css('border-radius', '8px');
+                    }
+                }, 1000);
+            }
+            else {
+                // clean up static elements first
+                if (playerObj.node.avatarImg) {
+                    playerObj.node.avatarImg.remove();
+                    delete playerObj.node.avatarImg;
+                }
+                var playerGiggers = jQuery("#".concat(CommonMethods.gifferPrefix).concat(pos));
+                if (playerGiggers && playerGiggers.length > 0) {
+                    var pg = playerGiggers[0];
+                    pg.remove();
+                }
+                // build animation
+                playerObj.node.avatar.setBackgroundImage(skinURL);
+            }
             if (gs && gs.ui.handZone && playerObj === gs.ui.gameMe) {
                 gs.ui.handZone.style.left = "calc(".concat(gs.ui.gameMe.clientWidth, "px)");
             }
             if (callback) {
-                callback(p, i, gs, skinWid);
+                callback(p, pos, gs, skinWid);
             }
         };
         img.src = skinURL;
@@ -2228,10 +2320,10 @@ var MainForm = /** @class */ (function () {
                 var skinExtention = skinType === 0 ? "webp" : "gif";
                 var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtention);
                 if (this.gameScene.isInGameRoom()) {
-                    this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, pMe, 0, this.gameScene);
+                    this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, pMe);
                 }
                 else {
-                    this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                    this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
                 }
             }
         }
@@ -2249,7 +2341,7 @@ var MainForm = /** @class */ (function () {
                 var skinType = this.GetSkinType(skinInUse);
                 var skinExtention = skinType === 0 ? "webp" : "gif";
                 var skinURL = "image/tractor/skin/".concat(skinInUse, ".").concat(skinExtention);
-                this.SetAvatarImage(skinURL, playerImage, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
+                this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerImage, this.gameScene.coordinates.cardHeight, this.SetObText, p);
             }
             curIndex = (curIndex + 1) % 4;
         }

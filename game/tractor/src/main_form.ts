@@ -40,6 +40,7 @@ const BUY_USE_SKIN_REQUEST = "BuyUseSkin"
 const UsedShengbiType_Qiangliangka = "UsedShengbiType_Qiangliangka"
 const PLAYER_QIANDAO_REQUEST = "PlayerQiandao"
 declare let jQuery: any;
+declare let Gifffer: any;
 
 export class MainForm {
     // public gameScene: GameScene | GameReplayScene
@@ -280,7 +281,7 @@ export class MainForm {
                         let skinType = this.GetSkinType(skinInUse);
                         let skinExtention = skinType === 0 ? "webp" : "gif";
                         let skinURL = `image/tractor/skin/${skinInUse}.${skinExtention}`;
-                        this.SetAvatarImage(skinURL, playerUI, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
+                        this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerUI, this.gameScene.coordinates.cardHeight, this.SetObText, p);
 
                     }
                     else {
@@ -289,7 +290,7 @@ export class MainForm {
                         let skinTypeMe = this.GetSkinType(skinInUseMe);
                         let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
                         let skinURL = `image/tractor/skin/${skinInUseMe}.${skinExtentionMe}`;
-                        this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
+                        this.SetAvatarImage(false, this.gameScene, i, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, p);
                     }
 
                     // 旁观玩家切换视角/房主将玩家请出房间
@@ -487,7 +488,7 @@ export class MainForm {
             let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
             let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
             let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
-            this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+            this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
         }
         this.drawingFormHelper.destroyAllCards()
         this.drawingFormHelper.destroyAllShowedCards()
@@ -1117,6 +1118,25 @@ export class MainForm {
             this.resetGameRoomUI();
         }
 
+        let noDongtuUntilExpDate: any = document.getElementById("lblNoDongtuUntilExpDate");
+        if (!this.isNoDongtuUntilExpired()) {
+            noDongtuUntilExpDate.style.display = "block";
+            noDongtuUntilExpDate.innerHTML = `有效期至${this.gameScene.noDongtuUntil}`;
+        }
+        let noDongtu: any = document.getElementById("cbxNoDongtu");
+        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
+        noDongtu.onchange = () => {
+            if (noDongtu.checked && this.isNoDongtuUntilExpired()) {
+                noDongtu.checked = false;
+                this.buyNoDongtuUntil();
+            }
+            else {
+                gs.noDongtu = noDongtu.checked.toString();
+                gs.game.saveConfig("noDongtu", gs.noDongtu);
+                this.UpdateSkinStatus();
+            }
+        }
+
         let noDanmu: any = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = () => {
@@ -1270,6 +1290,14 @@ export class MainForm {
         }
     }
 
+    public isNoDongtuUntilExpired(): boolean {
+        if (!this.gameScene.noDongtuUntil) return true;
+        let dExp = new Date(this.gameScene.noDongtuUntil);
+        let dNow = new Date();
+
+        return dExp < dNow;
+    }
+
     private btnExitRoom_Click() {
         if (this.gameScene.isReplayMode) {
             window.location.reload()
@@ -1334,6 +1362,23 @@ export class MainForm {
         }
 
         this.gameScene.sendMessageToServer(CommonMethods.SendBroadcast_REQUEST, this.tractorPlayer.MyOwnId, msg);
+    }
+
+    public buyNoDongtuUntil() {
+        let shengbi = 0
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
+        }
+        if (shengbi < CommonMethods.buyNoDongtuUntilCost) {
+            alert("升币余额不足，无法关闭动图")
+            return;
+        }
+
+        let msg = `此次购买将消耗升币【${CommonMethods.buyNoDongtuUntilCost}】，购买前余额：【${shengbi}】，购买后余额：【${shengbi - CommonMethods.buyNoDongtuUntilCost}】，是否确定？`;
+        var c = window.confirm(msg);
+        if (!c) return;
+        this.gameScene.sendMessageToServer(CommonMethods.BuyNoDongtuUntil_REQUEST, this.tractorPlayer.MyOwnId, "");
+        this.resetGameRoomUI();
     }
 
     public blurChat() {
@@ -1605,14 +1650,14 @@ export class MainForm {
             if (curSkinInfo) {
                 let skinExtention = curSkinInfo.skinType === 0 ? "webp" : "gif";
                 let skinURL = `image/tractor/skin/${curSkinInfo.skinName}.${skinExtention}`;
-                this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                this.SetAvatarImage(true, this.gameScene, 0, curSkinInfo.skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
 
                 if (this.skinPreviewTimer) clearTimeout(this.skinPreviewTimer);
                 this.skinPreviewTimer = setTimeout(() => {
                     let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
                     let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
                     let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
-                    this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                    this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
                     delete this.skinPreviewTimer;
                 }, 3000);
             }
@@ -2244,7 +2289,7 @@ export class MainForm {
         let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
         let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
         let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
-        this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+        this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
     }
 
     private drawHandZone() {
@@ -2376,20 +2421,76 @@ export class MainForm {
         return daojuInfoByPlayer && daojuInfoByPlayer.isRenewed;
     }
 
-    private SetAvatarImage(skinURL: string, playerObj: any, fixedHeight: number, callback?: any, p?: PlayerEntity, i?: number, gs?: GameScene) {
+    private SetAvatarImage(isPreview: boolean, gs: GameScene, pos: number, skinType: number, skinURL: string, playerObj: any, fixedHeight: number, callback?: any, p?: PlayerEntity) {
         var img = new Image();
         img.onload = (e: any) => {
             let wid = e.target.width;
             let hei = e.target.height;
             let skinWid = fixedHeight * wid / hei;
             playerObj.style.width = `calc(${skinWid}px)`;
-            playerObj.node.avatar.setBackgroundImage(skinURL);
+            if (!isPreview && gs.noDongtu.toLowerCase() === "true" && skinType === 1) {
+                // clean up static and animation elements first
+                jQuery(playerObj.node.avatar).removeAttr('background-image');
+                // giffer
+                if (playerObj.node.avatarImg) {
+                    playerObj.node.avatarImg.remove();
+                    delete playerObj.node.avatarImg;
+                }
+                let playerGiffers = jQuery(`#${CommonMethods.gifferPrefix}${pos}`);
+                if (playerGiffers && playerGiffers.length > 0) {
+                    let pg = playerGiffers[0];
+                    pg.remove();
+                }
+
+                // build giffer
+                let avatarImg = document.createElement("img");
+                playerObj.node.avatarImg = avatarImg;
+                playerObj.appendChild(avatarImg);
+                playerObj.node.avatarImg.setAttribute("id", `${CommonMethods.gifferPrefix}${pos}`);
+                playerObj.node.avatarImg.setAttribute("data-gifffer", skinURL);
+                playerObj.node.avatarImg.style.width = `calc(${skinWid}px)`;
+                playerObj.node.avatarImg.style.height = `calc(${fixedHeight}px)`;
+
+                Gifffer({
+                    playButtonStyles: {
+                        'display': 'none'
+                    },
+                    playButtonIconStyles: {
+                        'display': 'none'
+                    }
+                });
+
+                setTimeout(() => {
+                    let playerGiffersNew = jQuery(`#${CommonMethods.gifferPrefix}${pos}`);
+                    if (playerGiffersNew && playerGiffersNew.length > 0) {
+                        playerGiffersNew.prop("disabled", true);
+                        playerGiffersNew.css('cursor', 'default');
+                        playerGiffersNew.children('canvas').css('border-radius', '8px');
+                    }
+                }, 1000);
+            }
+            else {
+                // clean up static elements first
+                if (playerObj.node.avatarImg) {
+                    playerObj.node.avatarImg.remove();
+                    delete playerObj.node.avatarImg;
+                }
+                let playerGiggers = jQuery(`#${CommonMethods.gifferPrefix}${pos}`);
+                if (playerGiggers && playerGiggers.length > 0) {
+                    let pg = playerGiggers[0];
+                    pg.remove();
+                }
+
+                // build animation
+                playerObj.node.avatar.setBackgroundImage(skinURL);
+            }
+
             if (gs && gs.ui.handZone && playerObj === gs.ui.gameMe) {
                 gs.ui.handZone.style.left = `calc(${gs.ui.gameMe.clientWidth}px)`;
             }
 
             if (callback) {
-                callback(p, i, gs, skinWid);
+                callback(p, pos, gs, skinWid);
             }
         };
         img.src = skinURL;
@@ -2406,10 +2507,10 @@ export class MainForm {
                 let skinExtention = skinType === 0 ? "webp" : "gif";
                 let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtention}`;
                 if (this.gameScene.isInGameRoom()) {
-                    this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, pMe, 0, this.gameScene);
+                    this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, pMe);
                 }
                 else {
-                    this.SetAvatarImage(skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                    this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
                 }
             }
         }
@@ -2427,7 +2528,7 @@ export class MainForm {
                 let skinType = this.GetSkinType(skinInUse)
                 let skinExtention = skinType === 0 ? "webp" : "gif";
                 let skinURL = `image/tractor/skin/${skinInUse}.${skinExtention}`;
-                this.SetAvatarImage(skinURL, playerImage, this.gameScene.coordinates.cardHeight, this.SetObText, p, i, this.gameScene);
+                this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerImage, this.gameScene.coordinates.cardHeight, this.SetObText, p);
             }
 
             curIndex = (curIndex + 1) % 4

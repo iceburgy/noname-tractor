@@ -58,6 +58,14 @@ var TractorPlayer = /** @class */ (function () {
                 _this.PingStatus = -1;
             }
         }, this.PingInterval + this.PingInterval / 2);
+        // check noDongtuUntil
+        if (this.mainForm.gameScene.noDongtu.toLowerCase() === "true" && this.mainForm.isNoDongtuUntilExpired()) {
+            var finalMsg = "".concat(CommonMethods.systemMsgPrefix, "\u9053\u5177\u3010\u5173\u95ED\u52A8\u56FE\u3011\u5DF2\u5230\u671F");
+            this.mainForm.drawingFormHelper.DrawDanmu(finalMsg);
+            this.mainForm.appendChatMsg(finalMsg);
+            this.mainForm.gameScene.noDongtu = "false";
+            this.mainForm.UpdateSkinStatus();
+        }
     };
     TractorPlayer.prototype.NotifyGameState = function (gameState, notifyType) {
         //bug修复：如果所有人都就绪了，然后来自服务器的新消息就绪人数既不是0又不是4（由于网络延迟导致有一人未就绪的来自服务器的消息滞后到达），那么不处理这条消息
@@ -460,6 +468,7 @@ var TractorPlayer = /** @class */ (function () {
         if (updateQiandao)
             this.mainForm.UpdateQiandaoStatus();
         this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
+        this.mainForm.gameScene.noDongtuUntil = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].noDongtuUntil : "";
         if (updateSkin)
             this.mainForm.UpdateSkinStatus();
     };

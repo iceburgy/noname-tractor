@@ -38,6 +38,7 @@ export class CommonMethods {
 
     public static SendEmoji_REQUEST = "SendEmoji"
     public static SendBroadcast_REQUEST = "SendBroadcast"
+    public static BuyNoDongtuUntil_REQUEST = "BuyNoDongtuUntil"
     public static PlayerHasCutCards_REQUEST = "PlayerHasCutCards"
     public static cardNumToValue: string[] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     public static reenterRoomSignal = "断线重连中,请稍后...";
@@ -47,10 +48,12 @@ export class CommonMethods {
     public static wsErrorType_Insecure = "insecure";
     public static chatMaxLength = 100;
     public static danmuMaxLength = 30;
-    
+
     public static zIndexDanmu = 10;
     public static zIndexFrameChat = 11;
     public static zIndexSettingsForm = 100;
+
+    public static gifferPrefix = "playerGiffer";
 
     public static winEmojiLength = 4
     public static winEmojiTypeLength = 6
@@ -79,6 +82,7 @@ export class CommonMethods {
     public static qiangliangkaCost = 10;
     public static sendBroadcastPrefix = "@all";
     public static sendBroadcastCost = 10;
+    public static buyNoDongtuUntilCost = 20;
     public static defaultSkinInUse = "skin_questionmark";
 
     public static audioLiangpai = "liangpai";

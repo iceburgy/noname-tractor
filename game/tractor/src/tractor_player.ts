@@ -84,6 +84,15 @@ export class TractorPlayer {
                 this.PingStatus = -1;
             }
         }, this.PingInterval + this.PingInterval / 2);
+
+        // check noDongtuUntil
+        if (this.mainForm.gameScene.noDongtu.toLowerCase() === "true" && this.mainForm.isNoDongtuUntilExpired()) {
+            let finalMsg = `${CommonMethods.systemMsgPrefix}道具【关闭动图】已到期`;
+            this.mainForm.drawingFormHelper.DrawDanmu(finalMsg);
+            this.mainForm.appendChatMsg(finalMsg);
+            this.mainForm.gameScene.noDongtu = "false";
+            this.mainForm.UpdateSkinStatus();
+        }
     }
 
     public NotifyGameState(gameState: GameState, notifyType?: string) {
@@ -527,6 +536,7 @@ export class TractorPlayer {
         this.mainForm.DaojuInfo = daojuInfo;
         if (updateQiandao) this.mainForm.UpdateQiandaoStatus();
         this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
+        this.mainForm.gameScene.noDongtuUntil = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].noDongtuUntil : "";
         if (updateSkin) this.mainForm.UpdateSkinStatus();
     }
 }
