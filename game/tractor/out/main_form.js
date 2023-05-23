@@ -2843,7 +2843,6 @@ var MainForm = /** @class */ (function () {
             this.btnFirstPersonView.innerText = "第一视角";
         }
         this.StartReplay(true);
-        this.saveSettings();
     };
     MainForm.prototype.btnFirstTrick_Click = function () {
         if (this.tractorPlayer.replayedTricks.length > 0)
@@ -3038,19 +3037,6 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.shouldShowLast8Cards = function () {
         return this.gameScene.yesFirstPersonView !== "true" ||
             this.tractorPlayer.CurrentHandState.Starter === this.tractorPlayer.replayEntity.Players[0];
-    };
-    MainForm.prototype.saveSettings = function () {
-        // cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
-        //     this.joinAudioUrl = 'http://' + this.joinAudioUrl;
-        // }
-        // cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     };
     MainForm.prototype.removeOptions = function (selectElement) {
         var i, L = selectElement.options.length - 1;

@@ -248,7 +248,8 @@ export class DrawingFormHelper {
     private DrawShowedCards(serverCardList: number[], x: string, y: string, targetImages: any[], scale: number, pos: number) {
         // 5 - last 8 cards
         // 6 - score cards
-        if (pos === 2 || pos === 5) {
+        // 7 - DrawTrumpMadeCardsByPositionFromLastTrick for pos 3
+        if (pos === 2 || pos === 5 || pos === 7) {
             this.DrawShowedCardsReverse(serverCardList, x, y, targetImages, scale, pos);
             return;
         }
@@ -296,6 +297,7 @@ export class DrawingFormHelper {
                     image.style.bottom = `calc(${y})`;
                     break;
                 case 5:
+                case 7:
                     image.style.right = `calc(${x})`;
                     image.style.top = `calc(${y})`;
                     break;
@@ -354,30 +356,56 @@ export class DrawingFormHelper {
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] = false
         }
         if (!this.mainForm.tractorPlayer.isObserver) {
-            // left click
-            image.node.cover.addEventListener("mousedown", (e: any) => {
-                if (e.button === 0) {
+            if (CommonMethods.isTouchDevice()) {
+                // touch device
+                image.node.cover.addEventListener("touchstart", (e: any) => {
                     this.handleSelectingCard(image)
                     this.isMouseDown = true;
                     this.isDragging = image
-                }
-            });
-            window.addEventListener("mouseup", (e: any) => {
-                this.isMouseDown = false;
-                this.isDragging = undefined
-            });
-            image.node.cover.addEventListener("mouseover", (e: any) => {
-                if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && e.button === 0 && this.isDragging !== image && this.isMouseDown) {
-                    this.handleSelectingCard(image);
-                }
-            });
+                });
+                image.addEventListener("touchend", (e: any) => {
+                    this.isMouseDown = false;
+                    this.isDragging = undefined
+                });
+                image.node.cover.addEventListener("touchmove", (e: any) => {
+                    let coverTouched: any = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+                    if (coverTouched && coverTouched.classList.contains('cover')) {
+                        let cardTouched: any = coverTouched.parentElement;
+                        if (cardTouched.classList.contains('tractorCard')) {
+                            if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && this.isDragging !== cardTouched && this.isMouseDown) {
+                                this.handleSelectingCard(cardTouched);
+                                this.isDragging = cardTouched;
+                            }
+                        }
+                    }
+                });
+            }
+            else {
+                // left click
+                image.node.cover.addEventListener("mousedown", (e: any) => {
+                    if (e.button === 0) {
+                        this.handleSelectingCard(image)
+                        this.isMouseDown = true;
+                        this.isDragging = image
+                    }
+                });
+                image.addEventListener("mouseup", (e: any) => {
+                    this.isMouseDown = false;
+                    this.isDragging = undefined
+                });
+                image.node.cover.addEventListener("mouseover", (e: any) => {
+                    if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && e.button === 0 && this.isDragging !== image && this.isMouseDown) {
+                        this.handleSelectingCard(image);
+                    }
+                });
 
-            // right click
-            image.node.cover.addEventListener("mousedown", (e: any) => {
-                if (e.button === 2) {
-                    this.handleSelectingCardRightClick(image)
-                }
-            });
+                // right click
+                image.node.cover.addEventListener("mousedown", (e: any) => {
+                    if (e.button === 2) {
+                        this.handleSelectingCardRightClick(image)
+                    }
+                });
+            }
         }
 
         // if I made trump, move it up by 30px
@@ -826,7 +854,7 @@ export class DrawingFormHelper {
     public DrawTrumpMadeCardsByPositionFromLastTrick(cards: number[], pos: number) {
         let x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].x
         let y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].y
-        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos)
+        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos === 3 ? 7 : pos);
     }
 
     public DrawSidebarFull() {

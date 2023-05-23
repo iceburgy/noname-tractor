@@ -226,7 +226,8 @@ var DrawingFormHelper = /** @class */ (function () {
     DrawingFormHelper.prototype.DrawShowedCards = function (serverCardList, x, y, targetImages, scale, pos) {
         // 5 - last 8 cards
         // 6 - score cards
-        if (pos === 2 || pos === 5) {
+        // 7 - DrawTrumpMadeCardsByPositionFromLastTrick for pos 3
+        if (pos === 2 || pos === 5 || pos === 7) {
             this.DrawShowedCardsReverse(serverCardList, x, y, targetImages, scale, pos);
             return;
         }
@@ -270,6 +271,7 @@ var DrawingFormHelper = /** @class */ (function () {
                     image.style.bottom = "calc(".concat(y, ")");
                     break;
                 case 5:
+                case 7:
                     image.style.right = "calc(".concat(x, ")");
                     image.style.top = "calc(".concat(y, ")");
                     break;
@@ -325,29 +327,55 @@ var DrawingFormHelper = /** @class */ (function () {
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] = false;
         }
         if (!this.mainForm.tractorPlayer.isObserver) {
-            // left click
-            image.node.cover.addEventListener("mousedown", function (e) {
-                if (e.button === 0) {
+            if (CommonMethods.isTouchDevice()) {
+                // touch device
+                image.node.cover.addEventListener("touchstart", function (e) {
                     _this.handleSelectingCard(image);
                     _this.isMouseDown = true;
                     _this.isDragging = image;
-                }
-            });
-            window.addEventListener("mouseup", function (e) {
-                _this.isMouseDown = false;
-                _this.isDragging = undefined;
-            });
-            image.node.cover.addEventListener("mouseover", function (e) {
-                if (_this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && e.button === 0 && _this.isDragging !== image && _this.isMouseDown) {
-                    _this.handleSelectingCard(image);
-                }
-            });
-            // right click
-            image.node.cover.addEventListener("mousedown", function (e) {
-                if (e.button === 2) {
-                    _this.handleSelectingCardRightClick(image);
-                }
-            });
+                });
+                image.addEventListener("touchend", function (e) {
+                    _this.isMouseDown = false;
+                    _this.isDragging = undefined;
+                });
+                image.node.cover.addEventListener("touchmove", function (e) {
+                    var coverTouched = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+                    if (coverTouched && coverTouched.classList.contains('cover')) {
+                        var cardTouched = coverTouched.parentElement;
+                        if (cardTouched.classList.contains('tractorCard')) {
+                            if (_this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && _this.isDragging !== cardTouched && _this.isMouseDown) {
+                                _this.handleSelectingCard(cardTouched);
+                                _this.isDragging = cardTouched;
+                            }
+                        }
+                    }
+                });
+            }
+            else {
+                // left click
+                image.node.cover.addEventListener("mousedown", function (e) {
+                    if (e.button === 0) {
+                        _this.handleSelectingCard(image);
+                        _this.isMouseDown = true;
+                        _this.isDragging = image;
+                    }
+                });
+                image.addEventListener("mouseup", function (e) {
+                    _this.isMouseDown = false;
+                    _this.isDragging = undefined;
+                });
+                image.node.cover.addEventListener("mouseover", function (e) {
+                    if (_this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && e.button === 0 && _this.isDragging !== image && _this.isMouseDown) {
+                        _this.handleSelectingCard(image);
+                    }
+                });
+                // right click
+                image.node.cover.addEventListener("mousedown", function (e) {
+                    if (e.button === 2) {
+                        _this.handleSelectingCardRightClick(image);
+                    }
+                });
+            }
         }
         // if I made trump, move it up by 30px
         var trumpMadeCard = (this.mainForm.tractorPlayer.CurrentHandState.Trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
@@ -771,7 +799,7 @@ var DrawingFormHelper = /** @class */ (function () {
     DrawingFormHelper.prototype.DrawTrumpMadeCardsByPositionFromLastTrick = function (cards, pos) {
         var x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].x;
         var y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].y;
-        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos);
+        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos === 3 ? 7 : pos);
     };
     DrawingFormHelper.prototype.DrawSidebarFull = function () {
         var isRoomFull = CommonMethods.GetPlayerCount(this.mainForm.tractorPlayer.CurrentGameState.Players) == 4;

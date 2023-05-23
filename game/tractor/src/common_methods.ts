@@ -87,10 +87,6 @@ export class CommonMethods {
 
     public static audioLiangpai = "liangpai";
     public static audioShuaicuo = "shuaicuo";
-    public static audioDiaozhu = "diaozhu";
-    public static audioSha = "sha";
-    public static audioShafire = "shafire";
-    public static audioShathunder = "shathunder";
 
     public static audioRecoverhp = "audioRecoverhp";
     public static audioDraw = "audiodraw";
@@ -580,6 +576,10 @@ export class CommonMethods {
 
     public static isMobile(): boolean {
         return /Mobi|Android/i.test(navigator.userAgent)
+    }
+
+    public static isTouchDevice(): boolean {
+        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     }
 
     public static GetCookieExpires() {

@@ -51,8 +51,6 @@ var GameScene = /** @class */ (function () {
         // // this.hallPlayerNames = [];
         this.clientMessages = [];
         this.danmuMessages = [];
-        // // this.roomUIControls = { images: [], texts: [], imagesChair: [] };
-        // this.soundVolume = (this.lib && this.lib.config && this.lib.config.soundVolume) ? this.lib.config.noDanmu : 0.5;
         this.noDongtu = "false";
         this.noDongtuUntil = (this.lib && this.lib.config && this.lib.config.noDongtuUntil) ? this.lib.config.noDongtuUntil : "";
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
@@ -425,13 +423,6 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.isInGameRoom = function () {
         return this.ui && this.ui.roomOwnerText;
     };
-    // // public drawSgsAni(effectName: string, effectNature: string, wid: number, hei: number) {
-    // //     if (!window.spine) {
-    // //         console.error('spine 未定义.');
-    // //         return;
-    // //     }
-    // //     skillAnimate(effectName, effectNature, wid, hei)
-    // // }
     GameScene.prototype.playAudio = function (audioName, sex) {
         var audioInfo = [];
         if (typeof audioName === "string") {

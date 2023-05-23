@@ -451,6 +451,9 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.isMobile = function () {
         return /Mobi|Android/i.test(navigator.userAgent);
     };
+    CommonMethods.isTouchDevice = function () {
+        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    };
     CommonMethods.GetCookieExpires = function () {
         var result = new Date();
         result.setDate(result.getDate() + CommonMethods.cookieExpireInDays);
@@ -534,10 +537,6 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.defaultSkinInUse = "skin_questionmark";
     CommonMethods.audioLiangpai = "liangpai";
     CommonMethods.audioShuaicuo = "shuaicuo";
-    CommonMethods.audioDiaozhu = "diaozhu";
-    CommonMethods.audioSha = "sha";
-    CommonMethods.audioShafire = "shafire";
-    CommonMethods.audioShathunder = "shathunder";
     CommonMethods.audioRecoverhp = "audioRecoverhp";
     CommonMethods.audioDraw = "audiodraw";
     CommonMethods.audioDrawx = "audiodrawx";

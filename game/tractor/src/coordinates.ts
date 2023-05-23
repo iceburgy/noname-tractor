@@ -259,9 +259,9 @@ export class Coordinates {
         // from last trick
         this.trumpMadeCardsPositions = [
             { x: "0px", y: "1% + 130px" },
-            { x: "0px", y: "50% + 90px" },
-            { x: "50% + 70px", y: "0px" },
-            { x: "0px", y: "50% + 90px" },
+            { x: "0px", y: "50% + 100px" },
+            { x: "50% + 100px", y: "0px" },
+            { x: "0px", y: "50% + 100px" },
         ]
 
         // last8cards

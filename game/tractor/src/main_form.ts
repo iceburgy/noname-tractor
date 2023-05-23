@@ -3067,7 +3067,6 @@ export class MainForm {
             this.btnFirstPersonView.innerText = "第一视角";
         }
         this.StartReplay(true);
-        this.saveSettings();
     }
 
     public btnFirstTrick_Click() {
@@ -3255,21 +3254,6 @@ export class MainForm {
     private shouldShowLast8Cards() {
         return this.gameScene.yesFirstPersonView !== "true" ||
             this.tractorPlayer.CurrentHandState.Starter === this.tractorPlayer.replayEntity.Players[0];
-    }
-
-    public saveSettings() {
-        // cookies.set('soundVolume', this.soundVolume, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('noDanmu', this.noDanmu, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('noCutCards', this.noCutCards, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('yesDragSelect', this.yesDragSelect, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('yesFirstPersonView', this.yesFirstPersonView, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('qiangliangMin', this.qiangliangMin, { path: '/', expires: CommonMethods.GetCookieExpires() });
-
-        // if (this.joinAudioUrl && !this.joinAudioUrl.match(/^https?:\/\//i)) {
-        //     this.joinAudioUrl = 'http://' + this.joinAudioUrl;
-        // }
-        // cookies.set('joinAudioUrl', this.joinAudioUrl, { path: '/', expires: CommonMethods.GetCookieExpires() });
-        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
     }
 
     public removeOptions(selectElement: any) {
