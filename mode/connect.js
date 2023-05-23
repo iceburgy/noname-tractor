@@ -87,12 +87,16 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				ui.emailnode = nodeEmail;
 
 				var connect = function (e) {
-					if (ui.ipbutton.classList.contains('disabled')) return;
+					var isEnterHallDisabled = ui.ipbutton.classList.contains('disabled');
+					var isEnterHall = e.target.innerText === '进入大厅';
+					var isDoReplay = e.target.innerText === '录像回放';
 
 					clearTimeout(event.timeout);
 					game.clearConnect();
 
-					if (e.target.innerText === '进入大厅') {
+					if (isEnterHall) {
+						if (isEnterHallDisabled) return;
+
 						var textEmail = ui.create.div('', '连接中...');
 						textEmail.style.width = '400px';
 						textEmail.style.height = '30px';
@@ -109,12 +113,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 					import('../game/tractor/out/game_scene.js')
 						.then((GameScene) => {
-							var gameScene = new GameScene.GameScene(nodeHostName.value, nodePlayerName.value, nodePassword.value, nodeEmail.value, game, lib, ui, get);
-							if (e.target.innerText === '录像回放') {
-								gameScene.doReplay();
-							} else {
-								gameScene.connect();
-							}
+							var isReplayMode = isDoReplay;
+							var gameScene = new GameScene.GameScene(isReplayMode, nodeHostName.value, nodePlayerName.value, nodePassword.value, nodeEmail.value, game, lib, ui, get);
 						})
 						.catch(error => {
 							document.body.innerHTML = `<div>!!! 尝试加载页面失败！</div>`

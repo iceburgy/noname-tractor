@@ -6,7 +6,7 @@ import { EnterHallInfo } from './enter_hall_info.js';
 var dummyValue = "dummyValue";
 var IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 var GameScene = /** @class */ (function () {
-    function GameScene(hostName, playerName, nickNameOverridePass, playerEmail, gameIn, libIn, uiIn, getIn) {
+    function GameScene(irm, hostName, playerName, nickNameOverridePass, playerEmail, gameIn, libIn, uiIn, getIn) {
         // // public hallPlayerHeader: Phaser.GameObjects.Text
         // // public hallPlayerNames: Phaser.GameObjects.Text[]
         // // public btnJoinAudio: Phaser.GameObjects.Text
@@ -19,15 +19,7 @@ var GameScene = /** @class */ (function () {
         this.lib = libIn;
         this.ui = uiIn;
         this.get = getIn;
-        this.isReplayMode = false;
-        this.hostName = hostName.trim();
-        this.hostNameOriginal = this.hostName;
-        this.playerName = playerName.trim();
-        if (this.playerName && CommonMethods.IsNumber(this.playerName)) {
-            document.body.innerHTML = "<div>!!! \u6635\u79F0\u4E0D\u80FD\u4EE5\u6570\u5B57\u5F00\u5934\u7ED3\u5C3E\uFF1A".concat(this.playerName, "</div>");
-            this.hostName = "";
-            return;
-        }
+        this.isReplayMode = irm;
         // // this.existPlayers = [1]
         // // this.websocket = null
         // // this.getPlayerMsgCnt = 0
@@ -69,6 +61,20 @@ var GameScene = /** @class */ (function () {
         this.yesFirstPersonView = (this.lib && this.lib.config && this.lib.config.yesFirstPersonView) ? this.lib.config.yesFirstPersonView : "false";
         this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
+        IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
+        this.coordinates = new Coordinates(this.isReplayMode);
+        if (this.isReplayMode) {
+            this.doReplay();
+            return;
+        }
+        this.hostName = hostName.trim();
+        this.hostNameOriginal = this.hostName;
+        this.playerName = playerName.trim();
+        if (this.playerName && CommonMethods.IsNumber(this.playerName)) {
+            document.body.innerHTML = "<div>!!! \u6635\u79F0\u4E0D\u80FD\u4EE5\u6570\u5B57\u5F00\u5934\u7ED3\u5C3E\uFF1A".concat(this.playerName, "</div>");
+            this.hostName = "";
+            return;
+        }
         var isIPPort = IPPort.test(this.hostName);
         if (isIPPort) {
             this.wsprotocal = "ws";
@@ -81,12 +87,11 @@ var GameScene = /** @class */ (function () {
             }
             this.resolveUrl();
         }
-        IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
         this.nickNameOverridePass = nickNameOverridePass;
         this.playerEmail = playerEmail;
-        this.coordinates = new Coordinates(this.isReplayMode);
         this.soundPool = {};
         this.loadAudioFiles();
+        this.connect();
     }
     // non-replay mode, online
     GameScene.prototype.connect = function () {
@@ -227,7 +232,6 @@ var GameScene = /** @class */ (function () {
     // replay mode, offline
     GameScene.prototype.doReplay = function () {
         var _this = this;
-        this.isReplayMode = true;
         this.mainForm = new MainForm(this);
         this.mainForm.drawFrameMain();
         this.mainForm.drawGameRoom();

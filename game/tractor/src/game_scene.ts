@@ -18,9 +18,9 @@ declare let decadeUI: any;
 export class GameScene {
     public isReplayMode: boolean
     // public appVersion: string
-    public hostName
+    public hostName!: string;
     public hostNameOriginal
-    public playerName
+    public playerName!: string;
     public websocket: any
     // // public prepareBtn: Phaser.GameObjects.Image
     // // public prepareOkImg: Phaser.GameObjects.Image[]
@@ -79,20 +79,12 @@ export class GameScene {
     public ui: any
     public get: any
 
-    constructor(hostName: string, playerName: string, nickNameOverridePass: string, playerEmail: string, gameIn: any, libIn: any, uiIn: any, getIn: any) {
+    constructor(irm: boolean, hostName: string, playerName: string, nickNameOverridePass: string, playerEmail: string, gameIn: any, libIn: any, uiIn: any, getIn: any) {
         this.game = gameIn;
         this.lib = libIn;
         this.ui = uiIn;
         this.get = getIn;
-        this.isReplayMode = false;
-        this.hostName = hostName.trim()
-        this.hostNameOriginal = this.hostName
-        this.playerName = playerName.trim()
-        if (this.playerName && CommonMethods.IsNumber(this.playerName)) {
-            document.body.innerHTML = `<div>!!! 昵称不能以数字开头结尾：${this.playerName}</div>`
-            this.hostName = "";
-            return;
-        }
+        this.isReplayMode = irm;
         // // this.existPlayers = [1]
         // // this.websocket = null
         // // this.getPlayerMsgCnt = 0
@@ -135,6 +127,22 @@ export class GameScene {
         this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
+        IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
+        this.coordinates = new Coordinates(this.isReplayMode);
+
+        if (this.isReplayMode) {
+            this.doReplay();
+            return;
+        }
+
+        this.hostName = hostName.trim()
+        this.hostNameOriginal = this.hostName
+        this.playerName = playerName.trim()
+        if (this.playerName && CommonMethods.IsNumber(this.playerName)) {
+            document.body.innerHTML = `<div>!!! 昵称不能以数字开头结尾：${this.playerName}</div>`
+            this.hostName = "";
+            return;
+        }
         let isIPPort = IPPort.test(this.hostName);
         if (isIPPort) {
             this.wsprotocal = "ws";
@@ -146,14 +154,14 @@ export class GameScene {
             }
             this.resolveUrl()
         }
-        IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
         this.nickNameOverridePass = nickNameOverridePass;
         this.playerEmail = playerEmail;
 
-        this.coordinates = new Coordinates(this.isReplayMode);
 
         this.soundPool = {};
         this.loadAudioFiles();
+
+        this.connect();
     }
 
     // non-replay mode, online
@@ -298,7 +306,6 @@ export class GameScene {
 
     // replay mode, offline
     doReplay() {
-        this.isReplayMode = true;
         this.mainForm = new MainForm(this)
         this.mainForm.drawFrameMain();
         this.mainForm.drawGameRoom();
