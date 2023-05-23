@@ -2316,40 +2316,42 @@ var MainForm = /** @class */ (function () {
         img.src = skinURL;
     };
     MainForm.prototype.UpdateSkinStatus = function () {
-        this.destroyPokerPlayerObGameRoom();
-        var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.PlayerId];
-        var pMe = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId);
-        if (daojuInfoByPlayer) {
-            var ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
-            if (ownedSkinInfoList && ownedSkinInfoList.includes(this.gameScene.skinInUse)) {
-                var skinType = this.GetSkinType(this.gameScene.skinInUse);
-                var skinExtention = skinType === 0 ? "webp" : "gif";
-                var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtention);
-                if (this.gameScene.isInGameRoom()) {
-                    this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, pMe);
-                }
-                else {
-                    this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+        if (this.gameScene.isInGameHall()) {
+            var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.PlayerId];
+            var pMe = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId);
+            if (daojuInfoByPlayer) {
+                var ownedSkinInfoList = daojuInfoByPlayer.ownedSkinInfo;
+                if (ownedSkinInfoList && ownedSkinInfoList.includes(this.gameScene.skinInUse)) {
+                    var skinType = this.GetSkinType(this.gameScene.skinInUse);
+                    var skinExtention = skinType === 0 ? "webp" : "gif";
+                    var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtention);
+                    if (this.gameScene.isInGameRoom()) {
+                        this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, pMe);
+                    }
+                    else {
+                        this.SetAvatarImage(false, this.gameScene, 0, skinType, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+                    }
                 }
             }
-        }
-        // 如果在房间里，则事实更新其它玩家的皮肤
-        if (!this.gameScene.isInGameRoom())
             return;
-        var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId);
-        curIndex = (curIndex + 1) % 4;
-        for (var i = 1; i < 4; i++) {
-            var p = this.tractorPlayer.CurrentGameState.Players[curIndex];
-            if (p) {
-                var playerImage = this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
-                //skin
-                var skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
-                var skinType = this.GetSkinType(skinInUse);
-                var skinExtention = skinType === 0 ? "webp" : "gif";
-                var skinURL = "image/tractor/skin/".concat(skinInUse, ".").concat(skinExtention);
-                this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerImage, this.gameScene.coordinates.cardHeight, this.SetObText, p);
+        }
+        // 如果在房间里，则实时更新其它玩家的皮肤
+        if (this.gameScene.isInGameRoom()) {
+            this.destroyPokerPlayerObGameRoom();
+            var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId);
+            for (var i = 0; i < 4; i++) {
+                var p = this.tractorPlayer.CurrentGameState.Players[curIndex];
+                if (p) {
+                    var playerImage = i === 0 ? this.gameScene.ui.gameMe : this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                    //skin
+                    var skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
+                    var skinType = this.GetSkinType(skinInUse);
+                    var skinExtention = skinType === 0 ? "webp" : "gif";
+                    var skinURL = "image/tractor/skin/".concat(skinInUse, ".").concat(skinExtention);
+                    this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerImage, this.gameScene.coordinates.cardHeight, this.SetObText, p);
+                }
+                curIndex = (curIndex + 1) % 4;
             }
-            curIndex = (curIndex + 1) % 4;
         }
     };
     MainForm.prototype.NotifyEmojiEventHandler = function (playerID, emojiType, emojiIndex, isCenter, msgString, noSpeaker) {
