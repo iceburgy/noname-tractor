@@ -327,7 +327,7 @@ var DrawingFormHelper = /** @class */ (function () {
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] = false;
         }
         if (!this.mainForm.tractorPlayer.isObserver) {
-            if (CommonMethods.isTouchDevice()) {
+            if (this.mainForm.gameScene.noTouchDevice.toLowerCase() !== "true" && CommonMethods.isTouchDevice()) {
                 // touch device
                 image.node.cover.addEventListener("touchstart", function (e) {
                     _this.handleSelectingCard(image);

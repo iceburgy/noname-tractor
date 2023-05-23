@@ -1043,6 +1043,12 @@ var MainForm = /** @class */ (function () {
             gs.yesDragSelect = cbxYesDragSelect.checked.toString();
             gs.game.saveConfig("yesDragSelect", gs.yesDragSelect);
         };
+        var noTouchDevice = document.getElementById("cbxNoTouchDevice");
+        noTouchDevice.checked = gs.noTouchDevice.toLowerCase() === "true";
+        noTouchDevice.onchange = function () {
+            gs.noTouchDevice = noTouchDevice.checked.toString();
+            gs.game.saveConfig("noTouchDevice", gs.noTouchDevice);
+        };
         if (gs.isReplayMode)
             return;
         // 以下为需要连接服务器才能显示的设置

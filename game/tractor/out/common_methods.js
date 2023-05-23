@@ -452,7 +452,7 @@ export var CommonMethods = /** @class */ (function () {
         return /Mobi|Android/i.test(navigator.userAgent);
     };
     CommonMethods.isTouchDevice = function () {
-        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        return ('ontouchstart' in window) || (window.matchMedia("(pointer: coarse)").matches);
     };
     CommonMethods.GetCookieExpires = function () {
         var result = new Date();

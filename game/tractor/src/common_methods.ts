@@ -579,7 +579,7 @@ export class CommonMethods {
     }
 
     public static isTouchDevice(): boolean {
-        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        return ('ontouchstart' in window) || (window.matchMedia("(pointer: coarse)").matches);
     }
 
     public static GetCookieExpires() {

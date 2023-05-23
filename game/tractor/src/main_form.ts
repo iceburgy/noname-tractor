@@ -1158,6 +1158,13 @@ export class MainForm {
             gs.game.saveConfig("yesDragSelect", gs.yesDragSelect);
         }
 
+        let noTouchDevice: any = document.getElementById("cbxNoTouchDevice");
+        noTouchDevice.checked = gs.noTouchDevice.toLowerCase() === "true";
+        noTouchDevice.onchange = () => {
+            gs.noTouchDevice = noTouchDevice.checked.toString();
+            gs.game.saveConfig("noTouchDevice", gs.noTouchDevice);
+        }
+
         if (gs.isReplayMode) return;
 
         // 以下为需要连接服务器才能显示的设置

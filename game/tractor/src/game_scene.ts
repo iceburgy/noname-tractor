@@ -66,6 +66,7 @@ export class GameScene {
     public noDongtu!: string
     public noDongtuUntil!: string
     public noDanmu!: string
+    public noTouchDevice!: string
     public noCutCards!: string
     public yesDragSelect!: string
     public yesFirstPersonView!: string
@@ -119,6 +120,7 @@ export class GameScene {
         this.noDongtu = "false";
         this.noDongtuUntil = (this.lib && this.lib.config && this.lib.config.noDongtuUntil) ? this.lib.config.noDongtuUntil : "";
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
+        this.noTouchDevice = (this.lib && this.lib.config && this.lib.config.noTouchDevice) ? this.lib.config.noTouchDevice : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
         this.yesFirstPersonView = (this.lib && this.lib.config && this.lib.config.yesFirstPersonView) ? this.lib.config.yesFirstPersonView : "false";
