@@ -54,7 +54,6 @@ export class IDBHelper {
         getAllKeysRequest.onsuccess = function () {
             let clearReq = store.clear();
             clearReq.onsuccess = function () {
-                console.log(`attemped to clean up all replay records`);
                 callbackFunc.apply();
             }
         }
@@ -87,7 +86,6 @@ export class IDBHelper {
                     let upperRange = getAllKeysRequest.result[getAllKeysRequest.result.length - 1];
                     let deleteRange = IDBKeyRange.bound(lowerRange, upperRange)
                     store.delete(deleteRange)
-                    console.log(`attemped to clean up ${numToRemove} records before saving the new one: ${JSON.stringify(getAllKeysRequest.result)}`);
                     IDBHelper.SaveReplayEntityWorker(replayState, store, callback);
                 }
                 getAllKeysRequest.onerror = function (event: any) {
@@ -113,7 +111,6 @@ export class IDBHelper {
         }
         req.onsuccess = function () {
             callback.apply();
-            console.log(`attemped to save replay record: ${replayState.ReplayId}`);
         }
     }
 
@@ -154,7 +151,6 @@ export class IDBHelper {
                 let temp = new ReplayEntity();
                 temp.CloneFrom(re)
                 reList.push(temp)
-                console.log(`attemped to read replay record: ${temp.ReplayId}`);
                 cursor.continue();
             } else {
                 callback(reList)

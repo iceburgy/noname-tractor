@@ -37,7 +37,6 @@ export var IDBHelper = /** @class */ (function () {
         getAllKeysRequest.onsuccess = function () {
             var clearReq = store.clear();
             clearReq.onsuccess = function () {
-                console.log("attemped to clean up all replay records");
                 callbackFunc.apply();
             };
         };
@@ -68,7 +67,6 @@ export var IDBHelper = /** @class */ (function () {
                     var upperRange = getAllKeysRequest_1.result[getAllKeysRequest_1.result.length - 1];
                     var deleteRange = IDBKeyRange.bound(lowerRange, upperRange);
                     store.delete(deleteRange);
-                    console.log("attemped to clean up ".concat(numToRemove, " records before saving the new one: ").concat(JSON.stringify(getAllKeysRequest_1.result)));
                     IDBHelper.SaveReplayEntityWorker(replayState, store, callback);
                 };
                 getAllKeysRequest_1.onerror = function (event) {
@@ -94,7 +92,6 @@ export var IDBHelper = /** @class */ (function () {
         };
         req.onsuccess = function () {
             callback.apply();
-            console.log("attemped to save replay record: ".concat(replayState.ReplayId));
         };
     };
     IDBHelper.ReadReplayEntityAll = function (callback) {
@@ -132,7 +129,6 @@ export var IDBHelper = /** @class */ (function () {
                 var temp = new ReplayEntity();
                 temp.CloneFrom(re);
                 reList.push(temp);
-                console.log("attemped to read replay record: ".concat(temp.ReplayId));
                 cursor.continue();
             }
             else {
