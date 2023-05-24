@@ -136,6 +136,7 @@ export class MainForm {
         if (CommonMethods.GetReadyCount(this.tractorPlayer.CurrentGameState.Players) < 4) {
             if (!this.tractorPlayer.isObserver) {
                 this.gameScene.ui.btnReady.show();
+                this.gameScene.ui.btnReady.classList.remove('disabled');
                 this.gameScene.ui.btnExitAndObserve.show();
             }
 
@@ -143,8 +144,7 @@ export class MainForm {
             // this.btnSmallGames.setInteractive({ useHandCursor: true })
             // this.btnSmallGames.setColor('white')
         } else {
-            this.gameScene.ui.btnReady.hide();
-            this.gameScene.ui.btnExitAndObserve.hide();
+            this.gameScene.ui.btnReady.classList.add('disabled');
 
             // small games
             // this.btnSmallGames.disableInteractive()
@@ -1769,7 +1769,7 @@ export class MainForm {
         frameChat.style.width = '250px';
         frameChat.style.position = 'absolute';
         frameChat.style.top = 'calc(50px)';
-        frameChat.style.bottom = '0px';
+        frameChat.style.bottom = 'calc(2%)';
         frameChat.style.right = '0px';
         frameChat.style['z-index'] = CommonMethods.zIndexFrameChat;
         this.gameScene.ui.frameChat = frameChat;
@@ -1783,12 +1783,12 @@ export class MainForm {
 
         let divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.height = 'calc(60% - 20px)';
+        divChatHistory.style.height = 'calc(50% - 20px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
 
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.top = 'calc(80%)';
-        selectChatPresetMsgs.style.height = 'calc(4%)';
+        selectChatPresetMsgs.style.top = 'calc(70%)';
+        selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(selectChatPresetMsgs);
         this.gameScene.ui.selectPresetMsgs = selectChatPresetMsgs;
@@ -1806,8 +1806,8 @@ export class MainForm {
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
         textAreaChatMsg.placeholder = `消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，快捷消息的快捷键为对应的数字键`;
-        textAreaChatMsg.style.height = 'calc(13% - 10px)';
-        textAreaChatMsg.style.bottom = 'calc(2%)';
+        textAreaChatMsg.style.top = 'calc(70% + 40px)';
+        textAreaChatMsg.style.bottom = 'calc(50px)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);
         this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
@@ -1907,21 +1907,55 @@ export class MainForm {
 
         this.gameScene.ui.btnPig = btnPig;
 
-        // btnRobot
-        if (!this.gameScene.ui.btnRobot) {
-            this.gameScene.ui.btnRobot = this.gameScene.ui.create.system('托管', () => this.btnRobot_Click());
-            this.gameScene.ui.btnRobot.hide();
-        }
         // btnReady
         if (!this.gameScene.ui.btnReady) {
-            this.gameScene.ui.btnReady = this.gameScene.ui.create.system('就绪', () => this.btnReady_Click());
-            this.gameScene.ui.btnReady.hide();
+            let btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '就绪', () => this.btnReady_Click());
+            this.gameScene.ui.btnReady = btnReady
+            this.gameScene.ui.frameChat.appendChild(btnReady);
+            btnReady.style.position = 'absolute';
+
+            btnReady.style.left = `calc(50%)`;
+            btnReady.style.transform = `translate(-50%, 0%)`;
+            btnReady.style.transition = `0s`;
+
+            btnReady.style.bottom = `0px`;
+            btnReady.style.fontFamily = 'serif';
+            btnReady.style.fontSize = '20px';
+        }
+        let midBtnWid = this.gameScene.ui.btnReady.clientWidth;
+        // btnRobot
+        if (!this.gameScene.ui.btnRobot) {
+            let btnRobot = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '托管', () => this.btnRobot_Click());
+            this.gameScene.ui.btnRobot = btnRobot;
+            this.gameScene.ui.frameChat.appendChild(btnRobot);
+            btnRobot.style.position = 'absolute';
+
+            btnRobot.style.left = `calc((50% - ${midBtnWid / 2}px) / 2)`;
+            btnRobot.style.transform = `translate(-50%, 0%)`;
+            btnRobot.style.transition = `0s`;
+
+            btnRobot.style.bottom = `0px`;
+            btnRobot.style.fontFamily = 'serif';
+            btnRobot.style.fontSize = '20px';
         }
         // btnShowLastTrick
         if (!this.gameScene.ui.btnShowLastTrick) {
-            this.gameScene.ui.btnShowLastTrick = this.gameScene.ui.create.system('上轮', () => this.HandleRightClickEmptyArea());
-            this.gameScene.ui.btnShowLastTrick.hide();
+            let btnShowLastTrick = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '上轮', () => this.HandleRightClickEmptyArea());
+            this.gameScene.ui.btnShowLastTrick = btnShowLastTrick;
+            this.gameScene.ui.frameChat.appendChild(btnShowLastTrick);
+            btnShowLastTrick.style.position = 'absolute';
+
+            btnShowLastTrick.style.right = `calc((50% - ${midBtnWid / 2}px) / 2)`;
+            btnShowLastTrick.style.transform = `translate(50%, 0%)`;
+            btnShowLastTrick.style.transition = `0s`;
+
+            btnShowLastTrick.style.bottom = `0px`;
+            btnShowLastTrick.style.fontFamily = 'serif';
+            btnShowLastTrick.style.fontSize = '20px';
         }
+        this.gameScene.ui.btnRobot.hide();
+        this.gameScene.ui.btnReady.hide();
+        this.gameScene.ui.btnShowLastTrick.hide();
         // btnExitAndObserve
         if (!this.gameScene.ui.btnExitAndObserve) {
             this.gameScene.ui.btnExitAndObserve = this.gameScene.ui.create.system('上树', () => this.ExitAndObserve(), true, true);

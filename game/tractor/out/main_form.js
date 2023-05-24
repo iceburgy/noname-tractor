@@ -83,6 +83,7 @@ var MainForm = /** @class */ (function () {
         if (CommonMethods.GetReadyCount(this.tractorPlayer.CurrentGameState.Players) < 4) {
             if (!this.tractorPlayer.isObserver) {
                 this.gameScene.ui.btnReady.show();
+                this.gameScene.ui.btnReady.classList.remove('disabled');
                 this.gameScene.ui.btnExitAndObserve.show();
             }
             // small games
@@ -90,8 +91,7 @@ var MainForm = /** @class */ (function () {
             // this.btnSmallGames.setColor('white')
         }
         else {
-            this.gameScene.ui.btnReady.hide();
-            this.gameScene.ui.btnExitAndObserve.hide();
+            this.gameScene.ui.btnReady.classList.add('disabled');
             // small games
             // this.btnSmallGames.disableInteractive()
             // this.btnSmallGames.setColor('gray')
@@ -1618,7 +1618,7 @@ var MainForm = /** @class */ (function () {
         frameChat.style.width = '250px';
         frameChat.style.position = 'absolute';
         frameChat.style.top = 'calc(50px)';
-        frameChat.style.bottom = '0px';
+        frameChat.style.bottom = 'calc(2%)';
         frameChat.style.right = '0px';
         frameChat.style['z-index'] = CommonMethods.zIndexFrameChat;
         this.gameScene.ui.frameChat = frameChat;
@@ -1630,11 +1630,11 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
         var divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.height = 'calc(60% - 20px)';
+        divChatHistory.style.height = 'calc(50% - 20px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.top = 'calc(80%)';
-        selectChatPresetMsgs.style.height = 'calc(4%)';
+        selectChatPresetMsgs.style.top = 'calc(70%)';
+        selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(selectChatPresetMsgs);
         this.gameScene.ui.selectPresetMsgs = selectChatPresetMsgs;
@@ -1651,8 +1651,8 @@ var MainForm = /** @class */ (function () {
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
         textAreaChatMsg.placeholder = "\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7".concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
-        textAreaChatMsg.style.height = 'calc(13% - 10px)';
-        textAreaChatMsg.style.bottom = 'calc(2%)';
+        textAreaChatMsg.style.top = 'calc(70% + 40px)';
+        textAreaChatMsg.style.bottom = 'calc(50px)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);
         this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
@@ -1742,21 +1742,49 @@ var MainForm = /** @class */ (function () {
         btnPig.hide();
         this.gameScene.ui.frameGameRoom.appendChild(btnPig);
         this.gameScene.ui.btnPig = btnPig;
-        // btnRobot
-        if (!this.gameScene.ui.btnRobot) {
-            this.gameScene.ui.btnRobot = this.gameScene.ui.create.system('托管', function () { return _this.btnRobot_Click(); });
-            this.gameScene.ui.btnRobot.hide();
-        }
         // btnReady
         if (!this.gameScene.ui.btnReady) {
-            this.gameScene.ui.btnReady = this.gameScene.ui.create.system('就绪', function () { return _this.btnReady_Click(); });
-            this.gameScene.ui.btnReady.hide();
+            var btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '就绪', function () { return _this.btnReady_Click(); });
+            this.gameScene.ui.btnReady = btnReady;
+            this.gameScene.ui.frameChat.appendChild(btnReady);
+            btnReady.style.position = 'absolute';
+            btnReady.style.left = "calc(50%)";
+            btnReady.style.transform = "translate(-50%, 0%)";
+            btnReady.style.transition = "0s";
+            btnReady.style.bottom = "0px";
+            btnReady.style.fontFamily = 'serif';
+            btnReady.style.fontSize = '20px';
+        }
+        var midBtnWid = this.gameScene.ui.btnReady.clientWidth;
+        // btnRobot
+        if (!this.gameScene.ui.btnRobot) {
+            var btnRobot = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '托管', function () { return _this.btnRobot_Click(); });
+            this.gameScene.ui.btnRobot = btnRobot;
+            this.gameScene.ui.frameChat.appendChild(btnRobot);
+            btnRobot.style.position = 'absolute';
+            btnRobot.style.left = "calc((50% - ".concat(midBtnWid / 2, "px) / 2)");
+            btnRobot.style.transform = "translate(-50%, 0%)";
+            btnRobot.style.transition = "0s";
+            btnRobot.style.bottom = "0px";
+            btnRobot.style.fontFamily = 'serif';
+            btnRobot.style.fontSize = '20px';
         }
         // btnShowLastTrick
         if (!this.gameScene.ui.btnShowLastTrick) {
-            this.gameScene.ui.btnShowLastTrick = this.gameScene.ui.create.system('上轮', function () { return _this.HandleRightClickEmptyArea(); });
-            this.gameScene.ui.btnShowLastTrick.hide();
+            var btnShowLastTrick = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '上轮', function () { return _this.HandleRightClickEmptyArea(); });
+            this.gameScene.ui.btnShowLastTrick = btnShowLastTrick;
+            this.gameScene.ui.frameChat.appendChild(btnShowLastTrick);
+            btnShowLastTrick.style.position = 'absolute';
+            btnShowLastTrick.style.right = "calc((50% - ".concat(midBtnWid / 2, "px) / 2)");
+            btnShowLastTrick.style.transform = "translate(50%, 0%)";
+            btnShowLastTrick.style.transition = "0s";
+            btnShowLastTrick.style.bottom = "0px";
+            btnShowLastTrick.style.fontFamily = 'serif';
+            btnShowLastTrick.style.fontSize = '20px';
         }
+        this.gameScene.ui.btnRobot.hide();
+        this.gameScene.ui.btnReady.hide();
+        this.gameScene.ui.btnShowLastTrick.hide();
         // btnExitAndObserve
         if (!this.gameScene.ui.btnExitAndObserve) {
             this.gameScene.ui.btnExitAndObserve = this.gameScene.ui.create.system('上树', function () { return _this.ExitAndObserve(); }, true, true);

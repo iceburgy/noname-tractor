@@ -123,9 +123,9 @@ var Coordinates = /** @class */ (function () {
         this.trumpMadeCardsScale = 2 / 3;
         // from last trick
         this.trumpMadeCardsPositions = [
-            { x: "0px", y: "1% + 130px" },
+            { x: "0px", y: "1% + 160px" },
             { x: "0px", y: "50% + 100px" },
-            { x: "50% + 100px", y: "0px" },
+            { x: "50% + 60px", y: "30px" },
             { x: "0px", y: "50% + 100px" },
         ];
         // last8cards
