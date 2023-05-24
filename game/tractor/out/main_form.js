@@ -1007,24 +1007,6 @@ var MainForm = /** @class */ (function () {
             }
             _this.resetGameRoomUI();
         };
-        var noDongtuUntilExpDate = document.getElementById("lblNoDongtuUntilExpDate");
-        if (!this.isNoDongtuUntilExpired()) {
-            noDongtuUntilExpDate.style.display = "block";
-            noDongtuUntilExpDate.innerHTML = "\u6709\u6548\u671F\u81F3".concat(this.gameScene.noDongtuUntil);
-        }
-        var noDongtu = document.getElementById("cbxNoDongtu");
-        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
-        noDongtu.onchange = function () {
-            if (noDongtu.checked && _this.isNoDongtuUntilExpired()) {
-                noDongtu.checked = false;
-                _this.buyNoDongtuUntil();
-            }
-            else {
-                gs.noDongtu = noDongtu.checked.toString();
-                gs.game.saveConfig("noDongtu", gs.noDongtu);
-                _this.UpdateSkinStatus();
-            }
-        };
         var noDanmu = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = function () {
@@ -1052,6 +1034,26 @@ var MainForm = /** @class */ (function () {
         if (gs.isReplayMode)
             return;
         // 以下为需要连接服务器才能显示的设置
+        var pNoDongtu = document.getElementById("pNoDongtu");
+        pNoDongtu.style.display = "block";
+        var noDongtuUntilExpDate = document.getElementById("lblNoDongtuUntilExpDate");
+        if (!this.isNoDongtuUntilExpired()) {
+            noDongtuUntilExpDate.style.display = "block";
+            noDongtuUntilExpDate.innerHTML = "\u6709\u6548\u671F\u81F3".concat(this.gameScene.noDongtuUntil);
+        }
+        var noDongtu = document.getElementById("cbxNoDongtu");
+        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
+        noDongtu.onchange = function () {
+            if (noDongtu.checked && _this.isNoDongtuUntilExpired()) {
+                noDongtu.checked = false;
+                _this.buyNoDongtuUntil();
+            }
+            else {
+                gs.noDongtu = noDongtu.checked.toString();
+                gs.game.saveConfig("noDongtu", gs.noDongtu);
+                _this.UpdateSkinStatus();
+            }
+        };
         // 游戏道具栏
         var divDaojuWrapper = document.getElementById("divDaojuWrapper");
         divDaojuWrapper.style.display = "block";

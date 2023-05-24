@@ -1118,25 +1118,6 @@ export class MainForm {
             this.resetGameRoomUI();
         }
 
-        let noDongtuUntilExpDate: any = document.getElementById("lblNoDongtuUntilExpDate");
-        if (!this.isNoDongtuUntilExpired()) {
-            noDongtuUntilExpDate.style.display = "block";
-            noDongtuUntilExpDate.innerHTML = `有效期至${this.gameScene.noDongtuUntil}`;
-        }
-        let noDongtu: any = document.getElementById("cbxNoDongtu");
-        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
-        noDongtu.onchange = () => {
-            if (noDongtu.checked && this.isNoDongtuUntilExpired()) {
-                noDongtu.checked = false;
-                this.buyNoDongtuUntil();
-            }
-            else {
-                gs.noDongtu = noDongtu.checked.toString();
-                gs.game.saveConfig("noDongtu", gs.noDongtu);
-                this.UpdateSkinStatus();
-            }
-        }
-
         let noDanmu: any = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = () => {
@@ -1168,6 +1149,28 @@ export class MainForm {
         if (gs.isReplayMode) return;
 
         // 以下为需要连接服务器才能显示的设置
+
+        let pNoDongtu: any = document.getElementById("pNoDongtu");
+        pNoDongtu.style.display = "block";
+        let noDongtuUntilExpDate: any = document.getElementById("lblNoDongtuUntilExpDate");
+        if (!this.isNoDongtuUntilExpired()) {
+            noDongtuUntilExpDate.style.display = "block";
+            noDongtuUntilExpDate.innerHTML = `有效期至${this.gameScene.noDongtuUntil}`;
+        }
+        let noDongtu: any = document.getElementById("cbxNoDongtu");
+        noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
+        noDongtu.onchange = () => {
+            if (noDongtu.checked && this.isNoDongtuUntilExpired()) {
+                noDongtu.checked = false;
+                this.buyNoDongtuUntil();
+            }
+            else {
+                gs.noDongtu = noDongtu.checked.toString();
+                gs.game.saveConfig("noDongtu", gs.noDongtu);
+                this.UpdateSkinStatus();
+            }
+        }
+
         // 游戏道具栏
         let divDaojuWrapper: any = document.getElementById("divDaojuWrapper");
         divDaojuWrapper.style.display = "block";
