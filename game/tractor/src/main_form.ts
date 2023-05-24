@@ -2761,8 +2761,10 @@ export class MainForm {
             alert("请输入0-108之间的数字");
         } else {
             this.gameScene.sendMessageToServer(CommonMethods.PlayerHasCutCards_REQUEST, this.tractorPlayer.MyOwnId, cutInfo);
-            this.gameScene.ui.inputFormWrapper.remove();
-            delete this.gameScene.ui.inputFormWrapper;
+            if (this.gameScene.ui.inputFormWrapper) {
+                this.gameScene.ui.inputFormWrapper.remove();
+                delete this.gameScene.ui.inputFormWrapper;
+            }
         }
     }
 

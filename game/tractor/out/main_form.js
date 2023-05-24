@@ -2554,8 +2554,10 @@ var MainForm = /** @class */ (function () {
         }
         else {
             this.gameScene.sendMessageToServer(CommonMethods.PlayerHasCutCards_REQUEST, this.tractorPlayer.MyOwnId, cutInfo);
-            this.gameScene.ui.inputFormWrapper.remove();
-            delete this.gameScene.ui.inputFormWrapper;
+            if (this.gameScene.ui.inputFormWrapper) {
+                this.gameScene.ui.inputFormWrapper.remove();
+                delete this.gameScene.ui.inputFormWrapper;
+            }
         }
     };
     MainForm.prototype.DoReplayMainForm = function () {
