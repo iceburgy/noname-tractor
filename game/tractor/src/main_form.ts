@@ -151,7 +151,7 @@ export class MainForm {
             // this.btnSmallGames.setColor('gray')
             // this.groupSmallGames.setVisible(false);
         }
-        this.gameScene.ui.btnReady.innerHTML = (readyToStart ? "取消" : "就绪");
+        this.gameScene.ui.btnReady.innerHTML = (readyToStart ? "取消" : "开始");
         this.setStartLabels()
     }
 
@@ -987,7 +987,7 @@ export class MainForm {
 
     private btnReady_Click() {
         if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden') || this.gameScene.ui.btnReady.classList.contains('disabled')) return;
-        //为防止以外连续点两下就绪按钮，造成重复发牌，点完一下就立即disable就绪按钮
+        //为防止以外连续点两下开始按钮，造成重复发牌，点完一下就立即disable开始按钮
         this.gameScene.ui.btnReady.hide()
 
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
@@ -1795,10 +1795,10 @@ export class MainForm {
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(selectChatPresetMsgs);
         this.gameScene.ui.selectPresetMsgs = selectChatPresetMsgs;
-        for (var i = 0; i < CommonMethods.ChatPresetMsgs.length; i++) {
+        for (var i = 0; i < CommonMethods.emojiMsgs.length; i++) {
             var option = document.createElement("option");
-            option.value = CommonMethods.ChatPresetMsgs[i];
-            option.text = `${i + 1}-${CommonMethods.ChatPresetMsgs[i]}`;
+            option.value = CommonMethods.emojiMsgs[i];
+            option.text = `${i + 1}-${CommonMethods.emojiMsgs[i]}`;
             selectChatPresetMsgs.appendChild(option);
         }
         selectChatPresetMsgs.addEventListener('change', () => {
@@ -1912,7 +1912,7 @@ export class MainForm {
 
         // btnReady
         if (!this.gameScene.ui.btnReady) {
-            let btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '就绪', () => this.btnReady_Click());
+            let btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '开始', () => this.btnReady_Click());
             this.gameScene.ui.btnReady = btnReady
             this.gameScene.ui.frameChat.appendChild(btnReady);
             btnReady.style.position = 'absolute';

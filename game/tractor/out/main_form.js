@@ -97,7 +97,7 @@ var MainForm = /** @class */ (function () {
             // this.btnSmallGames.setColor('gray')
             // this.groupSmallGames.setVisible(false);
         }
-        this.gameScene.ui.btnReady.innerHTML = (readyToStart ? "取消" : "就绪");
+        this.gameScene.ui.btnReady.innerHTML = (readyToStart ? "取消" : "开始");
         this.setStartLabels();
     };
     MainForm.prototype.PlayerToggleIsRobot = function (isRobot) {
@@ -883,7 +883,7 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.btnReady_Click = function () {
         if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden') || this.gameScene.ui.btnReady.classList.contains('disabled'))
             return;
-        //为防止以外连续点两下就绪按钮，造成重复发牌，点完一下就立即disable就绪按钮
+        //为防止以外连续点两下开始按钮，造成重复发牌，点完一下就立即disable开始按钮
         this.gameScene.ui.btnReady.hide();
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "");
     };
@@ -1640,10 +1640,10 @@ var MainForm = /** @class */ (function () {
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(selectChatPresetMsgs);
         this.gameScene.ui.selectPresetMsgs = selectChatPresetMsgs;
-        for (var i = 0; i < CommonMethods.ChatPresetMsgs.length; i++) {
+        for (var i = 0; i < CommonMethods.emojiMsgs.length; i++) {
             var option = document.createElement("option");
-            option.value = CommonMethods.ChatPresetMsgs[i];
-            option.text = "".concat(i + 1, "-").concat(CommonMethods.ChatPresetMsgs[i]);
+            option.value = CommonMethods.emojiMsgs[i];
+            option.text = "".concat(i + 1, "-").concat(CommonMethods.emojiMsgs[i]);
             selectChatPresetMsgs.appendChild(option);
         }
         selectChatPresetMsgs.addEventListener('change', function () {
@@ -1746,7 +1746,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.btnPig = btnPig;
         // btnReady
         if (!this.gameScene.ui.btnReady) {
-            var btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '就绪', function () { return _this.btnReady_Click(); });
+            var btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '开始', function () { return _this.btnReady_Click(); });
             this.gameScene.ui.btnReady = btnReady;
             this.gameScene.ui.frameChat.appendChild(btnReady);
             btnReady.style.position = 'absolute';

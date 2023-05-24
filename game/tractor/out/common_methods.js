@@ -519,8 +519,8 @@ export var CommonMethods = /** @class */ (function () {
         "嚎啕大哭：（",
         "能不能快点啊，兵贵神速！",
         "烟花",
-        "人心散了，队伍不好带啊……",
-        "有劳点击“就绪”继续游戏",
+        "额~不好意思，刚才卡了",
+        "有劳点击“开始”继续游戏",
         "有劳房主点击自己昵称，再点击“继续上盘牌局”",
     ];
     CommonMethods.emojiWarningIntervalInSec = 1;
@@ -544,16 +544,5 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.audioWin = "audiowin";
     CommonMethods.audioGameStart = "audioGameStart";
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
-    CommonMethods.ChatPresetMsgs = [
-        "这波操作，666！",
-        "亲，请注意细节",
-        "猴开心：）",
-        "嚎啕大哭：（",
-        "能不能快点啊，兵贵神速！",
-        "烟花",
-        "额~不好意思，刚才卡了",
-        "有劳点击“就绪”继续游戏",
-        "有劳房主点击自己昵称，再点击“继续上盘牌局”",
-    ];
     return CommonMethods;
 }());

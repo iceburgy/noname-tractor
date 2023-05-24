@@ -68,7 +68,7 @@ var TractorPlayer = /** @class */ (function () {
         }
     };
     TractorPlayer.prototype.NotifyGameState = function (gameState, notifyType) {
-        //bug修复：如果所有人都就绪了，然后来自服务器的新消息就绪人数既不是0又不是4（由于网络延迟导致有一人未就绪的来自服务器的消息滞后到达），那么不处理这条消息
+        //bug修复：如果所有人都开始了，然后来自服务器的新消息开始人数既不是0又不是4（由于网络延迟导致有一人未开始的来自服务器的消息滞后到达），那么不处理这条消息
         var isCurrentAllReady = CommonMethods.GetReadyCount(this.CurrentGameState.Players) == 4;
         var newReadyCount = CommonMethods.GetReadyCount(gameState.Players);
         if (isCurrentAllReady && 0 < newReadyCount && newReadyCount < 4) {
