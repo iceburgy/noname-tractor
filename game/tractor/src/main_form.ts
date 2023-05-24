@@ -1394,155 +1394,7 @@ export class MainForm {
         this.gameScene.ui.textAreaChatMsg.blur();
     }
 
-    //     private shortcutKeyDownEventhandler(event: KeyboardEvent) {
-    //         if (!event || !event.key || !this.sgDrawingHelper.IsPlayingGame || this.sgDrawingHelper.IsPlayingGame !== SGCSState.GameName) return;
-    //         if (!this.sgDrawingHelper.sgcsState.Dudes[this.sgDrawingHelper.myPlayerIndex].Enabled) return;
-    //         let ekey: string = event.key.toLowerCase();
-    //         if (!['arrowup', 'arrowleft', 'arrowright'].includes(ekey)) return;
-
-    //         let isUpdated = false;
-    //         switch (ekey) {
-    //             case 'arrowup':
-    //                 this.sgcsPlayer.PressUpKey();
-    //                 isUpdated = true;
-    //                 break;
-    //             case 'arrowleft':
-    //                 this.sgcsPlayer.PressLeftKey();
-    //                 isUpdated = true;
-    //                 break;
-    //             case 'arrowright':
-    //                 this.sgcsPlayer.PressRightKey();
-    //                 isUpdated = true;
-    //                 break;
-    //             default:
-    //                 break;
-    //         }
-    //         if (isUpdated && this.sgcsPlayer.PlayerId === this.tractorPlayer.MyOwnId) {
-    //             this.gameScene.sendMessageToServer(SGCSPlayer.SgcsPlayerUpdated_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.sgcsPlayer));
-    //         }
-    //     }
-
-    //     private shortcutKeyUpEventhandler(event: KeyboardEvent) {
-    //         if (!event || !event.key) return;
-    //         let ekey: string = event.key.toLowerCase();
-    //         if (this.sgDrawingHelper.IsPlayingGame === SGCSState.GameName) {
-    //             if (['arrowleft', 'arrowright'].includes(ekey)) {
-    //                 if (this.sgcsPlayer.PlayerId === this.tractorPlayer.MyOwnId && this.sgDrawingHelper.sgcsState.Dudes[this.sgDrawingHelper.myPlayerIndex].Enabled) {
-    //                     this.sgcsPlayer.ReleaseLeftOrRightKey();
-    //                     this.gameScene.sendMessageToServer(SGCSPlayer.SgcsPlayerUpdated_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.sgcsPlayer));
-    //                 }
-    //                 return;
-    //             }
-    //         }
-    //         if (this.gameScene.isReplayMode) {
-    //             if (this.gameScene.ui.inputFormWrapper) return;
-    //             event.preventDefault();
-    //             switch (ekey) {
-    //                 case 'arrowup':
-    //                     (this.gameScene as GameReplayScene).btnFirstTrick_Click();
-    //                     return;
-    //                 case 'arrowleft':
-    //                     (this.gameScene as GameReplayScene).btnPreviousTrick_Click();
-    //                     return;
-    //                 case 'arrowright':
-    //                     (this.gameScene as GameReplayScene).btnNextTrick_Click();
-    //                     return;
-    //                 case 'arrowdown':
-    //                     (this.gameScene as GameReplayScene).btnLastTrick_Click();
-    //                     return;
-    //                 case '0':
-    //                     (this.gameScene as GameReplayScene).btnFirstPersonView_Click();
-    //                     return;
-    //                 default:
-    //                     break;
-    //             }
-    //         } else {
-    //             if (ekey === 'escape') {
-    //                 if (this.sgDrawingHelper.IsPlayingGame) {
-    //                     switch (this.sgDrawingHelper.IsPlayingGame) {
-    //                         case SGCSState.GameName:
-    //                             this.sgDrawingHelper.hitBomb(this.sgDrawingHelper.players.children.entries[this.sgDrawingHelper.myPlayerIndex], undefined);
-    //                             break;
-    //                         case SGGBState.GameName:
-    //                             this.sgDrawingHelper.sggbState.GameAction = "quit";
-    //                             this.sgDrawingHelper.UpdateGobang();
-    //                             break;
-    //                         default:
-    //                             break;
-    //                     }
-    //                     this.sgDrawingHelper.destroyGame(2);
-    //                 }
-    //                 this.resetGameRoomUI();
-    //                 return;
-    //             }
-    //             if (this.chatForm && this.chatForm.getChildByID("textAreaMsg") === document.activeElement) {
-    //                 if (ekey === 'enter') {
-    //                     this.emojiSubmitEventhandler();
-    //                 }
-    //                 return;
-    //             }
-
-    //             switch (ekey) {
-    //                 case 'z':
-    //                     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver) return;
-    //                     this.btnReady_Click();
-    //                     return;
-    //                 case 's':
-    //                     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver) return;
-    //                     this.btnPig_Click();
-    //                     return;
-    //                 case 'r':
-    //                     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver) return;
-    //                     this.btnRobot_Click();
-    //                     return;
-    //                 // case 'c':
-    //                 //     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || !this.sgDrawingHelper.gameOver) return;
-    //                 //     this.sgDrawingHelper.restartGame();
-    //                 //     return;
-    //                 // case 'p':
-    //                 //     if (this.gameScene.ui.inputFormWrapper || this.tractorPlayer.isObserver || !this.sgDrawingHelper.IsPlayingGame || this.sgDrawingHelper.gameOver) return;
-    //                 //     this.sgDrawingHelper.pauseGame();
-    //                 //     return;
-    //                 default:
-    //                     break;
-    //             }
-
-    //             if ('1' <= ekey && ekey <= CommonMethods.emojiMsgs.length.toString() && !this.gameScene.ui.inputFormWrapper) {
-    //                 let selectPresetMsgs = this.chatForm.getChildByID("selectPresetMsgs");
-    //                 let prevSelection = selectPresetMsgs.selectedIndex;
-    //                 let emojiType = parseInt(ekey) - 1;
-    //                 if (emojiType !== prevSelection) {
-    //                     selectPresetMsgs.selectedIndex = emojiType;
-    //                 }
-    //                 let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
-    //                 let msgString = CommonMethods.emojiMsgs[emojiType]
-    //                 let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-    //                 this.sendEmojiWithCheck(args)
-    //             }
-    //         }
-    //     }
-
     private sendEmojiWithCheck(args: (string | number)[]) {
-        // if ((this.sgDrawingHelper.hiddenEffects[args[2]] || this.sgDrawingHelper.hiddenGames[args[2]])) {
-        //     if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) &&
-        //         (SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing)) {
-        //         this.appendChatMsg("游戏中途不允许发隐藏技扰乱视听");
-        //         return;
-        //     }
-        //     if (this.tractorPlayer.isObserver) {
-        //         this.appendChatMsg("旁观玩家不能发动隐藏技");
-        //         return;
-        //     }
-        //     if (this.sgDrawingHelper.hiddenEffectImages &&
-        //         this.sgDrawingHelper.hiddenEffectImages.length > 0 &&
-        //         this.sgDrawingHelper.hiddenEffectImages[0].visible ||
-        //         this.sgDrawingHelper.hiddenGamesImages &&
-        //         this.sgDrawingHelper.hiddenGamesImages.length > 0 &&
-        //         this.sgDrawingHelper.hiddenGamesImages[0].visible) {
-        //         this.appendChatMsg(CommonMethods.hiddenEffectsWarningMsg);
-        //         return;
-        //     }
-        // }
         if (!this.isSendEmojiEnabled) {
             this.appendChatMsg(CommonMethods.emojiWarningMsg);
             return;
@@ -2363,6 +2215,7 @@ export class MainForm {
 
             if (keyCode === 27) {
                 this.resetGameRoomUI();
+                return;
             }
             if (this.gameScene.isReplayMode) return;
 
@@ -2373,10 +2226,7 @@ export class MainForm {
                 return;
             }
 
-            let ccTxtManual: any = document.getElementById("txtManual");
-            if (e.target === ccTxtManual) {
-                return;
-            }
+            if (this.gameScene.ui.inputFormWrapper) return;
 
             // 1 - 9: 49 - 57
             if (49 <= keyCode && keyCode <= 49 + CommonMethods.emojiMsgs.length - 1) {
