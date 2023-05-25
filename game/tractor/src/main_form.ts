@@ -137,6 +137,7 @@ export class MainForm {
             if (!this.tractorPlayer.isObserver) {
                 this.gameScene.ui.btnReady.show();
                 this.gameScene.ui.btnReady.classList.remove('disabled');
+                this.gameScene.ui.btnReady.classList.add('pointerdiv');
                 this.gameScene.ui.btnExitAndObserve.show();
             }
 
@@ -145,6 +146,7 @@ export class MainForm {
             // this.btnSmallGames.setColor('white')
         } else {
             this.gameScene.ui.btnReady.classList.add('disabled');
+            this.gameScene.ui.btnReady.classList.remove('pointerdiv');
 
             // small games
             // this.btnSmallGames.disableInteractive()
@@ -206,9 +208,11 @@ export class MainForm {
 
         if (this.tractorPlayer.isObserver) {
             this.gameScene.ui.btnReady.hide();
+            this.gameScene.ui.btnReady.classList.remove('pointerdiv');
             this.gameScene.ui.btnRobot.hide();
         } else {
             this.gameScene.ui.btnReady.show();
+            this.gameScene.ui.btnReady.classList.add('pointerdiv');
             this.gameScene.ui.btnRobot.show();
         }
 
@@ -651,6 +655,7 @@ export class MainForm {
         this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {}
         this.gameScene.game.timerCurrent = 0;
         this.gameScene.ui.btnPig.hide();
+        this.gameScene.ui.btnPig.classList.remove('pointerdiv');
 
         this.init();
     }
@@ -988,7 +993,8 @@ export class MainForm {
     private btnReady_Click() {
         if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden') || this.gameScene.ui.btnReady.classList.contains('disabled')) return;
         //为防止以外连续点两下开始按钮，造成重复发牌，点完一下就立即disable开始按钮
-        this.gameScene.ui.btnReady.hide()
+        this.gameScene.ui.btnReady.classList.add('disabled');
+        this.gameScene.ui.btnReady.classList.remove('pointerdiv');
 
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
     }
@@ -1545,6 +1551,7 @@ export class MainForm {
             if (this.SelectedCards.length == 8) {
                 //扣牌,所以擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
 
                 this.SelectedCards.forEach(card => {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
@@ -1562,6 +1569,7 @@ export class MainForm {
             if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
 
                 this.SelectedCards.forEach(card => {
                     this.tractorPlayer.CurrentPoker.RemoveCard(card);
@@ -1574,6 +1582,7 @@ export class MainForm {
             else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
             }
         }
@@ -1786,11 +1795,11 @@ export class MainForm {
 
         let divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.height = 'calc(50% - 20px)';
+        divChatHistory.style.height = 'calc(60% - 20px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
 
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.top = 'calc(70%)';
+        selectChatPresetMsgs.style.top = 'calc(80%)';
         selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(selectChatPresetMsgs);
@@ -1809,7 +1818,8 @@ export class MainForm {
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
         textAreaChatMsg.placeholder = `消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，快捷消息的快捷键为对应的数字键`;
-        textAreaChatMsg.style.top = 'calc(70% + 40px)';
+        textAreaChatMsg.style.resize = 'none';
+        textAreaChatMsg.style.top = 'calc(80% + 40px)';
         textAreaChatMsg.style.bottom = 'calc(50px)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);
@@ -1896,7 +1906,7 @@ export class MainForm {
         this.gameScene.ui.roomOwnerText = roomOwnerText;
 
         // btnPig
-        var btnPig = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '确定', () => this.btnPig_Click());
+        var btnPig = this.gameScene.ui.create.div('.menubutton.highlight.large', '确定', () => this.btnPig_Click());
         btnPig.style.width = 'calc(60px)';
         btnPig.style.height = 'calc(30px)';
         btnPig.style.position = 'absolute';
@@ -1912,11 +1922,12 @@ export class MainForm {
 
         // btnReady
         if (!this.gameScene.ui.btnReady) {
-            let btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '开始', () => this.btnReady_Click());
+            let btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large', '开始', () => this.btnReady_Click());
             this.gameScene.ui.btnReady = btnReady
             this.gameScene.ui.frameChat.appendChild(btnReady);
             btnReady.style.position = 'absolute';
 
+            btnReady.style.width = `calc(25%)`;
             btnReady.style.left = `calc(50%)`;
             btnReady.style.transform = `translate(-50%, 0%)`;
             btnReady.style.transition = `0s`;
@@ -1925,7 +1936,6 @@ export class MainForm {
             btnReady.style.fontFamily = 'serif';
             btnReady.style.fontSize = '20px';
         }
-        let midBtnWid = this.gameScene.ui.btnReady.clientWidth;
         // btnRobot
         if (!this.gameScene.ui.btnRobot) {
             let btnRobot = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '托管', () => this.btnRobot_Click());
@@ -1933,8 +1943,8 @@ export class MainForm {
             this.gameScene.ui.frameChat.appendChild(btnRobot);
             btnRobot.style.position = 'absolute';
 
-            btnRobot.style.left = `calc((50% - ${midBtnWid / 2}px) / 2)`;
-            btnRobot.style.transform = `translate(-50%, 0%)`;
+            btnRobot.style.width = `calc(25%)`;
+            btnRobot.style.left = '0px';
             btnRobot.style.transition = `0s`;
 
             btnRobot.style.bottom = `0px`;
@@ -1948,8 +1958,8 @@ export class MainForm {
             this.gameScene.ui.frameChat.appendChild(btnShowLastTrick);
             btnShowLastTrick.style.position = 'absolute';
 
-            btnShowLastTrick.style.right = `calc((50% - ${midBtnWid / 2}px) / 2)`;
-            btnShowLastTrick.style.transform = `translate(50%, 0%)`;
+            btnShowLastTrick.style.width = `calc(25%)`;
+            btnShowLastTrick.style.right = '0px';
             btnShowLastTrick.style.transition = `0s`;
 
             btnShowLastTrick.style.bottom = `0px`;

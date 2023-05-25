@@ -84,6 +84,7 @@ var MainForm = /** @class */ (function () {
             if (!this.tractorPlayer.isObserver) {
                 this.gameScene.ui.btnReady.show();
                 this.gameScene.ui.btnReady.classList.remove('disabled');
+                this.gameScene.ui.btnReady.classList.add('pointerdiv');
                 this.gameScene.ui.btnExitAndObserve.show();
             }
             // small games
@@ -92,6 +93,7 @@ var MainForm = /** @class */ (function () {
         }
         else {
             this.gameScene.ui.btnReady.classList.add('disabled');
+            this.gameScene.ui.btnReady.classList.remove('pointerdiv');
             // small games
             // this.btnSmallGames.disableInteractive()
             // this.btnSmallGames.setColor('gray')
@@ -145,10 +147,12 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.btnShowLastTrick.show();
         if (this.tractorPlayer.isObserver) {
             this.gameScene.ui.btnReady.hide();
+            this.gameScene.ui.btnReady.classList.remove('pointerdiv');
             this.gameScene.ui.btnRobot.hide();
         }
         else {
             this.gameScene.ui.btnReady.show();
+            this.gameScene.ui.btnReady.classList.add('pointerdiv');
             this.gameScene.ui.btnRobot.show();
         }
         if (this.tractorPlayer.isObserver) {
@@ -569,6 +573,7 @@ var MainForm = /** @class */ (function () {
         this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {};
         this.gameScene.game.timerCurrent = 0;
         this.gameScene.ui.btnPig.hide();
+        this.gameScene.ui.btnPig.classList.remove('pointerdiv');
         this.init();
     };
     MainForm.prototype.DiscardingLast8 = function () {
@@ -884,7 +889,8 @@ var MainForm = /** @class */ (function () {
         if (!this.gameScene.ui.btnReady || this.gameScene.ui.btnReady.classList.contains('hidden') || this.gameScene.ui.btnReady.classList.contains('disabled'))
             return;
         //为防止以外连续点两下开始按钮，造成重复发牌，点完一下就立即disable开始按钮
-        this.gameScene.ui.btnReady.hide();
+        this.gameScene.ui.btnReady.classList.add('disabled');
+        this.gameScene.ui.btnReady.classList.remove('pointerdiv');
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "");
     };
     MainForm.prototype.btnRobot_Click = function () {
@@ -1416,6 +1422,7 @@ var MainForm = /** @class */ (function () {
             if (this.SelectedCards.length == 8) {
                 //扣牌,所以擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.SelectedCards.forEach(function (card) {
                     _this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 });
@@ -1433,6 +1440,7 @@ var MainForm = /** @class */ (function () {
             if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.SelectedCards.forEach(function (card) {
                     _this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 });
@@ -1443,6 +1451,7 @@ var MainForm = /** @class */ (function () {
             else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards));
             }
         }
@@ -1632,10 +1641,10 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
         var divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.height = 'calc(50% - 20px)';
+        divChatHistory.style.height = 'calc(60% - 20px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.top = 'calc(70%)';
+        selectChatPresetMsgs.style.top = 'calc(80%)';
         selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(selectChatPresetMsgs);
@@ -1653,7 +1662,8 @@ var MainForm = /** @class */ (function () {
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
         textAreaChatMsg.placeholder = "\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7".concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
-        textAreaChatMsg.style.top = 'calc(70% + 40px)';
+        textAreaChatMsg.style.resize = 'none';
+        textAreaChatMsg.style.top = 'calc(80% + 40px)';
         textAreaChatMsg.style.bottom = 'calc(50px)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);
@@ -1732,7 +1742,7 @@ var MainForm = /** @class */ (function () {
         roomOwnerText.style.top = "calc(30px)";
         this.gameScene.ui.roomOwnerText = roomOwnerText;
         // btnPig
-        var btnPig = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '确定', function () { return _this.btnPig_Click(); });
+        var btnPig = this.gameScene.ui.create.div('.menubutton.highlight.large', '确定', function () { return _this.btnPig_Click(); });
         btnPig.style.width = 'calc(60px)';
         btnPig.style.height = 'calc(30px)';
         btnPig.style.position = 'absolute';
@@ -1746,10 +1756,11 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.btnPig = btnPig;
         // btnReady
         if (!this.gameScene.ui.btnReady) {
-            var btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '开始', function () { return _this.btnReady_Click(); });
+            var btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large', '开始', function () { return _this.btnReady_Click(); });
             this.gameScene.ui.btnReady = btnReady;
             this.gameScene.ui.frameChat.appendChild(btnReady);
             btnReady.style.position = 'absolute';
+            btnReady.style.width = "calc(25%)";
             btnReady.style.left = "calc(50%)";
             btnReady.style.transform = "translate(-50%, 0%)";
             btnReady.style.transition = "0s";
@@ -1757,15 +1768,14 @@ var MainForm = /** @class */ (function () {
             btnReady.style.fontFamily = 'serif';
             btnReady.style.fontSize = '20px';
         }
-        var midBtnWid = this.gameScene.ui.btnReady.clientWidth;
         // btnRobot
         if (!this.gameScene.ui.btnRobot) {
             var btnRobot = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '托管', function () { return _this.btnRobot_Click(); });
             this.gameScene.ui.btnRobot = btnRobot;
             this.gameScene.ui.frameChat.appendChild(btnRobot);
             btnRobot.style.position = 'absolute';
-            btnRobot.style.left = "calc((50% - ".concat(midBtnWid / 2, "px) / 2)");
-            btnRobot.style.transform = "translate(-50%, 0%)";
+            btnRobot.style.width = "calc(25%)";
+            btnRobot.style.left = '0px';
             btnRobot.style.transition = "0s";
             btnRobot.style.bottom = "0px";
             btnRobot.style.fontFamily = 'serif';
@@ -1777,8 +1787,8 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnShowLastTrick = btnShowLastTrick;
             this.gameScene.ui.frameChat.appendChild(btnShowLastTrick);
             btnShowLastTrick.style.position = 'absolute';
-            btnShowLastTrick.style.right = "calc((50% - ".concat(midBtnWid / 2, "px) / 2)");
-            btnShowLastTrick.style.transform = "translate(50%, 0%)";
+            btnShowLastTrick.style.width = "calc(25%)";
+            btnShowLastTrick.style.right = '0px';
             btnShowLastTrick.style.transition = "0s";
             btnShowLastTrick.style.bottom = "0px";
             btnShowLastTrick.style.fontFamily = 'serif';

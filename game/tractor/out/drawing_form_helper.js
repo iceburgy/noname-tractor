@@ -52,16 +52,19 @@ var DrawingFormHelper = /** @class */ (function () {
                         selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump)) {
                 if (this.mainForm.gameScene.ui.btnPig && !this.mainForm.gameScene.ui.btnPig.classList.contains('hidden')) {
                     this.mainForm.gameScene.ui.btnPig.classList.remove('disabled');
+                    this.mainForm.gameScene.ui.btnPig.classList.add('pointerdiv');
                 }
             }
             else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
                 && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
                 this.mainForm.gameScene.ui.btnPig.classList.add('disabled');
+                this.mainForm.gameScene.ui.btnPig.classList.remove('pointerdiv');
             }
         }
         else if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing
             && this.mainForm.tractorPlayer.CurrentTrickState.NextPlayer() == this.mainForm.tractorPlayer.PlayerId)) {
             this.mainForm.gameScene.ui.btnPig.classList.add('disabled');
+            this.mainForm.gameScene.ui.btnPig.classList.remove('pointerdiv');
         }
         this.My8CardsIsReady();
     };
@@ -78,9 +81,11 @@ var DrawingFormHelper = /** @class */ (function () {
             }
             if (total == 8) {
                 this.mainForm.gameScene.ui.btnPig.classList.remove('disabled');
+                this.mainForm.gameScene.ui.btnPig.classList.add('pointerdiv');
             }
             else {
                 this.mainForm.gameScene.ui.btnPig.classList.add('disabled');
+                this.mainForm.gameScene.ui.btnPig.classList.remove('pointerdiv');
             }
         }
     };

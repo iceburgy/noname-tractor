@@ -44,7 +44,7 @@ var GameScene = /** @class */ (function () {
         this.overridingLabelAnims = [
             ["", ""],
             ["", ""],
-            ["effect_qinglongyanyuedao", undefined],
+            ["effect_qinggangjian", undefined],
             ["effect_shoujidonghua", "play3"],
             ["effect_shoujidonghua", "play5"]
         ];

@@ -270,6 +270,7 @@ var TractorPlayer = /** @class */ (function () {
         if (!this.isObserver && isMeNextPlayer) {
             this.mainForm.gameScene.ui.btnPig.show();
             this.mainForm.gameScene.ui.btnPig.classList.add("disabled");
+            this.mainForm.gameScene.ui.btnPig.classList.remove('pointerdiv');
         }
         // 出牌中
         if (this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.Playing) {
