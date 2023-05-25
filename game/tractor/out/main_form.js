@@ -1743,6 +1743,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.roomOwnerText = roomOwnerText;
         // btnPig
         var btnPig = this.gameScene.ui.create.div('.menubutton.highlight.large', '确定', function () { return _this.btnPig_Click(); });
+        btnPig.style['touch-action'] = 'manipulation';
         btnPig.style.width = 'calc(60px)';
         btnPig.style.height = 'calc(30px)';
         btnPig.style.position = 'absolute';
@@ -2014,6 +2015,7 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.drawGameMe = function () {
         this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
+        this.gameScene.ui.gameMe.style.zIndex = CommonMethods.zIndexGameMe;
         var skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
         var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
         var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
@@ -2030,6 +2032,7 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.CreatePlayer = function (pos, playerId, parentNode) {
         var playerDiv = this.gameScene.ui.create.player(parentNode);
+        playerDiv.style['touch-action'] = 'manipulation';
         playerDiv.setAttribute('data-position', pos);
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';

@@ -502,6 +502,7 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.wsErrorType_Insecure = "insecure";
     CommonMethods.chatMaxLength = 100;
     CommonMethods.danmuMaxLength = 30;
+    CommonMethods.zIndexGameMe = -1;
     CommonMethods.zIndexDanmu = 10;
     CommonMethods.zIndexFrameChat = 11;
     CommonMethods.zIndexSettingsForm = 100;

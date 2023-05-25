@@ -49,6 +49,7 @@ export class CommonMethods {
     public static chatMaxLength = 100;
     public static danmuMaxLength = 30;
 
+    public static zIndexGameMe = -1;
     public static zIndexDanmu = 10;
     public static zIndexFrameChat = 11;
     public static zIndexSettingsForm = 100;
