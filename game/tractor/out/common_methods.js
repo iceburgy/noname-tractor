@@ -448,9 +448,6 @@ export var CommonMethods = /** @class */ (function () {
             num++;
         return num;
     };
-    CommonMethods.isMobile = function () {
-        return /Mobi|Android/i.test(navigator.userAgent);
-    };
     CommonMethods.isTouchDevice = function () {
         return ('ontouchstart' in window) || (window.matchMedia("(pointer: coarse)").matches);
     };

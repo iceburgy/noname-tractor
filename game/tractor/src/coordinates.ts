@@ -246,13 +246,13 @@ export class Coordinates {
         this.showedCardsPositions = [
             { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[0].y} + ${this.cardHeight + 40}px` },
             { x: `${this.playerSkinPositions[1].x} + 180px`, y: `${this.playerSkinPositions[1].y}` },
-            { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + ${(CommonMethods.isMobile() ? 120 : 160)}px` },
+            { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + 160px` },
             { x: `${this.playerSkinPositions[3].x} + 180px`, y: `${this.playerSkinPositions[3].y}` },
         ]
         this.showedCardsPositionsAni = [
             { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[0].y} + ${this.cardHeight + 40}px` },
             { x: `${this.playerSkinPositions[1].x} + 180px`, y: `${this.playerSkinPositions[1].y}` },
-            { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + ${(CommonMethods.isMobile() ? 120 : 160)}px` },
+            { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + 160px` },
             { x: `${this.playerSkinPositions[3].x} + 180px`, y: `${this.playerSkinPositions[3].y}` },
         ]
         this.trumpMadeCardsScale = 2 / 3
@@ -296,7 +296,7 @@ export class Coordinates {
         this.replayBarPosition = { x: this.screenWid * 0.65, y: 10 }
 
         // ending UI
-        this.last8Position = { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + ${(CommonMethods.isMobile() ? 100 : 140)}px` }
+        this.last8Position = { x: this.playerSkinPositions[2].x, y: `${this.playerSkinPositions[2].y} + 140px` }
         this.scoreCardsPosition = { x: this.last8Position.x, y: `${this.last8Position.y} + ${this.cardHeight + 30}px` }
         this.winPointsPosition = { x: this.last8Position.x, y: `${this.scoreCardsPosition.y} + ${this.cardHeight + 30}px` }
         this.last8PointsPosition = { x: this.last8Position.x, y: `${this.winPointsPosition.y} + 30px` }

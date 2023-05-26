@@ -147,6 +147,7 @@ export class MainForm {
         } else {
             this.gameScene.ui.btnReady.classList.add('disabled');
             this.gameScene.ui.btnReady.classList.remove('pointerdiv');
+            this.gameScene.ui.btnExitAndObserve.hide()
 
             // small games
             // this.btnSmallGames.disableInteractive()
@@ -1907,7 +1908,6 @@ export class MainForm {
 
         // btnPig
         var btnPig = this.gameScene.ui.create.div('.menubutton.highlight.large', '确定', () => this.btnPig_Click());
-        btnPig.style['touch-action'] = 'manipulation';
         btnPig.style.width = 'calc(60px)';
         btnPig.style.height = 'calc(30px)';
         btnPig.style.position = 'absolute';
@@ -2212,7 +2212,6 @@ export class MainForm {
 
     private CreatePlayer(pos: number, playerId: string, parentNode: any) {
         let playerDiv = this.gameScene.ui.create.player(parentNode);
-        playerDiv.style['touch-action'] = 'manipulation';
         playerDiv.setAttribute('data-position', pos);
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';

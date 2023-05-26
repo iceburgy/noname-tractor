@@ -1,4 +1,3 @@
-import { CommonMethods } from "./common_methods.js";
 var chatWidth = 240;
 var screenWidthReal = document.documentElement.clientWidth;
 var screenWidth = screenWidthReal - chatWidth;
@@ -111,13 +110,13 @@ var Coordinates = /** @class */ (function () {
         this.showedCardsPositions = [
             { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[0].y, " + ").concat(this.cardHeight + 40, "px") },
             { x: "".concat(this.playerSkinPositions[1].x, " + 180px"), y: "".concat(this.playerSkinPositions[1].y) },
-            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + ").concat((CommonMethods.isMobile() ? 120 : 160), "px") },
+            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + 160px") },
             { x: "".concat(this.playerSkinPositions[3].x, " + 180px"), y: "".concat(this.playerSkinPositions[3].y) },
         ];
         this.showedCardsPositionsAni = [
             { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[0].y, " + ").concat(this.cardHeight + 40, "px") },
             { x: "".concat(this.playerSkinPositions[1].x, " + 180px"), y: "".concat(this.playerSkinPositions[1].y) },
-            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + ").concat((CommonMethods.isMobile() ? 120 : 160), "px") },
+            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + 160px") },
             { x: "".concat(this.playerSkinPositions[3].x, " + 180px"), y: "".concat(this.playerSkinPositions[3].y) },
         ];
         this.trumpMadeCardsScale = 2 / 3;
@@ -156,7 +155,7 @@ var Coordinates = /** @class */ (function () {
         // sidebar for replay
         this.replayBarPosition = { x: this.screenWid * 0.65, y: 10 };
         // ending UI
-        this.last8Position = { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + ").concat((CommonMethods.isMobile() ? 100 : 140), "px") };
+        this.last8Position = { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + 140px") };
         this.scoreCardsPosition = { x: this.last8Position.x, y: "".concat(this.last8Position.y, " + ").concat(this.cardHeight + 30, "px") };
         this.winPointsPosition = { x: this.last8Position.x, y: "".concat(this.scoreCardsPosition.y, " + ").concat(this.cardHeight + 30, "px") };
         this.last8PointsPosition = { x: this.last8Position.x, y: "".concat(this.winPointsPosition.y, " + 30px") };

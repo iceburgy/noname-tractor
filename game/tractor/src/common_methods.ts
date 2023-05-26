@@ -563,10 +563,6 @@ export class CommonMethods {
         return num;
     }
 
-    public static isMobile(): boolean {
-        return /Mobi|Android/i.test(navigator.userAgent)
-    }
-
     public static isTouchDevice(): boolean {
         return ('ontouchstart' in window) || (window.matchMedia("(pointer: coarse)").matches);
     }

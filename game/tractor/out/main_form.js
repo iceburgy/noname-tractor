@@ -94,6 +94,7 @@ var MainForm = /** @class */ (function () {
         else {
             this.gameScene.ui.btnReady.classList.add('disabled');
             this.gameScene.ui.btnReady.classList.remove('pointerdiv');
+            this.gameScene.ui.btnExitAndObserve.hide();
             // small games
             // this.btnSmallGames.disableInteractive()
             // this.btnSmallGames.setColor('gray')
@@ -1743,7 +1744,6 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.roomOwnerText = roomOwnerText;
         // btnPig
         var btnPig = this.gameScene.ui.create.div('.menubutton.highlight.large', '确定', function () { return _this.btnPig_Click(); });
-        btnPig.style['touch-action'] = 'manipulation';
         btnPig.style.width = 'calc(60px)';
         btnPig.style.height = 'calc(30px)';
         btnPig.style.position = 'absolute';
@@ -2032,7 +2032,6 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.CreatePlayer = function (pos, playerId, parentNode) {
         var playerDiv = this.gameScene.ui.create.player(parentNode);
-        playerDiv.style['touch-action'] = 'manipulation';
         playerDiv.setAttribute('data-position', pos);
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
