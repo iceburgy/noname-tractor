@@ -780,7 +780,7 @@ var MainForm = /** @class */ (function () {
                         var toAddImage = this.gameScene.cardImages[i];
                         if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                             toAddImage.setAttribute("status", "up");
-                            toAddImage.style.transform = "translate(0px, -30px)";
+                            toAddImage.style.transform = "translate(0px, -".concat(CommonMethods.cardTiltHeight, "px)");
                         }
                     }
                 }
@@ -955,8 +955,6 @@ var MainForm = /** @class */ (function () {
         }
         if (!gs.ui.inputFormWrapper)
             return;
-        var txtPlayerEmail = document.getElementById("txtPlayerEmail");
-        txtPlayerEmail.value = gs.lib.config.playerEmail ? gs.lib.config.playerEmail : "";
         var txtMaxReplays = document.getElementById("txtMaxReplays");
         txtMaxReplays.value = IDBHelper.maxReplays;
         txtMaxReplays.oninput = function () {

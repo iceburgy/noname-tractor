@@ -343,10 +343,12 @@ export class DrawingFormHelper {
 
         let parent = this.mainForm.gameScene.ui.frameGameRoom;
         if (this.handcardPosition === 1) parent = this.mainForm.gameScene.ui.handZone;
+        let isAnimation = false;
         if (!image) {
             // 不是出牌，则需画牌
             let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumber]
-            image = this.createCard(parent, uiCardNumber, this.handcardScale);
+            isAnimation = true;
+            image = this.createCard(parent, uiCardNumber, this.handcardScale, x, y);
             image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
             image.setAttribute('serverCardNumber', serverCardNumber);
             image.node.seqnum.style.position = "absolute";
@@ -424,8 +426,10 @@ export class DrawingFormHelper {
         var trumpMadeCard = (this.mainForm.tractorPlayer.CurrentHandState.Trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
         switch (this.handcardPosition) {
             case 1:
-                image.style.left = `calc(${x})`;
-                image.style.bottom = `calc(${y})`;
+                if (!isAnimation) {
+                    image.style.left = `calc(${x})`;
+                    image.style.bottom = `calc(${y})`;
+                }
                 break;
             case 2:
                 image.style.right = `calc(${x})`;
@@ -476,7 +480,7 @@ export class DrawingFormHelper {
             trumpMadeCard == serverCardNumber &&
             (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished)) {
             if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker > SuitEnums.TrumpExposingPoker.SingleRank) {
-                image.style.transform = `translate(0px, -30px)`;
+                image.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}px)`;
                 image.setAttribute('status', "up");
             } else {
                 let lifted: boolean = false
@@ -487,7 +491,7 @@ export class DrawingFormHelper {
                     }
                 }
                 if (!lifted) {
-                    image.style.transform = `translate(0px, -30px)`;
+                    image.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}px)`;
                     image.setAttribute('status', "up");
                 }
             }
@@ -502,7 +506,7 @@ export class DrawingFormHelper {
         if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) &&
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] &&
             (image.data === null || !image.getAttribute('status') || image.getAttribute('status') === "down")) {
-            image.style.transform = `translate(0px, -30px)`;
+            image.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}px)`;
             image.setAttribute('status', "up");
         }
         if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) &&
@@ -561,12 +565,24 @@ export class DrawingFormHelper {
         this.mainForm.gameScene.cardImages = newCIs;
     }
 
-    private createCard(position: any, uiCardNumber: number, hcs: number): any {
+    private createCard(position: any, uiCardNumber: number, hcs: number, x?: string, y?: string): any {
         var tractorCard = this.mainForm.gameScene.ui.create.div('.tractorCard');
         if (position === this.mainForm.gameScene.ui.handZone && position.childNodes.length > this.mainForm.cardsOrderNumber) {
             position.insertBefore(tractorCard, position.childNodes[this.mainForm.cardsOrderNumber]);
         } else {
             position.appendChild(tractorCard);
+        }
+
+        if (position === this.mainForm.gameScene.ui.handZone && x !== undefined && y !== undefined) {
+            tractorCard.style.left = `calc(${x})`;
+            tractorCard.style.bottom = `calc(${CommonMethods.cardTiltHeight}px)`;
+            tractorCard.style.opacity = 0.1;
+
+            setTimeout(() => {
+                tractorCard.style.left = `calc(${x})`;
+                tractorCard.style.bottom = `calc(${y})`;
+                tractorCard.style.opacity = 1;
+            }, 100);
         }
 
         tractorCard.node = {
@@ -594,7 +610,7 @@ export class DrawingFormHelper {
         }
         if (!image || !image.getAttribute("status") || image.getAttribute("status") === "down") {
             image.setAttribute("status", "up");
-            image.style.transform = `translate(0px, -30px)`;
+            image.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}px)`;
             this.mainForm.myCardIsReady[parseInt(image.getAttribute("cardsOrderNumber"))] = true
             this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
             this.validateSelectedCards();
@@ -810,7 +826,7 @@ export class DrawingFormHelper {
                 //将选定的牌向上提升 via gameScene.cardImages
                 if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                     toAddImage.setAttribute("status", "up");
-                    toAddImage.style.transform = `translate(0px, -30px)`;
+                    toAddImage.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}0px)`;
                 }
             } else if (toAddImage && toAddImage.getAttribute("status") && toAddImage.getAttribute("status") === "up") {
                 toAddImage.setAttribute("status", "down");

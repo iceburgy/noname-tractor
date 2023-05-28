@@ -883,7 +883,7 @@ export class MainForm {
                         let toAddImage = this.gameScene.cardImages[i] as any;
                         if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                             toAddImage.setAttribute("status", "up");
-                            toAddImage.style.transform = `translate(0px, -30px)`;
+                            toAddImage.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}px)`;
                         }
                     }
                 }
@@ -1063,10 +1063,6 @@ export class MainForm {
             return;
         }
         if (!gs.ui.inputFormWrapper) return;
-
-
-        let txtPlayerEmail: any = document.getElementById("txtPlayerEmail")
-        txtPlayerEmail.value = gs.lib.config.playerEmail ? gs.lib.config.playerEmail : "";
 
         let txtMaxReplays: any = document.getElementById("txtMaxReplays")
         txtMaxReplays.value = IDBHelper.maxReplays

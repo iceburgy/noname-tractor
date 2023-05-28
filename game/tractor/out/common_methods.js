@@ -563,5 +563,6 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
     CommonMethods.classIsSuiteAvail = "classIsSuiteAvail";
     CommonMethods.classCardProcessed = "classCardProcessed";
+    CommonMethods.cardTiltHeight = 30;
     return CommonMethods;
 }());

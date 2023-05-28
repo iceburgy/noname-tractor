@@ -100,6 +100,7 @@ export class CommonMethods {
     public static classIsSuiteAvail = "classIsSuiteAvail";
 
     public static classCardProcessed = "classCardProcessed";
+    public static cardTiltHeight = 30;
 
     constructor() {
     }
