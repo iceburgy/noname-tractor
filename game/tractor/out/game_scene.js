@@ -27,6 +27,10 @@ var GameScene = /** @class */ (function () {
         // // this.pokerTableChairImg = []
         // // this.pokerTableChairNames = []
         this.cardImages = [];
+        this.cardServerNumToImage = {};
+        for (var i = 0; i < 54; i++) {
+            this.cardServerNumToImage[i] = [];
+        }
         this.cardImageSequence = [];
         this.toolbarImages = [];
         this.sidebarImages = [];

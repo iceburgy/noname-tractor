@@ -216,12 +216,31 @@ export var CommonMethods = /** @class */ (function () {
         }
         return res;
     };
-    // public static string GetSuitString(int a)
-    // {
-    //     int suitInt = GetSuit(a);
-    //     Suit suit = (Suit)suitInt;
-    //     return suit.ToString();
-    // }
+    /// <summary>
+    ///     得到一个牌的花色
+    /// </summary>
+    /// <param name="a">牌值</param>
+    /// <returns>花色</returns>
+    CommonMethods.GetSuit = function (a) {
+        if (a >= 0 && a < 13) {
+            return 1;
+        }
+        if (a >= 13 && a < 26) {
+            return 2;
+        }
+        if (a >= 26 && a < 39) {
+            return 3;
+        }
+        if (a >= 39 && a < 52) {
+            return 4;
+        }
+        return 5;
+    };
+    CommonMethods.GetSuitString = function (a) {
+        var suitInt = CommonMethods.GetSuit(a);
+        var suit = suitInt;
+        return SuitEnums.NumberToSuit[suit];
+    };
     CommonMethods.GetNumberString = function (a) {
         if (a == 52) {
             return "Small";
@@ -542,5 +561,6 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.audioWin = "audiowin";
     CommonMethods.audioGameStart = "audioGameStart";
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
+    CommonMethods.classCardProcessed = "classCardProcessed";
     return CommonMethods;
 }());

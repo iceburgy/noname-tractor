@@ -1107,8 +1107,8 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 						ui.mebg = ui.create.div('#mebg', ui.arena);
 						ui.me = decadeUI.dialog.create('hand-zone', ui.frameGameRoom);
-						ui.handcards1Container = decadeUI.dialog.create('hand-cards', ui.me);
-						ui.handcards2Container = ui.create.div('#handcards2', ui.me);
+						// ui.handcards1Container = decadeUI.dialog.create('hand-cards', ui.me);
+						// ui.handcards2Container = ui.create.div('#handcards2', ui.me);
 						ui.arena.classList.add('decadeUI');
 						ui.arena.classList.remove('nome');
 						// var equipSolts  = ui.equipSolts = decadeUI.dialog.create('equips-zone', ui.arena);
@@ -1168,31 +1168,31 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						decadeUI.resizeSensor.create(ui.me, decadeUI.layout.onResize);
 						decadeUI.layout.onResize();
 
-						if (lib.config.mousewheel && !lib.config.touchscreen) {
-							ui.handcards1Container.onmousewheel = ui.click.mousewheel;
-							ui.handcards2Container.onmousewheel = ui.click.mousewheel;
-						}
+						// if (lib.config.mousewheel && !lib.config.touchscreen) {
+						// 	ui.handcards1Container.onmousewheel = ui.click.mousewheel;
+						// 	ui.handcards2Container.onmousewheel = ui.click.mousewheel;
+						// }
 
-						ui.handcards1Container.ontouchstart = ui.click.touchStart;
-						ui.handcards2Container.ontouchstart = ui.click.touchStart;
-						ui.handcards1Container.ontouchmove = ui.click.touchScroll;
-						ui.handcards2Container.ontouchmove = ui.click.touchScroll;
-						ui.handcards1Container.style.WebkitOverflowScrolling = 'touch';
-						ui.handcards2Container.style.WebkitOverflowScrolling = 'touch';
+						// ui.handcards1Container.ontouchstart = ui.click.touchStart;
+						// ui.handcards2Container.ontouchstart = ui.click.touchStart;
+						// ui.handcards1Container.ontouchmove = ui.click.touchScroll;
+						// ui.handcards2Container.ontouchmove = ui.click.touchScroll;
+						// ui.handcards1Container.style.WebkitOverflowScrolling = 'touch';
+						// ui.handcards2Container.style.WebkitOverflowScrolling = 'touch';
 
-						if (hasme && game.me) {
-							ui.handcards1 = game.me.node.handcards1;
-							ui.handcards2 = game.me.node.handcards2;
-							ui.handcards1Container.appendChild(ui.handcards1);
-							ui.handcards2Container.appendChild(ui.handcards2);
-						}
-						else if (game.players.length) {
-							game.me = game.players[0];
-							ui.handcards1 = game.me.node.handcards1;
-							ui.handcards2 = game.me.node.handcards2;
-							ui.handcards1Container.appendChild(ui.handcards1);
-							ui.handcards2Container.appendChild(ui.handcards2);
-						}
+						// if (hasme && game.me) {
+						// 	ui.handcards1 = game.me.node.handcards1;
+						// 	ui.handcards2 = game.me.node.handcards2;
+						// 	ui.handcards1Container.appendChild(ui.handcards1);
+						// 	ui.handcards2Container.appendChild(ui.handcards2);
+						// }
+						// else if (game.players.length) {
+						// 	game.me = game.players[0];
+						// 	ui.handcards1 = game.me.node.handcards1;
+						// 	ui.handcards2 = game.me.node.handcards2;
+						// 	ui.handcards1Container.appendChild(ui.handcards1);
+						// 	ui.handcards2Container.appendChild(ui.handcards2);
+						// }
 
 						// if (game.me){
 						//     equipSolts.me = game.me;
@@ -4122,57 +4122,57 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						this.updateDiscard();
 					},
 					updateHand: function (debugName) {
-						if (!ui.handcards1Container || !ui.handcards1Container.firstChild || !game.me) return;
+						// if (!ui.handcards1Container || !ui.handcards1Container.firstChild || !game.me) return;
 
-						var parentNode = ui.handcards1Container.firstChild;
-						var handCards = [];
-						for (var i = 0; i < parentNode.childElementCount; i++) {
-							if (!parentNode.childNodes[i].classList.contains('removing')) {
-								handCards.push(parentNode.childNodes[i]);
-							} else {
-								parentNode.childNodes[i].scaled = null;
-							}
-						}
+						// var parentNode = ui.handcards1Container.firstChild;
+						// var handCards = [];
+						// for (var i = 0; i < parentNode.childElementCount; i++) {
+						// 	if (!parentNode.childNodes[i].classList.contains('removing')) {
+						// 		handCards.push(parentNode.childNodes[i]);
+						// 	} else {
+						// 		parentNode.childNodes[i].scaled = null;
+						// 	}
+						// }
 
-						if (!handCards.length) return;
+						// if (!handCards.length) return;
 
-						var margin = 1;
-						var scale = decadeUI.getCardBestScale();
-						var cardWidth = handCards[0].offsetWidth;
-						var x;
-						var y = Math.round((parentNode.offsetHeight - handCards[0].offsetHeight) / 2) + 'px';
-						var scaleMargin = (cardWidth - cardWidth * scale) / 2;
-						cardWidth = cardWidth * scale + margin * 2;
+						// var margin = 1;
+						// var scale = decadeUI.getCardBestScale();
+						// var cardWidth = handCards[0].offsetWidth;
+						// var x;
+						// var y = Math.round((parentNode.offsetHeight - handCards[0].offsetHeight) / 2) + 'px';
+						// var scaleMargin = (cardWidth - cardWidth * scale) / 2;
+						// cardWidth = cardWidth * scale + margin * 2;
 
-						var offset = parentNode.offsetWidth - cardWidth * handCards.length;
-						var overflow = offset < 0;
-						if (overflow) {
-							cardWidth -= margin * 2;
-							offset = Math.abs(offset + margin * 2 * handCards.length) / (handCards.length - 1);
-						} else {
-							offset /= 2;
-						}
+						// var offset = parentNode.offsetWidth - cardWidth * handCards.length;
+						// var overflow = offset < 0;
+						// if (overflow) {
+						// 	cardWidth -= margin * 2;
+						// 	offset = Math.abs(offset + margin * 2 * handCards.length) / (handCards.length - 1);
+						// } else {
+						// 	offset /= 2;
+						// }
 
-						for (var i = 0; i < handCards.length; i++) {
-							if (!handCards[i].scaled) {
-								handCards[i].classList.add('transition-none');
-								x = (parentNode.offsetWidth - Math.round(scaleMargin)) + 'px';
-								handCards[i].style.transform = 'translate(' + x + ',' + y + ')scale(' + scale + ')';
-								ui.refresh(handCards[i]);
-								handCards[i].scaled = true;
-								handCards[i].classList.remove('transition-none');
-							}
+						// for (var i = 0; i < handCards.length; i++) {
+						// 	if (!handCards[i].scaled) {
+						// 		handCards[i].classList.add('transition-none');
+						// 		x = (parentNode.offsetWidth - Math.round(scaleMargin)) + 'px';
+						// 		handCards[i].style.transform = 'translate(' + x + ',' + y + ')scale(' + scale + ')';
+						// 		ui.refresh(handCards[i]);
+						// 		handCards[i].scaled = true;
+						// 		handCards[i].classList.remove('transition-none');
+						// 	}
 
-							if (overflow) {
-								x = Math.round((i * (cardWidth - offset) - scaleMargin)) + 'px';
-							} else {
-								x = Math.round((i * cardWidth + margin - scaleMargin)) + 'px';
-							}
+						// 	if (overflow) {
+						// 		x = Math.round((i * (cardWidth - offset) - scaleMargin)) + 'px';
+						// 	} else {
+						// 		x = Math.round((i * cardWidth + margin - scaleMargin)) + 'px';
+						// 	}
 
-							handCards[i].style.transform = 'translate(' + x + ',' + y + ')scale(' + scale + ')';
-							handCards[i]._transform = handCards[i].style.transform;
-							handCards[i].classList.remove('drawinghidden');
-						}
+						// 	handCards[i].style.transform = 'translate(' + x + ',' + y + ')scale(' + scale + ')';
+						// 	handCards[i]._transform = handCards[i].style.transform;
+						// 	handCards[i].classList.remove('drawinghidden');
+						// }
 					},
 					updateDiscard: function () {
 						if (!ui.thrown) ui.thrown = [];

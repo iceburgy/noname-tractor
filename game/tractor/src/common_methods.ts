@@ -98,6 +98,8 @@ export class CommonMethods {
 
     public static NotifyStateType_ObservePlayerById = "ObservePlayerById";
 
+    public static classCardProcessed = "classCardProcessed";
+
     constructor() {
     }
 
@@ -305,12 +307,34 @@ export class CommonMethods {
         return res;
     }
 
-    // public static string GetSuitString(int a)
-    // {
-    //     int suitInt = GetSuit(a);
-    //     Suit suit = (Suit)suitInt;
-    //     return suit.ToString();
-    // }
+    /// <summary>
+    ///     得到一个牌的花色
+    /// </summary>
+    /// <param name="a">牌值</param>
+    /// <returns>花色</returns>
+    public static GetSuit(a: number): number {
+        if (a >= 0 && a < 13) {
+            return 1;
+        }
+        if (a >= 13 && a < 26) {
+            return 2;
+        }
+        if (a >= 26 && a < 39) {
+            return 3;
+        }
+
+        if (a >= 39 && a < 52) {
+            return 4;
+        }
+
+        return 5;
+    }
+
+    public static GetSuitString(a: number): string {
+        let suitInt = CommonMethods.GetSuit(a);
+        let suit: number = suitInt;
+        return SuitEnums.NumberToSuit[suit];
+    }
 
     public static GetNumberString(a: number): string {
         if (a == 52) {

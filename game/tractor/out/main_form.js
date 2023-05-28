@@ -46,7 +46,7 @@ var MainForm = /** @class */ (function () {
         // this.sgcsPlayer = new SGCSPlayer(this.tractorPlayer.MyOwnId)
         this.PlayerPosition = {};
         this.PositionPlayer = {};
-        this.myCardIsReady = [];
+        this.myCardIsReady = Array(33).fill(false);
         this.cardsOrderNumber = 0;
         this.IsDebug = false;
         this.SelectedCards = [];
@@ -372,7 +372,7 @@ var MainForm = /** @class */ (function () {
             this.tractorPlayer.playerLocalCache.WinResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, this.tractorPlayer.playerLocalCache.WinnderID);
         }
         this.PlayerCurrentTrickShowedCards();
-        this.drawingFormHelper.ResortMyHandCards();
+        this.drawingFormHelper.ResortMyHandCards(true);
         this.DrawDiscardedCardsCaller();
     };
     MainForm.prototype.TrumpChanged = function () {
@@ -604,7 +604,7 @@ var MainForm = /** @class */ (function () {
         if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             var tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId];
             this.tractorPlayer.CurrentPoker.CloneFrom(tempCP);
-            this.drawingFormHelper.ResortMyHandCards();
+            this.drawingFormHelper.ResortMyHandCards(true);
         }
         this.DrawDiscardedCardsCaller();
     };
@@ -704,7 +704,7 @@ var MainForm = /** @class */ (function () {
         //即时更新旁观手牌
         if (this.tractorPlayer.isObserver && this.tractorPlayer.PlayerId == latestPlayer) {
             this.tractorPlayer.CurrentPoker.CloneFrom(this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId]);
-            this.drawingFormHelper.ResortMyHandCards();
+            this.drawingFormHelper.ResortMyHandCards(true);
         }
         if (winResult > 0) {
             this.drawingFormHelper.DrawOverridingFlag(showedCards.length, this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID], this.tractorPlayer.playerLocalCache.WinResult - 1, true);
@@ -780,7 +780,7 @@ var MainForm = /** @class */ (function () {
                         var toAddImage = this.gameScene.cardImages[i];
                         if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                             toAddImage.setAttribute("status", "up");
-                            toAddImage.style.bottom = "calc(".concat(this.gameScene.coordinates.handCardPositions[0].y, " + 30px)");
+                            toAddImage.style.transform = "translate(0px, -30px)";
                         }
                     }
                 }
@@ -1427,6 +1427,7 @@ var MainForm = /** @class */ (function () {
                 this.SelectedCards.forEach(function (card) {
                     _this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 });
+                this.drawingFormHelper.removeCardImage(this.SelectedCards);
                 this.gameScene.sendMessageToServer(StoreDiscardedCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards));
                 this.drawingFormHelper.ResortMyHandCards();
             }
@@ -1445,6 +1446,7 @@ var MainForm = /** @class */ (function () {
                 this.SelectedCards.forEach(function (card) {
                     _this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 });
+                this.drawingFormHelper.removeCardImage(this.SelectedCards);
                 this.ShowCards();
                 this.drawingFormHelper.ResortMyHandCards();
                 this.SelectedCards = [];
@@ -1481,6 +1483,7 @@ var MainForm = /** @class */ (function () {
             this.SelectedCards.forEach(function (card) {
                 _this.tractorPlayer.CurrentPoker.RemoveCard(card);
             });
+            this.drawingFormHelper.removeCardImage(this.SelectedCards);
             this.ShowCards();
             this.drawingFormHelper.ResortMyHandCards();
             this.SelectedCards = [];
@@ -1498,6 +1501,7 @@ var MainForm = /** @class */ (function () {
                 result.MustShowCardsForDumpingFail.forEach(function (card) {
                     _this.tractorPlayer.CurrentPoker.RemoveCard(card);
                 });
+                _this.drawingFormHelper.removeCardImage(result.MustShowCardsForDumpingFail);
                 _this.SelectedCards = CommonMethods.deepCopy(result.MustShowCardsForDumpingFail);
                 _this.ShowCards();
                 _this.drawingFormHelper.ResortMyHandCards();
@@ -2024,6 +2028,7 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.drawHandZone = function () {
         this.gameScene.ui.create.me(); // creates ui.me, which is hand zone
         this.gameScene.ui.handZone = this.gameScene.ui.me;
+        this.gameScene.ui.handZone.innerHTML = '';
         this.gameScene.ui.handZone.style.position = "absolute";
         this.gameScene.ui.handZone.style.left = "calc(".concat(this.gameScene.ui.gameMe.clientWidth, "px)");
         // this.gameScene.ui.handZone.style.left will be re-adjusted via callback of drawGameMe

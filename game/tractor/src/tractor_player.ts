@@ -443,10 +443,7 @@ export class TractorPlayer {
             this.mainForm.PlayerOnGetCard(cardNumber);
         }
 
-        if (this.CurrentPoker.Count() == TractorRules.GetCardNumberofEachPlayer(this.CurrentGameState.Players.length) && this.PlayerId != this.CurrentHandState.Last8Holder) {
-            this.mainForm.drawingFormHelper.ResortMyHandCards();
-        }
-        else if (this.CurrentPoker.Count() == TractorRules.GetCardNumberofEachPlayer(this.CurrentGameState.Players.length) + 8) {
+        if (this.CurrentPoker.Count() == TractorRules.GetCardNumberofEachPlayer(this.CurrentGameState.Players.length) + 8) {
             this.mainForm.drawingFormHelper.ResortMyHandCards();
         }
     }

@@ -20,6 +20,7 @@ export class DrawingFormHelper {
     private suitSequence: number;
     public isDragging: any;
     public isMouseDown: boolean = false;
+    public skipCheckCardImages: boolean = false;
 
     constructor(mf: MainForm) {
         this.mainForm = mf
@@ -27,22 +28,35 @@ export class DrawingFormHelper {
     }
 
     public IGetCard() {
-        this.destroyAllCards()
+        this.skipCheckCardImages = true;
+        // this.destroyAllCards()
+        this.resetAllCards();
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
         this.reDrawToolbar();
     }
 
     // drawing cards without any tilt
-    public ResortMyHandCards() {
-        this.mainForm.myCardIsReady = []
-        this.destroyAllCards()
+    public ResortMyHandCards(destroy?: boolean) {
+        this.skipCheckCardImages = false;
+        if (this.mainForm.tractorPlayer.CurrentPoker.Count() === TractorRules.GetCardNumberofEachPlayer(this.mainForm.tractorPlayer.CurrentGameState.Players.length) + 8) {
+            this.skipCheckCardImages = true;
+        }
+        this.mainForm.myCardIsReady = Array(33).fill(false);
+        if (destroy) {
+            this.destroyAllCards();
+        }
+        else {
+            this.resetAllCards();
+        }
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1)
     }
 
     // drawing cards with selected cards tilted
     public DrawMyPlayingCards() {
+        this.skipCheckCardImages = true;
         this.DrawScoreImageAndCards()
-        this.destroyAllCards()
+        // this.destroyAllCards()
+        this.resetAllCards();
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1)
 
         this.validateSelectedCards()
@@ -114,7 +128,6 @@ export class DrawingFormHelper {
     // playerPos: 1-4
     public DrawHandCardsByPosition(playerPos: number, currentPoker: CurrentPoker, hcs: number, curTrump?: number) {
         this.handcardPosition = playerPos;
-        this.mainForm.cardsOrderNumber = 0
         let cardCount: number = currentPoker.Count()
 
         this.handcardScale = hcs;
@@ -315,22 +328,100 @@ export class DrawingFormHelper {
     }
 
     private drawCard(x: string, y: string, serverCardNumber: number,) {
-        let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumber]
+        let image: any = undefined;
+
+        let tempImages: any[] = this.mainForm.gameScene.cardServerNumToImage[serverCardNumber];
+        if (tempImages && tempImages.length > 0) {
+            for (let i = 0; i < tempImages.length; i++) {
+                let tempImage = tempImages[i];
+                if (tempImage.classList.contains(CommonMethods.classCardProcessed)) continue;
+
+                image = tempImage;
+                break;
+            }
+        }
+
         let parent = this.mainForm.gameScene.ui.frameGameRoom;
         if (this.handcardPosition === 1) parent = this.mainForm.gameScene.ui.handZone;
+        if (!image) {
+            // 不是出牌，则需画牌
+            let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumber]
+            image = this.createCard(parent, uiCardNumber, this.handcardScale);
+            image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
+            image.setAttribute('serverCardNumber', serverCardNumber);
+            image.node.seqnum.style.position = "absolute";
+            image.node.seqnum.style.left = "calc(1px)";
+            image.node.seqnum.style.top = "calc(65%)";
+            image.node.seqnum.style.fontSize = `${15 * this.handcardScale}px`;
+            image.node.seqnum.style.color = 'gray';
+            image.node.seqnum.style['font-family'] = 'serif';
+            image.node.seqnum.style['text-shadow'] = 'none';
 
-        let image = this.createCard(parent, uiCardNumber, this.handcardScale);
-        image.setAttribute('serverCardNumber', serverCardNumber);
-        image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
-        image.node.seqnum.innerHTML = `${this.suitSequence}`;
-        image.node.seqnum.style.position = "absolute";
-        image.node.seqnum.style.left = "calc(1px)";
-        image.node.seqnum.style.top = "calc(65%)";
-        image.node.seqnum.style.fontSize = `${15 * this.handcardScale}px`;
-        image.node.seqnum.style.color = 'gray';
-        image.node.seqnum.style['font-family'] = 'serif';
-        image.node.seqnum.style['text-shadow'] = 'none';
+            this.mainForm.gameScene.cardImages.splice(this.mainForm.cardsOrderNumber, 0, image);
+            image.classList.add(CommonMethods.classCardProcessed);
+            this.mainForm.gameScene.cardServerNumToImage[serverCardNumber].push(image);
 
+            if (this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] === undefined) {
+                this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] = false
+            }
+
+            if (!this.mainForm.gameScene.isReplayMode) {
+                if (!this.mainForm.tractorPlayer.isObserver) {
+                    if (this.mainForm.gameScene.noTouchDevice.toLowerCase() !== "true" && CommonMethods.isTouchDevice()) {
+                        // touch device
+                        image.node.cover.addEventListener("touchstart", (e: any) => {
+                            this.handleSelectingCard(image)
+                            this.isMouseDown = true;
+                            this.isDragging = image
+                        });
+                        image.addEventListener("touchend", (e: any) => {
+                            this.isMouseDown = false;
+                            this.isDragging = undefined
+                        });
+                        image.node.cover.addEventListener("touchmove", (e: any) => {
+                            let coverTouched: any = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+                            if (coverTouched && coverTouched.classList.contains('cover')) {
+                                let cardTouched: any = coverTouched.parentElement;
+                                if (cardTouched.classList.contains('tractorCard')) {
+                                    if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && this.isDragging !== cardTouched && this.isMouseDown) {
+                                        this.handleSelectingCard(cardTouched);
+                                        this.isDragging = cardTouched;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        // left click
+                        image.node.cover.addEventListener("mousedown", (e: any) => {
+                            if (e.button === 0) {
+                                this.handleSelectingCard(image)
+                                this.isMouseDown = true;
+                                this.isDragging = image
+                            }
+                        });
+                        image.addEventListener("mouseup", (e: any) => {
+                            this.isMouseDown = false;
+                            this.isDragging = undefined
+                        });
+                        image.node.cover.addEventListener("mouseover", (e: any) => {
+                            if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && e.button === 0 && this.isDragging !== image && this.isMouseDown) {
+                                this.handleSelectingCard(image);
+                            }
+                        });
+
+                        // right click
+                        image.node.cover.addEventListener("mousedown", (e: any) => {
+                            if (e.button === 2) {
+                                this.handleSelectingCardRightClick(image)
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        var trumpMadeCard = (this.mainForm.tractorPlayer.CurrentHandState.Trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
         switch (this.handcardPosition) {
             case 1:
                 image.style.left = `calc(${x})`;
@@ -352,76 +443,35 @@ export class DrawingFormHelper {
                 break;
         }
 
-        this.mainForm.gameScene.cardImages.push(image)
+        if (!this.skipCheckCardImages) {
+            let prevOrderNum = parseInt(image.getAttribute('cardsOrderNumber'));
+            if (prevOrderNum !== this.mainForm.cardsOrderNumber) {
+                if (this.mainForm.gameScene.cardImages[prevOrderNum]) {
+                    this.swapCardImage(prevOrderNum, this.mainForm.cardsOrderNumber);
+                    if (parent === this.mainForm.gameScene.ui.handZone && parent.childNodes.length > this.mainForm.cardsOrderNumber) {
+                        parent.insertBefore(image, parent.childNodes[this.mainForm.cardsOrderNumber]);
+                    } else {
+                        parent.appendChild(image);
+                    }
+                }
+            }
+        }
+        image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
+
+        image.node.seqnum.innerHTML = `${this.suitSequence}`;
+        image.classList.add(CommonMethods.classCardProcessed);
 
         this.suitSequence++
         if (this.mainForm.gameScene.isReplayMode) return;
 
-        if (this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] === undefined) {
-            this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] = false
-        }
-        if (!this.mainForm.tractorPlayer.isObserver) {
-            if (this.mainForm.gameScene.noTouchDevice.toLowerCase() !== "true" && CommonMethods.isTouchDevice()) {
-                // touch device
-                image.node.cover.addEventListener("touchstart", (e: any) => {
-                    this.handleSelectingCard(image)
-                    this.isMouseDown = true;
-                    this.isDragging = image
-                });
-                image.addEventListener("touchend", (e: any) => {
-                    this.isMouseDown = false;
-                    this.isDragging = undefined
-                });
-                image.node.cover.addEventListener("touchmove", (e: any) => {
-                    let coverTouched: any = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
-                    if (coverTouched && coverTouched.classList.contains('cover')) {
-                        let cardTouched: any = coverTouched.parentElement;
-                        if (cardTouched.classList.contains('tractorCard')) {
-                            if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && this.isDragging !== cardTouched && this.isMouseDown) {
-                                this.handleSelectingCard(cardTouched);
-                                this.isDragging = cardTouched;
-                            }
-                        }
-                    }
-                });
-            }
-            else {
-                // left click
-                image.node.cover.addEventListener("mousedown", (e: any) => {
-                    if (e.button === 0) {
-                        this.handleSelectingCard(image)
-                        this.isMouseDown = true;
-                        this.isDragging = image
-                    }
-                });
-                image.addEventListener("mouseup", (e: any) => {
-                    this.isMouseDown = false;
-                    this.isDragging = undefined
-                });
-                image.node.cover.addEventListener("mouseover", (e: any) => {
-                    if (this.mainForm.gameScene.yesDragSelect.toLowerCase() === "true" && e.button === 0 && this.isDragging !== image && this.isMouseDown) {
-                        this.handleSelectingCard(image);
-                    }
-                });
-
-                // right click
-                image.node.cover.addEventListener("mousedown", (e: any) => {
-                    if (e.button === 2) {
-                        this.handleSelectingCardRightClick(image)
-                    }
-                });
-            }
-        }
-
         // if I made trump, move it up by 30px
-        var trumpMadeCard = (this.mainForm.tractorPlayer.CurrentHandState.Trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
         if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.PairBlackJoker)
             trumpMadeCard = 52;
         else if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.PairRedJoker)
             trumpMadeCard = 53;
-        if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished) &&
-            this.mainForm.tractorPlayer.CurrentHandState.TrumpMaker == this.mainForm.tractorPlayer.PlayerId &&
-            trumpMadeCard == serverCardNumber) {
+        if (this.mainForm.tractorPlayer.CurrentHandState.TrumpMaker == this.mainForm.tractorPlayer.PlayerId &&
+            trumpMadeCard == serverCardNumber &&
+            (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished)) {
             if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker > SuitEnums.TrumpExposingPoker.SingleRank) {
                 image.style.transform = `translate(0px, -30px)`;
                 image.setAttribute('status', "up");
@@ -439,17 +489,83 @@ export class DrawingFormHelper {
                 }
             }
         }
+        if (this.mainForm.tractorPlayer.CurrentHandState.TrumpMaker == this.mainForm.tractorPlayer.PlayerId &&
+            trumpMadeCard == serverCardNumber &&
+            this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep > SuitEnums.HandStep.DistributingCardsFinished) {
+            image.setAttribute("status", "down");
+            image.style.transform = 'unset';
+        }
+
         if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) &&
             this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] &&
             (image.data === null || !image.getAttribute('status') || image.getAttribute('status') === "down")) {
             image.style.transform = `translate(0px, -30px)`;
             image.setAttribute('status', "up");
         }
+        if ((this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards || this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) &&
+            !this.mainForm.myCardIsReady[this.mainForm.cardsOrderNumber] &&
+            (image.data !== null && image.getAttribute('status') && image.getAttribute('status') === "up")) {
+            image.setAttribute("status", "down");
+            image.style.transform = 'unset';
+        }
         this.mainForm.cardsOrderNumber++
+    }
+    swapCardImage(prevOrderNum: number, curOrderNum: number) {
+        let prevImg = this.mainForm.gameScene.cardImages[prevOrderNum];
+        let curImg = this.mainForm.gameScene.cardImages[curOrderNum];
+        this.mainForm.gameScene.cardImages[prevOrderNum] = curImg;
+        this.mainForm.gameScene.cardImages[curOrderNum] = prevImg;
+        prevImg.setAttribute('cardsOrderNumber', curOrderNum);
+        curImg.setAttribute('cardsOrderNumber', prevOrderNum);
+    }
+
+    public removeCardImage(serverCardNumbers: number[]) {
+        // 是出牌，则需删除牌
+        let indicesToRemove: number[] = [];
+        for (let i = 0; i < serverCardNumbers.length; i++) {
+            let serverCardNumber = serverCardNumbers[i];
+            let removedCardImageIndex: number = -1;
+            for (let i = 0; i < this.mainForm.gameScene.cardServerNumToImage[serverCardNumber].length; i++) {
+                let tempImage = this.mainForm.gameScene.cardServerNumToImage[serverCardNumber][i];
+                if (tempImage.getAttribute('status') === 'up' ||
+                    (this.mainForm.tractorPlayer.playerLocalCache.isLastTrick || this.mainForm.IsDebug) && !this.mainForm.tractorPlayer.isObserver) {
+                    removedCardImageIndex = i;
+                    break;
+                }
+            }
+            let removedCardImage: any;
+            switch (removedCardImageIndex) {
+                case 1:
+                    removedCardImage = this.mainForm.gameScene.cardServerNumToImage[serverCardNumber].pop();
+                    break;
+                default:
+                    removedCardImage = this.mainForm.gameScene.cardServerNumToImage[serverCardNumber].shift();
+                    break;
+            }
+            let cardsOrderNumber: number = parseInt(removedCardImage.getAttribute('cardsOrderNumber'));
+            indicesToRemove.push(cardsOrderNumber);
+            if (removedCardImage) {
+                removedCardImage.remove();
+            }
+        }
+
+        let newCIs: any[] = [];
+        for (let i = 0; i < this.mainForm.gameScene.cardImages.length; i++) {
+            if (indicesToRemove.includes(i)) continue;
+            newCIs.push(this.mainForm.gameScene.cardImages[i]);
+        }
+
+        this.mainForm.gameScene.cardImages = newCIs;
     }
 
     private createCard(position: any, uiCardNumber: number, hcs: number): any {
-        var tractorCard = this.mainForm.gameScene.ui.create.div('.tractorCard', position);
+        var tractorCard = this.mainForm.gameScene.ui.create.div('.tractorCard');
+        if (position === this.mainForm.gameScene.ui.handZone && position.childNodes.length > this.mainForm.cardsOrderNumber) {
+            position.insertBefore(tractorCard, position.childNodes[this.mainForm.cardsOrderNumber]);
+        } else {
+            position.appendChild(tractorCard);
+        }
+
         tractorCard.node = {
             seqnum: this.mainForm.gameScene.ui.create.div('.seqnum', tractorCard),
             cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),
@@ -469,25 +585,30 @@ export class DrawingFormHelper {
     }
 
     private handleSelectingCard(image: any) {
-        if (this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
-            this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
-            if (!image || !image.getAttribute("status") || image.getAttribute("status") === "down") {
-                image.setAttribute("status", "up");
-                image.style.transform = `translate(0px, -30px)`;
-                this.mainForm.myCardIsReady[parseInt(image.getAttribute("cardsOrderNumber"))] = true
-                this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
-                this.validateSelectedCards();
-            } else {
-                image.setAttribute("status", "down");
-                image.style.transform = 'unset';
-                this.mainForm.myCardIsReady[parseInt(image.getAttribute("cardsOrderNumber"))] = false
-                this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
-                this.validateSelectedCards();
-            }
+        if (!(this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
+            this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards)) {
+            return;
+        }
+        if (!image || !image.getAttribute("status") || image.getAttribute("status") === "down") {
+            image.setAttribute("status", "up");
+            image.style.transform = `translate(0px, -30px)`;
+            this.mainForm.myCardIsReady[parseInt(image.getAttribute("cardsOrderNumber"))] = true
+            this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
+            this.validateSelectedCards();
+        } else {
+            image.setAttribute("status", "down");
+            image.style.transform = 'unset';
+            this.mainForm.myCardIsReady[parseInt(image.getAttribute("cardsOrderNumber"))] = false
+            this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
+            this.validateSelectedCards();
         }
     }
 
     private handleSelectingCardRightClick(image: any) {
+        if (!(this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing ||
+            this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards)) {
+            return;
+        }
         //统计已选中的牌张数
         let readyCount: number = 0;
         let crlength = this.mainForm.myCardIsReady.length
@@ -830,11 +951,31 @@ export class DrawingFormHelper {
             image.remove();
         })
         this.mainForm.gameScene.cardImages = []
+        for (let i = 0; i < 54; i++) {
+            this.mainForm.gameScene.cardServerNumToImage[i] = [];
+        }
+        this.mainForm.cardsOrderNumber = 0;
 
         this.mainForm.gameScene.cardImageSequence.forEach((image: any) => {
             image.remove();
         })
         this.mainForm.gameScene.cardImageSequence = []
+    }
+
+    public resetAllCards() {
+        this.mainForm.cardsOrderNumber = 0;
+
+        this.mainForm.gameScene.cardImageSequence.forEach((image: any) => {
+            image.remove();
+        })
+        this.mainForm.gameScene.cardImageSequence = []
+        for (const [key, ci] of Object.entries(this.mainForm.gameScene.cardServerNumToImage)) {
+            (ci as any[]).forEach((c: any) => {
+                c.classList.remove(CommonMethods.classCardProcessed);
+                c.setAttribute("status", "down");
+                c.style.transform = 'unset';
+            })
+        }
     }
 
     public destroyAllShowedCards() {

@@ -28,6 +28,7 @@ export class GameScene {
     // // public pokerTableChairNames: { tableName: any, chairNames: { myOwnName: any, observerNames: Phaser.GameObjects.Text[] }[] }[]
     public mainForm!: MainForm;
     public cardImages!: any[]
+    public cardServerNumToImage!: any;
     public cardImageSequence!: any[]
     public toolbarImages!: any[]
     public sidebarImages!: any[]
@@ -93,6 +94,10 @@ export class GameScene {
         // // this.pokerTableChairImg = []
         // // this.pokerTableChairNames = []
         this.cardImages = [];
+        this.cardServerNumToImage = {};
+        for (let i = 0; i < 54; i++) {
+            this.cardServerNumToImage[i] = [];
+        }
         this.cardImageSequence = [];
         this.toolbarImages = [];
         this.sidebarImages = [];
