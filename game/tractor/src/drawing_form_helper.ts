@@ -32,7 +32,7 @@ export class DrawingFormHelper {
         // this.destroyAllCards()
         this.resetAllCards();
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
-        this.reDrawToolbar();
+        this.reDrawToolbar(true);
     }
 
     // drawing cards without any tilt
@@ -820,26 +820,38 @@ export class DrawingFormHelper {
     }
 
     // with colorful icons if applicabl
-    public reDrawToolbar() {
-        this.destroyToolbar();
+    public reDrawToolbar(skipDestroy?: boolean) {
+        if (!skipDestroy) this.destroyToolbar();
         //如果打无主，无需再判断
         if (this.mainForm.tractorPlayer.CurrentHandState.Rank == 53)
             return;
         var availableTrump = this.mainForm.tractorPlayer.AvailableTrumps();
+        let imageToolBar = this.mainForm.gameScene.toolbarImage;
+        if (!imageToolBar) {
+            imageToolBar = this.mainForm.gameScene.ui.create.div('.imageToolBar', this.mainForm.gameScene.ui.frameGameRoom);
+            imageToolBar.setBackgroundImage('image/tractor/toolbar/suitsbar.png')
+            imageToolBar.style['background-size'] = '100% 100%';
+            imageToolBar.style['background-repeat'] = 'no-repeat';
+            imageToolBar.style.right = `calc(${this.mainForm.gameScene.coordinates.toolbarPosition.x})`;
+            imageToolBar.style.bottom = `calc(${this.mainForm.gameScene.coordinates.toolbarPosition.y})`;
+            imageToolBar.style.width = `250px`;
+            imageToolBar.style.height = `50px`;
+            this.mainForm.gameScene.toolbarImage = imageToolBar;
+        }
 
-        let imageToolBar = this.mainForm.gameScene.ui.create.div('.imageToolBar', this.mainForm.gameScene.ui.frameGameRoom);
-        imageToolBar.setBackgroundImage('image/tractor/toolbar/suitsbar.png')
-        imageToolBar.style['background-size'] = '100% 100%';
-        imageToolBar.style['background-repeat'] = 'no-repeat';
-        imageToolBar.style.right = `calc(${this.mainForm.gameScene.coordinates.toolbarPosition.x})`;
-        imageToolBar.style.bottom = `calc(${this.mainForm.gameScene.coordinates.toolbarPosition.y})`;
-        imageToolBar.style.width = `250px`;
-        imageToolBar.style.height = `50px`;
-        this.mainForm.gameScene.toolbarImages.push(imageToolBar);
         for (let i = 0; i < 5; i++) {
             let isSuiteAvailable = availableTrump.includes(i + 1)
+            let prevSuite = this.mainForm.gameScene.toolbarSuiteImages[i];
+            if (prevSuite && (prevSuite.classList.contains(CommonMethods.classIsSuiteAvail) && !isSuiteAvailable || !prevSuite.classList.contains(CommonMethods.classIsSuiteAvail) && isSuiteAvailable)) {
+                prevSuite.remove();
+                delete this.mainForm.gameScene.toolbarSuiteImages[i];
+            } else {
+                if (prevSuite) continue;
+            }
+
             let suiteOffset = isSuiteAvailable ? 0 : 5;
-            let imageToolBarSuit = this.mainForm.gameScene.ui.create.div('.imageToolBarSuit', imageToolBar);
+            let classIsSuiteAvail = isSuiteAvailable ? `.${CommonMethods.classIsSuiteAvail}` : "";
+            let imageToolBarSuit = this.mainForm.gameScene.ui.create.div(`.imageToolBarSuit${classIsSuiteAvail}`, imageToolBar);
             imageToolBarSuit.setBackgroundImage(`image/tractor/toolbar/tile0${(i + suiteOffset).toString().padStart(2, '0')}.png`);
             imageToolBarSuit.style['background-size'] = '100% 100%';
             imageToolBarSuit.style['background-repeat'] = 'no-repeat';
@@ -847,6 +859,7 @@ export class DrawingFormHelper {
             imageToolBarSuit.style.height = `40px`;
             imageToolBarSuit.style.right = `calc(5px + ${50 * (4 - i)}px)`;
             imageToolBarSuit.style.bottom = "5px";
+            this.mainForm.gameScene.toolbarSuiteImages[i] = imageToolBarSuit;
 
             if (isSuiteAvailable && !this.mainForm.tractorPlayer.isObserver) {
                 let trumpExpIndex = this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1
@@ -933,10 +946,14 @@ export class DrawingFormHelper {
     }
 
     public destroyToolbar() {
-        this.mainForm.gameScene.toolbarImages.forEach(image => {
+        if (this.mainForm.gameScene.toolbarImage) {
+            this.mainForm.gameScene.toolbarImage.remove();
+            delete this.mainForm.gameScene.toolbarImage;
+        }
+        this.mainForm.gameScene.toolbarSuiteImages.forEach(image => {
             image.remove();
         })
-        this.mainForm.gameScene.toolbarImages = []
+        this.mainForm.gameScene.toolbarSuiteImages = []
     }
 
     public destroySidebar() {

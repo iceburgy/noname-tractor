@@ -550,7 +550,7 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.qiangliangkaCost = 10;
     CommonMethods.sendBroadcastPrefix = "@all";
     CommonMethods.sendBroadcastCost = 10;
-    CommonMethods.buyNoDongtuUntilCost = 20;
+    CommonMethods.buyNoDongtuUntilCost = 0;
     CommonMethods.defaultSkinInUse = "skin_questionmark";
     CommonMethods.audioLiangpai = "liangpai";
     CommonMethods.audioShuaicuo = "shuaicuo";
@@ -561,6 +561,7 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.audioWin = "audiowin";
     CommonMethods.audioGameStart = "audioGameStart";
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
+    CommonMethods.classIsSuiteAvail = "classIsSuiteAvail";
     CommonMethods.classCardProcessed = "classCardProcessed";
     return CommonMethods;
 }());

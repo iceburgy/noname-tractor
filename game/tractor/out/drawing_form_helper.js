@@ -21,7 +21,7 @@ var DrawingFormHelper = /** @class */ (function () {
         // this.destroyAllCards()
         this.resetAllCards();
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
-        this.reDrawToolbar();
+        this.reDrawToolbar(true);
     };
     // drawing cards without any tilt
     DrawingFormHelper.prototype.ResortMyHandCards = function (destroy) {
@@ -767,26 +767,40 @@ var DrawingFormHelper = /** @class */ (function () {
         this.mainForm.gameScene.sendMessageToServer(CardsReady_REQUEST, this.mainForm.tractorPlayer.MyOwnId, JSON.stringify(this.mainForm.myCardIsReady));
     };
     // with colorful icons if applicabl
-    DrawingFormHelper.prototype.reDrawToolbar = function () {
+    DrawingFormHelper.prototype.reDrawToolbar = function (skipDestroy) {
         var _this = this;
-        this.destroyToolbar();
+        if (!skipDestroy)
+            this.destroyToolbar();
         //如果打无主，无需再判断
         if (this.mainForm.tractorPlayer.CurrentHandState.Rank == 53)
             return;
         var availableTrump = this.mainForm.tractorPlayer.AvailableTrumps();
-        var imageToolBar = this.mainForm.gameScene.ui.create.div('.imageToolBar', this.mainForm.gameScene.ui.frameGameRoom);
-        imageToolBar.setBackgroundImage('image/tractor/toolbar/suitsbar.png');
-        imageToolBar.style['background-size'] = '100% 100%';
-        imageToolBar.style['background-repeat'] = 'no-repeat';
-        imageToolBar.style.right = "calc(".concat(this.mainForm.gameScene.coordinates.toolbarPosition.x, ")");
-        imageToolBar.style.bottom = "calc(".concat(this.mainForm.gameScene.coordinates.toolbarPosition.y, ")");
-        imageToolBar.style.width = "250px";
-        imageToolBar.style.height = "50px";
-        this.mainForm.gameScene.toolbarImages.push(imageToolBar);
+        var imageToolBar = this.mainForm.gameScene.toolbarImage;
+        if (!imageToolBar) {
+            imageToolBar = this.mainForm.gameScene.ui.create.div('.imageToolBar', this.mainForm.gameScene.ui.frameGameRoom);
+            imageToolBar.setBackgroundImage('image/tractor/toolbar/suitsbar.png');
+            imageToolBar.style['background-size'] = '100% 100%';
+            imageToolBar.style['background-repeat'] = 'no-repeat';
+            imageToolBar.style.right = "calc(".concat(this.mainForm.gameScene.coordinates.toolbarPosition.x, ")");
+            imageToolBar.style.bottom = "calc(".concat(this.mainForm.gameScene.coordinates.toolbarPosition.y, ")");
+            imageToolBar.style.width = "250px";
+            imageToolBar.style.height = "50px";
+            this.mainForm.gameScene.toolbarImage = imageToolBar;
+        }
         var _loop_1 = function (i) {
             var isSuiteAvailable = availableTrump.includes(i + 1);
+            var prevSuite = this_1.mainForm.gameScene.toolbarSuiteImages[i];
+            if (prevSuite && (prevSuite.classList.contains(CommonMethods.classIsSuiteAvail) && !isSuiteAvailable || !prevSuite.classList.contains(CommonMethods.classIsSuiteAvail) && isSuiteAvailable)) {
+                prevSuite.remove();
+                delete this_1.mainForm.gameScene.toolbarSuiteImages[i];
+            }
+            else {
+                if (prevSuite)
+                    return "continue";
+            }
             var suiteOffset = isSuiteAvailable ? 0 : 5;
-            var imageToolBarSuit = this_1.mainForm.gameScene.ui.create.div('.imageToolBarSuit', imageToolBar);
+            var classIsSuiteAvail = isSuiteAvailable ? ".".concat(CommonMethods.classIsSuiteAvail) : "";
+            var imageToolBarSuit = this_1.mainForm.gameScene.ui.create.div(".imageToolBarSuit".concat(classIsSuiteAvail), imageToolBar);
             imageToolBarSuit.setBackgroundImage("image/tractor/toolbar/tile0".concat((i + suiteOffset).toString().padStart(2, '0'), ".png"));
             imageToolBarSuit.style['background-size'] = '100% 100%';
             imageToolBarSuit.style['background-repeat'] = 'no-repeat';
@@ -794,6 +808,7 @@ var DrawingFormHelper = /** @class */ (function () {
             imageToolBarSuit.style.height = "40px";
             imageToolBarSuit.style.right = "calc(5px + ".concat(50 * (4 - i), "px)");
             imageToolBarSuit.style.bottom = "5px";
+            this_1.mainForm.gameScene.toolbarSuiteImages[i] = imageToolBarSuit;
             if (isSuiteAvailable && !this_1.mainForm.tractorPlayer.isObserver) {
                 var trumpExpIndex_1 = this_1.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker + 1;
                 if (i == 4) {
@@ -879,10 +894,14 @@ var DrawingFormHelper = /** @class */ (function () {
         }
     };
     DrawingFormHelper.prototype.destroyToolbar = function () {
-        this.mainForm.gameScene.toolbarImages.forEach(function (image) {
+        if (this.mainForm.gameScene.toolbarImage) {
+            this.mainForm.gameScene.toolbarImage.remove();
+            delete this.mainForm.gameScene.toolbarImage;
+        }
+        this.mainForm.gameScene.toolbarSuiteImages.forEach(function (image) {
             image.remove();
         });
-        this.mainForm.gameScene.toolbarImages = [];
+        this.mainForm.gameScene.toolbarSuiteImages = [];
     };
     DrawingFormHelper.prototype.destroySidebar = function () {
         this.mainForm.gameScene.sidebarImages.forEach(function (image) {

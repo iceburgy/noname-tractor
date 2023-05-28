@@ -32,7 +32,7 @@ var GameScene = /** @class */ (function () {
             this.cardServerNumToImage[i] = [];
         }
         this.cardImageSequence = [];
-        this.toolbarImages = [];
+        this.toolbarSuiteImages = [];
         this.sidebarImages = [];
         this.scoreCardsImages = [];
         this.scoreCardsIntsDrawn = [];

@@ -30,7 +30,8 @@ export class GameScene {
     public cardImages!: any[]
     public cardServerNumToImage!: any;
     public cardImageSequence!: any[]
-    public toolbarImages!: any[]
+    public toolbarImage!: any
+    public toolbarSuiteImages!: any[]
     public sidebarImages!: any[]
     public scoreCardsImages!: any[]
     public scoreTotalText!: any
@@ -99,7 +100,7 @@ export class GameScene {
             this.cardServerNumToImage[i] = [];
         }
         this.cardImageSequence = [];
-        this.toolbarImages = [];
+        this.toolbarSuiteImages = [];
         this.sidebarImages = [];
         this.scoreCardsImages = [];
         this.scoreCardsIntsDrawn = [];

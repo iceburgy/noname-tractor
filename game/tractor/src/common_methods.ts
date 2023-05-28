@@ -83,7 +83,7 @@ export class CommonMethods {
     public static qiangliangkaCost = 10;
     public static sendBroadcastPrefix = "@all";
     public static sendBroadcastCost = 10;
-    public static buyNoDongtuUntilCost = 20;
+    public static buyNoDongtuUntilCost = 0;
     public static defaultSkinInUse = "skin_questionmark";
 
     public static audioLiangpai = "liangpai";
@@ -97,6 +97,7 @@ export class CommonMethods {
     public static audioGameStart = "audioGameStart";
 
     public static NotifyStateType_ObservePlayerById = "ObservePlayerById";
+    public static classIsSuiteAvail = "classIsSuiteAvail";
 
     public static classCardProcessed = "classCardProcessed";
 
