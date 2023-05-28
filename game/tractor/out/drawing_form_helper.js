@@ -428,8 +428,10 @@ var DrawingFormHelper = /** @class */ (function () {
         image.node.seqnum.innerHTML = "".concat(this.suitSequence);
         image.classList.add(CommonMethods.classCardProcessed);
         this.suitSequence++;
-        if (this.mainForm.gameScene.isReplayMode)
+        if (this.mainForm.gameScene.isReplayMode) {
+            this.mainForm.cardsOrderNumber++;
             return;
+        }
         // if I made trump, move it up by 30px
         if (this.mainForm.tractorPlayer.CurrentHandState.TrumpExposingPoker == SuitEnums.TrumpExposingPoker.PairBlackJoker)
             trumpMadeCard = 52;
