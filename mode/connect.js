@@ -120,10 +120,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						});
 
 					if (e) e.preventDefault();
-					game.saveConfig('last_ip', nodeHostName.value);
-					game.saveConfig('last_player_name', nodePlayerName.value);
-					game.saveConfig('last_password', nodePassword.value);
-					game.saveConfig('last_email', nodeEmail.value);
+					game.saveConfig('last_ip', nodeHostName.value.trim());
+					game.saveConfig('last_player_name', nodePlayerName.value.trim());
+					game.saveConfig('last_password', nodePassword.value.trim());
+					game.saveConfig('last_email', nodeEmail.value.trim());
 				};
 
 				var button = ui.create.div('.menubutton.highlight.large.pointerdiv.disabled', '进入大厅', connect);
