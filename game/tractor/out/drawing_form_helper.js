@@ -1260,8 +1260,8 @@ var DrawingFormHelper = /** @class */ (function () {
     //画庄家埋底的动画
     DrawingFormHelper.prototype.MoveDiscardedLast8Cards = function () {
         var _this = this;
-        var posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x;
-        var posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y;
+        var posX = "".concat(this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x, " - ").concat(this.mainForm.gameScene.coordinates.cardWidth / 4, "px");
+        var posY = "".concat(this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y, " - ").concat(this.mainForm.gameScene.coordinates.cardHeight / 4, "px");
         var scale = 0.5;
         var count = this.mainForm.gameScene.last8CardsImages.length;
         for (var i = 0; i < count; i++) {
