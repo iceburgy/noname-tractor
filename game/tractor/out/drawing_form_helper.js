@@ -1238,10 +1238,13 @@ var DrawingFormHelper = /** @class */ (function () {
         });
         this.mainForm.gameScene.last8CardsImages = [];
     };
-    DrawingFormHelper.prototype.DrawDiscardedCards = function () {
+    DrawingFormHelper.prototype.DrawDiscardedCards = function (doAni) {
         this.destroyLast8Cards();
-        var allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards;
-        if (this.mainForm.gameScene.isReplayMode) {
+        var allCards = Array(8).fill(CommonMethods.cardBackIndex);
+        if (this.mainForm.tractorPlayer.CurrentHandState.Last8Holder === this.mainForm.tractorPlayer.PlayerId) {
+            allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards;
+        }
+        if (!doAni) {
             var posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x;
             var posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y;
             this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, 0.5, 5);
@@ -1276,15 +1279,6 @@ var DrawingFormHelper = /** @class */ (function () {
                 x = "".concat(x, " + ").concat(_this.mainForm.gameScene.coordinates.handCardOffset * sc, "px");
             }
         }, 1000 * CommonMethods.distributeLast8Delay, posX, posY, scale);
-    };
-    DrawingFormHelper.prototype.DrawDiscardedCardsFaceDown = function () {
-        this.destroyLast8Cards();
-        var allCards = Array(8).fill(CommonMethods.cardBackIndex);
-        //画8张底牌，初始位置
-        var x = this.mainForm.gameScene.coordinates.discardLast8AniPosition.x;
-        var y = this.mainForm.gameScene.coordinates.discardLast8AniPosition.y;
-        this.DrawShowedCards(allCards, x, y, this.mainForm.gameScene.last8CardsImages, 1, 5);
-        this.MoveDiscardedLast8Cards();
     };
     //基于庄家相对于自己所在的位置，画庄家获得底牌的动画
     DrawingFormHelper.prototype.DrawDistributingLast8Cards = function (position) {

@@ -600,22 +600,18 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.Last8Discarded = function () {
         this.gameScene.playAudio(CommonMethods.audioTie);
-        if (this.tractorPlayer.CurrentHandState.Last8Holder !== this.tractorPlayer.PlayerId) {
-            this.drawingFormHelper.DrawDiscardedCardsFaceDown();
-        }
         if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             var tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId];
             this.tractorPlayer.CurrentPoker.CloneFrom(tempCP);
             this.drawingFormHelper.ResortMyHandCards(true);
         }
-        this.DrawDiscardedCardsCaller();
+        this.DrawDiscardedCardsCaller(true);
     };
-    MainForm.prototype.DrawDiscardedCardsCaller = function () {
+    MainForm.prototype.DrawDiscardedCardsCaller = function (doAni) {
         if (this.tractorPlayer.CurrentPoker != null && this.tractorPlayer.CurrentPoker.Count() > 0 &&
             this.tractorPlayer.CurrentHandState.DiscardedCards != null &&
             this.tractorPlayer.CurrentHandState.DiscardedCards.length == 8) {
-            if (this.tractorPlayer.CurrentHandState.Last8Holder === this.tractorPlayer.PlayerId)
-                this.drawingFormHelper.DrawDiscardedCards();
+            this.drawingFormHelper.DrawDiscardedCards(doAni);
         }
     };
     MainForm.prototype.HandEnding = function () {
