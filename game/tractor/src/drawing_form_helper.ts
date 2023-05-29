@@ -1324,7 +1324,7 @@ export class DrawingFormHelper {
     public DrawDiscardedCards(doAni?: boolean) {
         this.destroyLast8Cards()
         let allCards = Array(8).fill(CommonMethods.cardBackIndex);
-        if (this.mainForm.tractorPlayer.CurrentHandState.Last8Holder === this.mainForm.tractorPlayer.PlayerId) {
+        if (this.mainForm.tractorPlayer.CurrentHandState.Last8Holder === this.mainForm.tractorPlayer.PlayerId || this.mainForm.gameScene.isReplayMode) {
             allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards;
         }
 

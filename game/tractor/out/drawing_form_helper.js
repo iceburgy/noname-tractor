@@ -1241,7 +1241,7 @@ var DrawingFormHelper = /** @class */ (function () {
     DrawingFormHelper.prototype.DrawDiscardedCards = function (doAni) {
         this.destroyLast8Cards();
         var allCards = Array(8).fill(CommonMethods.cardBackIndex);
-        if (this.mainForm.tractorPlayer.CurrentHandState.Last8Holder === this.mainForm.tractorPlayer.PlayerId) {
+        if (this.mainForm.tractorPlayer.CurrentHandState.Last8Holder === this.mainForm.tractorPlayer.PlayerId || this.mainForm.gameScene.isReplayMode) {
             allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards;
         }
         if (!doAni) {
