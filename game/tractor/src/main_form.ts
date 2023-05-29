@@ -2252,7 +2252,13 @@ export class MainForm {
                     return;
                 }
             }
-            if (e.button === 0 && (e.target.classList.contains('replayFormWrapper') || e.target.classList.contains('frameGameRoom') || e.target.classList.contains('frameGameHall') || e.target.classList.contains('inputFormWrapper'))) {
+            if (e.button === 0 &&
+                (e.target.classList.contains('replayFormWrapper') ||
+                    e.target.classList.contains('frameGameRoom') ||
+                    e.target.classList.contains('frameGameHall') ||
+                    e.target.classList.contains('inputFormWrapper') ||
+                    e.target.classList.contains('chattextdiv') ||
+                    e.target.parentElement.classList.contains('chattextdiv'))) {
                 this.resetGameRoomUI();
                 return;
             }
