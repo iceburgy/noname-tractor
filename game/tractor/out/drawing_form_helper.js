@@ -394,9 +394,10 @@ var DrawingFormHelper = /** @class */ (function () {
         var trumpMadeCard = (this.mainForm.tractorPlayer.CurrentHandState.Trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
         switch (this.handcardPosition) {
             case 1:
-                if (!isAnimation) {
+                if (!isAnimation || this.mainForm.gameScene.isReplayMode) {
                     image.style.left = "calc(".concat(x, ")");
                     image.style.bottom = "calc(".concat(y, ")");
+                    image.style.opacity = 1;
                 }
                 break;
             case 2:
@@ -771,7 +772,7 @@ var DrawingFormHelper = /** @class */ (function () {
                 //将选定的牌向上提升 via gameScene.cardImages
                 if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                     toAddImage.setAttribute("status", "up");
-                    toAddImage.style.transform = "translate(0px, -".concat(CommonMethods.cardTiltHeight, "0px)");
+                    toAddImage.style.transform = "translate(0px, -".concat(CommonMethods.cardTiltHeight, "px)");
                 }
             }
             else if (toAddImage && toAddImage.getAttribute("status") && toAddImage.getAttribute("status") === "up") {
@@ -1239,33 +1240,51 @@ var DrawingFormHelper = /** @class */ (function () {
     };
     DrawingFormHelper.prototype.DrawDiscardedCards = function () {
         this.destroyLast8Cards();
+        var allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards;
+        if (this.mainForm.gameScene.isReplayMode) {
+            var posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x;
+            var posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y;
+            this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, 0.5, 5);
+        }
+        else {
+            //画8张底牌，初始位置
+            var x = this.mainForm.gameScene.coordinates.discardLast8AniPosition.x;
+            var y = this.mainForm.gameScene.coordinates.discardLast8AniPosition.y;
+            this.DrawShowedCards(allCards, x, y, this.mainForm.gameScene.last8CardsImages, 1, 5);
+            this.MoveDiscardedLast8Cards();
+        }
+    };
+    //画庄家埋底的动画
+    DrawingFormHelper.prototype.MoveDiscardedLast8Cards = function () {
+        var _this = this;
         var posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x;
         var posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y;
-        var allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards;
-        var count = allCards.length;
         var scale = 0.5;
-        this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, scale, 5);
-    };
-    DrawingFormHelper.prototype.DrawDiscardedCardsBackground = function () {
-        //画8张底牌
-        var last8Images = [];
-        var x = this.mainForm.gameScene.coordinates.distributingLast8Position.x;
-        var y = this.mainForm.gameScene.coordinates.distributingLast8Position.y;
-        var cardBackIndex = 54;
-        for (var i = 0; i < 8; i++) {
-            var cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
-            cardImage.style.left = "calc(".concat(x, ")");
-            cardImage.style.bottom = "calc(".concat(y, ")");
-            x = "".concat(x, " + ").concat(this.mainForm.gameScene.coordinates.distributingLast8PositionOffset, "px");
-            last8Images.push(cardImage);
+        var count = this.mainForm.gameScene.last8CardsImages.length;
+        for (var i = 0; i < count; i++) {
+            var cardImage = this.mainForm.gameScene.last8CardsImages[i];
+            cardImage.style.transition = "".concat(CommonMethods.distributeLast8Duration, "s");
+            cardImage.style['transition-delay'] = "".concat(CommonMethods.distributeLast8Interval * (7 - i), "s");
         }
-        //隐藏
-        setTimeout(function () {
-            last8Images.forEach(function (image) {
-                image.remove();
-            });
-            last8Images.length = 0;
-        }, 1000);
+        //画8张底牌，最终位置
+        setTimeout(function (x, y, sc) {
+            for (var i = count - 1; i >= 0; i--) {
+                var curImage = _this.mainForm.gameScene.last8CardsImages[i];
+                curImage.style.right = "calc(".concat(x, ")");
+                curImage.style.top = "calc(".concat(y, ")");
+                curImage.style.scale = sc;
+                x = "".concat(x, " + ").concat(_this.mainForm.gameScene.coordinates.handCardOffset * sc, "px");
+            }
+        }, 1000 * CommonMethods.distributeLast8Delay, posX, posY, scale);
+    };
+    DrawingFormHelper.prototype.DrawDiscardedCardsFaceDown = function () {
+        this.destroyLast8Cards();
+        var allCards = Array(8).fill(CommonMethods.cardBackIndex);
+        //画8张底牌，初始位置
+        var x = this.mainForm.gameScene.coordinates.discardLast8AniPosition.x;
+        var y = this.mainForm.gameScene.coordinates.discardLast8AniPosition.y;
+        this.DrawShowedCards(allCards, x, y, this.mainForm.gameScene.last8CardsImages, 1, 5);
+        this.MoveDiscardedLast8Cards();
     };
     //基于庄家相对于自己所在的位置，画庄家获得底牌的动画
     DrawingFormHelper.prototype.DrawDistributingLast8Cards = function (position) {
@@ -1279,7 +1298,7 @@ var DrawingFormHelper = /** @class */ (function () {
             var cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
             cardImage.style.left = "calc(".concat(x, ")");
             cardImage.style.bottom = "calc(".concat(y, ")");
-            cardImage.style.transition = "left ".concat(CommonMethods.distributeLast8Duration, "s, bottom ").concat(CommonMethods.distributeLast8Duration, "s");
+            cardImage.style.transition = "".concat(CommonMethods.distributeLast8Duration, "s");
             cardImage.style['transition-delay'] = "".concat(CommonMethods.distributeLast8Interval * (7 - i), "s");
             x = "".concat(x, " + ").concat(this.mainForm.gameScene.coordinates.distributingLast8PositionOffset, "px");
             last8Images.push(cardImage);

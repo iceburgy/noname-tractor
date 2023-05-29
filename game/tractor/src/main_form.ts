@@ -688,7 +688,9 @@ export class MainForm {
     public Last8Discarded() {
         this.gameScene.playAudio(CommonMethods.audioTie);
 
-        this.drawingFormHelper.DrawDiscardedCardsBackground();
+        if (this.tractorPlayer.CurrentHandState.Last8Holder !== this.tractorPlayer.PlayerId) {
+            this.drawingFormHelper.DrawDiscardedCardsFaceDown();
+        }
 
         if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             let tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId]
@@ -703,7 +705,6 @@ export class MainForm {
             this.tractorPlayer.CurrentHandState.DiscardedCards != null &&
             this.tractorPlayer.CurrentHandState.DiscardedCards.length == 8) {
             if (this.tractorPlayer.CurrentHandState.Last8Holder === this.tractorPlayer.PlayerId) this.drawingFormHelper.DrawDiscardedCards();
-            else this.drawingFormHelper.destroyLast8Cards();
         }
     }
 

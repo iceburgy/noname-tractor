@@ -101,6 +101,7 @@ export class CommonMethods {
 
     public static classCardProcessed = "classCardProcessed";
     public static cardTiltHeight = 30;
+    public static cardBackIndex = 54;
 
     constructor() {
     }

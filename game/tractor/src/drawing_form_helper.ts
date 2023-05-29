@@ -426,9 +426,10 @@ export class DrawingFormHelper {
         var trumpMadeCard = (this.mainForm.tractorPlayer.CurrentHandState.Trump - 1) * 13 + this.mainForm.tractorPlayer.CurrentHandState.Rank;
         switch (this.handcardPosition) {
             case 1:
-                if (!isAnimation) {
+                if (!isAnimation || this.mainForm.gameScene.isReplayMode) {
                     image.style.left = `calc(${x})`;
                     image.style.bottom = `calc(${y})`;
+                    image.style.opacity = 1;
                 }
                 break;
             case 2:
@@ -826,7 +827,7 @@ export class DrawingFormHelper {
                 //将选定的牌向上提升 via gameScene.cardImages
                 if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                     toAddImage.setAttribute("status", "up");
-                    toAddImage.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}0px)`;
+                    toAddImage.style.transform = `translate(0px, -${CommonMethods.cardTiltHeight}px)`;
                 }
             } else if (toAddImage && toAddImage.getAttribute("status") && toAddImage.getAttribute("status") === "up") {
                 toAddImage.setAttribute("status", "down");
@@ -1322,36 +1323,51 @@ export class DrawingFormHelper {
 
     public DrawDiscardedCards() {
         this.destroyLast8Cards()
-        let posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x
-        let posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y
-        let allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards
-        let count = allCards.length
-        let scale = 0.5
-        this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, scale, 5)
+        let allCards = this.mainForm.tractorPlayer.CurrentHandState.DiscardedCards;
+        if (this.mainForm.gameScene.isReplayMode) {
+            let posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x
+            let posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y
+            this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, 0.5, 5)
+        } else {
+            //画8张底牌，初始位置
+            let x = this.mainForm.gameScene.coordinates.discardLast8AniPosition.x
+            let y = this.mainForm.gameScene.coordinates.discardLast8AniPosition.y
+            this.DrawShowedCards(allCards, x, y, this.mainForm.gameScene.last8CardsImages, 1, 5)
+            this.MoveDiscardedLast8Cards();
+        }
     }
 
-    public DrawDiscardedCardsBackground() {
-        //画8张底牌
-        let last8Images: any[] = []
-        let x = this.mainForm.gameScene.coordinates.distributingLast8Position.x
-        let y = this.mainForm.gameScene.coordinates.distributingLast8Position.y
-        let cardBackIndex = 54
-
-        for (let i = 0; i < 8; i++) {
-            let cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
-            cardImage.style.left = `calc(${x})`;
-            cardImage.style.bottom = `calc(${y})`;
-            x = `${x} + ${this.mainForm.gameScene.coordinates.distributingLast8PositionOffset}px`;
-            last8Images.push(cardImage);
+    //画庄家埋底的动画
+    public MoveDiscardedLast8Cards() {
+        let posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x
+        let posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y
+        let scale = 0.5;
+        let count = this.mainForm.gameScene.last8CardsImages.length
+        for (let i = 0; i < count; i++) {
+            let cardImage: any = this.mainForm.gameScene.last8CardsImages[i];
+            cardImage.style.transition = `${CommonMethods.distributeLast8Duration}s`;
+            cardImage.style['transition-delay'] = `${CommonMethods.distributeLast8Interval * (7 - i)}s`;
         }
+        //画8张底牌，最终位置
+        setTimeout((x, y, sc) => {
+            for (let i = count - 1; i >= 0; i--) {
+                let curImage: any = this.mainForm.gameScene.last8CardsImages[i]
+                curImage.style.right = `calc(${x})`;
+                curImage.style.top = `calc(${y})`;
+                curImage.style.scale = sc;
+                x = `${x} + ${this.mainForm.gameScene.coordinates.handCardOffset * sc}px`;
+            }
+        }, 1000 * CommonMethods.distributeLast8Delay, posX, posY, scale);
+    }
 
-        //隐藏
-        setTimeout(() => {
-            last8Images.forEach(image => {
-                image.remove();
-            })
-            last8Images.length = 0
-        }, 1000);
+    public DrawDiscardedCardsFaceDown() {
+        this.destroyLast8Cards()
+        let allCards = Array(8).fill(CommonMethods.cardBackIndex);
+        //画8张底牌，初始位置
+        let x = this.mainForm.gameScene.coordinates.discardLast8AniPosition.x
+        let y = this.mainForm.gameScene.coordinates.discardLast8AniPosition.y
+        this.DrawShowedCards(allCards, x, y, this.mainForm.gameScene.last8CardsImages, 1, 5)
+        this.MoveDiscardedLast8Cards();
     }
 
     //基于庄家相对于自己所在的位置，画庄家获得底牌的动画
@@ -1366,7 +1382,7 @@ export class DrawingFormHelper {
             let cardImage = this.createCard(this.mainForm.gameScene.ui.frameGameRoom, cardBackIndex, 1);
             cardImage.style.left = `calc(${x})`;
             cardImage.style.bottom = `calc(${y})`;
-            cardImage.style.transition = `left ${CommonMethods.distributeLast8Duration}s, bottom ${CommonMethods.distributeLast8Duration}s`;
+            cardImage.style.transition = `${CommonMethods.distributeLast8Duration}s`;
             cardImage.style['transition-delay'] = `${CommonMethods.distributeLast8Interval * (7 - i)}s`;
             x = `${x} + ${this.mainForm.gameScene.coordinates.distributingLast8PositionOffset}px`;
             last8Images.push(cardImage);

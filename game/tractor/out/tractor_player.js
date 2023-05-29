@@ -190,8 +190,6 @@ var TractorPlayer = /** @class */ (function () {
             this.CurrentPoker.CloneFrom(this.CurrentHandState.PlayerHoldingCards[this.PlayerId]);
             this.CurrentPoker.Rank = this.CurrentHandState.Rank;
             this.CurrentPoker.Trump = this.CurrentHandState.Trump;
-            if (!this.IsTryingReenter)
-                this.mainForm.drawingFormHelper.ResortMyHandCards();
             return;
         }
         //改变旁观视角

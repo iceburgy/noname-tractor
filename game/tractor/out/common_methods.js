@@ -564,5 +564,6 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.classIsSuiteAvail = "classIsSuiteAvail";
     CommonMethods.classCardProcessed = "classCardProcessed";
     CommonMethods.cardTiltHeight = 30;
+    CommonMethods.cardBackIndex = 54;
     return CommonMethods;
 }());
