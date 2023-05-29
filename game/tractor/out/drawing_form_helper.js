@@ -318,9 +318,9 @@ var DrawingFormHelper = /** @class */ (function () {
             parent = this.mainForm.gameScene.ui.handZone;
         var isAnimation = false;
         if (!image) {
-            // 不是出牌，则需画牌
+            // 未在已画牌中，则需画牌
             var uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumber];
-            isAnimation = true;
+            isAnimation = !this.mainForm.tractorPlayer.isObserver;
             image = this.createCard(parent, uiCardNumber, this.handcardScale, x, y);
             image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
             image.setAttribute('serverCardNumber', serverCardNumber);
