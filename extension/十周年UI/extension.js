@@ -1105,7 +1105,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					ui.create.me = function (hasme) {
 						ui.arena.dataset.layout = game.layout;
 
-						ui.mebg = ui.create.div('#mebg', ui.arena);
+						// ui.mebg = ui.create.div('#mebg', ui.arena);
 						ui.me = decadeUI.dialog.create('hand-zone', ui.frameGameRoom);
 						// ui.handcards1Container = decadeUI.dialog.create('hand-cards', ui.me);
 						// ui.handcards2Container = ui.create.div('#handcards2', ui.me);

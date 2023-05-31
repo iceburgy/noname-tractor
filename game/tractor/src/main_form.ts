@@ -2741,19 +2741,19 @@ export class MainForm {
             this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
 
             // btnFirstPersonView
-            this.btnFirstPersonView = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass5', '第一视角', this.gameScene.ui.replayFormWrapper, () => this.btnFirstPersonView_Click());
+            if (!this.btnFirstPersonView) this.btnFirstPersonView = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass5', '第一视角', this.gameScene.ui.replayFormWrapper, () => this.btnFirstPersonView_Click());
 
             // btnFirstTrick
-            this.btnFirstTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass4', '第一轮', this.gameScene.ui.replayFormWrapper, () => this.btnFirstTrick_Click());
+            if (!this.btnFirstTrick) this.btnFirstTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass4', '第一轮', this.gameScene.ui.replayFormWrapper, () => this.btnFirstTrick_Click());
 
             // btnPreviousTrick
-            this.btnPreviousTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass3', '上一轮', this.gameScene.ui.replayFormWrapper, () => this.btnPreviousTrick_Click());
+            if (!this.btnPreviousTrick) this.btnPreviousTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass3', '上一轮', this.gameScene.ui.replayFormWrapper, () => this.btnPreviousTrick_Click());
 
             // btnNextTrick
-            this.btnNextTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass2', '下一轮', this.gameScene.ui.replayFormWrapper, () => this.btnNextTrick_Click());
+            if (!this.btnNextTrick) this.btnNextTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass2', '下一轮', this.gameScene.ui.replayFormWrapper, () => this.btnNextTrick_Click());
 
             // btnLastTrick
-            this.btnLastTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass1', '最末轮', this.gameScene.ui.replayFormWrapper, () => this.btnLastTrick_Click());
+            if (!this.btnLastTrick) this.btnLastTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass1', '最末轮', this.gameScene.ui.replayFormWrapper, () => this.btnLastTrick_Click());
         }
     }
 
@@ -2814,11 +2814,9 @@ export class MainForm {
             this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
             if (i === 0) {
                 this.gameScene.ui.gameMe = playerUI
-                if (this.gameScene.ui.handZone) {
-                    this.gameScene.ui.handZone.remove();
-                    delete this.gameScene.ui.handZone;
+                if (!this.gameScene.ui.handZone) {
+                    this.drawHandZone();
                 }
-                this.drawHandZone();
                 continue;
             }
 

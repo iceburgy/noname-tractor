@@ -2528,15 +2528,20 @@ var MainForm = /** @class */ (function () {
                 return;
             _this.loadReplayEntity(_this.currentReplayEntities[1][_this.selectTimes.selectedIndex], true);
             // btnFirstPersonView
-            _this.btnFirstPersonView = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass5', '第一视角', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnFirstPersonView_Click(); });
+            if (!_this.btnFirstPersonView)
+                _this.btnFirstPersonView = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass5', '第一视角', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnFirstPersonView_Click(); });
             // btnFirstTrick
-            _this.btnFirstTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass4', '第一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnFirstTrick_Click(); });
+            if (!_this.btnFirstTrick)
+                _this.btnFirstTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass4', '第一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnFirstTrick_Click(); });
             // btnPreviousTrick
-            _this.btnPreviousTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass3', '上一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnPreviousTrick_Click(); });
+            if (!_this.btnPreviousTrick)
+                _this.btnPreviousTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass3', '上一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnPreviousTrick_Click(); });
             // btnNextTrick
-            _this.btnNextTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass2', '下一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnNextTrick_Click(); });
+            if (!_this.btnNextTrick)
+                _this.btnNextTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass2', '下一轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnNextTrick_Click(); });
             // btnLastTrick
-            _this.btnLastTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass1', '最末轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnLastTrick_Click(); });
+            if (!_this.btnLastTrick)
+                _this.btnLastTrick = _this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass1', '最末轮', _this.gameScene.ui.replayFormWrapper, function () { return _this.btnLastTrick_Click(); });
         };
     };
     MainForm.prototype.InitReplayEntities = function () {
@@ -2592,11 +2597,9 @@ var MainForm = /** @class */ (function () {
             this_3.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
             if (i === 0) {
                 this_3.gameScene.ui.gameMe = playerUI;
-                if (this_3.gameScene.ui.handZone) {
-                    this_3.gameScene.ui.handZone.remove();
-                    delete this_3.gameScene.ui.handZone;
+                if (!this_3.gameScene.ui.handZone) {
+                    this_3.drawHandZone();
                 }
-                this_3.drawHandZone();
                 return "continue";
             }
             // 切换视角
