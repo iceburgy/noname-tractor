@@ -188,7 +188,7 @@ export class MainForm {
         }
     }
 
-    public NewPlayerJoined(playerChanged: boolean) {
+    public NewPlayerJoined() {
         if (this.gameScene.isInGameHall()) {
             this.destroyGameHall()
             this.init();
@@ -230,109 +230,96 @@ export class MainForm {
         // }
 
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)
-        if (playerChanged) this.destroyImagesChairOrPlayer();
+        this.destroyImagesChairOrPlayer();
         this.destroyPokerPlayerObGameRoom();
         for (let i = 0; i < 4; i++) {
-            // let lblNickName = this.lblNickNames[i];
-            // let lblObserver = this.lblObservers[i];
-            // lblNickName.setVisible(true)
             let p = this.tractorPlayer.CurrentGameState.Players[curIndex];
             let isEmptySeat = !p;
             if (isEmptySeat) {
-                if (playerChanged) {
-                    // lblNickName.setText("");
-                    // lblObserver.setText("");
-                    var pokerChair = this.gameScene.ui.create.div('.pokerChair', this.gameScene.ui.frameGameRoom);
-                    pokerChair.setBackgroundImage('image/tractor/btn/poker_chair.png')
-                    if (i === 1) pokerChair.style.right = `calc(${this.gameScene.coordinates.playerChairPositions[i].x})`;
-                    else pokerChair.style.left = `calc(${this.gameScene.coordinates.playerChairPositions[i].x})`;
-                    if (i === 2) pokerChair.style.top = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
-                    else pokerChair.style.bottom = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
-                    pokerChair.style.width = '80px';
-                    pokerChair.style.height = '80px';
-                    pokerChair.style['background-size'] = '100% 100%';
-                    pokerChair.style['background-repeat'] = 'no-repeat';
-                    pokerChair.style.cursor = 'pointer';
-                    pokerChair.setAttribute('data-position', i);
+                var pokerChair = this.gameScene.ui.create.div('.pokerChair', this.gameScene.ui.frameGameRoom);
+                pokerChair.setBackgroundImage('image/tractor/btn/poker_chair.png')
+                if (i === 1) pokerChair.style.right = `calc(${this.gameScene.coordinates.playerChairPositions[i].x})`;
+                else pokerChair.style.left = `calc(${this.gameScene.coordinates.playerChairPositions[i].x})`;
+                if (i === 2) pokerChair.style.top = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
+                else pokerChair.style.bottom = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
+                pokerChair.style.width = '80px';
+                pokerChair.style.height = '80px';
+                pokerChair.style['background-size'] = '100% 100%';
+                pokerChair.style['background-repeat'] = 'no-repeat';
+                pokerChair.style.cursor = 'pointer';
+                pokerChair.setAttribute('data-position', i);
 
-                    // click
-                    pokerChair.addEventListener("click", (e: any) => {
-                        let pos = i + 1;
-                        let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
-                        this.ExitRoomAndEnter(playerIndex);
-                    });
-                    // mouseover
-                    pokerChair.addEventListener("mouseover", (e: any) => {
-                        let pos = parseInt(e.target.getAttribute('data-position'));
-                        if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerChairPositions[i].y} - 5px)`;
-                        else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerChairPositions[i].y} + 5px)`;
-                    });
-                    // mouseout
-                    pokerChair.addEventListener("mouseout", (e: any) => {
-                        let pos = parseInt(e.target.getAttribute('data-position'));
-                        if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
-                        else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
-                    });
+                // click
+                pokerChair.addEventListener("click", (e: any) => {
+                    let pos = i + 1;
+                    let playerIndex = CommonMethods.GetPlayerIndexByPos(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId, pos);
+                    this.ExitRoomAndEnter(playerIndex);
+                });
+                // mouseover
+                pokerChair.addEventListener("mouseover", (e: any) => {
+                    let pos = parseInt(e.target.getAttribute('data-position'));
+                    if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerChairPositions[i].y} - 5px)`;
+                    else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerChairPositions[i].y} + 5px)`;
+                });
+                // mouseout
+                pokerChair.addEventListener("mouseout", (e: any) => {
+                    let pos = parseInt(e.target.getAttribute('data-position'));
+                    if (pos === 2) e.target.style.top = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
+                    else e.target.style.bottom = `calc(${this.gameScene.coordinates.playerChairPositions[i].y})`;
+                });
 
-                    this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = pokerChair;
-                }
+                this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = pokerChair;
             } else {
                 //skin
                 let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
-                if (playerChanged) {
-                    if (i !== 0) {
-                        let playerUI = this.CreatePlayer(i, p.PlayerId, this.gameScene.ui.frameGameRoom);
-                        this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
-                        let skinType = this.GetSkinType(skinInUse);
-                        let skinExtention = skinType === 0 ? "webp" : "gif";
-                        let skinURL = `image/tractor/skin/${skinInUse}.${skinExtention}`;
-                        this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerUI, this.gameScene.coordinates.cardHeight, this.SetObText, p);
+                if (i !== 0) {
+                    let playerUI = this.CreatePlayer(i, p.PlayerId, this.gameScene.ui.frameGameRoom);
+                    this.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
+                    let skinType = this.GetSkinType(skinInUse);
+                    let skinExtention = skinType === 0 ? "webp" : "gif";
+                    let skinURL = `image/tractor/skin/${skinInUse}.${skinExtention}`;
+                    this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerUI, this.gameScene.coordinates.cardHeight, this.SetObText, p);
 
-                    }
-                    else {
-                        this.gameScene.ui.gameMe.node.nameol.innerHTML = this.tractorPlayer.PlayerId;
-                        let skinInUseMe = this.tractorPlayer.isObserver ? skinInUse : this.gameScene.skinInUse;
-                        let skinTypeMe = this.GetSkinType(skinInUseMe);
-                        let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
-                        let skinURL = `image/tractor/skin/${skinInUseMe}.${skinExtentionMe}`;
-                        this.SetAvatarImage(false, this.gameScene, i, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, p);
-                    }
-
-                    // 旁观玩家切换视角/房主将玩家请出房间
-                    if ((this.tractorPlayer.isObserver || this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) && i !== 0) {
-                        let curPlayerImage = this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
-                        curPlayerImage.style.cursor = 'pointer';
-                        // click
-                        curPlayerImage.addEventListener("click", (e: any) => {
-                            let pos = i + 1;
-                            if (this.tractorPlayer.isObserver) {
-                                this.destroyImagesChairOrPlayer();
-                                this.observeByPosition(pos);
-                            }
-                            else if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
-                                var c = window.confirm("是否确定将此玩家请出房间？");
-                                if (c == true) {
-                                    this.bootPlayerByPosition(pos);
-                                }
-                            }
-                        });
-                        // mouseover
-                        curPlayerImage.addEventListener("mouseover", (e: any) => {
-                            let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                            if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
-                            else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
-                        });
-                        // mouseout
-                        curPlayerImage.addEventListener("mouseout", (e: any) => {
-                            let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                            if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                            else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                        });
-                    }
                 }
                 else {
-                    let playerDiv = i === 0 ? this.gameScene.ui.gameMe : this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
-                    this.SetObText(p, i, this.gameScene, playerDiv.style.width);
+                    this.gameScene.ui.gameMe.node.nameol.innerHTML = this.tractorPlayer.PlayerId;
+                    let skinInUseMe = this.tractorPlayer.isObserver ? skinInUse : this.gameScene.skinInUse;
+                    let skinTypeMe = this.GetSkinType(skinInUseMe);
+                    let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+                    let skinURL = `image/tractor/skin/${skinInUseMe}.${skinExtentionMe}`;
+                    this.SetAvatarImage(false, this.gameScene, i, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight, this.SetObText, p);
+                }
+
+                // 旁观玩家切换视角/房主将玩家请出房间
+                if ((this.tractorPlayer.isObserver || this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) && i !== 0) {
+                    let curPlayerImage = this.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                    curPlayerImage.style.cursor = 'pointer';
+                    // click
+                    curPlayerImage.addEventListener("click", (e: any) => {
+                        let pos = i + 1;
+                        if (this.tractorPlayer.isObserver) {
+                            this.destroyImagesChairOrPlayer();
+                            this.observeByPosition(pos);
+                        }
+                        else if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
+                            var c = window.confirm("是否确定将此玩家请出房间？");
+                            if (c == true) {
+                                this.bootPlayerByPosition(pos);
+                            }
+                        }
+                    });
+                    // mouseover
+                    curPlayerImage.addEventListener("mouseover", (e: any) => {
+                        let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                        if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
+                        else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
+                    });
+                    // mouseout
+                    curPlayerImage.addEventListener("mouseout", (e: any) => {
+                        let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                        if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                        else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                    });
                 }
             }
 
@@ -341,8 +328,6 @@ export class MainForm {
     }
 
     private SetObText(p: PlayerEntity, i: number, gs: GameScene, skinWid: number) {
-        // 避免重复加载旁观者信息
-        if (gs.ui.pokerPlayerObGameRoom && gs.ui.pokerPlayerObGameRoom[i]) return;
         if (p.Observers && p.Observers.length > 0) {
             var obNameText = "";
             let tempWidOb = 0;

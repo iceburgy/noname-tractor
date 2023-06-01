@@ -120,7 +120,7 @@ var TractorPlayer = /** @class */ (function () {
         if ((playerChanged || observerChanged)) {
             this.mainForm.PlayerPosition = newPlayerPosition;
             this.mainForm.PositionPlayer = newPositionPlayer;
-            this.mainForm.NewPlayerJoined(playerChanged);
+            this.mainForm.NewPlayerJoined();
         }
         for (var i = 0; i < gameState.Players.length; i++) {
             var p = gameState.Players[i];
@@ -156,19 +156,19 @@ var TractorPlayer = /** @class */ (function () {
         this.CurrentRoomSetting = roomSetting;
         this.mainForm.gameScene.ui.roomNameText.innerHTML = "\u623F\u95F4\uFF1A".concat(roomSetting.RoomName);
         this.mainForm.gameScene.ui.roomOwnerText.innerHTML = "\u623F\u4E3B\uFF1A".concat(roomSetting.RoomOwner);
-        // if (showMessage) {
-        //     var msgs = []
-        //     if (roomSetting.DisplaySignalCardInfo) {
-        //         msgs.push("信号牌机制声明：")
-        //         msgs.push("8、9、J、Q代表本门有进手张")
-        //         msgs.push("级牌调主代表寻求对家帮忙清主")
-        //         msgs.push("")
-        //     }
-        //     msgs.push("房间设置：")
-        //     msgs.push(`关闭大牌语音及画面提示：${roomSetting.HideOverridingFlag ? "是" : "否"}`)
-        //     msgs.push(`断线重连等待时长：${roomSetting.secondsToWaitForReenter}秒`)
-        //     this.NotifyMessage(msgs)
-        // }
+        if (showMessage) {
+            var msgs = [];
+            if (roomSetting.DisplaySignalCardInfo) {
+                msgs.push("信号牌机制声明：");
+                msgs.push("8、9、J、Q代表本门有进手张");
+                msgs.push("级牌调主代表寻求对家帮忙清主");
+                msgs.push("");
+            }
+            msgs.push("房间设置：");
+            msgs.push("\u5173\u95ED\u5927\u724C\u8BED\u97F3\u53CA\u753B\u9762\u63D0\u793A\uFF1A".concat(roomSetting.HideOverridingFlag ? "是" : "否"));
+            msgs.push("\u65AD\u7EBF\u91CD\u8FDE\u7B49\u5F85\u65F6\u957F\uFF1A".concat(roomSetting.secondsToWaitForReenter, "\u79D2"));
+            this.NotifyMessage(msgs);
+        }
     };
     TractorPlayer.prototype.NotifyCurrentHandState = function (currentHandState, notifyType) {
         var trumpChanged = false;

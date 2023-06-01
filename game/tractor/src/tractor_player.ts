@@ -155,7 +155,7 @@ export class TractorPlayer {
         if ((playerChanged || observerChanged)) {
             this.mainForm.PlayerPosition = newPlayerPosition;
             this.mainForm.PositionPlayer = newPositionPlayer;
-            this.mainForm.NewPlayerJoined(playerChanged)
+            this.mainForm.NewPlayerJoined()
         }
 
         for (let i = 0; i < gameState.Players.length; i++) {
@@ -194,21 +194,21 @@ export class TractorPlayer {
         (this.mainForm.gameScene.ui.roomNameText as any).innerHTML = `房间：${roomSetting.RoomName}`;
         (this.mainForm.gameScene.ui.roomOwnerText as any).innerHTML = `房主：${roomSetting.RoomOwner}`;
 
-        // if (showMessage) {
-        //     var msgs = []
-        //     if (roomSetting.DisplaySignalCardInfo) {
-        //         msgs.push("信号牌机制声明：")
-        //         msgs.push("8、9、J、Q代表本门有进手张")
-        //         msgs.push("级牌调主代表寻求对家帮忙清主")
-        //         msgs.push("")
-        //     }
+        if (showMessage) {
+            var msgs = []
+            if (roomSetting.DisplaySignalCardInfo) {
+                msgs.push("信号牌机制声明：")
+                msgs.push("8、9、J、Q代表本门有进手张")
+                msgs.push("级牌调主代表寻求对家帮忙清主")
+                msgs.push("")
+            }
 
-        //     msgs.push("房间设置：")
-        //     msgs.push(`关闭大牌语音及画面提示：${roomSetting.HideOverridingFlag ? "是" : "否"}`)
-        //     msgs.push(`断线重连等待时长：${roomSetting.secondsToWaitForReenter}秒`)
+            msgs.push("房间设置：")
+            msgs.push(`关闭大牌语音及画面提示：${roomSetting.HideOverridingFlag ? "是" : "否"}`)
+            msgs.push(`断线重连等待时长：${roomSetting.secondsToWaitForReenter}秒`)
 
-        //     this.NotifyMessage(msgs)
-        // }
+            this.NotifyMessage(msgs)
+        }
     }
     public NotifyCurrentHandState(currentHandState: CurrentHandState, notifyType?: string) {
         var trumpChanged = false;
