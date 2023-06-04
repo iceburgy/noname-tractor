@@ -249,7 +249,7 @@ var DrawingFormHelper = /** @class */ (function () {
             this.DrawShowedCardsReverse(serverCardList, x, y, targetImages, scale, pos);
             return;
         }
-        if (pos === 1 || pos === 3) {
+        if (pos === 3) {
             x = "".concat(x, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * scale * (serverCardList.length - 1) / 2, "px");
         }
         for (var i = 0; i < serverCardList.length; i++) {

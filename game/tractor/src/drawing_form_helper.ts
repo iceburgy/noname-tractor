@@ -271,7 +271,7 @@ export class DrawingFormHelper {
             this.DrawShowedCardsReverse(serverCardList, x, y, targetImages, scale, pos);
             return;
         }
-        if (pos === 1 || pos === 3) {
+        if (pos === 3) {
             x = `${x} - ${this.mainForm.gameScene.coordinates.handCardOffset * scale * (serverCardList.length - 1) / 2}px`;
         }
 
