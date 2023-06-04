@@ -241,7 +241,7 @@ var DrawingFormHelper = /** @class */ (function () {
         }
         return hasDrawn;
     };
-    DrawingFormHelper.prototype.DrawShowedCards = function (serverCardList, x, y, targetImages, scale, pos) {
+    DrawingFormHelper.prototype.DrawShowedCards = function (serverCardList, x, y, targetImages, scale, pos, skipXUpdate) {
         // 5 - last 8 cards
         // 6 - score cards
         // 7 - DrawTrumpMadeCardsByPositionFromLastTrick for pos 3
@@ -249,7 +249,7 @@ var DrawingFormHelper = /** @class */ (function () {
             this.DrawShowedCardsReverse(serverCardList, x, y, targetImages, scale, pos);
             return;
         }
-        if (pos === 3) {
+        if (!skipXUpdate && (pos === 1 || pos === 3)) {
             x = "".concat(x, " - ").concat(this.mainForm.gameScene.coordinates.handCardOffset * scale * (serverCardList.length - 1) / 2, "px");
         }
         for (var i = 0; i < serverCardList.length; i++) {
@@ -974,7 +974,7 @@ var DrawingFormHelper = /** @class */ (function () {
     DrawingFormHelper.prototype.DrawTrumpMadeCardsByPositionFromLastTrick = function (cards, pos) {
         var x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].x;
         var y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].y;
-        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos === 3 ? 7 : pos);
+        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos === 3 ? 7 : pos, true);
     };
     DrawingFormHelper.prototype.DrawSidebarFull = function () {
         var isRoomFull = CommonMethods.GetPlayerCount(this.mainForm.tractorPlayer.CurrentGameState.Players) == 4;

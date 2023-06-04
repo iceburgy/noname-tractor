@@ -513,7 +513,13 @@ export class GameScene {
         this.soundPool[CommonMethods.audioWin] = ["effect", "win"];
         this.soundPool[CommonMethods.audioGameStart] = ["effect", "game_start"];
         this.soundPool[CommonMethods.audioEnterHall] = ["effect", "enter_hall_click"];
-        this.soundPool[CommonMethods.audioEnterRoom] = ["effect", "enter_room_kongcheng12"];
+        this.soundPool[CommonMethods.audioEnterRoom] = [
+            [],
+            [],
+            ["effect", "enter_room_kongcheng11"],
+            ["effect", "enter_room_kongcheng12"],
+            ["effect", "tie"],
+        ];
     }
 
     public saveSettings() {
@@ -541,7 +547,7 @@ export class GameScene {
         return this.ui && this.ui.roomOwnerText;
     }
 
-    public playAudio(audioName: string | number, sex?: string) {
+    public playAudio(audioName: string | number, sex?: string | number) {
         let audioInfo: string[] = [];
         if (typeof audioName === "string") {
             if (sex) {

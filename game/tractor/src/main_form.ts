@@ -2568,7 +2568,7 @@ export class MainForm {
         let isJoingingStr = isJoining ? "加入" : "退出";
         let chatMsg = `【${playerID}】${isJoingingStr}了游戏`;
         this.appendChatMsg(chatMsg);
-        if (isJoining) this.gameScene.playAudio(CommonMethods.audioEnterHall);
+        if (isJoining && this.shouldSoundEnter(playerID, true)) this.gameScene.playAudio(CommonMethods.audioEnterHall);
     }
 
     public NotifyGameRoomPlayerListEventHandler(playerID: string, isJoining: boolean, roomName: string) {
@@ -2576,7 +2576,21 @@ export class MainForm {
         let isJoingingStr = isJoining ? "加入" : "退出";
         let chatMsg = `【${playerID}】${isJoingingStr}了房间【${roomName}】`;
         this.appendChatMsg(chatMsg);
-        if (isJoining) this.gameScene.playAudio(CommonMethods.audioEnterRoom);
+        if (isJoining && this.shouldSoundEnter(playerID, false)) this.gameScene.playAudio(CommonMethods.audioEnterRoom, CommonMethods.GetPlayerCount(this.tractorPlayer.CurrentGameState.Players));
+    }
+
+    private shouldSoundEnter(playerID: string, isJoiningGameHall: boolean) {
+        let players = this.tractorPlayer.CurrentGameState.Players;
+        if (playerID !== this.tractorPlayer.PlayerId &&
+            this.gameScene.isInGameRoom() &&
+            this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards &&
+            // 房间未满，有人加入大厅或者本房间
+            (CommonMethods.GetPlayerCount(players) <= 3 && (isJoiningGameHall || CommonMethods.GetPlayerByID(players, playerID)) ||
+                // 房间已满，有人加入本房间
+                (CommonMethods.GetPlayerCount(players) === 4 && CommonMethods.GetPlayerByID(players, playerID)))) {
+            return true;
+        }
+        return false;
     }
 
     public CutCardShoeCardsEventHandler() {

@@ -263,7 +263,7 @@ export class DrawingFormHelper {
         return hasDrawn
     }
 
-    private DrawShowedCards(serverCardList: number[], x: string, y: string, targetImages: any[], scale: number, pos: number) {
+    private DrawShowedCards(serverCardList: number[], x: string, y: string, targetImages: any[], scale: number, pos: number, skipXUpdate?: boolean) {
         // 5 - last 8 cards
         // 6 - score cards
         // 7 - DrawTrumpMadeCardsByPositionFromLastTrick for pos 3
@@ -271,7 +271,7 @@ export class DrawingFormHelper {
             this.DrawShowedCardsReverse(serverCardList, x, y, targetImages, scale, pos);
             return;
         }
-        if (pos === 3) {
+        if (!skipXUpdate && (pos === 1 || pos === 3)) {
             x = `${x} - ${this.mainForm.gameScene.coordinates.handCardOffset * scale * (serverCardList.length - 1) / 2}px`;
         }
 
@@ -1037,7 +1037,7 @@ export class DrawingFormHelper {
     public DrawTrumpMadeCardsByPositionFromLastTrick(cards: number[], pos: number) {
         let x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].x
         let y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[pos - 1].y
-        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos === 3 ? 7 : pos);
+        this.DrawShowedCards(cards, x, y, this.mainForm.gameScene.showedCardImages, this.mainForm.gameScene.coordinates.trumpMadeCardsScale, pos === 3 ? 7 : pos, true);
     }
 
     public DrawSidebarFull() {
