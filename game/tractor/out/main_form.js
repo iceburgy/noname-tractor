@@ -2366,6 +2366,8 @@ var MainForm = /** @class */ (function () {
         var isJoingingStr = isJoining ? "加入" : "退出";
         var chatMsg = "\u3010".concat(playerID, "\u3011").concat(isJoingingStr, "\u4E86\u6E38\u620F");
         this.appendChatMsg(chatMsg);
+        if (isJoining)
+            this.gameScene.playAudio(CommonMethods.audioEnterHall);
     };
     MainForm.prototype.NotifyGameRoomPlayerListEventHandler = function (playerID, isJoining, roomName) {
         if (!roomName)
@@ -2373,6 +2375,8 @@ var MainForm = /** @class */ (function () {
         var isJoingingStr = isJoining ? "加入" : "退出";
         var chatMsg = "\u3010".concat(playerID, "\u3011").concat(isJoingingStr, "\u4E86\u623F\u95F4\u3010").concat(roomName, "\u3011");
         this.appendChatMsg(chatMsg);
+        if (isJoining)
+            this.gameScene.playAudio(CommonMethods.audioEnterRoom);
     };
     MainForm.prototype.CutCardShoeCardsEventHandler = function () {
         var _this = this;

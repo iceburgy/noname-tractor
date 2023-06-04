@@ -95,6 +95,8 @@ export class CommonMethods {
     public static audioTie = "audiotie";
     public static audioWin = "audiowin";
     public static audioGameStart = "audioGameStart";
+    public static audioEnterHall = "audioEnterHall";
+    public static audioEnterRoom = "audioEnterRoom";
 
     public static NotifyStateType_ObservePlayerById = "ObservePlayerById";
     public static classIsSuiteAvail = "classIsSuiteAvail";

@@ -2568,6 +2568,7 @@ export class MainForm {
         let isJoingingStr = isJoining ? "加入" : "退出";
         let chatMsg = `【${playerID}】${isJoingingStr}了游戏`;
         this.appendChatMsg(chatMsg);
+        if (isJoining) this.gameScene.playAudio(CommonMethods.audioEnterHall);
     }
 
     public NotifyGameRoomPlayerListEventHandler(playerID: string, isJoining: boolean, roomName: string) {
@@ -2575,6 +2576,7 @@ export class MainForm {
         let isJoingingStr = isJoining ? "加入" : "退出";
         let chatMsg = `【${playerID}】${isJoingingStr}了房间【${roomName}】`;
         this.appendChatMsg(chatMsg);
+        if (isJoining) this.gameScene.playAudio(CommonMethods.audioEnterRoom);
     }
 
     public CutCardShoeCardsEventHandler() {
