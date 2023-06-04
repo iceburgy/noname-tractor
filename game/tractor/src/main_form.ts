@@ -2580,14 +2580,20 @@ export class MainForm {
     }
 
     private shouldSoundEnter(playerID: string, isJoiningGameHall: boolean) {
+        // 如果是自己，无需通知
+        if (playerID === this.tractorPlayer.PlayerId) return false;
+
+        // 如果我在大厅，别人加入大厅
+        if (this.gameScene.isInGameHall() && isJoiningGameHall) return true;
+
+        // 如果我在房间里、游戏尚未开始
         let players = this.tractorPlayer.CurrentGameState.Players;
-        if (playerID !== this.tractorPlayer.PlayerId &&
-            this.gameScene.isInGameRoom() &&
+        if (this.gameScene.isInGameRoom() &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards &&
-            // 房间未满，有人加入大厅或者本房间
-            (CommonMethods.GetPlayerCount(players) <= 3 && (isJoiningGameHall || CommonMethods.GetPlayerByID(players, playerID)) ||
-                // 房间已满，有人加入本房间
-                (CommonMethods.GetPlayerCount(players) === 4 && CommonMethods.GetPlayerByID(players, playerID)))) {
+            // 有人加入大厅、房间未满
+            ((isJoiningGameHall && CommonMethods.GetPlayerCount(players) <= 3) ||
+                // 有人加入房间
+                CommonMethods.GetPlayerByID(players, playerID))) {
             return true;
         }
         return false;
