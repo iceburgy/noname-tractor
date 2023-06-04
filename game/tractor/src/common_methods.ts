@@ -71,7 +71,7 @@ export class CommonMethods {
         "烟花",
         "额~不好意思，刚才卡了",
         "有劳点击“开始”继续游戏",
-        "有劳房主点击自己昵称，再点击“继续上盘牌局”",
+        "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
     ]
     public static emojiWarningIntervalInSec = 1
     public static emojiWarningMsg = `请不要过于频繁发送消息，每条消息间隔${CommonMethods.emojiWarningIntervalInSec}秒`

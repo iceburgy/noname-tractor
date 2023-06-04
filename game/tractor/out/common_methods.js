@@ -538,7 +538,7 @@ export var CommonMethods = /** @class */ (function () {
         "烟花",
         "额~不好意思，刚才卡了",
         "有劳点击“开始”继续游戏",
-        "有劳房主点击自己昵称，再点击“继续上盘牌局”",
+        "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
     ];
     CommonMethods.emojiWarningIntervalInSec = 1;
     CommonMethods.emojiWarningMsg = "\u8BF7\u4E0D\u8981\u8FC7\u4E8E\u9891\u7E41\u53D1\u9001\u6D88\u606F\uFF0C\u6BCF\u6761\u6D88\u606F\u95F4\u9694".concat(CommonMethods.emojiWarningIntervalInSec, "\u79D2");
