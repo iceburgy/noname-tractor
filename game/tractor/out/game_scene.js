@@ -413,7 +413,7 @@ var GameScene = /** @class */ (function () {
             [],
             ["effect", "enter_room_kongcheng11"],
             ["effect", "enter_room_kongcheng12"],
-            ["effect", "tie"],
+            ["effect", "game_start"],
         ];
     };
     GameScene.prototype.saveSettings = function () {

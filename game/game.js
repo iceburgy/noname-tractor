@@ -46575,37 +46575,37 @@
 				return players;
 			},
 			me:function(hasme){
-				ui.mebg=ui.create.div('#mebg',ui.arena);
-				ui.me=ui.create.div('#me',ui.arena).animate('start');
-				ui.handcards1Container=ui.create.div('#handcards1',ui.me);
-				ui.handcards2Container=ui.create.div('#handcards2',ui.me);
-				ui.arena.classList.remove('nome');
-				if(lib.config.mousewheel&&!lib.config.touchscreen){
-					ui.handcards1Container.onmousewheel=ui.click.mousewheel;
-					ui.handcards2Container.onmousewheel=ui.click.mousewheel;
-				}
-				ui.handcards1Container.ontouchstart = ui.click.touchStart;
-				ui.handcards2Container.ontouchstart = ui.click.touchStart;
-				ui.handcards1Container.ontouchmove = ui.click.touchScroll;
-				ui.handcards2Container.ontouchmove = ui.click.touchScroll;
-				ui.handcards1Container.style.WebkitOverflowScrolling='touch';
-				ui.handcards2Container.style.WebkitOverflowScrolling='touch';
+				// ui.mebg=ui.create.div('#mebg',ui.arena);
+				// ui.me=ui.create.div('#me',ui.arena).animate('start');
+				// ui.handcards1Container=ui.create.div('#handcards1',ui.me);
+				// ui.handcards2Container=ui.create.div('#handcards2',ui.me);
+				// ui.arena.classList.remove('nome');
+				// if(lib.config.mousewheel&&!lib.config.touchscreen){
+				// 	ui.handcards1Container.onmousewheel=ui.click.mousewheel;
+				// 	ui.handcards2Container.onmousewheel=ui.click.mousewheel;
+				// }
+				// ui.handcards1Container.ontouchstart = ui.click.touchStart;
+				// ui.handcards2Container.ontouchstart = ui.click.touchStart;
+				// ui.handcards1Container.ontouchmove = ui.click.touchScroll;
+				// ui.handcards2Container.ontouchmove = ui.click.touchScroll;
+				// ui.handcards1Container.style.WebkitOverflowScrolling='touch';
+				// ui.handcards2Container.style.WebkitOverflowScrolling='touch';
 
-				if(hasme&&game.me){
-					ui.handcards1=game.me.node.handcards1;
-					ui.handcards2=game.me.node.handcards2;
-					ui.handcards1Container.appendChild(ui.handcards1);
-					ui.handcards2Container.appendChild(ui.handcards2);
-					// ui.updatehl();
-				}
-				else if(game.players.length){
-					game.me=game.players[0];
-					ui.handcards1=game.me.node.handcards1;
-					ui.handcards2=game.me.node.handcards2;
-					ui.handcards1Container.appendChild(ui.handcards1);
-					ui.handcards2Container.appendChild(ui.handcards2);
-					// ui.updatehl();
-				}
+				// if(hasme&&game.me){
+				// 	ui.handcards1=game.me.node.handcards1;
+				// 	ui.handcards2=game.me.node.handcards2;
+				// 	ui.handcards1Container.appendChild(ui.handcards1);
+				// 	ui.handcards2Container.appendChild(ui.handcards2);
+				// 	// ui.updatehl();
+				// }
+				// else if(game.players.length){
+				// 	game.me=game.players[0];
+				// 	ui.handcards1=game.me.node.handcards1;
+				// 	ui.handcards2=game.me.node.handcards2;
+				// 	ui.handcards1Container.appendChild(ui.handcards1);
+				// 	ui.handcards2Container.appendChild(ui.handcards2);
+				// 	// ui.updatehl();
+				// }
 			},
 			card:function(position,info,noclick){
 				var node=ui.create.div('.card',position);

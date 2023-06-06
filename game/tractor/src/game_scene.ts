@@ -518,7 +518,7 @@ export class GameScene {
             [],
             ["effect", "enter_room_kongcheng11"],
             ["effect", "enter_room_kongcheng12"],
-            ["effect", "tie"],
+            ["effect", "game_start"],
         ];
     }
 

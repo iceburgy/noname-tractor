@@ -1044,7 +1044,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 
 						gameVolume.onchange = function () {
 							game.saveConfig('volumn_audio', gameVolume.value);
-							game.playAudio('skill','biyue1');
+							game.playAudio('skill', 'biyue1');
 						};
 
 						setting.add('背景音量');
@@ -1123,42 +1123,42 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						// ui.handSpecial = decadeUI.dialog.create('hand-special playerfocus', ui.arena);
 						// ui.handSpecial.hide();
 
-						var properties = {
-							handSpecial: {
-								cards: decadeUI.dialog.create('special cards', ui.handSpecial),
-								reset: function (cards) {
-									var newWidth = 0;
-									if (game.muniuCardWidth) {
-										newWidth = cards.length * game.muniuCardWidth / 2;
-									}
+						// var properties = {
+						// 	handSpecial: {
+						// 		cards: decadeUI.dialog.create('special cards', ui.handSpecial),
+						// 		reset: function (cards) {
+						// 			var newWidth = 0;
+						// 			if (game.muniuCardWidth) {
+						// 				newWidth = cards.length * game.muniuCardWidth / 2;
+						// 			}
 
-									ui.handSpecial.style.width = Math.max(150, newWidth) + 'px';
-									var elements = ui.handSpecial.cards.childNodes;
-									for (var i = elements.length - 1; i >= 0; i--) {
-										if (cards && cards.contains(elements[i])) continue;
-										ui.special.appendChild(elements[i]);
-									}
+						// 			ui.handSpecial.style.width = Math.max(150, newWidth) + 'px';
+						// 			var elements = ui.handSpecial.cards.childNodes;
+						// 			for (var i = elements.length - 1; i >= 0; i--) {
+						// 				if (cards && cards.contains(elements[i])) continue;
+						// 				ui.special.appendChild(elements[i]);
+						// 			}
 
-									if (cards && cards.length) {
-										for (var i = 0; i < cards.length; i++) {
-											if (cards[i] && !ui.handSpecial.cards.contains(cards[i])) {
-												ui.handSpecial.cards.appendChild(cards[i]);
-											}
-											var newTransform = 'translateX(-' + (i + (game.download ? 1 : 0)) * cards[i].offsetWidth + 'px)';
-											if (!cards[i].classList.contains('removing') &&
-												!cards[i].style.transform.includes('translateY(-20px)') &&
-												cards[i].style.transform != newTransform) {
-												cards[i].style.transform = newTransform;
-											}
-										}
-									}
+						// 			if (cards && cards.length) {
+						// 				for (var i = 0; i < cards.length; i++) {
+						// 					if (cards[i] && !ui.handSpecial.cards.contains(cards[i])) {
+						// 						ui.handSpecial.cards.appendChild(cards[i]);
+						// 					}
+						// 					var newTransform = 'translateX(-' + (i + (game.download ? 1 : 0)) * cards[i].offsetWidth + 'px)';
+						// 					if (!cards[i].classList.contains('removing') &&
+						// 						!cards[i].style.transform.includes('translateY(-20px)') &&
+						// 						cards[i].style.transform != newTransform) {
+						// 						cards[i].style.transform = newTransform;
+						// 					}
+						// 				}
+						// 			}
 
-									if (!game.muniuCardWidth && ui.handSpecial.cards.childNodes && ui.handSpecial.cards.childNodes.length) {
-										game.muniuCardWidth = ui.handSpecial.cards.childNodes[0].offsetWidth;
-									}
-								},
-							}
-						};
+						// 			if (!game.muniuCardWidth && ui.handSpecial.cards.childNodes && ui.handSpecial.cards.childNodes.length) {
+						// 				game.muniuCardWidth = ui.handSpecial.cards.childNodes[0].offsetWidth;
+						// 			}
+						// 		},
+						// 	}
+						// };
 
 
 						// for (var key in properties.handSpecial) {

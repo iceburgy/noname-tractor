@@ -131,7 +131,7 @@ var MainForm = /** @class */ (function () {
             nextPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, nextPlayer).PlayerId;
         }
     };
-    MainForm.prototype.NewPlayerJoined = function () {
+    MainForm.prototype.NewPlayerJoined = function (playerChanged) {
         var _this = this;
         if (this.gameScene.isInGameHall()) {
             this.destroyGameHall();
@@ -167,106 +167,116 @@ var MainForm = /** @class */ (function () {
         // if (this.tractorPlayer.isObserver) {
         //     this.groupSmallGames.setVisible(false);
         // }
-        var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId);
-        this.destroyImagesChairOrPlayer();
+        var shouldReDrawChairOrPlayer = playerChanged || this.tractorPlayer.isObserver;
+        if (shouldReDrawChairOrPlayer)
+            this.destroyImagesChairOrPlayer();
         this.destroyPokerPlayerObGameRoom();
+        var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId);
         var _loop_1 = function (i) {
             var p = this_1.tractorPlayer.CurrentGameState.Players[curIndex];
             var isEmptySeat = !p;
             if (isEmptySeat) {
-                pokerChair = this_1.gameScene.ui.create.div('.pokerChair', this_1.gameScene.ui.frameGameRoom);
-                pokerChair.setBackgroundImage('image/tractor/btn/poker_chair.png');
-                if (i === 1)
-                    pokerChair.style.right = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].x, ")");
-                else
-                    pokerChair.style.left = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].x, ")");
-                if (i === 2)
-                    pokerChair.style.top = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].y, ")");
-                else
-                    pokerChair.style.bottom = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].y, ")");
-                pokerChair.style.width = '80px';
-                pokerChair.style.height = '80px';
-                pokerChair.style['background-size'] = '100% 100%';
-                pokerChair.style['background-repeat'] = 'no-repeat';
-                pokerChair.style.cursor = 'pointer';
-                pokerChair.setAttribute('data-position', i);
-                // click
-                pokerChair.addEventListener("click", function (e) {
-                    var pos = i + 1;
-                    var playerIndex = CommonMethods.GetPlayerIndexByPos(_this.tractorPlayer.CurrentGameState.Players, _this.tractorPlayer.PlayerId, pos);
-                    _this.ExitRoomAndEnter(playerIndex);
-                });
-                // mouseover
-                pokerChair.addEventListener("mouseover", function (e) {
-                    var pos = parseInt(e.target.getAttribute('data-position'));
-                    if (pos === 2)
-                        e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, " - 5px)");
+                if (shouldReDrawChairOrPlayer) {
+                    pokerChair = this_1.gameScene.ui.create.div('.pokerChair', this_1.gameScene.ui.frameGameRoom);
+                    pokerChair.setBackgroundImage('image/tractor/btn/poker_chair.png');
+                    if (i === 1)
+                        pokerChair.style.right = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].x, ")");
                     else
-                        e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, " + 5px)");
-                });
-                // mouseout
-                pokerChair.addEventListener("mouseout", function (e) {
-                    var pos = parseInt(e.target.getAttribute('data-position'));
-                    if (pos === 2)
-                        e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, ")");
+                        pokerChair.style.left = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].x, ")");
+                    if (i === 2)
+                        pokerChair.style.top = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].y, ")");
                     else
-                        e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, ")");
-                });
-                this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i] = pokerChair;
-            }
-            else {
-                //skin
-                var skinInUse = this_1.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this_1.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
-                if (i !== 0) {
-                    var playerUI = this_1.CreatePlayer(i, p.PlayerId, this_1.gameScene.ui.frameGameRoom);
-                    this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
-                    var skinType = this_1.GetSkinType(skinInUse);
-                    var skinExtention = skinType === 0 ? "webp" : "gif";
-                    var skinURL = "image/tractor/skin/".concat(skinInUse, ".").concat(skinExtention);
-                    this_1.SetAvatarImage(false, this_1.gameScene, i, skinType, skinURL, playerUI, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p);
-                }
-                else {
-                    this_1.gameScene.ui.gameMe.node.nameol.innerHTML = this_1.tractorPlayer.PlayerId;
-                    var skinInUseMe = this_1.tractorPlayer.isObserver ? skinInUse : this_1.gameScene.skinInUse;
-                    var skinTypeMe = this_1.GetSkinType(skinInUseMe);
-                    var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
-                    var skinURL = "image/tractor/skin/".concat(skinInUseMe, ".").concat(skinExtentionMe);
-                    this_1.SetAvatarImage(false, this_1.gameScene, i, skinTypeMe, skinURL, this_1.gameScene.ui.gameMe, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p);
-                }
-                // 旁观玩家切换视角/房主将玩家请出房间
-                if ((this_1.tractorPlayer.isObserver || this_1.tractorPlayer.CurrentRoomSetting.RoomOwner === this_1.tractorPlayer.MyOwnId) && i !== 0) {
-                    var curPlayerImage = this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i];
-                    curPlayerImage.style.cursor = 'pointer';
+                        pokerChair.style.bottom = "calc(".concat(this_1.gameScene.coordinates.playerChairPositions[i].y, ")");
+                    pokerChair.style.width = '80px';
+                    pokerChair.style.height = '80px';
+                    pokerChair.style['background-size'] = '100% 100%';
+                    pokerChair.style['background-repeat'] = 'no-repeat';
+                    pokerChair.style.cursor = 'pointer';
+                    pokerChair.setAttribute('data-position', i);
                     // click
-                    curPlayerImage.addEventListener("click", function (e) {
+                    pokerChair.addEventListener("click", function (e) {
                         var pos = i + 1;
-                        if (_this.tractorPlayer.isObserver) {
-                            _this.destroyImagesChairOrPlayer();
-                            _this.observeByPosition(pos);
-                        }
-                        else if (_this.tractorPlayer.CurrentRoomSetting.RoomOwner === _this.tractorPlayer.MyOwnId) {
-                            var c = window.confirm("是否确定将此玩家请出房间？");
-                            if (c == true) {
-                                _this.bootPlayerByPosition(pos);
-                            }
-                        }
+                        var playerIndex = CommonMethods.GetPlayerIndexByPos(_this.tractorPlayer.CurrentGameState.Players, _this.tractorPlayer.PlayerId, pos);
+                        _this.ExitRoomAndEnter(playerIndex);
                     });
                     // mouseover
-                    curPlayerImage.addEventListener("mouseover", function (e) {
-                        var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                    pokerChair.addEventListener("mouseover", function (e) {
+                        var pos = parseInt(e.target.getAttribute('data-position'));
                         if (pos === 2)
-                            e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                            e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, " - 5px)");
                         else
-                            e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+                            e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, " + 5px)");
                     });
                     // mouseout
-                    curPlayerImage.addEventListener("mouseout", function (e) {
-                        var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                    pokerChair.addEventListener("mouseout", function (e) {
+                        var pos = parseInt(e.target.getAttribute('data-position'));
                         if (pos === 2)
-                            e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                            e.target.style.top = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, ")");
                         else
-                            e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                            e.target.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerChairPositions[i].y, ")");
                     });
+                    this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i] = pokerChair;
+                }
+            }
+            else {
+                if (shouldReDrawChairOrPlayer) {
+                    //skin                
+                    var skinInUse = this_1.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this_1.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
+                    if (i !== 0) {
+                        var playerUI = this_1.CreatePlayer(i, p.PlayerId, this_1.gameScene.ui.frameGameRoom);
+                        this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
+                        var skinType = this_1.GetSkinType(skinInUse);
+                        var skinExtention = skinType === 0 ? "webp" : "gif";
+                        var skinURL = "image/tractor/skin/".concat(skinInUse, ".").concat(skinExtention);
+                        this_1.SetAvatarImage(false, this_1.gameScene, i, skinType, skinURL, playerUI, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p);
+                    }
+                    else {
+                        this_1.gameScene.ui.gameMe.node.nameol.innerHTML = this_1.tractorPlayer.PlayerId;
+                        var skinInUseMe = this_1.tractorPlayer.isObserver ? skinInUse : this_1.gameScene.skinInUse;
+                        var skinTypeMe = this_1.GetSkinType(skinInUseMe);
+                        var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+                        var skinURL = "image/tractor/skin/".concat(skinInUseMe, ".").concat(skinExtentionMe);
+                        this_1.SetAvatarImage(false, this_1.gameScene, i, skinTypeMe, skinURL, this_1.gameScene.ui.gameMe, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p);
+                    }
+                    // 旁观玩家切换视角/房主将玩家请出房间
+                    if ((this_1.tractorPlayer.isObserver || this_1.tractorPlayer.CurrentRoomSetting.RoomOwner === this_1.tractorPlayer.MyOwnId) && i !== 0) {
+                        var curPlayerImage = this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                        curPlayerImage.style.cursor = 'pointer';
+                        // click
+                        curPlayerImage.addEventListener("click", function (e) {
+                            var pos = i + 1;
+                            if (_this.tractorPlayer.isObserver) {
+                                _this.destroyImagesChairOrPlayer();
+                                _this.observeByPosition(pos);
+                            }
+                            else if (_this.tractorPlayer.CurrentRoomSetting.RoomOwner === _this.tractorPlayer.MyOwnId) {
+                                var c = window.confirm("是否确定将此玩家请出房间？");
+                                if (c == true) {
+                                    _this.bootPlayerByPosition(pos);
+                                }
+                            }
+                        });
+                        // mouseover
+                        curPlayerImage.addEventListener("mouseover", function (e) {
+                            var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            if (pos === 2)
+                                e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                            else
+                                e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+                        });
+                        // mouseout
+                        curPlayerImage.addEventListener("mouseout", function (e) {
+                            var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            if (pos === 2)
+                                e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                            else
+                                e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                        });
+                    }
+                }
+                else {
+                    var playerUI = i === 0 ? this_1.gameScene.ui.gameMe : this_1.gameScene.ui.gameRoomImagesChairOrPlayer[i];
+                    this_1.SetObText(p, i, this_1.gameScene, playerUI.clientWidth);
                 }
             }
             curIndex = (curIndex + 1) % 4;
@@ -295,6 +305,8 @@ var MainForm = /** @class */ (function () {
             pokerPlayerOb.style.fontFamily = 'serif';
             pokerPlayerOb.style.fontSize = '16px';
             pokerPlayerOb.style.textAlign = 'left';
+            if (gs.ui.pokerPlayerObGameRoom[i])
+                gs.ui.pokerPlayerObGameRoom[i].remove();
             gs.ui.pokerPlayerObGameRoom[i] = pokerPlayerOb;
             var obX = gs.coordinates.observerTextPositions[i].x;
             var obY = gs.coordinates.observerTextPositions[i].y;
@@ -385,8 +397,12 @@ var MainForm = /** @class */ (function () {
         }
         delete this.gameScene.ui.roomNameText;
         delete this.gameScene.ui.roomOwnerText;
-        delete this.gameScene.ui.btnPig;
+        if (this.gameScene.ui.btnPig) {
+            this.gameScene.ui.btnPig.remove();
+            delete this.gameScene.ui.btnPig;
+        }
         this.gameScene.ui.gameRoomImagesChairOrPlayer = [];
+        this.gameScene.ui.pokerPlayerObGameRoom = [];
         this.gameScene.ui.pokerPlayerStartersLabel = [];
         if (this.gameScene.ui.btnRobot) {
             this.gameScene.ui.btnRobot.remove();
@@ -433,7 +449,8 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.destroyImagesChairOrPlayer = function () {
         if (this.gameScene.ui.gameRoomImagesChairOrPlayer) {
             this.gameScene.ui.gameRoomImagesChairOrPlayer.forEach(function (image) {
-                image.remove();
+                if (image)
+                    image.remove();
             });
             this.gameScene.ui.gameRoomImagesChairOrPlayer = [];
         }
@@ -441,7 +458,8 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.destroyPokerPlayerStartersLabel = function () {
         if (this.gameScene.ui.pokerPlayerStartersLabel) {
             this.gameScene.ui.pokerPlayerStartersLabel.forEach(function (image) {
-                image.remove();
+                if (image)
+                    image.remove();
             });
             this.gameScene.ui.pokerPlayerStartersLabel = [];
         }
@@ -451,7 +469,8 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.pokerPlayerObGameRoom = [];
         }
         this.gameScene.ui.pokerPlayerObGameRoom.forEach(function (image) {
-            image.remove();
+            if (image)
+                image.remove();
         });
         this.gameScene.ui.pokerPlayerObGameRoom = [];
     };
@@ -556,8 +575,10 @@ var MainForm = /** @class */ (function () {
         // this.btnRiot.Visible = false;
         this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {};
         this.gameScene.game.timerCurrent = 0;
-        this.gameScene.ui.btnPig.hide();
-        this.gameScene.ui.btnPig.classList.remove('pointerdiv');
+        if (this.gameScene.ui.btnPig) {
+            this.gameScene.ui.btnPig.hide();
+            this.gameScene.ui.btnPig.classList.remove('pointerdiv');
+        }
         this.init();
     };
     MainForm.prototype.DiscardingLast8 = function () {

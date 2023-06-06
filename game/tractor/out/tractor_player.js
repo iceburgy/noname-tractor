@@ -120,7 +120,7 @@ var TractorPlayer = /** @class */ (function () {
         if ((playerChanged || observerChanged)) {
             this.mainForm.PlayerPosition = newPlayerPosition;
             this.mainForm.PositionPlayer = newPositionPlayer;
-            this.mainForm.NewPlayerJoined();
+            this.mainForm.NewPlayerJoined(playerChanged);
         }
         for (var i = 0; i < gameState.Players.length; i++) {
             var p = gameState.Players[i];
@@ -422,7 +422,7 @@ var TractorPlayer = /** @class */ (function () {
             }
             else if (m.includes("新游戏即将开始")) {
                 //新游戏开始前播放提示音，告诉玩家要抢庄
-                this.mainForm.gameScene.playAudio(CommonMethods.audioGameStart);
+                this.mainForm.gameScene.playAudio(CommonMethods.audioWin);
                 decadeUI.animation.playSpine2D('effect_youxikaishi', void 0, void 0, decadeUI.animation.canvas.width * 0.8, decadeUI.animation.canvas.height * 0.8);
             }
             else if (m.includes("罚分") && !this.mainForm.gameScene.isReplayMode) {
