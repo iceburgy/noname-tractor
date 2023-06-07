@@ -131,7 +131,7 @@ var MainForm = /** @class */ (function () {
             nextPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, nextPlayer).PlayerId;
         }
     };
-    MainForm.prototype.NewPlayerJoined = function (playerChanged) {
+    MainForm.prototype.NewPlayerJoined = function (shouldReDrawChairOrPlayer) {
         var _this = this;
         if (this.gameScene.isInGameHall()) {
             this.destroyGameHall();
@@ -167,7 +167,6 @@ var MainForm = /** @class */ (function () {
         // if (this.tractorPlayer.isObserver) {
         //     this.groupSmallGames.setVisible(false);
         // }
-        var shouldReDrawChairOrPlayer = playerChanged || this.tractorPlayer.isObserver;
         if (shouldReDrawChairOrPlayer)
             this.destroyImagesChairOrPlayer();
         this.destroyPokerPlayerObGameRoom();

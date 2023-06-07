@@ -188,7 +188,7 @@ export class MainForm {
         }
     }
 
-    public NewPlayerJoined(playerChanged: boolean) {
+    public NewPlayerJoined(shouldReDrawChairOrPlayer: boolean) {
         if (this.gameScene.isInGameHall()) {
             this.destroyGameHall()
             this.init();
@@ -229,7 +229,6 @@ export class MainForm {
         //     this.groupSmallGames.setVisible(false);
         // }
 
-        let shouldReDrawChairOrPlayer = playerChanged || this.tractorPlayer.isObserver;
         if (shouldReDrawChairOrPlayer) this.destroyImagesChairOrPlayer();
         this.destroyPokerPlayerObGameRoom();
         var curIndex = CommonMethods.GetPlayerIndexByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.PlayerId)

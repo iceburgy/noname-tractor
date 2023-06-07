@@ -98,12 +98,18 @@ var TractorPlayer = /** @class */ (function () {
             }
             curIndex = (curIndex + 1) % 4;
         }
+        var oldObservee = "";
+        var newObservee = "";
         var totalPlayers = 0;
         for (var i = 0; i < 4; i++) {
             playerChanged = playerChanged || !(!newPositionPlayer[i + 1] && !this.mainForm.PositionPlayer[i + 1] ||
                 newPositionPlayer[i + 1] && this.mainForm.PositionPlayer[i + 1] && newPositionPlayer[i + 1] == this.mainForm.PositionPlayer[i + 1]);
             observerChanged = observerChanged || !(!this.CurrentGameState.Players[i] && !gameState.Players[i] ||
                 this.CurrentGameState.Players[i] && gameState.Players[i] && CommonMethods.ArrayIsEqual(this.CurrentGameState.Players[i].Observers, gameState.Players[i].Observers));
+            if (this.CurrentGameState.Players[i] && this.CurrentGameState.Players[i].Observers.includes(this.MyOwnId))
+                oldObservee = this.CurrentGameState.Players[i].PlayerId;
+            if (gameState.Players[i] && gameState.Players[i].Observers.includes(this.MyOwnId))
+                newObservee = gameState.Players[i].PlayerId;
             if (gameState.Players[i] != null && gameState.Players[i].Team != 0 &&
                 (this.CurrentGameState.Players[i] == null || this.CurrentGameState.Players[i].PlayerId != gameState.Players[i].PlayerId || this.CurrentGameState.Players[i].Team != gameState.Players[i].Team)) {
                 teamMade = true;
@@ -112,6 +118,7 @@ var TractorPlayer = /** @class */ (function () {
                 totalPlayers++;
             }
         }
+        var shouldReDrawChairOrPlayer = playerChanged || newObservee !== "" && newObservee !== oldObservee;
         var anyBecomesReady = CommonMethods.SomeoneBecomesReady(this.CurrentGameState.Players, gameState.Players);
         this.CurrentGameState.CloneFrom(gameState);
         if (teamMade || observerChanged && totalPlayers == 4) {
@@ -120,7 +127,7 @@ var TractorPlayer = /** @class */ (function () {
         if ((playerChanged || observerChanged)) {
             this.mainForm.PlayerPosition = newPlayerPosition;
             this.mainForm.PositionPlayer = newPositionPlayer;
-            this.mainForm.NewPlayerJoined(playerChanged);
+            this.mainForm.NewPlayerJoined(shouldReDrawChairOrPlayer);
         }
         for (var i = 0; i < gameState.Players.length; i++) {
             var p = gameState.Players[i];
