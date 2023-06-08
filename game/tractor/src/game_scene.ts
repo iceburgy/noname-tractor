@@ -71,6 +71,7 @@ export class GameScene {
     public noTouchDevice!: string
     public noCutCards!: string
     public yesDragSelect!: string
+    public onlyMeShowCardCancelLastTrickView!: string
     public yesFirstPersonView!: string
     public qiangliangMin!: string
     public skinInUse!: string
@@ -129,6 +130,7 @@ export class GameScene {
         this.noTouchDevice = (this.lib && this.lib.config && this.lib.config.noTouchDevice) ? this.lib.config.noTouchDevice : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
         this.yesDragSelect = (this.lib && this.lib.config && this.lib.config.yesDragSelect) ? this.lib.config.yesDragSelect : "false";
+        this.onlyMeShowCardCancelLastTrickView = (this.lib && this.lib.config && this.lib.config.onlyMeShowCardCancelLastTrickView) ? this.lib.config.onlyMeShowCardCancelLastTrickView : "false";
         this.yesFirstPersonView = (this.lib && this.lib.config && this.lib.config.yesFirstPersonView) ? this.lib.config.yesFirstPersonView : "false";
         this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'

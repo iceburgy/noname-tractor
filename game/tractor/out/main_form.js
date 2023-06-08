@@ -697,8 +697,11 @@ var MainForm = /** @class */ (function () {
             }
             this.drawingFormHelper.DrawShowedCardsByPosition(showedCards, position);
         }
-        //如果正在回看并且自己刚刚出了牌，则重置回看，重新画牌
-        if (this.tractorPlayer.ShowLastTrickCards) {
+        // 如果正在回看，且：
+        // - 如果设置“仅自己出牌时才自动退出上轮回看模式”开启，自己刚刚出了牌
+        // - 或者有人刚刚出了牌
+        // 则重置回看，重新画牌
+        if (this.tractorPlayer.ShowLastTrickCards && (this.gameScene.onlyMeShowCardCancelLastTrickView.toLowerCase() !== "true" || latestPlayer == this.tractorPlayer.PlayerId)) {
             this.HandleRightClickEmptyArea();
         }
         //即时更新旁观手牌
@@ -1029,6 +1032,12 @@ var MainForm = /** @class */ (function () {
         cbxYesDragSelect.onchange = function () {
             gs.yesDragSelect = cbxYesDragSelect.checked.toString();
             gs.game.saveConfig("yesDragSelect", gs.yesDragSelect);
+        };
+        var cbxOnlyMeShowCardCancelLastTrickView = document.getElementById("cbxOnlyMeShowCardCancelLastTrickView");
+        cbxOnlyMeShowCardCancelLastTrickView.checked = gs.onlyMeShowCardCancelLastTrickView.toLowerCase() === "true";
+        cbxOnlyMeShowCardCancelLastTrickView.onchange = function () {
+            gs.onlyMeShowCardCancelLastTrickView = cbxOnlyMeShowCardCancelLastTrickView.checked.toString();
+            gs.game.saveConfig("onlyMeShowCardCancelLastTrickView", gs.onlyMeShowCardCancelLastTrickView);
         };
         var noTouchDevice = document.getElementById("cbxNoTouchDevice");
         noTouchDevice.checked = gs.noTouchDevice.toLowerCase() === "true";
