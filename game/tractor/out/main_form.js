@@ -2362,8 +2362,8 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = playersInGameHall[i];
-                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : "");
-                d.innerText = "\u3010".concat(pidInfo, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal);
+                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "");
+                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2381,8 +2381,8 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = players[i];
-                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : "");
-                d.innerText = "\u3010".concat(pidInfo, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal);
+                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "");
+                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
             if (obs && obs.length > 0) {
@@ -2395,8 +2395,8 @@ var MainForm = /** @class */ (function () {
                     d.style.position = 'static';
                     d.style.display = 'block';
                     var oid = obs[i];
-                    var oidInfo = "".concat(oid).concat(this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : "");
-                    d.innerText = "\u3010".concat(oidInfo, "\u3011\u79EF\u5206\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal);
+                    var oidInfo = "".concat(oid).concat(this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "");
+                    d.innerText = "\u3010".concat(oidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[oid].Shengbi);
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }

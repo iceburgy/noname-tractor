@@ -2555,8 +2555,8 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = playersInGameHall[i];
-                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : ""}`;
-                d.innerText = `【${pidInfo}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
+                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : ""}`;
+                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2575,8 +2575,8 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = players[i];
-                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : ""}`;
-                d.innerText = `【${pidInfo}】积分：${this.DaojuInfo.daojuInfoByPlayer[pid].ShengbiTotal}`;
+                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : ""}`;
+                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
 
@@ -2590,8 +2590,8 @@ export class MainForm {
                     d.style.position = 'static';
                     d.style.display = 'block';
                     let oid = obs[i];
-                    let oidInfo = `${oid}${this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-旧版" : ""}`;
-                    d.innerText = `【${oidInfo}】积分：${this.DaojuInfo.daojuInfoByPlayer[oid].ShengbiTotal}`;
+                    let oidInfo = `${oid}${this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : ""}`;
+                    d.innerText = `【${oidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[oid].Shengbi}`;
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }
