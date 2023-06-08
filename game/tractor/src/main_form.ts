@@ -312,15 +312,17 @@ export class MainForm {
                         });
                         // mouseover
                         curPlayerImage.addEventListener("mouseover", (e: any) => {
-                            let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                            if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
-                            else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
+                            let targetUI = jQuery(e.target).closest('.player')[0];
+                            let pos = parseInt(targetUI.getAttribute('data-position'));
+                            if (pos === 2) targetUI.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
+                            else targetUI.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
                         });
                         // mouseout
                         curPlayerImage.addEventListener("mouseout", (e: any) => {
-                            let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                            if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                            else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                            let targetUI = jQuery(e.target).closest('.player')[0];
+                            let pos = parseInt(targetUI.getAttribute('data-position'));
+                            if (pos === 2) targetUI.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                            else targetUI.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
                         });
                     }
                 }
@@ -690,7 +692,8 @@ export class MainForm {
         if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             let tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId]
             this.tractorPlayer.CurrentPoker.CloneFrom(tempCP);
-            this.drawingFormHelper.ResortMyHandCards(true);
+            this.drawingFormHelper.removeCardImage(this.tractorPlayer.CurrentHandState.DiscardedCards);
+            this.drawingFormHelper.ResortMyHandCards();
         }
         this.DrawDiscardedCardsCaller(true);
     }
@@ -801,7 +804,8 @@ export class MainForm {
         //即时更新旁观手牌
         if (this.tractorPlayer.isObserver && this.tractorPlayer.PlayerId == latestPlayer) {
             this.tractorPlayer.CurrentPoker.CloneFrom(this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId])
-            this.drawingFormHelper.ResortMyHandCards(true);
+            this.drawingFormHelper.removeCardImage(showedCards);
+            this.drawingFormHelper.ResortMyHandCards();
         }
 
         if (winResult > 0) {
@@ -2387,8 +2391,11 @@ export class MainForm {
                     let playerGiffersNew = jQuery(`#${CommonMethods.gifferPrefix}${pos}`);
                     if (playerGiffersNew && playerGiffersNew.length > 0) {
                         playerGiffersNew.prop("disabled", true);
-                        playerGiffersNew.css('cursor', 'default');
                         playerGiffersNew.children('canvas').css('border-radius', '8px');
+                        let playerUI = jQuery(playerGiffersNew).closest('.player')[0];
+                        if (jQuery(playerUI).css('cursor') !== 'pointer') {
+                            playerGiffersNew.css('cursor', 'default');
+                        }
                     }
                 }, 1000);
             }
@@ -2864,15 +2871,17 @@ export class MainForm {
             });
             // mouseover
             playerUI.addEventListener("mouseover", (e: any) => {
-                let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
-                else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
+                let targetUI = jQuery(e.target).closest('.player')[0];
+                let pos = parseInt(targetUI.getAttribute('data-position'));
+                if (pos === 2) targetUI.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} - 5px)`;
+                else targetUI.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y} + 5px)`;
             });
             // mouseout
             playerUI.addEventListener("mouseout", (e: any) => {
-                let pos = parseInt(e.target.parentElement.getAttribute('data-position'));
-                if (pos === 2) e.target.parentElement.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
-                else e.target.parentElement.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                let targetUI = jQuery(e.target).closest('.player')[0];
+                let pos = parseInt(targetUI.getAttribute('data-position'));
+                if (pos === 2) targetUI.style.top = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
+                else targetUI.style.bottom = `calc(${this.gameScene.coordinates.playerSkinPositions[i].y})`;
             });
         }
 

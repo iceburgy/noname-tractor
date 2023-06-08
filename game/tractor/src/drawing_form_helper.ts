@@ -347,7 +347,7 @@ export class DrawingFormHelper {
         if (!image) {
             // 未在已画牌中，则需画牌
             let uiCardNumber = CommonMethods.ServerToUICardMap[serverCardNumber]
-            isAnimation = !this.mainForm.tractorPlayer.isObserver;
+            isAnimation = this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep === SuitEnums.HandStep.DistributingCards;
             image = this.createCard(parent, uiCardNumber, this.handcardScale, x, y);
             image.setAttribute('cardsOrderNumber', this.mainForm.cardsOrderNumber);
             image.setAttribute('serverCardNumber', serverCardNumber);
@@ -518,7 +518,7 @@ export class DrawingFormHelper {
         }
         this.mainForm.cardsOrderNumber++
     }
-    swapCardImage(prevOrderNum: number, curOrderNum: number) {
+    private swapCardImage(prevOrderNum: number, curOrderNum: number) {
         let prevImg = this.mainForm.gameScene.cardImages[prevOrderNum];
         let curImg = this.mainForm.gameScene.cardImages[curOrderNum];
         this.mainForm.gameScene.cardImages[prevOrderNum] = curImg;

@@ -257,19 +257,21 @@ var MainForm = /** @class */ (function () {
                         });
                         // mouseover
                         curPlayerImage.addEventListener("mouseover", function (e) {
-                            var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            var targetUI = jQuery(e.target).closest('.player')[0];
+                            var pos = parseInt(targetUI.getAttribute('data-position'));
                             if (pos === 2)
-                                e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                                targetUI.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
                             else
-                                e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+                                targetUI.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
                         });
                         // mouseout
                         curPlayerImage.addEventListener("mouseout", function (e) {
-                            var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                            var targetUI = jQuery(e.target).closest('.player')[0];
+                            var pos = parseInt(targetUI.getAttribute('data-position'));
                             if (pos === 2)
-                                e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                                targetUI.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
                             else
-                                e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                                targetUI.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
                         });
                     }
                 }
@@ -607,7 +609,8 @@ var MainForm = /** @class */ (function () {
         if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             var tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId];
             this.tractorPlayer.CurrentPoker.CloneFrom(tempCP);
-            this.drawingFormHelper.ResortMyHandCards(true);
+            this.drawingFormHelper.removeCardImage(this.tractorPlayer.CurrentHandState.DiscardedCards);
+            this.drawingFormHelper.ResortMyHandCards();
         }
         this.DrawDiscardedCardsCaller(true);
     };
@@ -707,7 +710,8 @@ var MainForm = /** @class */ (function () {
         //即时更新旁观手牌
         if (this.tractorPlayer.isObserver && this.tractorPlayer.PlayerId == latestPlayer) {
             this.tractorPlayer.CurrentPoker.CloneFrom(this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId]);
-            this.drawingFormHelper.ResortMyHandCards(true);
+            this.drawingFormHelper.removeCardImage(showedCards);
+            this.drawingFormHelper.ResortMyHandCards();
         }
         if (winResult > 0) {
             this.drawingFormHelper.DrawOverridingFlag(showedCards.length, this.PlayerPosition[this.tractorPlayer.playerLocalCache.WinnderID], this.tractorPlayer.playerLocalCache.WinResult - 1, true);
@@ -2207,8 +2211,11 @@ var MainForm = /** @class */ (function () {
                     var playerGiffersNew = jQuery("#".concat(CommonMethods.gifferPrefix).concat(pos));
                     if (playerGiffersNew && playerGiffersNew.length > 0) {
                         playerGiffersNew.prop("disabled", true);
-                        playerGiffersNew.css('cursor', 'default');
                         playerGiffersNew.children('canvas').css('border-radius', '8px');
+                        var playerUI = jQuery(playerGiffersNew).closest('.player')[0];
+                        if (jQuery(playerUI).css('cursor') !== 'pointer') {
+                            playerGiffersNew.css('cursor', 'default');
+                        }
                     }
                 }, 1000);
             }
@@ -2651,19 +2658,21 @@ var MainForm = /** @class */ (function () {
             });
             // mouseover
             playerUI.addEventListener("mouseover", function (e) {
-                var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                var targetUI = jQuery(e.target).closest('.player')[0];
+                var pos = parseInt(targetUI.getAttribute('data-position'));
                 if (pos === 2)
-                    e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
+                    targetUI.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " - 5px)");
                 else
-                    e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
+                    targetUI.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, " + 5px)");
             });
             // mouseout
             playerUI.addEventListener("mouseout", function (e) {
-                var pos = parseInt(e.target.parentElement.getAttribute('data-position'));
+                var targetUI = jQuery(e.target).closest('.player')[0];
+                var pos = parseInt(targetUI.getAttribute('data-position'));
                 if (pos === 2)
-                    e.target.parentElement.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                    targetUI.style.top = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
                 else
-                    e.target.parentElement.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
+                    targetUI.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
             });
         };
         var this_3 = this;
