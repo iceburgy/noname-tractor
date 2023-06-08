@@ -565,5 +565,14 @@
         "skinCost": 200,
         "skinExpiration": "2022-12-22T16:20:38.9658932-08:00",
         "isSkinExpired": true
+    },
+    "skin_dong_guanyinpin_fengwujiutian": {
+        "skinName": "skin_dong_guanyinpin_fengwujiutian",
+        "skinSex": "f",
+        "skinDesc": "SP关银屏-凰舞九天-动态",
+        "skinType": 1,
+        "skinCost": 200,
+        "skinExpiration": "2022-12-22T16:20:38.9658932-08:00",
+        "isSkinExpired": true
     }
 }
