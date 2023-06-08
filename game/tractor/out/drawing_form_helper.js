@@ -1192,7 +1192,8 @@ var DrawingFormHelper = /** @class */ (function () {
                 }
             }
         }
-        this.DrawShowedCards(scIntsToDraw, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, scale, 6);
+        var tempX = "0px + ".concat(this.mainForm.gameScene.coordinates.handCardOffset * scale * this.mainForm.gameScene.scoreCardsIntsDrawn.length, "px");
+        this.DrawShowedCards(scIntsToDraw, tempX, "180px", this.mainForm.gameScene.scoreCardsImages, scale, 6);
         this.mainForm.gameScene.scoreCardsIntsDrawn = this.mainForm.gameScene.scoreCardsIntsDrawn.concat(scIntsToDraw);
         var IntsDrawnLen = this.mainForm.gameScene.scoreCardsIntsDrawn.length;
         var scitaLen = scoreCardsImagesToAnimate.length;

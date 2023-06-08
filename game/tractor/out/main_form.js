@@ -576,6 +576,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.game.timerCurrent = 0;
         if (this.gameScene.ui.btnPig) {
             this.gameScene.ui.btnPig.hide();
+            this.gameScene.ui.btnPig.classList.add('disabled');
             this.gameScene.ui.btnPig.classList.remove('pointerdiv');
         }
         this.init();
@@ -1420,6 +1421,7 @@ var MainForm = /** @class */ (function () {
             if (this.SelectedCards.length == 8) {
                 //扣牌,所以擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled');
                 this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.SelectedCards.forEach(function (card) {
                     _this.tractorPlayer.CurrentPoker.RemoveCard(card);
@@ -1439,6 +1441,7 @@ var MainForm = /** @class */ (function () {
             if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled');
                 this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.SelectedCards.forEach(function (card) {
                     _this.tractorPlayer.CurrentPoker.RemoveCard(card);
@@ -1451,6 +1454,7 @@ var MainForm = /** @class */ (function () {
             else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled');
                 this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards));
             }
@@ -1518,7 +1522,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.timer.show();
         this.gameScene.game.countDown(timerLength, function () { _this.gameScene.ui.timer.hide(); }, true);
     };
-    //     //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
+    //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
     MainForm.prototype.PlayerCurrentTrickShowedCards = function () {
         //擦掉出牌区
         this.drawingFormHelper.destroyAllShowedCards();
@@ -1753,6 +1757,7 @@ var MainForm = /** @class */ (function () {
         btnPig.style.fontFamily = 'serif';
         btnPig.style.fontSize = '20px';
         btnPig.classList.add('disabled');
+        btnPig.classList.remove('pointerdiv');
         btnPig.hide();
         this.gameScene.ui.frameGameRoom.appendChild(btnPig);
         this.gameScene.ui.btnPig = btnPig;

@@ -1272,7 +1272,8 @@ export class DrawingFormHelper {
                 }
             }
         }
-        this.DrawShowedCards(scIntsToDraw, "0px", "180px", this.mainForm.gameScene.scoreCardsImages, scale, 6);
+        let tempX = `0px + ${this.mainForm.gameScene.coordinates.handCardOffset * scale * this.mainForm.gameScene.scoreCardsIntsDrawn.length}px`
+        this.DrawShowedCards(scIntsToDraw, tempX, "180px", this.mainForm.gameScene.scoreCardsImages, scale, 6);
         this.mainForm.gameScene.scoreCardsIntsDrawn = this.mainForm.gameScene.scoreCardsIntsDrawn.concat(scIntsToDraw);
         let IntsDrawnLen = this.mainForm.gameScene.scoreCardsIntsDrawn.length;
 

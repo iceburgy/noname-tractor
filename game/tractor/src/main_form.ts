@@ -654,6 +654,7 @@ export class MainForm {
         this.gameScene.game.timerCurrent = 0;
         if (this.gameScene.ui.btnPig) {
             this.gameScene.ui.btnPig.hide();
+            this.gameScene.ui.btnPig.classList.add('disabled')
             this.gameScene.ui.btnPig.classList.remove('pointerdiv');
         }
         this.init();
@@ -1543,6 +1544,7 @@ export class MainForm {
             if (this.SelectedCards.length == 8) {
                 //扣牌,所以擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled')
                 this.gameScene.ui.btnPig.classList.remove('pointerdiv');
 
                 this.SelectedCards.forEach(card => {
@@ -1562,6 +1564,7 @@ export class MainForm {
             if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled')
                 this.gameScene.ui.btnPig.classList.remove('pointerdiv');
 
                 this.SelectedCards.forEach(card => {
@@ -1576,6 +1579,7 @@ export class MainForm {
             else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
                 //擦去小猪
                 this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled')
                 this.gameScene.ui.btnPig.classList.remove('pointerdiv');
                 this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
             }
@@ -1651,7 +1655,7 @@ export class MainForm {
         this.gameScene.game.countDown(timerLength, () => { this.gameScene.ui.timer.hide(); }, true);
     }
 
-    //     //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
+    //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
     private PlayerCurrentTrickShowedCards() {
         //擦掉出牌区
         this.drawingFormHelper.destroyAllShowedCards();
@@ -1911,6 +1915,7 @@ export class MainForm {
         btnPig.style.fontFamily = 'serif';
         btnPig.style.fontSize = '20px';
         btnPig.classList.add('disabled');
+        btnPig.classList.remove('pointerdiv');
         btnPig.hide();
         this.gameScene.ui.frameGameRoom.appendChild(btnPig);
 

@@ -231,6 +231,8 @@ export class TractorPlayer {
         if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards) {
             if (currentHandState.Last8Holder == this.MyOwnId) {
                 this.mainForm.gameScene.ui.btnPig.show();
+                this.mainForm.gameScene.ui.btnPig.classList.add("disabled");
+                this.mainForm.gameScene.ui.btnPig.classList.remove('pointerdiv');
             }
             this.mainForm.setStartLabels();
         }
