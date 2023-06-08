@@ -2353,7 +2353,7 @@ export class MainForm {
             playerObj.style.width = `calc(${skinWid}px)`;
             if (!isPreview && gs.noDongtu.toLowerCase() === "true" && skinType === 1) {
                 // clean up static and animation elements first
-                jQuery(playerObj.node.avatar).removeAttr('background-image');
+                jQuery(playerObj.node.avatar).css("background-image", "");
                 // giffer
                 if (playerObj.node.avatarImg) {
                     playerObj.node.avatarImg.remove();
