@@ -302,7 +302,7 @@
 
 /*联机名称显示*/
 .player>.nameol {
-	top: 5px;
+	bottom: 0px;
     font-size: 16px;
     font-family: 'shousha';
     text-shadow: 0 0 2px black;
