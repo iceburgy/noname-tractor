@@ -18,6 +18,7 @@ var ReadyToStart_REQUEST = "ReadyToStart";
 var ToggleIsRobot_REQUEST = "ToggleIsRobot";
 var ObserveNext_REQUEST = "ObserveNext";
 var ExitRoom_REQUEST = "ExitRoom";
+var ExitRoom_REQUEST_TYPE_BootPlayer = "BootPlayer";
 var StoreDiscardedCards_REQUEST = "StoreDiscardedCards";
 var PlayerShowCards_REQUEST = "PlayerShowCards";
 var ValidateDumpingCards_REQUEST = "ValidateDumpingCards";
@@ -921,9 +922,7 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.bootPlayerByPosition = function (pos) {
         if (this.PositionPlayer[pos]) {
             var playerID = this.PositionPlayer[pos];
-            var args = [-1, -1, "\u73A9\u5BB6\u3010".concat(playerID, "\u3011\u88AB\u623F\u4E3B\u8BF7\u51FA\u623F\u95F4")];
-            this.sendEmojiWithCheck(args);
-            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "");
+            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "".concat(ExitRoom_REQUEST_TYPE_BootPlayer));
         }
     };
     MainForm.prototype.LoadUIUponConnect = function () {
@@ -1057,7 +1056,7 @@ var MainForm = /** @class */ (function () {
         var noDongtuUntilExpDate = document.getElementById("lblNoDongtuUntilExpDate");
         if (!this.isNoDongtuUntilExpired()) {
             noDongtuUntilExpDate.style.display = "block";
-            noDongtuUntilExpDate.innerHTML = "\u6709\u6548\u671F\u81F3".concat(this.gameScene.noDongtuUntil);
+            noDongtuUntilExpDate.innerHTML = "\u6709\u6548\u671F\u81F3".concat(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
         }
         var noDongtu = document.getElementById("cbxNoDongtu");
         noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
@@ -1198,11 +1197,19 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.isNoDongtuUntilExpired = function () {
-        if (!this.gameScene.noDongtuUntil)
+        if (!this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil)
             return true;
-        var dExp = new Date(this.gameScene.noDongtuUntil);
+        var dExp = new Date(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
         var dNow = new Date();
         return dExp < dNow;
+    };
+    MainForm.prototype.isChatBanned = function (pid) {
+        if (this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
+            var dBanned = new Date(this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil);
+            var dNow = new Date();
+            return dNow < dBanned;
+        }
+        return false;
     };
     MainForm.prototype.btnExitRoom_Click = function () {
         if (this.gameScene.isReplayMode) {
@@ -1235,8 +1242,6 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.emojiSubmitEventhandler = function () {
-        if (!this.gameScene.ui.selectPresetMsgs)
-            return;
         var emojiType = -1;
         var emojiIndex = -1;
         var msgString = this.gameScene.ui.textAreaChatMsg.value;
@@ -1258,6 +1263,10 @@ var MainForm = /** @class */ (function () {
         this.sendEmojiWithCheck(args);
     };
     MainForm.prototype.sendBroadcastMsgType = function (msg) {
+        if (this.isChatBanned(this.tractorPlayer.MyOwnId)) {
+            alert("\u7981\u8A00\u751F\u6548\u4E2D\uFF0C\u8BF7\u5728\u89E3\u7981\u540E\u91CD\u8BD5\uFF0C\u89E3\u7981\u65E5\u671F\uFF1A".concat(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noChatUntil));
+            return;
+        }
         var shengbi = 0;
         if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
             shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
@@ -1292,6 +1301,21 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.sendEmojiWithCheck = function (args) {
         var _this = this;
+        if (this.isChatBanned(this.tractorPlayer.MyOwnId)) {
+            alert("\u7981\u8A00\u751F\u6548\u4E2D\uFF0C\u8BF7\u5728\u89E3\u7981\u540E\u91CD\u8BD5\uFF0C\u89E3\u7981\u65E5\u671F\uFF1A".concat(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noChatUntil));
+            return;
+        }
+        var emojiType = args[0];
+        if (emojiType < 0) {
+            var shengbi = 0;
+            if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+                shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
+            }
+            if (shengbi < CommonMethods.chatMessageCost) {
+                alert("升币余额不足，无法发送消息");
+                return;
+            }
+        }
         if (!this.isSendEmojiEnabled) {
             this.appendChatMsg(CommonMethods.emojiWarningMsg);
             return;
@@ -1680,13 +1704,20 @@ var MainForm = /** @class */ (function () {
         });
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = "\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7".concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
+        textAreaChatMsg.placeholder = "\u6BCF\u6761\u6D88\u606F\u6D88\u8017\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7").concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
         textAreaChatMsg.style.resize = 'none';
         textAreaChatMsg.style.height = '3em';
         textAreaChatMsg.style.bottom = 'calc(50px)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);
         this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
+        textAreaChatMsg.addEventListener('focus', function () {
+            if (!_this.gameScene.chatMessageCostNoted) {
+                alert("\u6BCF\u6B21\u53D1\u8A00\u6D88\u8017\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u4F59\u989D\u4E0D\u8DB3\u65F6\u65E0\u6CD5\u53D1\u8A00\uFF0C\u5FEB\u6377\u8BED\u9664\u5916"));
+                _this.gameScene.chatMessageCostNoted = true;
+                _this.gameScene.game.saveConfig("chatMessageCostNoted", true);
+            }
+        });
     };
     MainForm.prototype.drawGameRoom = function () {
         var _this = this;
@@ -2362,7 +2393,9 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = playersInGameHall[i];
-                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "");
+                var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
                 d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
@@ -2381,7 +2414,9 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = players[i];
-                var pidInfo = "".concat(pid).concat(this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "");
+                var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
                 d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
@@ -2394,9 +2429,11 @@ var MainForm = /** @class */ (function () {
                     var d = document.createElement("div");
                     d.style.position = 'static';
                     d.style.display = 'block';
-                    var oid = obs[i];
-                    var oidInfo = "".concat(oid).concat(this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "");
-                    d.innerText = "\u3010".concat(oidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[oid].Shengbi);
+                    var pid = obs[i];
+                    var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                    var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                    var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
+                    d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }

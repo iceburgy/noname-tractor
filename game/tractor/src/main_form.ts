@@ -25,6 +25,7 @@ const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
 const ObserveNext_REQUEST = "ObserveNext"
 const ExitRoom_REQUEST = "ExitRoom"
+const ExitRoom_REQUEST_TYPE_BootPlayer = "BootPlayer"
 const StoreDiscardedCards_REQUEST = "StoreDiscardedCards"
 const PlayerShowCards_REQUEST = "PlayerShowCards"
 const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
@@ -1024,9 +1025,7 @@ export class MainForm {
     private bootPlayerByPosition(pos: number) {
         if (this.PositionPlayer[pos]) {
             let playerID = this.PositionPlayer[pos];
-            let args: (string | number)[] = [-1, -1, `玩家【${playerID}】被房主请出房间`];
-            this.sendEmojiWithCheck(args)
-            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, "")
+            this.gameScene.sendMessageToServer(ExitRoom_REQUEST, playerID, `${ExitRoom_REQUEST_TYPE_BootPlayer}`);
         }
     }
 
@@ -1168,7 +1167,7 @@ export class MainForm {
         let noDongtuUntilExpDate: any = document.getElementById("lblNoDongtuUntilExpDate");
         if (!this.isNoDongtuUntilExpired()) {
             noDongtuUntilExpDate.style.display = "block";
-            noDongtuUntilExpDate.innerHTML = `有效期至${this.gameScene.noDongtuUntil}`;
+            noDongtuUntilExpDate.innerHTML = `有效期至${this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil}`;
         }
         let noDongtu: any = document.getElementById("cbxNoDongtu");
         noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
@@ -1314,11 +1313,20 @@ export class MainForm {
     }
 
     public isNoDongtuUntilExpired(): boolean {
-        if (!this.gameScene.noDongtuUntil) return true;
-        let dExp = new Date(this.gameScene.noDongtuUntil);
+        if (!this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil) return true;
+        let dExp = new Date(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
         let dNow = new Date();
 
         return dExp < dNow;
+    }
+
+    public isChatBanned(pid: string): boolean {
+        if (this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
+            let dBanned = new Date(this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil);
+            let dNow = new Date();
+            return dNow < dBanned;
+        }
+        return false;
     }
 
     private btnExitRoom_Click() {
@@ -1353,7 +1361,6 @@ export class MainForm {
     }
 
     private emojiSubmitEventhandler() {
-        if (!this.gameScene.ui.selectPresetMsgs) return;
         let emojiType = -1;
         let emojiIndex = -1;
         let msgString = this.gameScene.ui.textAreaChatMsg.value;
@@ -1375,6 +1382,11 @@ export class MainForm {
     }
 
     public sendBroadcastMsgType(msg: string) {
+        if (this.isChatBanned(this.tractorPlayer.MyOwnId)) {
+            alert(`禁言生效中，请在解禁后重试，解禁日期：${this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noChatUntil}`)
+            return;
+        }
+
         let shengbi = 0
         if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
             shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
@@ -1411,6 +1423,23 @@ export class MainForm {
     }
 
     private sendEmojiWithCheck(args: (string | number)[]) {
+        if (this.isChatBanned(this.tractorPlayer.MyOwnId)) {
+            alert(`禁言生效中，请在解禁后重试，解禁日期：${this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noChatUntil}`)
+            return;
+        }
+
+        let emojiType: number = (args[0] as number);
+        if (emojiType < 0) {
+            let shengbi = 0
+            if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+                shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
+            }
+            if (shengbi < CommonMethods.chatMessageCost) {
+                alert("升币余额不足，无法发送消息")
+                return;
+            }
+        }
+
         if (!this.isSendEmojiEnabled) {
             this.appendChatMsg(CommonMethods.emojiWarningMsg);
             return;
@@ -1831,13 +1860,20 @@ export class MainForm {
 
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = `消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，快捷消息的快捷键为对应的数字键`;
+        textAreaChatMsg.placeholder = `每条消息消耗【升币】x${CommonMethods.chatMessageCost}，消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，快捷消息的快捷键为对应的数字键`;
         textAreaChatMsg.style.resize = 'none';
         textAreaChatMsg.style.height = '3em';
         textAreaChatMsg.style.bottom = 'calc(50px)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);
         this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
+        textAreaChatMsg.addEventListener('focus', () => {
+            if (!this.gameScene.chatMessageCostNoted) {
+                alert(`每次发言消耗【升币】x${CommonMethods.chatMessageCost}，余额不足时无法发言，快捷语除外`);
+                this.gameScene.chatMessageCostNoted = true;
+                this.gameScene.game.saveConfig("chatMessageCostNoted", true);
+            }
+        });
     }
 
     public drawGameRoom() {
@@ -2555,7 +2591,9 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = playersInGameHall[i];
-                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : ""}`;
+                let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                let pidInfo = `${pid}${noChat}${clientVersion}`;
                 d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
@@ -2575,7 +2613,9 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = players[i];
-                let pidInfo = `${pid}${this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : ""}`;
+                let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                let pidInfo = `${pid}${noChat}${clientVersion}`;
                 d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
@@ -2589,9 +2629,11 @@ export class MainForm {
                     let d = document.createElement("div");
                     d.style.position = 'static';
                     d.style.display = 'block';
-                    let oid = obs[i];
-                    let oidInfo = `${oid}${this.DaojuInfo.daojuInfoByPlayer[oid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : ""}`;
-                    d.innerText = `【${oidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[oid].Shengbi}`;
+                    let pid = obs[i];
+                    let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                    let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                    let pidInfo = `${pid}${noChat}${clientVersion}`;
+                    d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }

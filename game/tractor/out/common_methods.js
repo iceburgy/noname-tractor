@@ -551,6 +551,7 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.sendBroadcastPrefix = "@all";
     CommonMethods.sendBroadcastCost = 10;
     CommonMethods.buyNoDongtuUntilCost = 0;
+    CommonMethods.chatMessageCost = 1;
     CommonMethods.defaultSkinInUse = "skin_questionmark";
     CommonMethods.audioLiangpai = "liangpai";
     CommonMethods.audioShuaicuo = "shuaicuo";

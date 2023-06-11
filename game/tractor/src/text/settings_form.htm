@@ -25,6 +25,16 @@
 </style>
 
 <div id="input-form" class="settingsroot">
+    <h2>用户须知</h2>
+    <ul>
+        <li>请勿在游戏中进行不文明发言。违规处理：</li>
+        <ul>
+            <li>升币余额大于400将会被减半，否则扣除200。（每次发言消耗【升币】x1，余额不足时无法发言，快捷语除外）</li>
+            <li>玩家将会被禁言24小时（含快捷语）</li>
+            <li>如出现意外情况，欢迎与管理员联系</li>
+        </ul>
+    </ul>
+
     <div id="divRoomSettingsWrapper" style="display: none;">
         <h2>房间设置</h2>
         <div id="divRoomSettings" style="display: none;">
@@ -50,7 +60,8 @@
     <p><input type="checkbox" id="cbxNoDanmu" /><label for="cbxNoDanmu">关闭弹幕</label></p>
     <p><input type="checkbox" id="cbxCutCards" /><label for="cbxCutCards">关闭切牌</label></p>
     <p><input type="checkbox" id="cbxYesDragSelect" /><label for="cbxYesDragSelect">开启拖拽选牌</label></p>
-    <p><input type="checkbox" id="cbxOnlyMeShowCardCancelLastTrickView" /><label for="cbxOnlyMeShowCardCancelLastTrickView">仅自己出牌时才自动退出上轮回看模式</label></p>
+    <p><input type="checkbox" id="cbxOnlyMeShowCardCancelLastTrickView" /><label
+            for="cbxOnlyMeShowCardCancelLastTrickView">仅自己出牌时才自动退出上轮回看模式</label></p>
     <p>
         <input type="checkbox" id="cbxNoTouchDevice" /><label for="cbxNoTouchDevice">关闭自动触屏检测机制</label>
         <br />
@@ -75,10 +86,14 @@
             <li>完成一局游戏且获胜再额外+5</li>
         </ul>
 
-        <input type="button" id="btnShengbiLeadingBoard" value="积分榜" /><br />
+        <input type="button" id="btnShengbiLeadingBoard" value="富豪榜" /><br />
         <p>
         <div id="divShengbiLeadingBoard" class="ShengbiLeadingBoard"></div>
         </p>
+        </p>
+        <p>
+            <b>发言</b><br />
+            每次发言消耗【升币】x1，快捷语除外<br />
         </p>
         <p>
             <b>抢亮卡</b><br />

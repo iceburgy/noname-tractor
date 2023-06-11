@@ -409,14 +409,6 @@ var TractorPlayer = /** @class */ (function () {
             var m = msgs[i];
             if (m.includes("获胜！")) {
                 this.mainForm.gameScene.playAudio(CommonMethods.audioWin);
-                // 播放烟花
-                if (this.CurrentRoomSetting.RoomOwner == this.MyOwnId) {
-                    var emojiType = 5;
-                    var emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
-                    var msgString = CommonMethods.emojiMsgs[emojiType];
-                    var args = [emojiType, emojiIndex, msgString, true];
-                    this.mainForm.gameScene.sendMessageToServer(CommonMethods.SendEmoji_REQUEST, this.MyOwnId, JSON.stringify(args));
-                }
             }
             else if (m.includes(CommonMethods.reenterRoomSignal)) {
                 if (m.includes("\u3010".concat(this.MyOwnId, "\u3011"))) {
@@ -473,7 +465,6 @@ var TractorPlayer = /** @class */ (function () {
         if (updateQiandao)
             this.mainForm.UpdateQiandaoStatus();
         this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
-        this.mainForm.gameScene.noDongtuUntil = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].noDongtuUntil : "";
         if (updateSkin)
             this.mainForm.UpdateSkinStatus();
     };
