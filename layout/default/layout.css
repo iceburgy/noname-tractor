@@ -5235,6 +5235,6 @@ div[data-decoration="bronze"]::after{
 	}
 }
 /*--------其它--------*/
-::-webkit-scrollbar {
+:not(.chattextdiv)::-webkit-scrollbar {
 	display: none;
 }
