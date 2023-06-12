@@ -1074,6 +1074,13 @@ var MainForm = /** @class */ (function () {
         // 游戏道具栏
         var divDaojuWrapper = document.getElementById("divDaojuWrapper");
         divDaojuWrapper.style.display = "block";
+        // 聊天卡
+        var lblChatQuota = document.getElementById("lblChatQuota");
+        var chatQuotaNum = 0;
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            chatQuotaNum = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].ChatQuota;
+        }
+        lblChatQuota.innerHTML = chatQuotaNum;
         // 升币
         var lblShengbi = document.getElementById("lblShengbi");
         var shengbiNum = 0;

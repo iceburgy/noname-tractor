@@ -1186,6 +1186,14 @@ export class MainForm {
         let divDaojuWrapper: any = document.getElementById("divDaojuWrapper");
         divDaojuWrapper.style.display = "block";
 
+        // 聊天卡
+        let lblChatQuota: any = document.getElementById("lblChatQuota");
+        let chatQuotaNum = 0;
+        if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            chatQuotaNum = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].ChatQuota;
+        }
+        lblChatQuota.innerHTML = chatQuotaNum;
+
         // 升币
         let lblShengbi: any = document.getElementById("lblShengbi");
         let shengbiNum = 0;
