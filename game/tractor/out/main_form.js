@@ -1715,7 +1715,7 @@ var MainForm = /** @class */ (function () {
         });
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = "\u6BCF\u6761\u6D88\u606F\u6D88\u8017\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7").concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
+        textAreaChatMsg.placeholder = "\u6BCF\u6761\u6D88\u606F\u6D88\u8017\u3010\u804A\u5929\u5361\u3011\uFF08\u4F18\u5148\u89E6\u53D1\uFF09\u6216\u8005\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7").concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
         textAreaChatMsg.style.resize = 'none';
         textAreaChatMsg.style.height = '3em';
         textAreaChatMsg.style.bottom = 'calc(50px)';
