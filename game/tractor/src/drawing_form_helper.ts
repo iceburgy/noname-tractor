@@ -1457,7 +1457,7 @@ export class DrawingFormHelper {
     }
 
     public DrawEmojiByPosition(position: number, emojiType: number, emojiIndex: number, isCenter: boolean) {
-        let emojiURL = `image/tractor/emoji/${EmojiUtil.emojiTypes[emojiType]}${emojiIndex}.gif`;
+        let emojiURL = `image/tractor/emoji/${EmojiUtil.emojiTypes[emojiType]}${emojiIndex}.gif?${new Date().getTime()}`;
 
         var img = new Image();
         img.onload = (e: any) => {

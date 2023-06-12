@@ -1,7 +1,7 @@
 export var EmojiUtil = /** @class */ (function () {
     function EmojiUtil() {
     }
-    EmojiUtil.displayDuration = 3; // in seconds
+    EmojiUtil.displayDuration = 4; // in seconds
     EmojiUtil.fixedHeight = 90; // in px
     EmojiUtil.emojiTypes = [
         'goodjob',

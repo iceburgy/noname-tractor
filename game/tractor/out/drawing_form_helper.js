@@ -1371,7 +1371,7 @@ var DrawingFormHelper = /** @class */ (function () {
     };
     DrawingFormHelper.prototype.DrawEmojiByPosition = function (position, emojiType, emojiIndex, isCenter) {
         var _this = this;
-        var emojiURL = "image/tractor/emoji/".concat(EmojiUtil.emojiTypes[emojiType]).concat(emojiIndex, ".gif");
+        var emojiURL = "image/tractor/emoji/".concat(EmojiUtil.emojiTypes[emojiType]).concat(emojiIndex, ".gif?").concat(new Date().getTime());
         var img = new Image();
         img.onload = function (e) {
             var fixedWidth, fixedHeight;
