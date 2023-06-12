@@ -4,10 +4,11 @@ export class EmojiUtil {
     public static emojiTypes = [
         'goodjob',
         'lol',
-        'happy',
-        'sad',
+        'sorry',
+        'noproblem',
         'hurryup',
-        'fireworks'
+        'fireworks',
+        'youareright'
     ]
 
     constructor() {

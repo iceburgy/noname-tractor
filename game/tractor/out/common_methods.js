@@ -524,19 +524,19 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.zIndexSettingsForm = 100;
     CommonMethods.gifferPrefix = "playerGiffer";
     CommonMethods.winEmojiLength = 4;
-    CommonMethods.animatedEmojiTypeLength = 6;
     CommonMethods.danmuDuration = 8;
     CommonMethods.distributeLast8Delay = 0.2;
     CommonMethods.distributeLast8Interval = 0.1;
     CommonMethods.distributeLast8Duration = 0.5;
+    CommonMethods.animatedEmojiTypeLength = 7;
     CommonMethods.emojiMsgs = [
         "这波操作，666！",
         "哈哈哈哈~~",
-        "猴开心：）",
-        "嚎啕大哭：（",
+        "不好意思，这个没出好",
+        "没事儿~",
         "能不能快点啊，兵贵神速！",
         "烟花",
-        "额~不好意思，刚才卡了",
+        "嗯，没错儿",
         "有劳点击“开始”继续游戏",
         "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
     ];

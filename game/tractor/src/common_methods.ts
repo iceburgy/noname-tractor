@@ -57,19 +57,19 @@ export class CommonMethods {
     public static gifferPrefix = "playerGiffer";
 
     public static winEmojiLength = 4
-    public static animatedEmojiTypeLength = 6
     public static danmuDuration = 8
     public static distributeLast8Delay = 0.2;
     public static distributeLast8Interval = 0.1;
     public static distributeLast8Duration = 0.5;
+    public static animatedEmojiTypeLength = 7
     public static emojiMsgs: string[] = [
         "这波操作，666！",
         "哈哈哈哈~~",
-        "猴开心：）",
-        "嚎啕大哭：（",
+        "不好意思，这个没出好",
+        "没事儿~",
         "能不能快点啊，兵贵神速！",
         "烟花",
-        "额~不好意思，刚才卡了",
+        "嗯，没错儿",
         "有劳点击“开始”继续游戏",
         "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
     ]

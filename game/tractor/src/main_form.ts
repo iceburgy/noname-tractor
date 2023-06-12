@@ -1386,12 +1386,14 @@ export class MainForm {
             return;
         }
 
+        let chatQuota = 0
         let shengbi = 0
         if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].ChatQuota);
             shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
         }
-        if (shengbi < CommonMethods.sendBroadcastCost) {
-            alert("升币余额不足，无法发送广播消息")
+        if (chatQuota + shengbi < CommonMethods.sendBroadcastCost) {
+            alert("聊天卡/升币余额不足，无法发送广播消息")
             return;
         }
 
@@ -1429,12 +1431,14 @@ export class MainForm {
 
         let emojiType: number = (args[0] as number);
         if (emojiType < 0) {
+            let chatQuota = 0
             let shengbi = 0
             if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+                chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].ChatQuota);
                 shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
             }
-            if (shengbi < CommonMethods.chatMessageCost) {
-                alert("升币余额不足，无法发送消息")
+            if (chatQuota + shengbi < CommonMethods.chatMessageCost) {
+                alert("聊天卡/升币余额不足，无法发送消息")
                 return;
             }
         }
@@ -2593,7 +2597,9 @@ export class MainForm {
                 let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                 let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
                 let pidInfo = `${pid}${noChat}${clientVersion}`;
-                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                let chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
+                let chatQuotaInfo = chatQuota > 0 ? `，聊天卡：${chatQuota}` : "";
+                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}${chatQuotaInfo}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2615,7 +2621,9 @@ export class MainForm {
                 let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                 let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
                 let pidInfo = `${pid}${noChat}${clientVersion}`;
-                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                let chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
+                let chatQuotaInfo = chatQuota > 0 ? `，聊天卡：${chatQuota}` : "";
+                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}${chatQuotaInfo}`;
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
 
@@ -2632,7 +2640,9 @@ export class MainForm {
                     let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                     let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
                     let pidInfo = `${pid}${noChat}${clientVersion}`;
-                    d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                    let chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
+                    let chatQuotaInfo = chatQuota > 0 ? `，聊天卡：${chatQuota}` : "";
+                    d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}${chatQuotaInfo}`;
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }

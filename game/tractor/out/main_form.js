@@ -1267,12 +1267,14 @@ var MainForm = /** @class */ (function () {
             alert("\u7981\u8A00\u751F\u6548\u4E2D\uFF0C\u8BF7\u5728\u89E3\u7981\u540E\u91CD\u8BD5\uFF0C\u89E3\u7981\u65E5\u671F\uFF1A".concat(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noChatUntil));
             return;
         }
+        var chatQuota = 0;
         var shengbi = 0;
         if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+            chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].ChatQuota);
             shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
         }
-        if (shengbi < CommonMethods.sendBroadcastCost) {
-            alert("升币余额不足，无法发送广播消息");
+        if (chatQuota + shengbi < CommonMethods.sendBroadcastCost) {
+            alert("聊天卡/升币余额不足，无法发送广播消息");
             return;
         }
         this.gameScene.sendMessageToServer(CommonMethods.SendBroadcast_REQUEST, this.tractorPlayer.MyOwnId, msg);
@@ -1307,12 +1309,14 @@ var MainForm = /** @class */ (function () {
         }
         var emojiType = args[0];
         if (emojiType < 0) {
+            var chatQuota = 0;
             var shengbi = 0;
             if (this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {
+                chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].ChatQuota);
                 shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
             }
-            if (shengbi < CommonMethods.chatMessageCost) {
-                alert("升币余额不足，无法发送消息");
+            if (chatQuota + shengbi < CommonMethods.chatMessageCost) {
+                alert("聊天卡/升币余额不足，无法发送消息");
                 return;
             }
         }
@@ -2396,7 +2400,9 @@ var MainForm = /** @class */ (function () {
                 var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                 var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
                 var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
-                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
+                var chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
+                var chatQuotaInfo = chatQuota > 0 ? "\uFF0C\u804A\u5929\u5361\uFF1A".concat(chatQuota) : "";
+                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi).concat(chatQuotaInfo);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
         }
@@ -2417,7 +2423,9 @@ var MainForm = /** @class */ (function () {
                 var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                 var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
                 var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
-                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
+                var chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
+                var chatQuotaInfo = chatQuota > 0 ? "\uFF0C\u804A\u5929\u5361\uFF1A".concat(chatQuota) : "";
+                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi).concat(chatQuotaInfo);
                 this.gameScene.ui.divOnlinePlayerList.appendChild(d);
             }
             if (obs && obs.length > 0) {
@@ -2433,7 +2441,9 @@ var MainForm = /** @class */ (function () {
                     var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                     var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
                     var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
-                    d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
+                    var chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
+                    var chatQuotaInfo = chatQuota > 0 ? "\uFF0C\u804A\u5929\u5361\uFF1A".concat(chatQuota) : "";
+                    d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi).concat(chatQuotaInfo);
                     this.gameScene.ui.divOnlinePlayerList.appendChild(d);
                 }
             }

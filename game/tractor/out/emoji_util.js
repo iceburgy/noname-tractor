@@ -6,10 +6,11 @@ export var EmojiUtil = /** @class */ (function () {
     EmojiUtil.emojiTypes = [
         'goodjob',
         'lol',
-        'happy',
-        'sad',
+        'sorry',
+        'noproblem',
         'hurryup',
-        'fireworks'
+        'fireworks',
+        'youareright'
     ];
     return EmojiUtil;
 }());
