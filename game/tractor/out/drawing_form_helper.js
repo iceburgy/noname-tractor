@@ -4,6 +4,7 @@ import { SuitEnums } from './suit_enums.js';
 import { TractorRules } from './tractor_rules.js';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result.js';
 import { PokerHelper } from './poker_helper.js';
+import { EmojiUtil } from './emoji_util.js';
 var CardsReady_REQUEST = "CardsReady";
 var DrawingFormHelper = /** @class */ (function () {
     function DrawingFormHelper(mf) {
@@ -1324,6 +1325,8 @@ var DrawingFormHelper = /** @class */ (function () {
     DrawingFormHelper.prototype.DrawOverridingFlag = function (cardsCount, position, winType, playAnimation) {
         if (this.mainForm.tractorPlayer.CurrentRoomSetting.HideOverridingFlag)
             return;
+        if (this.mainForm.tractorPlayer.ShowLastTrickCards)
+            return;
         if (this.mainForm.gameScene.OverridingFlagImage) {
             this.mainForm.gameScene.OverridingFlagImage.remove();
         }
@@ -1367,22 +1370,66 @@ var DrawingFormHelper = /** @class */ (function () {
         }
     };
     DrawingFormHelper.prototype.DrawEmojiByPosition = function (position, emojiType, emojiIndex, isCenter) {
-        // let emojiKey = EmojiUtil.emojiTypesAndInstances[emojiType][emojiIndex]
-        // let posIndex = position - 1;
-        // let x = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].x;
-        // let y = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].y;
-        // let displaySize = this.mainForm.gameScene.coordinates.emojiSize
-        // if (isCenter) {
-        //     x = this.mainForm.gameScene.coordinates.screenWid / 2;
-        //     y = this.mainForm.gameScene.coordinates.screenHei / 2;
-        //     displaySize *= 5;
-        // }
-        // let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, emojiKey)
-        //     .setDisplaySize(displaySize, displaySize * EmojiUtil.emojiXToYRatio[emojiType][emojiIndex]);
-        // if (!isCenter) {
-        //     spriteAnimation.setOrigin(0);
-        // }
-        // spriteAnimation.play(emojiKey);
+        var _this = this;
+        var emojiURL = "image/tractor/emoji/".concat(EmojiUtil.emojiTypes[emojiType]).concat(emojiIndex, ".gif");
+        var img = new Image();
+        img.onload = function (e) {
+            var fixedWidth, fixedHeight;
+            var wid = e.target.width;
+            var hei = e.target.height;
+            var emojiImage = _this.mainForm.gameScene.ui.create.div('.emojiImage', _this.mainForm.gameScene.ui.frameGameRoom);
+            emojiImage.style.position = 'absolute';
+            if (isCenter) {
+                if (_this.mainForm.gameScene.isInGameHall()) {
+                    fixedWidth = _this.mainForm.gameScene.ui.frameGameHall.clientWidth / 2;
+                }
+                else {
+                    fixedWidth = _this.mainForm.gameScene.ui.frameGameRoom.clientWidth / 2;
+                }
+                fixedHeight = fixedWidth * hei / wid;
+                emojiImage.style.top = 'calc(50%)';
+                emojiImage.style.left = 'calc(50%)';
+                emojiImage.style.width = "calc(".concat(fixedWidth, "px)");
+                emojiImage.style.height = "calc(".concat(fixedHeight, "px)");
+                emojiImage.style.transform = "translate(-50%, -50%)";
+                emojiImage.style.transition = "0s";
+            }
+            else {
+                fixedHeight = EmojiUtil.fixedHeight;
+                fixedWidth = fixedHeight * wid / hei;
+                emojiImage.style.width = "calc(".concat(fixedWidth, "px)");
+                emojiImage.style.height = "calc(".concat(fixedHeight, "px)");
+                var x = _this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[position - 1].x;
+                var y = _this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[position - 1].y;
+                if (position === 1)
+                    y = _this.mainForm.gameScene.coordinates.handCardPositions[3].y;
+                switch (position) {
+                    case 1:
+                    case 4:
+                        emojiImage.style.left = "calc(".concat(x, ")");
+                        emojiImage.style.bottom = "calc(".concat(y, ")");
+                        break;
+                    case 2:
+                        emojiImage.style.right = "calc(".concat(x, ")");
+                        emojiImage.style.bottom = "calc(".concat(y, ")");
+                        break;
+                    case 3:
+                        emojiImage.style.right = "calc(".concat(x, ")");
+                        emojiImage.style.top = "calc(".concat(y, ")");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            // emojiImage.style.zIndex = CommonMethods.zIndexSettingsForm;
+            emojiImage.setBackgroundImage(emojiURL);
+            emojiImage.style['background-size'] = '100% 100%';
+            emojiImage.style['background-repeat'] = 'no-repeat';
+            setTimeout(function () {
+                emojiImage.remove();
+            }, 1000 * EmojiUtil.displayDuration);
+        };
+        img.src = emojiURL;
     };
     DrawingFormHelper.prototype.DrawMovingTractorByPosition = function (cardsCount, position) {
         var height = this.mainForm.gameScene.coordinates.cardHeight - 10;

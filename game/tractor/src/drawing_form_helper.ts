@@ -6,6 +6,7 @@ import { TractorRules } from './tractor_rules.js';
 import { ShowingCardsValidationResult } from './showing_cards_validation_result.js';
 import { PokerHelper } from './poker_helper.js';
 import { TrumpState } from './trump_state.js';
+import { EmojiUtil } from './emoji_util.js';
 
 const CardsReady_REQUEST = "CardsReady"
 declare let decadeUI: any;
@@ -1405,6 +1406,7 @@ export class DrawingFormHelper {
 
     public DrawOverridingFlag(cardsCount: number, position: number, winType: number, playAnimation: boolean) {
         if (this.mainForm.tractorPlayer.CurrentRoomSetting.HideOverridingFlag) return;
+        if (this.mainForm.tractorPlayer.ShowLastTrickCards) return;
 
         if (this.mainForm.gameScene.OverridingFlagImage) {
             this.mainForm.gameScene.OverridingFlagImage.remove()
@@ -1455,22 +1457,66 @@ export class DrawingFormHelper {
     }
 
     public DrawEmojiByPosition(position: number, emojiType: number, emojiIndex: number, isCenter: boolean) {
-        // let emojiKey = EmojiUtil.emojiTypesAndInstances[emojiType][emojiIndex]
-        // let posIndex = position - 1;
-        // let x = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].x;
-        // let y = this.mainForm.gameScene.coordinates.playerEmojiPositions[posIndex].y;
-        // let displaySize = this.mainForm.gameScene.coordinates.emojiSize
-        // if (isCenter) {
-        //     x = this.mainForm.gameScene.coordinates.screenWid / 2;
-        //     y = this.mainForm.gameScene.coordinates.screenHei / 2;
-        //     displaySize *= 5;
-        // }
-        // let spriteAnimation = this.mainForm.gameScene.add.sprite(x, y, emojiKey)
-        //     .setDisplaySize(displaySize, displaySize * EmojiUtil.emojiXToYRatio[emojiType][emojiIndex]);
-        // if (!isCenter) {
-        //     spriteAnimation.setOrigin(0);
-        // }
-        // spriteAnimation.play(emojiKey);
+        let emojiURL = `image/tractor/emoji/${EmojiUtil.emojiTypes[emojiType]}${emojiIndex}.gif`;
+
+        var img = new Image();
+        img.onload = (e: any) => {
+            let fixedWidth, fixedHeight: number;
+            let wid = e.target.width;
+            let hei = e.target.height;
+
+            var emojiImage = this.mainForm.gameScene.ui.create.div('.emojiImage', this.mainForm.gameScene.ui.frameGameRoom);
+            emojiImage.style.position = 'absolute';
+            if (isCenter) {
+                if (this.mainForm.gameScene.isInGameHall()) {
+                    fixedWidth = this.mainForm.gameScene.ui.frameGameHall.clientWidth / 2;
+                } else {
+                    fixedWidth = this.mainForm.gameScene.ui.frameGameRoom.clientWidth / 2;
+                }
+                fixedHeight = fixedWidth * hei / wid;
+                emojiImage.style.top = 'calc(50%)';
+                emojiImage.style.left = 'calc(50%)';
+                emojiImage.style.width = `calc(${fixedWidth}px)`;
+                emojiImage.style.height = `calc(${fixedHeight}px)`;
+                emojiImage.style.transform = `translate(-50%, -50%)`;
+                emojiImage.style.transition = `0s`;
+            }
+            else {
+                fixedHeight = EmojiUtil.fixedHeight;
+                fixedWidth = fixedHeight * wid / hei;
+                emojiImage.style.width = `calc(${fixedWidth}px)`;
+                emojiImage.style.height = `calc(${fixedHeight}px)`;
+                let x = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[position - 1].x;
+                let y = this.mainForm.gameScene.coordinates.trumpMadeCardsPositions[position - 1].y;
+                if (position === 1) y = this.mainForm.gameScene.coordinates.handCardPositions[3].y;
+                switch (position) {
+                    case 1:
+                    case 4:
+                        emojiImage.style.left = `calc(${x})`;
+                        emojiImage.style.bottom = `calc(${y})`;
+                        break;
+                    case 2:
+                        emojiImage.style.right = `calc(${x})`;
+                        emojiImage.style.bottom = `calc(${y})`;
+                        break;
+                    case 3:
+                        emojiImage.style.right = `calc(${x})`;
+                        emojiImage.style.top = `calc(${y})`;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            // emojiImage.style.zIndex = CommonMethods.zIndexSettingsForm;
+            emojiImage.setBackgroundImage(emojiURL)
+            emojiImage.style['background-size'] = '100% 100%';
+            emojiImage.style['background-repeat'] = 'no-repeat';
+
+            setTimeout(() => {
+                emojiImage.remove();
+            }, 1000 * EmojiUtil.displayDuration);
+        };
+        img.src = emojiURL;
     }
 
     public DrawMovingTractorByPosition(cardsCount: number, position: number) {

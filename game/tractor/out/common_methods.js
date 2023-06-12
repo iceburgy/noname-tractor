@@ -524,14 +524,14 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.zIndexSettingsForm = 100;
     CommonMethods.gifferPrefix = "playerGiffer";
     CommonMethods.winEmojiLength = 4;
-    CommonMethods.winEmojiTypeLength = 6;
+    CommonMethods.animatedEmojiTypeLength = 6;
     CommonMethods.danmuDuration = 8;
     CommonMethods.distributeLast8Delay = 0.2;
     CommonMethods.distributeLast8Interval = 0.1;
     CommonMethods.distributeLast8Duration = 0.5;
     CommonMethods.emojiMsgs = [
         "这波操作，666！",
-        "亲，请注意细节",
+        "哈哈哈哈~~",
         "猴开心：）",
         "嚎啕大哭：（",
         "能不能快点啊，兵贵神速！",
@@ -540,7 +540,7 @@ export var CommonMethods = /** @class */ (function () {
         "有劳点击“开始”继续游戏",
         "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
     ];
-    CommonMethods.emojiWarningIntervalInSec = 1;
+    CommonMethods.emojiWarningIntervalInSec = 3;
     CommonMethods.emojiWarningMsg = "\u8BF7\u4E0D\u8981\u8FC7\u4E8E\u9891\u7E41\u53D1\u9001\u6D88\u606F\uFF0C\u6BCF\u6761\u6D88\u606F\u95F4\u9694".concat(CommonMethods.emojiWarningIntervalInSec, "\u79D2");
     CommonMethods.hiddenEffectsWarningMsg = "隐藏技正在进行中，请稍后再试";
     CommonMethods.nickNameOverridePassLength = 5;

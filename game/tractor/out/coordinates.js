@@ -96,19 +96,12 @@ var Coordinates = /** @class */ (function () {
             { x: "50% + 55px", y: "0px" },
             { x: "0px", y: "50% + 70px" },
         ];
-        this.emojiSize = 80;
-        // this.playerEmojiPositions = [
-        //     { x: this.playerMainTextPositions[0].x - this.emojiSize - 120, y: this.playerStarterPositions[0].y - 30 },
-        //     { x: this.screenWid - this.hiddenWidth - this.emojiSize, y: this.playerTextPositions[1].y + 50 },
-        //     { x: this.playerMainTextPositions[2].x - this.emojiSize - 20, y: this.danmuPositionY + 10 },
-        //     { x: this.playerMainTextPositions[3].x, y: this.playerTextPositions[1].y + 50 },
-        // ]
         this.sgsAnimWidth = 80;
         this.sgsAnimHeight = 120;
         this.sgsAnimOffsetY = 10;
         // cards
         this.showedCardsPositions = [
-            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[0].y, " + ").concat(this.cardHeight + 40, "px") },
+            { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[0].y, " + ").concat(this.cardHeight + 45, "px") },
             { x: "".concat(this.playerSkinPositions[1].x, " + 180px"), y: "".concat(this.playerSkinPositions[1].y) },
             { x: this.playerSkinPositions[2].x, y: "".concat(this.playerSkinPositions[2].y, " + 160px") },
             { x: "".concat(this.playerSkinPositions[3].x, " + 180px"), y: "".concat(this.playerSkinPositions[3].y) },

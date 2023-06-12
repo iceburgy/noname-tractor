@@ -838,7 +838,7 @@ var MainForm = /** @class */ (function () {
         this.drawingFormHelper.destroyToolbar();
         this.drawingFormHelper.destroyScoreImageAndCards();
         this.drawingFormHelper.destroyLast8Cards();
-        this.drawingFormHelper.DrawSidebarFull();
+        this.drawingFormHelper.destroySidebar();
     };
     MainForm.prototype.setStartLabels = function () {
         var onesTurnPlayerID = "";
@@ -2314,7 +2314,7 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.NotifyEmojiEventHandler = function (playerID, emojiType, emojiIndex, isCenter, msgString, noSpeaker) {
         var isPlayerInGameHall = this.gameScene.isInGameHall();
-        if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
+        if (0 <= emojiType && emojiType < CommonMethods.animatedEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
             msgString = CommonMethods.emojiMsgs[emojiType];
             if (!isPlayerInGameHall) {
                 this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);

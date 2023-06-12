@@ -57,14 +57,14 @@ export class CommonMethods {
     public static gifferPrefix = "playerGiffer";
 
     public static winEmojiLength = 4
-    public static winEmojiTypeLength = 6
+    public static animatedEmojiTypeLength = 6
     public static danmuDuration = 8
     public static distributeLast8Delay = 0.2;
     public static distributeLast8Interval = 0.1;
     public static distributeLast8Duration = 0.5;
     public static emojiMsgs: string[] = [
         "这波操作，666！",
-        "亲，请注意细节",
+        "哈哈哈哈~~",
         "猴开心：）",
         "嚎啕大哭：（",
         "能不能快点啊，兵贵神速！",
@@ -73,7 +73,7 @@ export class CommonMethods {
         "有劳点击“开始”继续游戏",
         "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
     ]
-    public static emojiWarningIntervalInSec = 1
+    public static emojiWarningIntervalInSec = 3;
     public static emojiWarningMsg = `请不要过于频繁发送消息，每条消息间隔${CommonMethods.emojiWarningIntervalInSec}秒`
     public static hiddenEffectsWarningMsg = "隐藏技正在进行中，请稍后再试"
     public static nickNameOverridePassLength = 5

@@ -933,14 +933,13 @@ export class MainForm {
 
     private init() {
         //每次初始化都重绘背景
-        this.tractorPlayer.destroyAllClientMessages()
-        this.drawingFormHelper.destroyAllCards()
-        this.drawingFormHelper.destroyAllShowedCards()
-        this.drawingFormHelper.destroyToolbar()
-        this.drawingFormHelper.destroyScoreImageAndCards()
-        this.drawingFormHelper.destroyLast8Cards()
-
-        this.drawingFormHelper.DrawSidebarFull();
+        this.tractorPlayer.destroyAllClientMessages();
+        this.drawingFormHelper.destroyAllCards();
+        this.drawingFormHelper.destroyAllShowedCards();
+        this.drawingFormHelper.destroyToolbar();
+        this.drawingFormHelper.destroyScoreImageAndCards();
+        this.drawingFormHelper.destroyLast8Cards();
+        this.drawingFormHelper.destroySidebar();
     }
 
     public setStartLabels() {
@@ -2506,7 +2505,7 @@ export class MainForm {
 
     public NotifyEmojiEventHandler(playerID: string, emojiType: number, emojiIndex: number, isCenter: boolean, msgString: string, noSpeaker: boolean) {
         let isPlayerInGameHall = this.gameScene.isInGameHall();
-        if (0 <= emojiType && emojiType < CommonMethods.winEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
+        if (0 <= emojiType && emojiType < CommonMethods.animatedEmojiTypeLength && Object.keys(this.PlayerPosition).includes(playerID)) {
             msgString = CommonMethods.emojiMsgs[emojiType];
             if (!isPlayerInGameHall) {
                 this.drawingFormHelper.DrawEmojiByPosition(this.PlayerPosition[playerID], emojiType, emojiIndex, isCenter);
