@@ -2138,18 +2138,19 @@ var MainForm = /** @class */ (function () {
                 }
             });
         }
-        // 右键点空白区
         window.addEventListener("mouseup", function (e) {
+            // 右键点空白区
             if (_this.gameScene.isInGameRoom()) {
                 if (e.button === 2 && e.target.classList.contains('frameGameRoom')) {
                     _this.HandleRightClickEmptyArea();
                     return;
                 }
             }
+            // 左键点空白区
             if (e.button === 0 &&
                 (e.target.classList.contains('replayFormWrapper') ||
                     e.target.classList.contains('frameGameRoom') ||
-                    e.target.classList.contains('frameGameHall') ||
+                    e.target.classList.contains('frameGameHallTables') ||
                     e.target.classList.contains('inputFormWrapper') ||
                     e.target.classList.contains('chattextdiv') ||
                     e.target.parentElement.classList.contains('chattextdiv'))) {
