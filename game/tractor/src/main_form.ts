@@ -2057,7 +2057,15 @@ export class MainForm {
         frameGameHall.style.right = '0px';
         this.gameScene.ui.frameGameHall = frameGameHall;
 
-        let textHall = this.gameScene.ui.create.div('', '大厅', this.gameScene.ui.frameGameHall);
+        let frameGameHallOnliners = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
+        frameGameHallOnliners.style.position = 'absolute';
+        frameGameHallOnliners.style.top = '0px';
+        frameGameHallOnliners.style.left = '0px';
+        frameGameHallOnliners.style.bottom = '0px';
+        frameGameHallOnliners.style.width = '15%';
+        this.gameScene.ui.frameGameHallOnliners = frameGameHallOnliners;
+
+        let textHall = this.gameScene.ui.create.div('', '在线', this.gameScene.ui.frameGameHallOnliners);
         textHall.style.width = '70px';
         textHall.style.fontFamily = 'xinwei';
         textHall.style.fontSize = '30px';
@@ -2066,28 +2074,18 @@ export class MainForm {
         textHall.style.top = 'calc(60px)';
         textHall.style.textAlign = 'left';
 
-        let topPx = 110;
-        for (let i = 0; i < playerList.length; i++) {
-            let textHallPlayer = this.gameScene.ui.create.div('', playerList[i], this.gameScene.ui.frameGameHall);
-            textHallPlayer.style.fontFamily = 'serif';
-            textHallPlayer.style.fontSize = '20px';
-            textHallPlayer.style.padding = '10px';
-            textHallPlayer.style.left = 'calc(10px)';
-            textHallPlayer.style.top = `calc(${topPx}px)`;
-            textHallPlayer.style.textAlign = 'left';
-            topPx += 30;
-        }
+        let playerListAll: string[] = CommonMethods.deepCopy<string[]>(playerList);
 
         let frameGameHallTables = this.gameScene.ui.create.div('.frameGameHallTables', this.gameScene.ui.frameGameHall);
         frameGameHallTables.style.position = 'absolute';
         frameGameHallTables.style.top = '0px';
-        frameGameHallTables.style.left = '0px';
+        frameGameHallTables.style.left = '15%';
         frameGameHallTables.style.bottom = '0px';
         frameGameHallTables.style.right = '0px';
         this.gameScene.ui.frameGameHallTables = frameGameHallTables;
 
         for (let i = 0; i < roomStateList.length; i++) {
-            let leftOffset = 35 + 40 * (i % 2);
+            let leftOffset = 28 + 44 * (i % 2);
             let topOffset = 30 + 40 * Math.floor(i / 2);
 
             var pokerTable = this.gameScene.ui.create.div('.pokerTable', this.gameScene.ui.frameGameHallTables);
@@ -2174,7 +2172,9 @@ export class MainForm {
                             break;
                     }
 
-                    var pokerPlayer = this.gameScene.ui.create.div('.pokerPlayer', roomStateList[i].CurrentGameState.Players[j].PlayerId, this.gameScene.ui.frameGameHallTables);
+                    let pid: string = roomStateList[i].CurrentGameState.Players[j].PlayerId;
+                    playerListAll.push(pid)
+                    var pokerPlayer = this.gameScene.ui.create.div('.pokerPlayer', pid, this.gameScene.ui.frameGameHallTables);
                     pokerPlayer.style.fontFamily = 'serif';
                     pokerPlayer.style.fontSize = '20px';
                     pokerPlayer.style.left = leftOffsetPlayer;
@@ -2202,7 +2202,9 @@ export class MainForm {
                                     break;
                             }
 
-                            var pokerPlayerOb = this.gameScene.ui.create.div('.pokerPlayerObGameHall', `【${roomStateList[i].CurrentGameState.Players[j].Observers[k]}】`, this.gameScene.ui.frameGameHallTables);
+                            let oid: string = roomStateList[i].CurrentGameState.Players[j].Observers[k];
+                            playerListAll.push(oid);
+                            var pokerPlayerOb = this.gameScene.ui.create.div('.pokerPlayerObGameHall', `【${oid}】`, this.gameScene.ui.frameGameHallTables);
                             pokerPlayerOb.style.fontFamily = 'serif';
                             pokerPlayerOb.style.fontSize = '20px';
                             pokerPlayerOb.style.left = leftOffsetPlayer;
@@ -2260,6 +2262,18 @@ export class MainForm {
                     });
                 }
             }
+        }
+
+        let topPx = 110;
+        for (let i = 0; i < playerListAll.length; i++) {
+            let textHallPlayer = this.gameScene.ui.create.div('', playerListAll[i], this.gameScene.ui.frameGameHallOnliners);
+            textHallPlayer.style.fontFamily = 'serif';
+            textHallPlayer.style.fontSize = '20px';
+            textHallPlayer.style.padding = '10px';
+            textHallPlayer.style.left = 'calc(10px)';
+            textHallPlayer.style.top = `calc(${topPx}px)`;
+            textHallPlayer.style.textAlign = 'left';
+            topPx += 30;
         }
     }
 
@@ -2331,6 +2345,7 @@ export class MainForm {
             if (e.button === 0 &&
                 (e.target.classList.contains('replayFormWrapper') ||
                     e.target.classList.contains('frameGameRoom') ||
+                    e.target.classList.contains('frameGameHallOnliners') ||
                     e.target.classList.contains('frameGameHallTables') ||
                     e.target.classList.contains('inputFormWrapper') ||
                     e.target.classList.contains('chattextdiv') ||
