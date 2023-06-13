@@ -1660,6 +1660,10 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.destroyGameHall = function () {
+        if (this.gameScene.ui.frameGameHallTables) {
+            this.gameScene.ui.frameGameHallTables.remove();
+            delete this.gameScene.ui.frameGameHallTables;
+        }
         if (this.gameScene.ui.frameGameHall) {
             this.gameScene.ui.frameGameHall.remove();
             delete this.gameScene.ui.frameGameHall;
@@ -1897,10 +1901,17 @@ var MainForm = /** @class */ (function () {
             textHallPlayer.style.textAlign = 'left';
             topPx += 30;
         }
+        var frameGameHallTables = this.gameScene.ui.create.div('.frameGameHallTables', this.gameScene.ui.frameGameHall);
+        frameGameHallTables.style.position = 'absolute';
+        frameGameHallTables.style.top = '0px';
+        frameGameHallTables.style.left = '0px';
+        frameGameHallTables.style.bottom = '0px';
+        frameGameHallTables.style.right = '0px';
+        this.gameScene.ui.frameGameHallTables = frameGameHallTables;
         var _loop_2 = function (i) {
             var leftOffset = 35 + 40 * (i % 2);
             var topOffset = 30 + 40 * Math.floor(i / 2);
-            pokerTable = this_2.gameScene.ui.create.div('.pokerTable', this_2.gameScene.ui.frameGameHall);
+            pokerTable = this_2.gameScene.ui.create.div('.pokerTable', this_2.gameScene.ui.frameGameHallTables);
             pokerTable.setBackgroundImage('image/tractor/btn/poker_table.png');
             pokerTable.setAttribute('data-position', i);
             pokerTable.style.left = "calc(".concat(leftOffset, "% - 80px)");
@@ -1909,7 +1920,7 @@ var MainForm = /** @class */ (function () {
             pokerTable.style.height = '160px';
             pokerTable.style['background-size'] = '100% 100%';
             pokerTable.style['background-repeat'] = 'no-repeat';
-            var pokerTableName = this_2.gameScene.ui.create.div('', '加入旁观', this_2.gameScene.ui.frameGameHall);
+            var pokerTableName = this_2.gameScene.ui.create.div('', "".concat(i + 1, "\u53F7\u623F\u95F4"), this_2.gameScene.ui.frameGameHallTables);
             pokerTableName.style.fontFamily = 'serif';
             pokerTableName.style.fontSize = '18px';
             pokerTableName.style.width = '160px';
@@ -1980,7 +1991,7 @@ var MainForm = /** @class */ (function () {
                         default:
                             break;
                     }
-                    pokerPlayer = this_2.gameScene.ui.create.div('.pokerPlayer', roomStateList[i].CurrentGameState.Players[j].PlayerId, this_2.gameScene.ui.frameGameHall);
+                    pokerPlayer = this_2.gameScene.ui.create.div('.pokerPlayer', roomStateList[i].CurrentGameState.Players[j].PlayerId, this_2.gameScene.ui.frameGameHallTables);
                     pokerPlayer.style.fontFamily = 'serif';
                     pokerPlayer.style.fontSize = '20px';
                     pokerPlayer.style.left = leftOffsetPlayer;
@@ -2007,7 +2018,7 @@ var MainForm = /** @class */ (function () {
                                 default:
                                     break;
                             }
-                            pokerPlayerOb = this_2.gameScene.ui.create.div('.pokerPlayerObGameHall', "\u3010".concat(roomStateList[i].CurrentGameState.Players[j].Observers[k], "\u3011"), this_2.gameScene.ui.frameGameHall);
+                            pokerPlayerOb = this_2.gameScene.ui.create.div('.pokerPlayerObGameHall', "\u3010".concat(roomStateList[i].CurrentGameState.Players[j].Observers[k], "\u3011"), this_2.gameScene.ui.frameGameHallTables);
                             pokerPlayerOb.style.fontFamily = 'serif';
                             pokerPlayerOb.style.fontSize = '20px';
                             pokerPlayerOb.style.left = leftOffsetPlayer;
@@ -2025,7 +2036,7 @@ var MainForm = /** @class */ (function () {
                     }
                 }
                 else {
-                    pokerChair = this_2.gameScene.ui.create.div('.pokerChair', this_2.gameScene.ui.frameGameHall);
+                    pokerChair = this_2.gameScene.ui.create.div('.pokerChair', this_2.gameScene.ui.frameGameHallTables);
                     pokerChair.setBackgroundImage('image/tractor/btn/poker_chair.png');
                     pokerChair.setAttribute('data-position', i * 4 + j);
                     pokerChair.style.left = leftOffsetChair;
@@ -2034,7 +2045,7 @@ var MainForm = /** @class */ (function () {
                     pokerChair.style.height = '80px';
                     pokerChair.style['background-size'] = '100% 100%';
                     pokerChair.style['background-repeat'] = 'no-repeat';
-                    var pokerChairName = this_2.gameScene.ui.create.div('.pokerChairName', "".concat(j + 1), this_2.gameScene.ui.frameGameHall);
+                    var pokerChairName = this_2.gameScene.ui.create.div('.pokerChairName', "".concat(j + 1), this_2.gameScene.ui.frameGameHallTables);
                     pokerChairName.style.fontFamily = 'cursive';
                     pokerChairName.style.fontSize = '20px';
                     pokerChairName.style.color = 'yellow';

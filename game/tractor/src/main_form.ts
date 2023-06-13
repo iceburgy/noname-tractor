@@ -1808,6 +1808,10 @@ export class MainForm {
     }
 
     public destroyGameHall() {
+        if (this.gameScene.ui.frameGameHallTables) {
+            this.gameScene.ui.frameGameHallTables.remove();
+            delete this.gameScene.ui.frameGameHallTables;
+        }
         if (this.gameScene.ui.frameGameHall) {
             this.gameScene.ui.frameGameHall.remove();
             delete this.gameScene.ui.frameGameHall;
@@ -2074,12 +2078,19 @@ export class MainForm {
             topPx += 30;
         }
 
+        let frameGameHallTables = this.gameScene.ui.create.div('.frameGameHallTables', this.gameScene.ui.frameGameHall);
+        frameGameHallTables.style.position = 'absolute';
+        frameGameHallTables.style.top = '0px';
+        frameGameHallTables.style.left = '0px';
+        frameGameHallTables.style.bottom = '0px';
+        frameGameHallTables.style.right = '0px';
+        this.gameScene.ui.frameGameHallTables = frameGameHallTables;
 
         for (let i = 0; i < roomStateList.length; i++) {
             let leftOffset = 35 + 40 * (i % 2);
             let topOffset = 30 + 40 * Math.floor(i / 2);
 
-            var pokerTable = this.gameScene.ui.create.div('.pokerTable', this.gameScene.ui.frameGameHall);
+            var pokerTable = this.gameScene.ui.create.div('.pokerTable', this.gameScene.ui.frameGameHallTables);
             pokerTable.setBackgroundImage('image/tractor/btn/poker_table.png')
             pokerTable.setAttribute('data-position', i);
             pokerTable.style.left = `calc(${leftOffset}% - 80px)`;
@@ -2089,7 +2100,7 @@ export class MainForm {
             pokerTable.style['background-size'] = '100% 100%';
             pokerTable.style['background-repeat'] = 'no-repeat';
 
-            let pokerTableName = this.gameScene.ui.create.div('', '加入旁观', this.gameScene.ui.frameGameHall);
+            let pokerTableName = this.gameScene.ui.create.div('', `${i + 1}号房间`, this.gameScene.ui.frameGameHallTables);
             pokerTableName.style.fontFamily = 'serif';
             pokerTableName.style.fontSize = '18px';
             pokerTableName.style.width = '160px';
@@ -2163,7 +2174,7 @@ export class MainForm {
                             break;
                     }
 
-                    var pokerPlayer = this.gameScene.ui.create.div('.pokerPlayer', roomStateList[i].CurrentGameState.Players[j].PlayerId, this.gameScene.ui.frameGameHall);
+                    var pokerPlayer = this.gameScene.ui.create.div('.pokerPlayer', roomStateList[i].CurrentGameState.Players[j].PlayerId, this.gameScene.ui.frameGameHallTables);
                     pokerPlayer.style.fontFamily = 'serif';
                     pokerPlayer.style.fontSize = '20px';
                     pokerPlayer.style.left = leftOffsetPlayer;
@@ -2191,7 +2202,7 @@ export class MainForm {
                                     break;
                             }
 
-                            var pokerPlayerOb = this.gameScene.ui.create.div('.pokerPlayerObGameHall', `【${roomStateList[i].CurrentGameState.Players[j].Observers[k]}】`, this.gameScene.ui.frameGameHall);
+                            var pokerPlayerOb = this.gameScene.ui.create.div('.pokerPlayerObGameHall', `【${roomStateList[i].CurrentGameState.Players[j].Observers[k]}】`, this.gameScene.ui.frameGameHallTables);
                             pokerPlayerOb.style.fontFamily = 'serif';
                             pokerPlayerOb.style.fontSize = '20px';
                             pokerPlayerOb.style.left = leftOffsetPlayer;
@@ -2207,7 +2218,7 @@ export class MainForm {
                         }
                     }
                 } else {
-                    var pokerChair = this.gameScene.ui.create.div('.pokerChair', this.gameScene.ui.frameGameHall);
+                    var pokerChair = this.gameScene.ui.create.div('.pokerChair', this.gameScene.ui.frameGameHallTables);
                     pokerChair.setBackgroundImage('image/tractor/btn/poker_chair.png')
                     pokerChair.setAttribute('data-position', i * 4 + j);
                     pokerChair.style.left = leftOffsetChair;
@@ -2217,7 +2228,7 @@ export class MainForm {
                     pokerChair.style['background-size'] = '100% 100%';
                     pokerChair.style['background-repeat'] = 'no-repeat';
 
-                    let pokerChairName = this.gameScene.ui.create.div('.pokerChairName', `${j + 1}`, this.gameScene.ui.frameGameHall);
+                    let pokerChairName = this.gameScene.ui.create.div('.pokerChairName', `${j + 1}`, this.gameScene.ui.frameGameHallTables);
                     pokerChairName.style.fontFamily = 'cursive';
                     pokerChairName.style.fontSize = '20px';
                     pokerChairName.style.color = 'yellow';
