@@ -838,7 +838,7 @@ var MainForm = /** @class */ (function () {
         this.drawingFormHelper.destroyToolbar();
         this.drawingFormHelper.destroyScoreImageAndCards();
         this.drawingFormHelper.destroyLast8Cards();
-        this.drawingFormHelper.destroySidebar();
+        this.drawingFormHelper.DrawSidebarFull();
     };
     MainForm.prototype.setStartLabels = function () {
         var onesTurnPlayerID = "";

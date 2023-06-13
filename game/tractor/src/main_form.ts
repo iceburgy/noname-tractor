@@ -939,7 +939,7 @@ export class MainForm {
         this.drawingFormHelper.destroyToolbar();
         this.drawingFormHelper.destroyScoreImageAndCards();
         this.drawingFormHelper.destroyLast8Cards();
-        this.drawingFormHelper.destroySidebar();
+        this.drawingFormHelper.DrawSidebarFull();
     }
 
     public setStartLabels() {
