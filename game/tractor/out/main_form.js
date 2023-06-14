@@ -389,6 +389,8 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.destroyGameRoom = function () {
+        this.StartGame();
+        this.drawingFormHelper.destroySidebar();
         if (this.gameScene.ui.handZone) {
             this.gameScene.ui.handZone.remove();
             delete this.gameScene.ui.handZone;
@@ -435,13 +437,6 @@ var MainForm = /** @class */ (function () {
             var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
             this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
         }
-        this.drawingFormHelper.destroyAllCards();
-        this.drawingFormHelper.destroyAllShowedCards();
-        this.tractorPlayer.destroyAllClientMessages();
-        this.drawingFormHelper.destroyToolbar();
-        this.drawingFormHelper.destroySidebar();
-        this.drawingFormHelper.destroyScoreImageAndCards();
-        this.drawingFormHelper.destroyLast8Cards();
         this.PlayerPosition = {};
         this.PositionPlayer = {};
         //重置状态
