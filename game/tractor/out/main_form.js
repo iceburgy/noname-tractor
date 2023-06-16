@@ -1705,7 +1705,8 @@ var MainForm = /** @class */ (function () {
         for (var i = 0; i < CommonMethods.emojiMsgs.length; i++) {
             var option = document.createElement("option");
             option.value = CommonMethods.emojiMsgs[i];
-            option.text = "".concat(i + 1, "-").concat(CommonMethods.emojiMsgs[i]);
+            var shortCutKeyChar = String.fromCharCode(CommonMethods.emojiIndexToKeyCodes[i]);
+            option.text = "".concat(shortCutKeyChar, "-").concat(CommonMethods.emojiMsgs[i]);
             selectChatPresetMsgs.appendChild(option);
         }
         selectChatPresetMsgs.addEventListener('change', function () {
@@ -1714,7 +1715,7 @@ var MainForm = /** @class */ (function () {
         });
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = "\u6BCF\u6761\u6D88\u606F\u6D88\u8017\u3010\u804A\u5929\u5361\u3011\uFF08\u4F18\u5148\u89E6\u53D1\uFF09\u6216\u8005\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7").concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57\u952E");
+        textAreaChatMsg.placeholder = "\u6BCF\u6761\u6D88\u606F\u6D88\u8017\u3010\u804A\u5929\u5361\u3011\uFF08\u4F18\u5148\u89E6\u53D1\uFF09\u6216\u8005\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7").concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u6D88\u606F\u4E3A\u7A7A\u65F6\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\u5F53\u524D\u9009\u4E2D\u7684\u5FEB\u6377\u6D88\u606F\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57/\u5B57\u6BCD\u952E");
         textAreaChatMsg.style.resize = 'none';
         textAreaChatMsg.style.height = '3em';
         textAreaChatMsg.style.bottom = 'calc(50px)';
@@ -2183,9 +2184,10 @@ var MainForm = /** @class */ (function () {
             if (_this.gameScene.ui.inputFormWrapper)
                 return;
             // 1 - 9: 49 - 57
-            if (49 <= keyCode && keyCode <= 49 + CommonMethods.emojiMsgs.length - 1) {
+            var keyCodeString = "".concat(keyCode);
+            if (CommonMethods.emojiKeyCodeToIndex.hasOwnProperty(keyCodeString)) {
                 var prevSelection = _this.gameScene.ui.selectPresetMsgs.selectedIndex;
-                var emojiType = keyCode - 49;
+                var emojiType = CommonMethods.emojiKeyCodeToIndex[keyCodeString];
                 if (emojiType !== prevSelection) {
                     _this.gameScene.ui.selectPresetMsgs.selectedIndex = emojiType;
                 }

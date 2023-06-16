@@ -533,13 +533,47 @@ export var CommonMethods = /** @class */ (function () {
         "这波操作，666！",
         "哈哈哈哈~~",
         "不好意思，这个没出好",
-        "没事儿~",
+        "没事儿",
         "能不能快点啊，兵贵神速！",
         "烟花",
         "嗯，没错儿",
         "有劳点击“开始”继续游戏",
         "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
+        "不好意思，得撤了，最后一把咯",
+        "谢谢大家",
+        "拜拜",
+        "好的",
     ];
+    CommonMethods.emojiIndexToKeyCodes = [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        76,
+        84,
+        66,
+        79,
+    ];
+    CommonMethods.emojiKeyCodeToIndex = {
+        "49": 0,
+        "50": 1,
+        "51": 2,
+        "52": 3,
+        "53": 4,
+        "54": 5,
+        "55": 6,
+        "56": 7,
+        "57": 8,
+        "76": 9,
+        "84": 10,
+        "66": 11,
+        "79": 12,
+    };
     CommonMethods.emojiWarningIntervalInSec = 3;
     CommonMethods.emojiWarningMsg = "\u8BF7\u4E0D\u8981\u8FC7\u4E8E\u9891\u7E41\u53D1\u9001\u6D88\u606F\uFF0C\u6BCF\u6761\u6D88\u606F\u95F4\u9694".concat(CommonMethods.emojiWarningIntervalInSec, "\u79D2");
     CommonMethods.hiddenEffectsWarningMsg = "隐藏技正在进行中，请稍后再试";

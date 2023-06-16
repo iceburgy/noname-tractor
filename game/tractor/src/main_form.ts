@@ -1862,7 +1862,8 @@ export class MainForm {
         for (var i = 0; i < CommonMethods.emojiMsgs.length; i++) {
             var option = document.createElement("option");
             option.value = CommonMethods.emojiMsgs[i];
-            option.text = `${i + 1}-${CommonMethods.emojiMsgs[i]}`;
+            let shortCutKeyChar = String.fromCharCode(CommonMethods.emojiIndexToKeyCodes[i]);
+            option.text = `${shortCutKeyChar}-${CommonMethods.emojiMsgs[i]}`;
             selectChatPresetMsgs.appendChild(option);
         }
         selectChatPresetMsgs.addEventListener('change', () => {
@@ -1872,7 +1873,7 @@ export class MainForm {
 
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = `每条消息消耗【聊天卡】（优先触发）或者【升币】x${CommonMethods.chatMessageCost}，消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，快捷消息的快捷键为对应的数字键`;
+        textAreaChatMsg.placeholder = `每条消息消耗【聊天卡】（优先触发）或者【升币】x${CommonMethods.chatMessageCost}，消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
         textAreaChatMsg.style.resize = 'none';
         textAreaChatMsg.style.height = '3em';
         textAreaChatMsg.style.bottom = 'calc(50px)';
@@ -2370,9 +2371,10 @@ export class MainForm {
             if (this.gameScene.ui.inputFormWrapper) return;
 
             // 1 - 9: 49 - 57
-            if (49 <= keyCode && keyCode <= 49 + CommonMethods.emojiMsgs.length - 1) {
+            let keyCodeString = `${keyCode}`;
+            if (CommonMethods.emojiKeyCodeToIndex.hasOwnProperty(keyCodeString)) {
                 let prevSelection = this.gameScene.ui.selectPresetMsgs.selectedIndex;
-                let emojiType = keyCode - 49;
+                let emojiType = CommonMethods.emojiKeyCodeToIndex[keyCodeString];
                 if (emojiType !== prevSelection) {
                     this.gameScene.ui.selectPresetMsgs.selectedIndex = emojiType;
                 }

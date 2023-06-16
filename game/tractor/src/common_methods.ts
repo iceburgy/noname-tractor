@@ -66,13 +66,47 @@ export class CommonMethods {
         "这波操作，666！",
         "哈哈哈哈~~",
         "不好意思，这个没出好",
-        "没事儿~",
+        "没事儿",
         "能不能快点啊，兵贵神速！",
         "烟花",
         "嗯，没错儿",
         "有劳点击“开始”继续游戏",
         "有劳房主点击右上角“设置”，再点击“继续上盘牌局”",
+        "不好意思，得撤了，最后一把咯",
+        "谢谢大家",
+        "拜拜",
+        "好的",
     ]
+    public static emojiIndexToKeyCodes: number[] = [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        76,
+        84,
+        66,
+        79,
+    ]
+    public static emojiKeyCodeToIndex: any = {
+        "49": 0,
+        "50": 1,
+        "51": 2,
+        "52": 3,
+        "53": 4,
+        "54": 5,
+        "55": 6,
+        "56": 7,
+        "57": 8,
+        "76": 9,
+        "84": 10,
+        "66": 11,
+        "79": 12,
+    }
     public static emojiWarningIntervalInSec = 3;
     public static emojiWarningMsg = `请不要过于频繁发送消息，每条消息间隔${CommonMethods.emojiWarningIntervalInSec}秒`
     public static hiddenEffectsWarningMsg = "隐藏技正在进行中，请稍后再试"
