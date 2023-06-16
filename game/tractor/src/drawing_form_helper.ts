@@ -1446,13 +1446,9 @@ export class DrawingFormHelper {
         this.mainForm.gameScene.OverridingFlagImage = orImage;
 
         if (playAnimation && winType >= 2) {
-            // getting the location of the first showed cards from latest player
-            let showedLength = this.mainForm.gameScene.showedCardImages.length;
-            if (this.mainForm.gameScene.showedCardImages && showedLength >= cardsCount) {
-                let lastCardImage = this.mainForm.gameScene.showedCardImages[showedLength - cardsCount];
-                var rect = lastCardImage.getBoundingClientRect();
-                decadeUI.animation.playSpine2D(this.mainForm.gameScene.overridingLabelAnims[winType][0], rect.left, document.documentElement.clientHeight - rect.bottom, this.mainForm.gameScene.coordinates.cardWidth, this.mainForm.gameScene.coordinates.cardHeight, this.mainForm.gameScene.overridingLabelAnims[winType][1]);
-            }
+            // getting the location of the OverridingFlag image, which should match the first showed cards from the winner player
+            var rect = orImage.getBoundingClientRect();
+            decadeUI.animation.playSpine2D(this.mainForm.gameScene.overridingLabelAnims[winType][0], rect.left, document.documentElement.clientHeight - rect.bottom, this.mainForm.gameScene.coordinates.cardWidth, this.mainForm.gameScene.coordinates.cardHeight, this.mainForm.gameScene.overridingLabelAnims[winType][1]);
         }
     }
 
