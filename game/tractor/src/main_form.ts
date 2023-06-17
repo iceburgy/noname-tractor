@@ -1325,6 +1325,13 @@ export class MainForm {
     }
 
     public isChatBanned(pid: string): boolean {
+        if (Object.keys(this.DaojuInfo).length === 0) {
+            console.log("this.DaojuInfo is empty");
+        } else if (Object.keys(this.DaojuInfo.daojuInfoByPlayer).length === 0) {
+            console.log("this.DaojuInfo.daojuInfoByPlayer is empty");
+        } else if (!this.DaojuInfo.daojuInfoByPlayer.hasOwnProperty(pid)) {
+            console.log(`this.DaojuInfo.daojuInfoByPlayer is missing playerID as key: ${pid}`);
+        }
         if (this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
             let dBanned = new Date(this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil);
             let dNow = new Date();

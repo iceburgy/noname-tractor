@@ -1206,6 +1206,15 @@ var MainForm = /** @class */ (function () {
         return dExp < dNow;
     };
     MainForm.prototype.isChatBanned = function (pid) {
+        if (Object.keys(this.DaojuInfo).length === 0) {
+            console.log("this.DaojuInfo is empty");
+        }
+        else if (Object.keys(this.DaojuInfo.daojuInfoByPlayer).length === 0) {
+            console.log("this.DaojuInfo.daojuInfoByPlayer is empty");
+        }
+        else if (!this.DaojuInfo.daojuInfoByPlayer.hasOwnProperty(pid)) {
+            console.log("this.DaojuInfo.daojuInfoByPlayer is missing playerID as key: ".concat(pid));
+        }
         if (this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
             var dBanned = new Date(this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil);
             var dNow = new Date();
