@@ -2600,6 +2600,7 @@ export class MainForm {
         // gather players with status
         let playersInGameRoomPlaying: any = {};
         let playersInGameRoomObserving: any = {};
+        let playerIsOffline: any = {};
 
         for (let i = 0; i < roomStateList.length; i++) {
             let rs: RoomState = roomStateList[i];
@@ -2614,6 +2615,9 @@ export class MainForm {
                         playersInGameRoomObserving[roomName] = [];
                     }
                     playersInGameRoomPlaying[roomName].push(player.PlayerId);
+                    if (player.IsOffline) {
+                        playerIsOffline[player.PlayerId] = true;
+                    }
                     if (player.Observers && player.Observers.length > 0) {
                         playersInGameRoomObserving[roomName] = playersInGameRoomObserving[roomName].concat(player.Observers);
                     }
@@ -2661,7 +2665,8 @@ export class MainForm {
                 let pid = players[i];
                 let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                 let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                let pidInfo = `${pid}${noChat}${clientVersion}`;
+                let isOfflineInfo = (pid in playerIsOffline) ? "-离线中" : "";
+                let pidInfo = `${pid}${noChat}${clientVersion}${isOfflineInfo}`;
                 let chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
                 let chatQuotaInfo = chatQuota > 0 ? `，聊天卡：${chatQuota}` : "";
                 d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}${chatQuotaInfo}`;
@@ -2707,9 +2712,6 @@ export class MainForm {
     }
 
     private shouldSoundEnter(playerID: string, isJoiningGameHall: boolean) {
-        // 如果是自己，无需通知
-        if (playerID === this.tractorPlayer.PlayerId) return false;
-
         // 如果我在大厅，别人加入大厅
         if (this.gameScene.isInGameHall() && isJoiningGameHall) return true;
 

@@ -76,6 +76,7 @@ export class CommonMethods {
         "谢谢大家",
         "拜拜",
         "好的",
+        "Hi，大家好！",
     ]
     public static emojiIndexToKeyCodes: number[] = [
         49,
@@ -91,6 +92,7 @@ export class CommonMethods {
         84,
         66,
         79,
+        72,
     ]
     public static emojiKeyCodeToIndex: any = {
         "49": 0,
@@ -106,6 +108,7 @@ export class CommonMethods {
         "84": 10,
         "66": 11,
         "79": 12,
+        "72": 13,
     }
     public static emojiWarningIntervalInSec = 3;
     public static emojiWarningMsg = `请不要过于频繁发送消息，每条消息间隔${CommonMethods.emojiWarningIntervalInSec}秒`

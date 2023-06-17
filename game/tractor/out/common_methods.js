@@ -543,6 +543,7 @@ export var CommonMethods = /** @class */ (function () {
         "谢谢大家",
         "拜拜",
         "好的",
+        "Hi，大家好！",
     ];
     CommonMethods.emojiIndexToKeyCodes = [
         49,
@@ -558,6 +559,7 @@ export var CommonMethods = /** @class */ (function () {
         84,
         66,
         79,
+        72,
     ];
     CommonMethods.emojiKeyCodeToIndex = {
         "49": 0,
@@ -573,6 +575,7 @@ export var CommonMethods = /** @class */ (function () {
         "84": 10,
         "66": 11,
         "79": 12,
+        "72": 13,
     };
     CommonMethods.emojiWarningIntervalInSec = 3;
     CommonMethods.emojiWarningMsg = "\u8BF7\u4E0D\u8981\u8FC7\u4E8E\u9891\u7E41\u53D1\u9001\u6D88\u606F\uFF0C\u6BCF\u6761\u6D88\u606F\u95F4\u9694".concat(CommonMethods.emojiWarningIntervalInSec, "\u79D2");

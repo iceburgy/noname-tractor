@@ -551,9 +551,9 @@ export class DrawingFormHelper {
                     removedCardImage = this.mainForm.gameScene.cardServerNumToImage[serverCardNumber].shift();
                     break;
             }
-            let cardsOrderNumber: number = parseInt(removedCardImage.getAttribute('cardsOrderNumber'));
-            indicesToRemove.push(cardsOrderNumber);
             if (removedCardImage) {
+                let cardsOrderNumber: number = parseInt(removedCardImage.getAttribute('cardsOrderNumber'));
+                indicesToRemove.push(cardsOrderNumber);
                 removedCardImage.remove();
             }
         }

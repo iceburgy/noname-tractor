@@ -2404,6 +2404,7 @@ var MainForm = /** @class */ (function () {
         // gather players with status
         var playersInGameRoomPlaying = {};
         var playersInGameRoomObserving = {};
+        var playerIsOffline = {};
         for (var i = 0; i < roomStateList.length; i++) {
             var rs = roomStateList[i];
             var roomName = rs.roomSetting.RoomName;
@@ -2417,6 +2418,9 @@ var MainForm = /** @class */ (function () {
                         playersInGameRoomObserving[roomName] = [];
                     }
                     playersInGameRoomPlaying[roomName].push(player.PlayerId);
+                    if (player.IsOffline) {
+                        playerIsOffline[player.PlayerId] = true;
+                    }
                     if (player.Observers && player.Observers.length > 0) {
                         playersInGameRoomObserving[roomName] = playersInGameRoomObserving[roomName].concat(player.Observers);
                     }
@@ -2460,7 +2464,8 @@ var MainForm = /** @class */ (function () {
                 var pid = players[i];
                 var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
                 var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
+                var isOfflineInfo = (pid in playerIsOffline) ? "-离线中" : "";
+                var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion).concat(isOfflineInfo);
                 var chatQuota = parseInt(this.DaojuInfo.daojuInfoByPlayer[pid].ChatQuota);
                 var chatQuotaInfo = chatQuota > 0 ? "\uFF0C\u804A\u5929\u5361\uFF1A".concat(chatQuota) : "";
                 d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi).concat(chatQuotaInfo);
@@ -2505,9 +2510,6 @@ var MainForm = /** @class */ (function () {
             this.gameScene.playAudio(CommonMethods.audioEnterRoom, CommonMethods.GetPlayerCount(this.tractorPlayer.CurrentGameState.Players));
     };
     MainForm.prototype.shouldSoundEnter = function (playerID, isJoiningGameHall) {
-        // 如果是自己，无需通知
-        if (playerID === this.tractorPlayer.PlayerId)
-            return false;
         // 如果我在大厅，别人加入大厅
         if (this.gameScene.isInGameHall() && isJoiningGameHall)
             return true;

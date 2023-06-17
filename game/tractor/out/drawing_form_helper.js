@@ -515,9 +515,9 @@ var DrawingFormHelper = /** @class */ (function () {
                     removedCardImage = this.mainForm.gameScene.cardServerNumToImage[serverCardNumber].shift();
                     break;
             }
-            var cardsOrderNumber = parseInt(removedCardImage.getAttribute('cardsOrderNumber'));
-            indicesToRemove.push(cardsOrderNumber);
             if (removedCardImage) {
+                var cardsOrderNumber = parseInt(removedCardImage.getAttribute('cardsOrderNumber'));
+                indicesToRemove.push(cardsOrderNumber);
                 removedCardImage.remove();
             }
         }
