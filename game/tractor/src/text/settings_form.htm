@@ -67,7 +67,10 @@
         <br />
         <label id="lblNoTouchDeviceDesc">不勾选此选项，并配合【开启拖拽选牌】选项方能在触屏设备上实现拖拽选牌功能</label>
     </p>
-    <p><label for="txtMaxReplays">录像个数上限：</label><input type="text" id="txtMaxReplays" value="1000" /></p>
+    <p>
+        当前录像个数：<span id="divReplayCount"></span><br />
+        <label for="txtMaxReplays">录像个数上限：</label><input type="text" id="txtMaxReplays" value="1000" />
+    </p>
     <p><input type="button" id="btnCleanupReplays" value="清空所有录像" /></p>
     <p><input type="button" id="btnExportZipFile" value="导出所有录像至本地文件" /></p>
     <p><label for="inputRecordingFile">导入本地录像文件（仅支持zip/json格式）：</label></p>

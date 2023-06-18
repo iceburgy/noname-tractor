@@ -102,6 +102,25 @@ export class IDBHelper {
         }
     }
 
+    public static GetReplayCount(divReplayCount: any) {
+        let tx = IDBHelper.LocalIDB.transaction([IDBHelper.ReplayEntityStore], 'readwrite');
+        let store = tx.objectStore(IDBHelper.ReplayEntityStore);
+        tx.oncomplete = function () { }
+        tx.onerror = function (event: any) {
+            console.log('error SaveReplayEntity');
+            console.log(event);
+        }
+
+        var req = store.count();
+        req.onsuccess = function () {
+            divReplayCount.innerText = req.result;
+        }
+        req.onerror = function (event: any) {
+            console.log('error in GetReplayCount');
+            console.log(event);
+        }
+    }
+
     public static SaveReplayEntityWorker(replayState: ReplayEntity, store: any, callback: any) {
         let re = { datetime: replayState.ReplayId, text: JSON.stringify(replayState) };
         var req = store.add(re);

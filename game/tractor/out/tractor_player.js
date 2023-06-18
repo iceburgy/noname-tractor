@@ -13,7 +13,7 @@ var UsedShengbi_REQUEST = "UsedShengbi";
 var NotifyPong_REQUEST = "NotifyPong";
 var TractorPlayer = /** @class */ (function () {
     function TractorPlayer(mf) {
-        this.PingInterval = 12000;
+        this.PingInterval = 17000;
         this.PingStatus = 0; // 0: uninitialized; -1: unhealthy; 1: healthy
         this.mainForm = mf;
         this.CurrentRoomSetting = new RoomSetting();

@@ -1074,6 +1074,9 @@ export class MainForm {
             gs.game.saveConfig("maxReplays", maxInt);
         }
 
+        let divReplayCount: any = document.getElementById("divReplayCount")
+        IDBHelper.GetReplayCount(divReplayCount);
+
         let btnCleanupReplays: any = document.getElementById("btnCleanupReplays")
         btnCleanupReplays.onclick = () => {
             var c = window.confirm("你确定要清空所有录像文件吗？");
@@ -2713,7 +2716,7 @@ export class MainForm {
 
     private shouldSoundEnter(playerID: string, isJoiningGameHall: boolean) {
         // 如果我在大厅，别人加入大厅
-        if (this.gameScene.isInGameHall() && isJoiningGameHall) return true;
+        if (this.gameScene.isInGameHall() && isJoiningGameHall && playerID !== this.tractorPlayer.PlayerId) return true;
 
         // 如果我在房间里、游戏尚未开始
         let players = this.tractorPlayer.CurrentGameState.Players;

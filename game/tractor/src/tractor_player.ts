@@ -38,7 +38,7 @@ export class TractorPlayer {
     public replayEntity: ReplayEntity;
     public replayedTricks: CurrentTrickState[];
     public replayAngle: number;
-    public PingInterval = 12000;
+    public PingInterval = 17000;
     public PingStatus = 0; // 0: uninitialized; -1: unhealthy; 1: healthy
 
     constructor(mf: MainForm) {

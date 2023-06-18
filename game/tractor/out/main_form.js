@@ -967,6 +967,8 @@ var MainForm = /** @class */ (function () {
             IDBHelper.maxReplays = maxInt;
             gs.game.saveConfig("maxReplays", maxInt);
         };
+        var divReplayCount = document.getElementById("divReplayCount");
+        IDBHelper.GetReplayCount(divReplayCount);
         var btnCleanupReplays = document.getElementById("btnCleanupReplays");
         btnCleanupReplays.onclick = function () {
             var c = window.confirm("你确定要清空所有录像文件吗？");
@@ -2511,7 +2513,7 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.shouldSoundEnter = function (playerID, isJoiningGameHall) {
         // 如果我在大厅，别人加入大厅
-        if (this.gameScene.isInGameHall() && isJoiningGameHall)
+        if (this.gameScene.isInGameHall() && isJoiningGameHall && playerID !== this.tractorPlayer.PlayerId)
             return true;
         // 如果我在房间里、游戏尚未开始
         var players = this.tractorPlayer.CurrentGameState.Players;
