@@ -121,7 +121,7 @@ export class CommonMethods {
     public static sendBroadcastPrefix = "@all";
     public static sendBroadcastCost = 10;
     public static buyNoDongtuUntilCost = 0;
-    public static chatMessageCost = 1;
+    public static chatMessageCost = 0;
     public static defaultSkinInUse = "skin_questionmark";
 
     public static audioLiangpai = "liangpai";
