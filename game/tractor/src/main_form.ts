@@ -2760,6 +2760,15 @@ export class MainForm {
         let cutPoint = -1;
 
         let btnRandom: any = document.getElementById("btnRandom")
+
+        // fix bug: 其它操作导致切牌对话框被终止，则视为取消切牌
+        if (!btnRandom) {
+            let cutPoint = 0;
+            let cutInfo = `取消,${cutPoint}`;
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+            return;
+        }
+
         btnRandom.onclick = () => {
             cutPoint = CommonMethods.GetRandomInt(107) + 1;
             cutInfo = `${btnRandom.value},${cutPoint}`;

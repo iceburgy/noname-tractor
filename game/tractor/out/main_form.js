@@ -2553,6 +2553,13 @@ var MainForm = /** @class */ (function () {
         var cutInfo = "";
         var cutPoint = -1;
         var btnRandom = document.getElementById("btnRandom");
+        // fix bug: 其它操作导致切牌对话框被终止，则视为取消切牌
+        if (!btnRandom) {
+            var cutPoint_1 = 0;
+            var cutInfo_1 = "\u53D6\u6D88,".concat(cutPoint_1);
+            this.CutCardShoeCardsCompleteEventHandler(cutPoint_1, cutInfo_1);
+            return;
+        }
         btnRandom.onclick = function () {
             cutPoint = CommonMethods.GetRandomInt(107) + 1;
             cutInfo = "".concat(btnRandom.value, ",").concat(cutPoint);
