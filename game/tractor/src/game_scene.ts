@@ -66,6 +66,7 @@ export class GameScene {
     public soundwin!: string[];
     // public soundVolume!: number
     public noDongtu!: string
+    public noChat: boolean = false;
     public noDanmu!: string
     public noTouchDevice!: string
     public noCutCards!: string

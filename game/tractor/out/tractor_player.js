@@ -66,6 +66,13 @@ var TractorPlayer = /** @class */ (function () {
             this.mainForm.gameScene.noDongtu = "false";
             this.mainForm.UpdateSkinStatus();
         }
+        // check noChatUntil
+        if (this.mainForm.gameScene.noChat && !this.mainForm.isChatBanned(this.MyOwnId)) {
+            var finalMsg = "".concat(CommonMethods.systemMsgPrefix, "\u7981\u8A00\u5DF2\u89E3\u9664\uFF0C\u8BF7\u5237\u65B0\u9875\u9762\u4F7F\u5176\u751F\u6548");
+            this.mainForm.drawingFormHelper.DrawDanmu(finalMsg);
+            this.mainForm.appendChatMsg(finalMsg);
+            this.mainForm.gameScene.noChat = false;
+        }
     };
     TractorPlayer.prototype.NotifyGameState = function (gameState, notifyType) {
         //bug修复：如果所有人都开始了，然后来自服务器的新消息开始人数既不是0又不是4（由于网络延迟导致有一人未开始的来自服务器的消息滞后到达），那么不处理这条消息
@@ -462,6 +469,7 @@ var TractorPlayer = /** @class */ (function () {
     };
     TractorPlayer.prototype.NotifyDaojuInfo = function (daojuInfo, updateQiandao, updateSkin) {
         this.mainForm.DaojuInfo = daojuInfo;
+        this.mainForm.gameScene.noChat = this.mainForm.isChatBanned(this.MyOwnId);
         if (updateQiandao)
             this.mainForm.UpdateQiandaoStatus();
         this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;

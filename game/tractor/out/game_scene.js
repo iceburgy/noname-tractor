@@ -14,6 +14,7 @@ var GameScene = /** @class */ (function () {
         // public joinAudioUrl: string 
         this.nickNameOverridePass = "";
         this.playerEmail = "";
+        this.noChat = false;
         this.wsprotocal = "wss";
         this.game = gameIn;
         this.lib = libIn;

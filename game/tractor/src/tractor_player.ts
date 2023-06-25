@@ -93,6 +93,14 @@ export class TractorPlayer {
             this.mainForm.gameScene.noDongtu = "false";
             this.mainForm.UpdateSkinStatus();
         }
+
+        // check noChatUntil
+        if (this.mainForm.gameScene.noChat && !this.mainForm.isChatBanned(this.MyOwnId)) {
+            let finalMsg = `${CommonMethods.systemMsgPrefix}禁言已解除，请刷新页面使其生效`;
+            this.mainForm.drawingFormHelper.DrawDanmu(finalMsg);
+            this.mainForm.appendChatMsg(finalMsg);
+            this.mainForm.gameScene.noChat = false;
+        }
     }
 
     public NotifyGameState(gameState: GameState, notifyType?: string) {
@@ -530,6 +538,7 @@ export class TractorPlayer {
 
     public NotifyDaojuInfo(daojuInfo: any, updateQiandao: boolean, updateSkin: boolean) {
         this.mainForm.DaojuInfo = daojuInfo;
+        this.mainForm.gameScene.noChat = this.mainForm.isChatBanned(this.MyOwnId);
         if (updateQiandao) this.mainForm.UpdateQiandaoStatus();
         this.mainForm.gameScene.skinInUse = daojuInfo.daojuInfoByPlayer[this.MyOwnId] ? daojuInfo.daojuInfoByPlayer[this.MyOwnId].skinInUse : CommonMethods.defaultSkinInUse;
         if (updateSkin) this.mainForm.UpdateSkinStatus();
