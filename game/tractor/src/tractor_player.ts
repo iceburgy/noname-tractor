@@ -216,6 +216,9 @@ export class TractorPlayer {
                 msgs.push("8、9、J、Q代表本门有进手张")
                 msgs.push("级牌调主代表寻求对家帮忙清主")
                 msgs.push("")
+            } else {
+                msgs.push("该房间不打信号牌")
+                msgs.push("")
             }
 
             msgs.push("房间设置：")

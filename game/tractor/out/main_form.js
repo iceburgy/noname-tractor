@@ -1151,10 +1151,17 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag = cbxNoOverridingFlag_1.checked;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
+            var cbxNoSignalCard_1 = document.getElementById("cbxNoSignalCard");
+            cbxNoSignalCard_1.checked = !this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo;
+            cbxNoSignalCard_1.onchange = function () {
+                _this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo = !cbxNoSignalCard_1.checked;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+            };
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag_1.disabled = true;
+                cbxNoSignalCard_1.disabled = true;
             }
             else {
                 var divRoomSettings = document.getElementById("divRoomSettings");
@@ -1917,7 +1924,8 @@ var MainForm = /** @class */ (function () {
             pokerTable.style.height = '160px';
             pokerTable.style['background-size'] = '100% 100%';
             pokerTable.style['background-repeat'] = 'no-repeat';
-            var pokerTableName = this_2.gameScene.ui.create.div('', "".concat(i + 1, "\u53F7\u623F\u95F4"), this_2.gameScene.ui.frameGameHallTables);
+            var noSignalStr = roomStateList[i].roomSetting.DisplaySignalCardInfo ? "" : "<br/>（不打信号牌）";
+            var pokerTableName = this_2.gameScene.ui.create.div('', "".concat(i + 1, "\u53F7\u623F\u95F4").concat(noSignalStr), this_2.gameScene.ui.frameGameHallTables);
             pokerTableName.style.fontFamily = 'serif';
             pokerTableName.style.fontSize = '18px';
             pokerTableName.style.width = '160px';
@@ -1925,7 +1933,8 @@ var MainForm = /** @class */ (function () {
             pokerTableName.style.left = "calc(".concat(leftOffset, "% - 80px)");
             pokerTableName.style.top = "calc(".concat(topOffset, "% - 80px)");
             pokerTableName.style.textAlign = 'center';
-            pokerTableName.style['line-height'] = '55px';
+            if (roomStateList[i].roomSetting.DisplaySignalCardInfo)
+                pokerTableName.style['line-height'] = '55px';
             pokerTableName.style.cursor = 'pointer';
             // click
             pokerTableName.addEventListener("click", function (e) {

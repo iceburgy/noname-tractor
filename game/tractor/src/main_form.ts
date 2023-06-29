@@ -1270,10 +1270,18 @@ export class MainForm {
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
+            let cbxNoSignalCard: any = document.getElementById("cbxNoSignalCard");
+            cbxNoSignalCard.checked = !this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo;
+            cbxNoSignalCard.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo = !cbxNoSignalCard.checked;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+            };
+
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag.disabled = true;
+                cbxNoSignalCard.disabled = true;
             } else {
                 let divRoomSettings: any = document.getElementById("divRoomSettings");
                 divRoomSettings.style.display = "block";
@@ -2098,7 +2106,8 @@ export class MainForm {
             pokerTable.style['background-size'] = '100% 100%';
             pokerTable.style['background-repeat'] = 'no-repeat';
 
-            let pokerTableName = this.gameScene.ui.create.div('', `${i + 1}号房间`, this.gameScene.ui.frameGameHallTables);
+            let noSignalStr = roomStateList[i].roomSetting.DisplaySignalCardInfo ? "" : "<br/>（不打信号牌）";
+            let pokerTableName = this.gameScene.ui.create.div('', `${i + 1}号房间${noSignalStr}`, this.gameScene.ui.frameGameHallTables);
             pokerTableName.style.fontFamily = 'serif';
             pokerTableName.style.fontSize = '18px';
             pokerTableName.style.width = '160px';
@@ -2106,7 +2115,7 @@ export class MainForm {
             pokerTableName.style.left = `calc(${leftOffset}% - 80px)`;
             pokerTableName.style.top = `calc(${topOffset}% - 80px)`;
             pokerTableName.style.textAlign = 'center';
-            pokerTableName.style['line-height'] = '55px';
+            if (roomStateList[i].roomSetting.DisplaySignalCardInfo) pokerTableName.style['line-height'] = '55px';
             pokerTableName.style.cursor = 'pointer';
 
             // click
