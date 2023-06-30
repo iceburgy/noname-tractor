@@ -418,9 +418,7 @@ var GameScene = /** @class */ (function () {
             ["effect", "game_start"],
         ];
     };
-    GameScene.prototype.saveSettings = function () {
-        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    };
+    GameScene.prototype.saveSettings = function () { };
     // [flag, pass, email]
     GameScene.prototype.savePlayerLoginInfo = function (loginInfo) {
         this.nickNameOverridePass = loginInfo[1];

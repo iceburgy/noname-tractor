@@ -525,9 +525,7 @@ export class GameScene {
         ];
     }
 
-    public saveSettings() {
-        // cookies.set('maxReplays', IDBHelper.maxReplays, { path: '/', expires: CommonMethods.GetCookieExpires() });
-    }
+    public saveSettings() { }
 
     // [flag, pass, email]
     public savePlayerLoginInfo(loginInfo: string[]) {
@@ -566,4 +564,3 @@ export class GameScene {
         this.game.playAudio(audioInfo[0], audioInfo[1]);
     }
 }
-
