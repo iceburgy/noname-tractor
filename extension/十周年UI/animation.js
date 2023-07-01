@@ -1,7 +1,12 @@
 'use strict';
 decadeParts.import(function(lib, game, ui, get, ai, _status){
 	decadeUI.animation = (function(){
-		if (!window.spine) return console.error('spine 未定义.');
+		if (!window.spine){
+			errMsg='游戏动画资源加载异常，请刷新重试';
+			console.log(errMsg);
+			alert(errMsg);
+			return;
+		} 
 		
 		var canvas = document.body.appendChild(document.createElement('canvas'));
 		canvas.id = 'decadeUI-canvas';
@@ -24,7 +29,9 @@ decadeParts.import(function(lib, game, ui, get, ai, _status){
 				skeletons: [],
 			}
 		} else {
-			console.error('当前设备不支持 WebGL.');
+			errMsg='当前设备不支持 WebGL.';
+			console.log(errMsg);
+			alert(errMsg);
 		}
 		
 		function Receipt(fileName, onload, onerror){
