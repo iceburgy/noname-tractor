@@ -3101,6 +3101,18 @@ var MainForm = /** @class */ (function () {
             selectElement.remove(i);
         }
     };
+    MainForm.prototype.FullScreenPop = function (str) {
+        var node = this.gameScene.ui.create.div('.damage');
+        node.innerHTML = str;
+        node.dataset.nature = 'thunder';
+        this.gameScene.ui.window.appendChild(node);
+        this.gameScene.ui.refresh(node);
+        node.classList.add('damageadded');
+        setTimeout(function () {
+            node.delete();
+            node.style.transform = 'scale(1.5)';
+        }, 1600);
+    };
     return MainForm;
 }());
 export { MainForm };

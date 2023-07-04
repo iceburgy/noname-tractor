@@ -3320,4 +3320,17 @@ export class MainForm {
             selectElement.remove(i);
         }
     }
+
+    public FullScreenPop(str: string) {
+        var node = this.gameScene.ui.create.div('.damage');
+        node.innerHTML = str;
+        node.dataset.nature = 'thunder';
+        this.gameScene.ui.window.appendChild(node);
+        this.gameScene.ui.refresh(node);
+        node.classList.add('damageadded');
+        setTimeout(function () {
+            node.delete();
+            node.style.transform = 'scale(1.5)'
+        }, 1600);
+    }
 }

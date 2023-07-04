@@ -435,7 +435,7 @@ var TractorPlayer = /** @class */ (function () {
             else if (m.includes("新游戏即将开始")) {
                 //新游戏开始前播放提示音，告诉玩家要抢庄
                 this.mainForm.gameScene.playAudio(CommonMethods.audioWin);
-                decadeUI.animation.playSpine2D('effect_youxikaishi', void 0, void 0, decadeUI.animation.canvas.width * 0.8, decadeUI.animation.canvas.height * 0.8);
+                this.mainForm.FullScreenPop("准备抢庄！");
             }
             else if (m.includes("罚分") && !this.mainForm.gameScene.isReplayMode) {
                 //甩牌失败播放提示音

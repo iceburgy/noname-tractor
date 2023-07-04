@@ -2365,7 +2365,6 @@ div:not(.handcards)>.card>.info>span,
 }
 .player>.damage,
 #window>.damage {
-	font-family: 'huangcao','xinwei';
 	font-size: 72px;
 	width: 100%;
 	text-align: center;
