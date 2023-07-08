@@ -592,7 +592,8 @@ export class DrawingFormHelper {
             cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),
         }
 
-        tractorCard.setBackgroundImage(`image/tractor/cards/tile0${uiCardNumber.toString().padStart(2, '0')}.png`);
+        let cardsStyle = this.mainForm.gameScene.useCardUIStyleClassic ? "cardsclassic" : "cards";
+        tractorCard.setBackgroundImage(`image/tractor/${cardsStyle}/tile0${uiCardNumber.toString().padStart(2, '0')}.png`);
         tractorCard.style['background-size'] = '100% 100%';
         tractorCard.style['background-repeat'] = 'no-repeat';
 
@@ -1253,7 +1254,7 @@ export class DrawingFormHelper {
         }
 
         //动画
-        let scale = 1 / 2;
+        let scale = 2 / 3;
         let scoreCardsIntsTotal: number[] = CommonMethods.deepCopy<number[]>(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards);
         let scIntsToDraw = CommonMethods.ArrayMinus(scoreCardsIntsTotal, this.mainForm.gameScene.scoreCardsIntsDrawn);
         let sciToDrawLocked = CommonMethods.deepCopy<number[]>(scIntsToDraw);
@@ -1333,7 +1334,7 @@ export class DrawingFormHelper {
         if (!doAni) {
             let posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x
             let posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y
-            this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, 0.5, 5)
+            this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, 0.67, 5)
         } else {
             //画8张底牌，初始位置
             let x = this.mainForm.gameScene.coordinates.discardLast8AniPosition.x
@@ -1347,7 +1348,7 @@ export class DrawingFormHelper {
     public MoveDiscardedLast8Cards() {
         let posX = `${this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x} - ${this.mainForm.gameScene.coordinates.cardWidth / 4}px`;
         let posY = `${this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y} - ${this.mainForm.gameScene.coordinates.cardHeight / 4}px`;
-        let scale = 0.5;
+        let scale = 0.67;
         let count = this.mainForm.gameScene.last8CardsImages.length
         for (let i = 0; i < count; i++) {
             let cardImage: any = this.mainForm.gameScene.last8CardsImages[i];

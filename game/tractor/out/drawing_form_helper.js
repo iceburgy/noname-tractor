@@ -551,7 +551,8 @@ var DrawingFormHelper = /** @class */ (function () {
             seqnum: this.mainForm.gameScene.ui.create.div('.seqnum', tractorCard),
             cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),
         };
-        tractorCard.setBackgroundImage("image/tractor/cards/tile0".concat(uiCardNumber.toString().padStart(2, '0'), ".png"));
+        var cardsStyle = this.mainForm.gameScene.useCardUIStyleClassic ? "cardsclassic" : "cards";
+        tractorCard.setBackgroundImage("image/tractor/".concat(cardsStyle, "/tile0").concat(uiCardNumber.toString().padStart(2, '0'), ".png"));
         tractorCard.style['background-size'] = '100% 100%';
         tractorCard.style['background-repeat'] = 'no-repeat';
         tractorCard.style.width = "".concat(this.mainForm.gameScene.coordinates.cardWidth * hcs, "px");
@@ -1172,7 +1173,7 @@ var DrawingFormHelper = /** @class */ (function () {
             return;
         }
         //动画
-        var scale = 1 / 2;
+        var scale = 2 / 3;
         var scoreCardsIntsTotal = CommonMethods.deepCopy(this.mainForm.tractorPlayer.CurrentHandState.ScoreCards);
         var scIntsToDraw = CommonMethods.ArrayMinus(scoreCardsIntsTotal, this.mainForm.gameScene.scoreCardsIntsDrawn);
         var sciToDrawLocked = CommonMethods.deepCopy(scIntsToDraw);
@@ -1249,7 +1250,7 @@ var DrawingFormHelper = /** @class */ (function () {
         if (!doAni) {
             var posX = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x;
             var posY = this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y;
-            this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, 0.5, 5);
+            this.DrawShowedCards(allCards, posX, posY, this.mainForm.gameScene.last8CardsImages, 0.67, 5);
         }
         else {
             //画8张底牌，初始位置
@@ -1264,7 +1265,7 @@ var DrawingFormHelper = /** @class */ (function () {
         var _this = this;
         var posX = "".concat(this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x, " - ").concat(this.mainForm.gameScene.coordinates.cardWidth / 4, "px");
         var posY = "".concat(this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y, " - ").concat(this.mainForm.gameScene.coordinates.cardHeight / 4, "px");
-        var scale = 0.5;
+        var scale = 0.67;
         var count = this.mainForm.gameScene.last8CardsImages.length;
         for (var i = 0; i < count; i++) {
             var cardImage = this.mainForm.gameScene.last8CardsImages[i];

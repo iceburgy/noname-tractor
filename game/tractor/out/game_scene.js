@@ -15,6 +15,7 @@ var GameScene = /** @class */ (function () {
         this.nickNameOverridePass = "";
         this.playerEmail = "";
         this.noChat = false;
+        this.useCardUIStyleClassic = false;
         this.wsprotocal = "wss";
         this.game = gameIn;
         this.lib = libIn;
@@ -57,6 +58,7 @@ var GameScene = /** @class */ (function () {
         this.clientMessages = [];
         this.danmuMessages = [];
         this.noDongtu = "false";
+        this.useCardUIStyleClassic = (this.lib && this.lib.config && this.lib.config.useCardUIStyleClassic) ? this.lib.config.useCardUIStyleClassic : false;
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noTouchDevice = (this.lib && this.lib.config && this.lib.config.noTouchDevice) ? this.lib.config.noTouchDevice : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
@@ -67,7 +69,7 @@ var GameScene = /** @class */ (function () {
         this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
         IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
-        this.coordinates = new Coordinates(this.isReplayMode);
+        this.coordinates = new Coordinates(this);
         if (this.isReplayMode) {
             this.doReplay();
             return;

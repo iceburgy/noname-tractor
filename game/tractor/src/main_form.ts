@@ -1122,6 +1122,13 @@ export class MainForm {
             this.resetGameRoomUI();
         }
 
+        let cbxUseCardUIStyleClassic: any = document.getElementById("cbxUseCardUIStyleClassic");
+        cbxUseCardUIStyleClassic.checked = gs.useCardUIStyleClassic;
+        cbxUseCardUIStyleClassic.onchange = () => {
+            gs.useCardUIStyleClassic = cbxUseCardUIStyleClassic.checked;
+            gs.game.saveConfig("useCardUIStyleClassic", gs.useCardUIStyleClassic);
+        }
+
         let noDanmu: any = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = () => {

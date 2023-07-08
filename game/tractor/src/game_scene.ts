@@ -67,6 +67,7 @@ export class GameScene {
     // public soundVolume!: number
     public noDongtu!: string
     public noChat: boolean = false;
+    public useCardUIStyleClassic: boolean = false;
     public noDanmu!: string
     public noTouchDevice!: string
     public noCutCards!: string
@@ -126,6 +127,7 @@ export class GameScene {
         this.clientMessages = [];
         this.danmuMessages = [];
         this.noDongtu = "false";
+        this.useCardUIStyleClassic = (this.lib && this.lib.config && this.lib.config.useCardUIStyleClassic) ? this.lib.config.useCardUIStyleClassic : false;
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noTouchDevice = (this.lib && this.lib.config && this.lib.config.noTouchDevice) ? this.lib.config.noTouchDevice : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";
@@ -137,7 +139,7 @@ export class GameScene {
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
         IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
-        this.coordinates = new Coordinates(this.isReplayMode);
+        this.coordinates = new Coordinates(this);
 
         if (this.isReplayMode) {
             this.doReplay();

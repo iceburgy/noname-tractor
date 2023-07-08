@@ -3,10 +3,10 @@ var screenWidthReal = document.documentElement.clientWidth;
 var screenWidth = screenWidthReal - chatWidth;
 var screenHeight = document.documentElement.clientHeight;
 var Coordinates = /** @class */ (function () {
-    function Coordinates(isrpm) {
+    function Coordinates(gs) {
         this.isReplayMode = false;
         this.regexNonEnglishChar = /[^\u0000-\u007F]/g;
-        this.isReplayMode = isrpm;
+        this.isReplayMode = gs.isReplayMode;
         // 屏幕左上角为坐标原点 (0, 0), 横轴为 x, 纵轴为 y
         // 右边无法显示的区域
         this.screenWidReal = screenWidthReal;
@@ -42,7 +42,7 @@ var Coordinates = /** @class */ (function () {
         this.lineOffsetY = 40;
         this.cardWidth = 90;
         this.cardHeight = 120;
-        this.handCardOffset = 24;
+        this.handCardOffset = gs.useCardUIStyleClassic ? 18 : 24;
         this.suitSequenceSize = 15;
         this.overridingFlagHeight = 40;
         this.overridingFlagWidth = this.overridingFlagHeight * 3 / 2;
@@ -125,7 +125,7 @@ var Coordinates = /** @class */ (function () {
         // replay
         // account for maximum of five suites, with 4 gaps, shift to left by 2 gaps
         this.replayControlButtonWidth = 60;
-        this.replayHandCardScale = 0.6;
+        this.replayHandCardScale = 0.67;
         this.handCardPositions = [
             { x: "50% - ".concat(this.cardWidth / 2, "px"), y: "0px" },
             { x: this.last8CardsForStarterPosition.x, y: "".concat(this.showedCardsPositions[0].y) },

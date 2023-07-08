@@ -1015,6 +1015,12 @@ var MainForm = /** @class */ (function () {
             }
             _this.resetGameRoomUI();
         };
+        var cbxUseCardUIStyleClassic = document.getElementById("cbxUseCardUIStyleClassic");
+        cbxUseCardUIStyleClassic.checked = gs.useCardUIStyleClassic;
+        cbxUseCardUIStyleClassic.onchange = function () {
+            gs.useCardUIStyleClassic = cbxUseCardUIStyleClassic.checked;
+            gs.game.saveConfig("useCardUIStyleClassic", gs.useCardUIStyleClassic);
+        };
         var noDanmu = document.getElementById("cbxNoDanmu");
         noDanmu.checked = gs.noDanmu.toLowerCase() === "true";
         noDanmu.onchange = function () {
