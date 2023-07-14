@@ -1717,6 +1717,7 @@ export class MainForm {
             if (this.gameScene.ui.timer) {
                 this.gameScene.ui.timer.hide();
             }
+            this.gameScene.game.timerCurrent = 0;
             return;
         }
         this.gameScene.ui.timer.show();
