@@ -1589,7 +1589,7 @@ export class DrawingFormHelper {
         if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true') return;
 
         // truncate danmu message to certain length
-        if (msgString && !msgString.startsWith(CommonMethods.systemMsgPrefix) && msgString.length > CommonMethods.danmuMaxLength) {
+        if (msgString && msgString.length > CommonMethods.danmuMaxLength) {
             msgString = `${msgString.slice(0, CommonMethods.danmuMaxLength)}...(略)`;
         }
 

@@ -1494,7 +1494,7 @@ var DrawingFormHelper = /** @class */ (function () {
         if (this.mainForm.gameScene.noDanmu.toLowerCase() === 'true')
             return;
         // truncate danmu message to certain length
-        if (msgString && !msgString.startsWith(CommonMethods.systemMsgPrefix) && msgString.length > CommonMethods.danmuMaxLength) {
+        if (msgString && msgString.length > CommonMethods.danmuMaxLength) {
             msgString = "".concat(msgString.slice(0, CommonMethods.danmuMaxLength), "...(\u7565)");
         }
         var danmuIndex = 0;
