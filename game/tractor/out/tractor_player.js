@@ -185,6 +185,8 @@ var TractorPlayer = /** @class */ (function () {
             msgs.push("房间设置：");
             msgs.push("\u5173\u95ED\u5927\u724C\u8BED\u97F3\u53CA\u753B\u9762\u63D0\u793A\uFF1A".concat(roomSetting.HideOverridingFlag ? "是" : "否"));
             msgs.push("\u65AD\u7EBF\u91CD\u8FDE\u7B49\u5F85\u65F6\u957F\uFF1A".concat(roomSetting.secondsToWaitForReenter, "\u79D2"));
+            msgs.push("\u51FA\u724C\u65F6\u9650\uFF1A".concat(roomSetting.secondsToShowCards > 0 ? roomSetting.secondsToShowCards + "秒" : "不限制"));
+            msgs.push("\u57CB\u5E95\u65F6\u9650\uFF1A".concat(roomSetting.secondsToDiscardCards > 0 ? roomSetting.secondsToDiscardCards + "秒" : "不限制"));
             this.NotifyMessage(msgs);
         }
     };

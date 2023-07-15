@@ -11,6 +11,8 @@ export class RoomSetting {
     public AllowRobotMakeTrump: boolean
     public IsFullDebug: boolean
     public secondsToWaitForReenter: number
+    public secondsToShowCards: number
+    public secondsToDiscardCards: number
     public DisplaySignalCardInfo: boolean
     public HideOverridingFlag: boolean
 
@@ -25,6 +27,8 @@ export class RoomSetting {
         this.AllowRobotMakeTrump = false
         this.IsFullDebug = false
         this.secondsToWaitForReenter = 60
+        this.secondsToShowCards = 0
+        this.secondsToDiscardCards = 0
         this.DisplaySignalCardInfo = false
         this.HideOverridingFlag = false
     }
@@ -39,6 +43,8 @@ export class RoomSetting {
         this.AllowRobotMakeTrump = from.AllowRobotMakeTrump
         this.IsFullDebug = from.IsFullDebug
         this.secondsToWaitForReenter = from.secondsToWaitForReenter
+        this.secondsToShowCards = from.secondsToShowCards
+        this.secondsToDiscardCards = from.secondsToDiscardCards
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo
         this.HideOverridingFlag = from.HideOverridingFlag
     }

@@ -51,6 +51,38 @@
         </div>
         <p><input type="checkbox" id="cbxNoOverridingFlag" /><label for="cbxNoOverridingFlag">关闭大牌语音及画面提示</label></p>
         <p><input type="checkbox" id="cbxNoSignalCard" /><label for="cbxNoSignalCard">不打信号牌</label></p>
+        <p>
+            <label>出牌时限</label>
+            <select id="selectSecondsToShowCards">
+                <option value="0">不限制</option>
+                <option value="10">10秒</option>
+                <option value="20">20秒</option>
+                <option value="30">30秒</option>
+                <option value="40">40秒</option>
+                <option value="50">60秒</option>
+                <option value="60">60秒</option>
+                <option value="90">90秒</option>
+            </select>
+        </p>
+        <p>
+            <label>埋底时限</label>
+            <select id="selectSecondsToDiscardCards">
+                <option value="0">不限制</option>
+                <option value="30">30秒</option>
+                <option value="60">60秒</option>
+                <option value="90">90秒</option>
+                <option value="120">120秒</option>
+            </select>
+        </p>
+        <p>
+            <label>断线重连等待时长</label>
+            <select id="selectSecondsToWaitForReenter">
+                <option value="60">60秒</option>
+                <option value="90">90秒</option>
+                <option value="120">120秒</option>
+                <option value="180">180秒</option>
+            </select>
+        </p>
     </div>
     <h2>本地设置</h2>
     <p id="pNoDongtu" style="display: none;">
@@ -58,7 +90,8 @@
         <br />
         <label id="lblNoDongtuUntilExpDate" style="display: none;" />
     </p>
-    <p><input type="checkbox" id="cbxUseCardUIStyleClassic" /><label for="cbxUseCardUIStyleClassic">启用经典卡牌风格（需重启游戏生效）</label></p>
+    <p><input type="checkbox" id="cbxUseCardUIStyleClassic" /><label
+            for="cbxUseCardUIStyleClassic">启用经典卡牌风格（需重启游戏生效）</label></p>
     <p><input type="checkbox" id="cbxNoDanmu" /><label for="cbxNoDanmu">关闭弹幕</label></p>
     <p><input type="checkbox" id="cbxCutCards" /><label for="cbxCutCards">关闭切牌</label></p>
     <p><input type="checkbox" id="cbxYesDragSelect" /><label for="cbxYesDragSelect">开启拖拽选牌</label></p>

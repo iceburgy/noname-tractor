@@ -112,7 +112,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 					import('../game/tractor/out/game_scene.js')
 						.then((GameScene) => {
-							var gameScene = new GameScene.GameScene(isDoReplay, nodeHostName.value.trim(), nodePlayerName.value.trim(), nodePassword.value.trim(), nodeEmail.value.trim(), game, lib, ui, get);
+							var gameScene = new GameScene.GameScene(isDoReplay, nodeHostName.value.trim(), nodePlayerName.value.trim(), nodePassword.value.trim(), nodeEmail.value.trim(), game, lib, ui, get, _status);
 						})
 						.catch(error => {
 							document.body.innerHTML = `<div>!!! 尝试加载页面失败！</div>`

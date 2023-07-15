@@ -11,6 +11,8 @@ var RoomSetting = /** @class */ (function () {
         this.AllowRobotMakeTrump = false;
         this.IsFullDebug = false;
         this.secondsToWaitForReenter = 60;
+        this.secondsToShowCards = 0;
+        this.secondsToDiscardCards = 0;
         this.DisplaySignalCardInfo = false;
         this.HideOverridingFlag = false;
     }
@@ -25,6 +27,8 @@ var RoomSetting = /** @class */ (function () {
         this.AllowRobotMakeTrump = from.AllowRobotMakeTrump;
         this.IsFullDebug = from.IsFullDebug;
         this.secondsToWaitForReenter = from.secondsToWaitForReenter;
+        this.secondsToShowCards = from.secondsToShowCards;
+        this.secondsToDiscardCards = from.secondsToDiscardCards;
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo;
         this.HideOverridingFlag = from.HideOverridingFlag;
     };

@@ -84,12 +84,14 @@ export class GameScene {
     public lib: any
     public ui: any
     public get: any
+    public _status: any
 
-    constructor(irm: boolean, hostName: string, playerName: string, nickNameOverridePass: string, playerEmail: string, gameIn: any, libIn: any, uiIn: any, getIn: any) {
+    constructor(irm: boolean, hostName: string, playerName: string, nickNameOverridePass: string, playerEmail: string, gameIn: any, libIn: any, uiIn: any, getIn: any, _statusIn: any) {
         this.game = gameIn;
         this.lib = libIn;
         this.ui = uiIn;
         this.get = getIn;
+        this._status = _statusIn;
         this.isReplayMode = irm;
         // // this.existPlayers = [1]
         // // this.websocket = null
@@ -380,8 +382,9 @@ export class GameScene {
     }
 
     public handleNotifyStartTimer(objList: any) {
-        var result: number = objList[0];
-        this.mainForm.NotifyStartTimerEventHandler(result)
+        var timerLength: number = objList[0];
+        var playerID: string = objList[1];
+        this.mainForm.NotifyStartTimerEventHandler(timerLength, playerID);
     }
 
     public handleNotifyDumpingValidationResult(objList: any) {

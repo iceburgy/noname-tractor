@@ -110,7 +110,10 @@ var MainForm = /** @class */ (function () {
         var shouldTrigger = isRobot && isRobot != this.IsDebug;
         this.IsDebug = isRobot;
         if (shouldTrigger) {
-            if (!this.tractorPlayer.CurrentTrickState.IsStarted())
+            if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
+                this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId)
+                this.DiscardingLast8();
+            else if (!this.tractorPlayer.CurrentTrickState.IsStarted())
                 this.RobotPlayStarting();
             else
                 this.RobotPlayFollowing();
@@ -509,7 +512,6 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.ShowingCardBegan = function () {
-        this.DiscardingLast8();
         this.drawingFormHelper.destroyToolbar();
         this.drawingFormHelper.destroyAllShowedCards();
         this.tractorPlayer.destroyAllClientMessages();
@@ -585,7 +587,7 @@ var MainForm = /** @class */ (function () {
         // Refresh();
         // g.Dispose();
         //托管代打：埋底
-        if (this.tractorPlayer.CurrentRoomSetting.IsFullDebug && this.IsDebug && !this.tractorPlayer.isObserver) {
+        if (this.IsDebug && !this.tractorPlayer.isObserver) {
             if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
                 this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) //如果等我扣牌
              {
@@ -1163,11 +1165,32 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo = !cbxNoSignalCard_1.checked;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
+            var selectSecondsToShowCards_1 = document.getElementById("selectSecondsToShowCards");
+            selectSecondsToShowCards_1.value = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards;
+            selectSecondsToShowCards_1.onchange = function () {
+                _this.tractorPlayer.CurrentRoomSetting.secondsToShowCards = selectSecondsToShowCards_1.value;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+            };
+            var selectSecondsToDiscardCards_1 = document.getElementById("selectSecondsToDiscardCards");
+            selectSecondsToDiscardCards_1.value = this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards;
+            selectSecondsToDiscardCards_1.onchange = function () {
+                _this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = selectSecondsToDiscardCards_1.value;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+            };
+            var selectSecondsToWaitForReenter_1 = document.getElementById("selectSecondsToWaitForReenter");
+            selectSecondsToWaitForReenter_1.value = this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter;
+            selectSecondsToWaitForReenter_1.onchange = function () {
+                _this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter = selectSecondsToWaitForReenter_1.value;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+            };
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
+                selectSecondsToShowCards_1.disabled = true;
+                selectSecondsToDiscardCards_1.disabled = true;
+                selectSecondsToWaitForReenter_1.disabled = true;
             }
             else {
                 var divRoomSettings = document.getElementById("divRoomSettings");
@@ -1571,17 +1594,35 @@ var MainForm = /** @class */ (function () {
             }, 3000);
         }
     };
-    MainForm.prototype.NotifyStartTimerEventHandler = function (timerLength) {
+    MainForm.prototype.NotifyStartTimerEventHandler = function (timerLength, playerID) {
         var _this = this;
         if (timerLength <= 0) {
-            if (this.gameScene.ui.timer) {
-                this.gameScene.ui.timer.hide();
+            if (playerID) {
+                this.UnwaitForPlayer(playerID);
             }
-            this.gameScene.game.timerCurrent = 0;
+            else {
+                this.ClearTimer();
+            }
             return;
         }
-        this.gameScene.ui.timer.show();
-        this.gameScene.game.countDown(timerLength, function () { _this.gameScene.ui.timer.hide(); }, true);
+        if (playerID) {
+            this.WaitForPlayer(timerLength, playerID);
+        }
+        else {
+            this.ClearTimer();
+            this.gameScene.ui.timer.show();
+            this.gameScene.game.countDown(timerLength, function () {
+                _this.gameScene.ui.timer.hide();
+            }, true);
+        }
+    };
+    MainForm.prototype.ClearTimer = function () {
+        if (this.gameScene._status && this.gameScene._status.countDown) {
+            clearInterval(this.gameScene._status.countDown);
+            delete this.gameScene._status.countDown;
+            this.gameScene.ui.timer.hide();
+            this.gameScene.game.timerCurrent = 0;
+        }
     };
     //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
     MainForm.prototype.PlayerCurrentTrickShowedCards = function () {
@@ -3119,6 +3160,39 @@ var MainForm = /** @class */ (function () {
             node.delete();
             node.style.transform = 'scale(1.5)';
         }, 1600);
+    };
+    MainForm.prototype.WaitForPlayer = function (timerLength, playerID) {
+        var _this = this;
+        if (playerID === this.tractorPlayer.PlayerId) {
+            this.ClearTimer();
+            this.gameScene.ui.timer.show();
+            this.gameScene.game.countDown(timerLength, function () {
+                _this.gameScene.ui.timer.hide();
+                // if actual player, trigger robot
+                if (!_this.tractorPlayer.isObserver) {
+                    _this.btnRobot_Click();
+                }
+            }, true);
+        }
+        else {
+            if (playerID in this.PlayerPosition) {
+                var pos = this.PlayerPosition[playerID];
+                var playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
+                playerUI.showTimer(1000 * timerLength);
+            }
+        }
+    };
+    MainForm.prototype.UnwaitForPlayer = function (playerID) {
+        if (playerID === this.tractorPlayer.PlayerId) {
+            this.ClearTimer();
+        }
+        else {
+            if (playerID in this.PlayerPosition) {
+                var pos = this.PlayerPosition[playerID];
+                var playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
+                playerUI.hideTimer();
+            }
+        }
     };
     return MainForm;
 }());

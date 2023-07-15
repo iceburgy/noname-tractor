@@ -167,7 +167,9 @@ export class MainForm {
         this.IsDebug = isRobot;
 
         if (shouldTrigger) {
-            if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
+            if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
+                this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) this.DiscardingLast8();
+            else if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
             else this.RobotPlayFollowing();
         }
     }
@@ -577,7 +579,6 @@ export class MainForm {
     }
 
     public ShowingCardBegan() {
-        this.DiscardingLast8();
         this.drawingFormHelper.destroyToolbar();
         this.drawingFormHelper.destroyAllShowedCards();
         this.tractorPlayer.destroyAllClientMessages();
@@ -668,7 +669,7 @@ export class MainForm {
         // g.Dispose();
 
         //托管代打：埋底
-        if (this.tractorPlayer.CurrentRoomSetting.IsFullDebug && this.IsDebug && !this.tractorPlayer.isObserver) {
+        if (this.IsDebug && !this.tractorPlayer.isObserver) {
             if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
                 this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) //如果等我扣牌
             {
@@ -1284,11 +1285,35 @@ export class MainForm {
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
+            let selectSecondsToShowCards: any = document.getElementById("selectSecondsToShowCards");
+            selectSecondsToShowCards.value = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards;
+            selectSecondsToShowCards.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.secondsToShowCards = selectSecondsToShowCards.value;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+            };
+
+            let selectSecondsToDiscardCards: any = document.getElementById("selectSecondsToDiscardCards");
+            selectSecondsToDiscardCards.value = this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards;
+            selectSecondsToDiscardCards.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = selectSecondsToDiscardCards.value;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+            };
+
+            let selectSecondsToWaitForReenter: any = document.getElementById("selectSecondsToWaitForReenter");
+            selectSecondsToWaitForReenter.value = this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter;
+            selectSecondsToWaitForReenter.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter = selectSecondsToWaitForReenter.value;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+            };
+
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
+                selectSecondsToShowCards.disabled = true;
+                selectSecondsToDiscardCards.disabled = true;
+                selectSecondsToWaitForReenter.disabled = true;
             } else {
                 let divRoomSettings: any = document.getElementById("divRoomSettings");
                 divRoomSettings.style.display = "block";
@@ -1712,16 +1737,33 @@ export class MainForm {
         }
     }
 
-    public NotifyStartTimerEventHandler(timerLength: number) {
+    public NotifyStartTimerEventHandler(timerLength: number, playerID: string) {
         if (timerLength <= 0) {
-            if (this.gameScene.ui.timer) {
-                this.gameScene.ui.timer.hide();
+            if (playerID) {
+                this.UnwaitForPlayer(playerID);
+            } else {
+                this.ClearTimer();
             }
-            this.gameScene.game.timerCurrent = 0;
             return;
         }
-        this.gameScene.ui.timer.show();
-        this.gameScene.game.countDown(timerLength, () => { this.gameScene.ui.timer.hide(); }, true);
+        if (playerID) {
+            this.WaitForPlayer(timerLength, playerID);
+        } else {
+            this.ClearTimer();
+            this.gameScene.ui.timer.show();
+            this.gameScene.game.countDown(timerLength, () => {
+                this.gameScene.ui.timer.hide();
+            }, true);
+        }
+    }
+
+    public ClearTimer() {
+        if (this.gameScene._status && this.gameScene._status.countDown) {
+            clearInterval(this.gameScene._status.countDown);
+            delete this.gameScene._status.countDown;
+            this.gameScene.ui.timer.hide();
+            this.gameScene.game.timerCurrent = 0;
+        }
     }
 
     //绘制当前轮各家所出的牌（仅用于切换视角，断线重连，恢复牌局，当前回合大牌变更时）
@@ -3340,5 +3382,37 @@ export class MainForm {
             node.delete();
             node.style.transform = 'scale(1.5)'
         }, 1600);
+    }
+
+    public WaitForPlayer(timerLength: number, playerID: string) {
+        if (playerID === this.tractorPlayer.PlayerId) {
+            this.ClearTimer();
+            this.gameScene.ui.timer.show();
+            this.gameScene.game.countDown(timerLength, () => {
+                this.gameScene.ui.timer.hide();
+                // if actual player, trigger robot
+                if (!this.tractorPlayer.isObserver) {
+                    this.btnRobot_Click();
+                }
+            }, true);
+        } else {
+            if (playerID in this.PlayerPosition) {
+                let pos = this.PlayerPosition[playerID];
+                let playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
+                playerUI.showTimer(1000 * timerLength)
+            }
+        }
+    }
+
+    public UnwaitForPlayer(playerID: string) {
+        if (playerID === this.tractorPlayer.PlayerId) {
+            this.ClearTimer();
+        } else {
+            if (playerID in this.PlayerPosition) {
+                let pos = this.PlayerPosition[playerID];
+                let playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
+                playerUI.hideTimer()
+            }
+        }
     }
 }

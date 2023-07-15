@@ -6,7 +6,7 @@ import { EnterHallInfo } from './enter_hall_info.js';
 var dummyValue = "dummyValue";
 var IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
 var GameScene = /** @class */ (function () {
-    function GameScene(irm, hostName, playerName, nickNameOverridePass, playerEmail, gameIn, libIn, uiIn, getIn) {
+    function GameScene(irm, hostName, playerName, nickNameOverridePass, playerEmail, gameIn, libIn, uiIn, getIn, _statusIn) {
         // // public hallPlayerHeader: Phaser.GameObjects.Text
         // // public hallPlayerNames: Phaser.GameObjects.Text[]
         // // public btnJoinAudio: Phaser.GameObjects.Text
@@ -21,6 +21,7 @@ var GameScene = /** @class */ (function () {
         this.lib = libIn;
         this.ui = uiIn;
         this.get = getIn;
+        this._status = _statusIn;
         this.isReplayMode = irm;
         // // this.existPlayers = [1]
         // // this.websocket = null
@@ -290,8 +291,9 @@ var GameScene = /** @class */ (function () {
         this.mainForm.NotifyEmojiEventHandler.apply(this.mainForm, objList);
     };
     GameScene.prototype.handleNotifyStartTimer = function (objList) {
-        var result = objList[0];
-        this.mainForm.NotifyStartTimerEventHandler(result);
+        var timerLength = objList[0];
+        var playerID = objList[1];
+        this.mainForm.NotifyStartTimerEventHandler(timerLength, playerID);
     };
     GameScene.prototype.handleNotifyDumpingValidationResult = function (objList) {
         var result = objList[0];
