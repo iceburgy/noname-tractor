@@ -2511,6 +2511,8 @@ export class MainForm {
                 playerObj.appendChild(avatarImg);
                 playerObj.node.avatarImg.setAttribute("id", `${CommonMethods.gifferPrefix}${pos}`);
                 playerObj.node.avatarImg.setAttribute("data-gifffer", skinURL);
+                playerObj.node.avatarImg.setAttribute("data-gifffer-width", skinWid);
+                playerObj.node.avatarImg.setAttribute("data-gifffer-height", fixedHeight);
                 playerObj.node.avatarImg.style.width = `calc(${skinWid}px)`;
                 playerObj.node.avatarImg.style.height = `calc(${fixedHeight}px)`;
 
@@ -2527,7 +2529,6 @@ export class MainForm {
                     let playerGiffersNew = jQuery(`#${CommonMethods.gifferPrefix}${pos}`);
                     if (playerGiffersNew && playerGiffersNew.length > 0) {
                         playerGiffersNew.prop("disabled", true);
-                        playerGiffersNew.children('canvas').css('border-radius', '8px');
                         let playerUI = jQuery(playerGiffersNew).closest('.player')[0];
                         if (jQuery(playerUI).css('cursor') !== 'pointer') {
                             playerGiffersNew.css('cursor', 'default');
