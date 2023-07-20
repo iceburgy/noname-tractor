@@ -243,6 +243,7 @@ var TractorPlayer = /** @class */ (function () {
         }
         else if (newHandStep) {
             if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished) {
+                this.mainForm.ResetBtnRobot();
                 this.mainForm.drawingFormHelper.ResortMyHandCards();
             }
             else if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingLast8Cards) {

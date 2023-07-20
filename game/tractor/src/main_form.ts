@@ -612,12 +612,6 @@ export class MainForm {
             return;
         }
 
-        //摸牌结束，如果处于托管状态，则取消托管
-        var me: PlayerEntity = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.MyOwnId);
-        if (me.IsRobot && this.gameScene.ui.btnRobot && this.gameScene.ui.btnRobot.innerHTML === "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
-            this.btnRobot_Click()
-        }
-
         //摸牌结束，如果允许投降，则显示投降按钮
         if (this.tractorPlayer.CurrentRoomSetting.AllowSurrender) {
             // this.btnSurrender.Visible = true;
@@ -640,6 +634,14 @@ export class MainForm {
         //         this.btnRiot.Visible = true;
         //     }
         // }
+    }
+
+    public ResetBtnRobot() {
+        //摸牌结束，如果处于托管状态，则取消托管
+        var me: PlayerEntity = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.MyOwnId);
+        if (me.IsRobot && this.gameScene.ui.btnRobot && this.gameScene.ui.btnRobot.innerHTML === "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
+            this.btnRobot_Click()
+        }
     }
 
     public StartGame() {
