@@ -561,6 +561,8 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.ResetBtnRobot = function () {
         //摸牌结束，如果处于托管状态，则取消托管
+        if (this.tractorPlayer.isObserver)
+            return;
         var me = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.MyOwnId);
         if (me.IsRobot && this.gameScene.ui.btnRobot && this.gameScene.ui.btnRobot.innerHTML === "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
             this.btnRobot_Click();
