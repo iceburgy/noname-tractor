@@ -2308,57 +2308,27 @@ var MainForm = /** @class */ (function () {
             var skinWid = fixedHeight * wid / hei;
             playerObj.style.width = "calc(".concat(skinWid, "px)");
             if (!isPreview && gs.noDongtu.toLowerCase() === "true" && skinType === 1) {
-                // clean up static and animation elements first
+                // clean up animation elements first
                 jQuery(playerObj.node.avatar).css("background-image", "");
-                // giffer
                 if (playerObj.node.avatarImg) {
                     playerObj.node.avatarImg.remove();
                     delete playerObj.node.avatarImg;
                 }
-                var playerGiffers = jQuery("#".concat(CommonMethods.gifferPrefix).concat(pos));
-                if (playerGiffers && playerGiffers.length > 0) {
-                    var pg = playerGiffers[0];
-                    pg.remove();
-                }
-                // build giffer
-                var avatarImg = document.createElement("img");
-                playerObj.node.avatarImg = avatarImg;
-                playerObj.appendChild(avatarImg);
-                playerObj.node.avatarImg.setAttribute("id", "".concat(CommonMethods.gifferPrefix).concat(pos));
-                playerObj.node.avatarImg.setAttribute("data-gifffer", skinURL);
-                playerObj.node.avatarImg.setAttribute("data-gifffer-width", skinWid);
-                playerObj.node.avatarImg.setAttribute("data-gifffer-height", fixedHeight);
-                playerObj.node.avatarImg.style.width = "calc(".concat(skinWid, "px)");
-                playerObj.node.avatarImg.style.height = "calc(".concat(fixedHeight, "px)");
-                Gifffer({
-                    playButtonStyles: {
-                        'display': 'none'
-                    },
-                    playButtonIconStyles: {
-                        'display': 'none'
-                    }
-                });
-                setTimeout(function () {
-                    var playerGiffersNew = jQuery("#".concat(CommonMethods.gifferPrefix).concat(pos));
-                    if (playerGiffersNew && playerGiffersNew.length > 0) {
-                        playerGiffersNew.prop("disabled", true);
-                        var playerUI = jQuery(playerGiffersNew).closest('.player')[0];
-                        if (jQuery(playerUI).css('cursor') !== 'pointer') {
-                            playerGiffersNew.css('cursor', 'default');
-                        }
-                    }
-                }, 1000);
+                var canvas = document.createElement('canvas');
+                canvas.width = skinWid;
+                canvas.height = fixedHeight;
+                canvas.getContext('2d').drawImage(img, 0, 0, skinWid, fixedHeight);
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                canvas.style['border-radius'] = '8px';
+                playerObj.appendChild(canvas);
+                playerObj.node.avatarImg = canvas;
             }
             else {
                 // clean up static elements first
                 if (playerObj.node.avatarImg) {
                     playerObj.node.avatarImg.remove();
                     delete playerObj.node.avatarImg;
-                }
-                var playerGiggers = jQuery("#".concat(CommonMethods.gifferPrefix).concat(pos));
-                if (playerGiggers && playerGiggers.length > 0) {
-                    var pg = playerGiggers[0];
-                    pg.remove();
                 }
                 // build animation
                 playerObj.node.avatar.setBackgroundImage(skinURL);
