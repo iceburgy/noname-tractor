@@ -2227,6 +2227,7 @@ var MainForm = /** @class */ (function () {
                     e.target.classList.contains('frameGameHallTables') ||
                     e.target.classList.contains('inputFormWrapper') ||
                     e.target.classList.contains('chattextdiv') ||
+                    e.target.classList.contains('hand-zone') ||
                     e.target.parentElement.classList.contains('chattextdiv'))) {
                 _this.resetGameRoomUI();
                 return;
