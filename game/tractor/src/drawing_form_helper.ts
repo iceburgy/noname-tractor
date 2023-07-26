@@ -1346,8 +1346,8 @@ export class DrawingFormHelper {
 
     //画庄家埋底的动画
     public MoveDiscardedLast8Cards() {
-        let posX = `${this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x} - ${this.mainForm.gameScene.coordinates.cardWidth / 4}px`;
-        let posY = `${this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y} - ${this.mainForm.gameScene.coordinates.cardHeight / 4}px`;
+        let posX = `${this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.x} - ${this.mainForm.gameScene.coordinates.cardWidth / 6}px`;
+        let posY = `${this.mainForm.gameScene.coordinates.last8CardsForStarterPosition.y} - ${this.mainForm.gameScene.coordinates.cardHeight / 6}px`;
         let scale = 0.67;
         let count = this.mainForm.gameScene.last8CardsImages.length
         for (let i = 0; i < count; i++) {
