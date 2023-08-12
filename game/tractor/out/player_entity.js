@@ -8,6 +8,7 @@ export var PlayerEntity = /** @class */ (function () {
         this.Team = 0;
         this.IsReadyToStart = false;
         this.IsRobot = false;
+        this.IsQiangliang = false;
         this.IsOffline = false;
         this.Observers = [];
     }
@@ -19,6 +20,7 @@ export var PlayerEntity = /** @class */ (function () {
         this.Team = from.Team;
         this.IsReadyToStart = from.IsReadyToStart;
         this.IsRobot = from.IsRobot;
+        this.IsQiangliang = from.IsQiangliang;
         this.IsOffline = from.IsOffline;
         this.Observers = CommonMethods.deepCopy(from.Observers);
     };

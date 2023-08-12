@@ -16,6 +16,7 @@ import { IDBHelper } from './idb_helper.js';
 import { FileHelper } from './file_helper.js';
 var ReadyToStart_REQUEST = "ReadyToStart";
 var ToggleIsRobot_REQUEST = "ToggleIsRobot";
+var ToggleIsQiangliang_REQUEST = "ToggleIsQiangliang";
 var ObserveNext_REQUEST = "ObserveNext";
 var ExitRoom_REQUEST = "ExitRoom";
 var ExitRoom_REQUEST_TYPE_BootPlayer = "BootPlayer";
@@ -50,6 +51,7 @@ var MainForm = /** @class */ (function () {
         this.myCardIsReady = Array(33).fill(false);
         this.cardsOrderNumber = 0;
         this.IsDebug = false;
+        this.IsQiangliang = false;
         this.SelectedCards = [];
         this.timerIntervalID = [];
         this.isSendEmojiEnabled = true;
@@ -110,6 +112,15 @@ var MainForm = /** @class */ (function () {
         var shouldTrigger = isRobot && isRobot != this.IsDebug;
         this.IsDebug = isRobot;
         if (shouldTrigger) {
+            // 等待玩家切牌
+            var btnRandom = document.getElementById("btnRandom");
+            if (btnRandom) {
+                var cutPoint = 0;
+                var cutInfo = "\u53D6\u6D88,".concat(cutPoint);
+                this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+                return;
+            }
+            // 其它情况：埋底，领出，跟出
             if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
                 this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId)
                 this.DiscardingLast8();
@@ -118,6 +129,11 @@ var MainForm = /** @class */ (function () {
             else
                 this.RobotPlayFollowing();
         }
+    };
+    MainForm.prototype.PlayerToggleIsQiangliang = function (isQiangliang) {
+        this.gameScene.ui.btnQiangliang.innerHTML = (isQiangliang ? "取消" : "抢亮");
+        this.setStartLabels();
+        this.IsQiangliang = isQiangliang;
     };
     MainForm.prototype.PlayersTeamMade = function () {
         //set player position
@@ -154,11 +170,13 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnReady.hide();
             this.gameScene.ui.btnReady.classList.remove('pointerdiv');
             this.gameScene.ui.btnRobot.hide();
+            this.gameScene.ui.btnQiangliang.hide();
         }
         else {
             this.gameScene.ui.btnReady.show();
             this.gameScene.ui.btnReady.classList.add('pointerdiv');
             this.gameScene.ui.btnRobot.show();
+            this.gameScene.ui.btnQiangliang.show();
         }
         if (this.tractorPlayer.isObserver) {
             this.gameScene.ui.btnExitAndObserve.hide();
@@ -419,6 +437,10 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnReady.remove();
             delete this.gameScene.ui.btnReady;
         }
+        if (this.gameScene.ui.btnQiangliang) {
+            this.gameScene.ui.btnQiangliang.remove();
+            delete this.gameScene.ui.btnQiangliang;
+        }
         if (this.gameScene.ui.btnShowLastTrick) {
             this.gameScene.ui.btnShowLastTrick.remove();
             delete this.gameScene.ui.btnShowLastTrick;
@@ -486,7 +508,7 @@ var MainForm = /** @class */ (function () {
             shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
         }
         var isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost || this.tractorPlayer.CurrentHandState.TrumpMaker && this.tractorPlayer.CurrentHandState.TrumpMaker === this.tractorPlayer.MyOwnId;
-        if (this.IsDebug &&
+        if (this.IsQiangliang &&
             (this.tractorPlayer.CurrentRoomSetting.IsFullDebug ||
                 this.tractorPlayer.CurrentRoomSetting.AllowRobotMakeTrump ||
                 isUsingQiangliangka) &&
@@ -560,12 +582,15 @@ var MainForm = /** @class */ (function () {
         // }
     };
     MainForm.prototype.ResetBtnRobot = function () {
-        //摸牌结束，如果处于托管状态，则取消托管
+        //摸牌结束，如果处于托管、抢亮状态，则取消之
         if (this.tractorPlayer.isObserver)
             return;
         var me = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.MyOwnId);
         if (me.IsRobot && this.gameScene.ui.btnRobot && this.gameScene.ui.btnRobot.innerHTML === "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
             this.btnRobot_Click();
+        }
+        if (me.IsQiangliang && this.gameScene.ui.btnQiangliang && this.gameScene.ui.btnQiangliang.innerHTML === "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
+            this.btnQiangliang_Click();
         }
     };
     MainForm.prototype.StartGame = function () {
@@ -859,6 +884,14 @@ var MainForm = /** @class */ (function () {
         for (var i = 0; i < 4; i++) {
             this.gameScene.ui.pokerPlayerStartersLabel[i].style.color = "orange";
             var curPlayer = this.tractorPlayer.CurrentGameState.Players[curIndex];
+            var isUsingQiangliangka = false;
+            if (curPlayer && curPlayer.IsQiangliang && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
+                var shengbi = 0;
+                if (this.DaojuInfo && this.DaojuInfo.daojuInfoByPlayer && this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId]) {
+                    shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId].Shengbi);
+                }
+                isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost;
+            }
             if (curPlayer && curPlayer.IsOffline) {
                 this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "离线中";
             }
@@ -867,15 +900,9 @@ var MainForm = /** @class */ (function () {
             }
             else if (curPlayer && curPlayer.IsRobot) {
                 this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "托管中";
-                if (this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
-                    var shengbi = 0;
-                    if (this.DaojuInfo && this.DaojuInfo.daojuInfoByPlayer && this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId]) {
-                        shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId].Shengbi);
-                    }
-                    var isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost;
-                    if (isUsingQiangliangka)
-                        this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "抢亮卡";
-                }
+            }
+            else if (isUsingQiangliangka) {
+                this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "抢亮卡";
             }
             else if (curPlayer && !curPlayer.IsReadyToStart) {
                 this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "思索中";
@@ -902,6 +929,11 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.btnReady.classList.add('disabled');
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "");
+    };
+    MainForm.prototype.btnQiangliang_Click = function () {
+        if (!this.gameScene.ui.btnQiangliang || this.gameScene.ui.btnQiangliang.classList.contains('hidden') || this.gameScene.ui.btnQiangliang.classList.contains('disabled'))
+            return;
+        this.gameScene.sendMessageToServer(ToggleIsQiangliang_REQUEST, this.tractorPlayer.PlayerId, "");
     };
     MainForm.prototype.btnRobot_Click = function () {
         if (!this.gameScene.ui.btnRobot || this.gameScene.ui.btnRobot.classList.contains('hidden') || this.gameScene.ui.btnRobot.classList.contains('disabled'))
@@ -1879,19 +1911,32 @@ var MainForm = /** @class */ (function () {
         btnPig.hide();
         this.gameScene.ui.frameGameRoom.appendChild(btnPig);
         this.gameScene.ui.btnPig = btnPig;
+        var btnWid = "18%";
         // btnReady
         if (!this.gameScene.ui.btnReady) {
             var btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large', '开始', function () { return _this.btnReady_Click(); });
             this.gameScene.ui.btnReady = btnReady;
             this.gameScene.ui.frameChat.appendChild(btnReady);
             btnReady.style.position = 'absolute';
-            btnReady.style.width = "calc(25%)";
-            btnReady.style.left = "calc(50%)";
-            btnReady.style.transform = "translate(-50%, 0%)";
+            btnReady.style.width = "calc(".concat(btnWid, ")");
+            btnReady.style.left = "calc(26%)";
             btnReady.style.transition = "0s";
             btnReady.style.bottom = "0px";
             btnReady.style.fontFamily = 'serif';
             btnReady.style.fontSize = '20px';
+        }
+        // btnQiangliang
+        if (!this.gameScene.ui.btnQiangliang) {
+            var btnQiangliang = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '抢亮', function () { return _this.btnQiangliang_Click(); });
+            this.gameScene.ui.btnQiangliang = btnQiangliang;
+            this.gameScene.ui.frameChat.appendChild(btnQiangliang);
+            btnQiangliang.style.position = 'absolute';
+            btnQiangliang.style.width = "calc(".concat(btnWid, ")");
+            btnQiangliang.style.right = "calc(26%)";
+            btnQiangliang.style.transition = "0s";
+            btnQiangliang.style.bottom = "0px";
+            btnQiangliang.style.fontFamily = 'serif';
+            btnQiangliang.style.fontSize = '20px';
         }
         // btnRobot
         if (!this.gameScene.ui.btnRobot) {
@@ -1899,7 +1944,7 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnRobot = btnRobot;
             this.gameScene.ui.frameChat.appendChild(btnRobot);
             btnRobot.style.position = 'absolute';
-            btnRobot.style.width = "calc(25%)";
+            btnRobot.style.width = "calc(".concat(btnWid, ")");
             btnRobot.style.left = '0px';
             btnRobot.style.transition = "0s";
             btnRobot.style.bottom = "0px";
@@ -1912,7 +1957,7 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnShowLastTrick = btnShowLastTrick;
             this.gameScene.ui.frameChat.appendChild(btnShowLastTrick);
             btnShowLastTrick.style.position = 'absolute';
-            btnShowLastTrick.style.width = "calc(25%)";
+            btnShowLastTrick.style.width = "calc(".concat(btnWid, ")");
             btnShowLastTrick.style.right = '0px';
             btnShowLastTrick.style.transition = "0s";
             btnShowLastTrick.style.bottom = "0px";
@@ -1921,6 +1966,7 @@ var MainForm = /** @class */ (function () {
         }
         this.gameScene.ui.btnRobot.hide();
         this.gameScene.ui.btnReady.hide();
+        this.gameScene.ui.btnQiangliang.hide();
         this.gameScene.ui.btnShowLastTrick.hide();
         // btnExitAndObserve
         if (!this.gameScene.ui.btnExitAndObserve) {
@@ -2278,6 +2324,11 @@ var MainForm = /** @class */ (function () {
                         if (_this.tractorPlayer.isObserver)
                             return;
                         _this.btnRobot_Click();
+                        return;
+                    case 81:
+                        if (_this.tractorPlayer.isObserver)
+                            return;
+                        _this.btnQiangliang_Click();
                         return;
                     default:
                         break;

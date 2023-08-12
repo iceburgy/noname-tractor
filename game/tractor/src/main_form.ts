@@ -23,6 +23,7 @@ import { debug } from 'console';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
+const ToggleIsQiangliang_REQUEST = "ToggleIsQiangliang"
 const ObserveNext_REQUEST = "ObserveNext"
 const ExitRoom_REQUEST = "ExitRoom"
 const ExitRoom_REQUEST_TYPE_BootPlayer = "BootPlayer"
@@ -67,6 +68,7 @@ export class MainForm {
     public drawingFormHelper: DrawingFormHelper
     // public sgDrawingHelper: SGDrawingHelper
     public IsDebug: boolean
+    public IsQiangliang: boolean
     public timerIntervalID: any[]
     // public timerImage: Phaser.GameObjects.Text
     public modalForm: any
@@ -102,6 +104,7 @@ export class MainForm {
         this.myCardIsReady = Array(33).fill(false);
         this.cardsOrderNumber = 0
         this.IsDebug = false
+        this.IsQiangliang = false
         this.SelectedCards = []
         this.timerIntervalID = []
         this.isSendEmojiEnabled = true;
@@ -167,11 +170,28 @@ export class MainForm {
         this.IsDebug = isRobot;
 
         if (shouldTrigger) {
+            // 等待玩家切牌
+            let btnRandom: any = document.getElementById("btnRandom");
+            if (btnRandom) {
+                let cutPoint = 0;
+                let cutInfo = `取消,${cutPoint}`;
+                this.CutCardShoeCardsCompleteEventHandler(cutPoint, cutInfo);
+                return;
+            }
+
+            // 其它情况：埋底，领出，跟出
             if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards &&
                 this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) this.DiscardingLast8();
             else if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
             else this.RobotPlayFollowing();
         }
+    }
+
+    public PlayerToggleIsQiangliang(isQiangliang: boolean) {
+        this.gameScene.ui.btnQiangliang.innerHTML = (isQiangliang ? "取消" : "抢亮");
+        this.setStartLabels()
+
+        this.IsQiangliang = isQiangliang;
     }
 
     public PlayersTeamMade() {
@@ -214,10 +234,12 @@ export class MainForm {
             this.gameScene.ui.btnReady.hide();
             this.gameScene.ui.btnReady.classList.remove('pointerdiv');
             this.gameScene.ui.btnRobot.hide();
+            this.gameScene.ui.btnQiangliang.hide();
         } else {
             this.gameScene.ui.btnReady.show();
             this.gameScene.ui.btnReady.classList.add('pointerdiv');
             this.gameScene.ui.btnRobot.show();
+            this.gameScene.ui.btnQiangliang.show();
         }
 
         if (this.tractorPlayer.isObserver) {
@@ -477,6 +499,10 @@ export class MainForm {
             this.gameScene.ui.btnReady.remove();
             delete this.gameScene.ui.btnReady;
         }
+        if (this.gameScene.ui.btnQiangliang) {
+            this.gameScene.ui.btnQiangliang.remove();
+            delete this.gameScene.ui.btnQiangliang;
+        }
         if (this.gameScene.ui.btnShowLastTrick) {
             this.gameScene.ui.btnShowLastTrick.remove();
             delete this.gameScene.ui.btnShowLastTrick;
@@ -552,7 +578,7 @@ export class MainForm {
             shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].Shengbi);
         }
         let isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost || this.tractorPlayer.CurrentHandState.TrumpMaker && this.tractorPlayer.CurrentHandState.TrumpMaker === this.tractorPlayer.MyOwnId;
-        if (this.IsDebug &&
+        if (this.IsQiangliang &&
             (this.tractorPlayer.CurrentRoomSetting.IsFullDebug ||
                 this.tractorPlayer.CurrentRoomSetting.AllowRobotMakeTrump ||
                 isUsingQiangliangka) &&
@@ -637,11 +663,14 @@ export class MainForm {
     }
 
     public ResetBtnRobot() {
-        //摸牌结束，如果处于托管状态，则取消托管
+        //摸牌结束，如果处于托管、抢亮状态，则取消之
         if (this.tractorPlayer.isObserver) return;
         var me: PlayerEntity = CommonMethods.GetPlayerByID(this.tractorPlayer.CurrentGameState.Players, this.tractorPlayer.MyOwnId);
         if (me.IsRobot && this.gameScene.ui.btnRobot && this.gameScene.ui.btnRobot.innerHTML === "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
             this.btnRobot_Click()
+        }
+        if (me.IsQiangliang && this.gameScene.ui.btnQiangliang && this.gameScene.ui.btnQiangliang.innerHTML === "取消" && !this.tractorPlayer.CurrentRoomSetting.IsFullDebug) {
+            this.btnQiangliang_Click()
         }
     }
 
@@ -960,6 +989,16 @@ export class MainForm {
             (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).style.color = "orange";
 
             var curPlayer = this.tractorPlayer.CurrentGameState.Players[curIndex];
+
+            let isUsingQiangliangka = false;
+            if (curPlayer && curPlayer.IsQiangliang && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
+                let shengbi = 0
+                if (this.DaojuInfo && this.DaojuInfo.daojuInfoByPlayer && this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId]) {
+                    shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId].Shengbi);
+                }
+                isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost;
+            }
+
             if (curPlayer && curPlayer.IsOffline) {
                 (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "离线中";
             }
@@ -968,14 +1007,9 @@ export class MainForm {
             }
             else if (curPlayer && curPlayer.IsRobot) {
                 (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "托管中";
-                if (this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
-                    let shengbi = 0
-                    if (this.DaojuInfo && this.DaojuInfo.daojuInfoByPlayer && this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId]) {
-                        shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId].Shengbi);
-                    }
-                    let isUsingQiangliangka = shengbi >= CommonMethods.qiangliangkaCost;
-                    if (isUsingQiangliangka) (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "抢亮卡";
-                }
+            }
+            else if (isUsingQiangliangka) {
+                (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "抢亮卡";
             }
             else if (curPlayer && !curPlayer.IsReadyToStart) {
                 (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "思索中";
@@ -1002,6 +1036,11 @@ export class MainForm {
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
 
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
+    }
+
+    private btnQiangliang_Click() {
+        if (!this.gameScene.ui.btnQiangliang || this.gameScene.ui.btnQiangliang.classList.contains('hidden') || this.gameScene.ui.btnQiangliang.classList.contains('disabled')) return;
+        this.gameScene.sendMessageToServer(ToggleIsQiangliang_REQUEST, this.tractorPlayer.PlayerId, "")
     }
 
     private btnRobot_Click() {
@@ -2047,6 +2086,7 @@ export class MainForm {
 
         this.gameScene.ui.btnPig = btnPig;
 
+        let btnWid = "18%";
         // btnReady
         if (!this.gameScene.ui.btnReady) {
             let btnReady = this.gameScene.ui.create.div('.menubutton.highlight.large', '开始', () => this.btnReady_Click());
@@ -2054,14 +2094,28 @@ export class MainForm {
             this.gameScene.ui.frameChat.appendChild(btnReady);
             btnReady.style.position = 'absolute';
 
-            btnReady.style.width = `calc(25%)`;
-            btnReady.style.left = `calc(50%)`;
-            btnReady.style.transform = `translate(-50%, 0%)`;
+            btnReady.style.width = `calc(${btnWid})`;
+            btnReady.style.left = `calc(26%)`;
             btnReady.style.transition = `0s`;
 
             btnReady.style.bottom = `0px`;
             btnReady.style.fontFamily = 'serif';
             btnReady.style.fontSize = '20px';
+        }
+        // btnQiangliang
+        if (!this.gameScene.ui.btnQiangliang) {
+            let btnQiangliang = this.gameScene.ui.create.div('.menubutton.highlight.large.pointerdiv', '抢亮', () => this.btnQiangliang_Click());
+            this.gameScene.ui.btnQiangliang = btnQiangliang
+            this.gameScene.ui.frameChat.appendChild(btnQiangliang);
+            btnQiangliang.style.position = 'absolute';
+
+            btnQiangliang.style.width = `calc(${btnWid})`;
+            btnQiangliang.style.right = `calc(26%)`;
+            btnQiangliang.style.transition = `0s`;
+
+            btnQiangliang.style.bottom = `0px`;
+            btnQiangliang.style.fontFamily = 'serif';
+            btnQiangliang.style.fontSize = '20px';
         }
         // btnRobot
         if (!this.gameScene.ui.btnRobot) {
@@ -2070,7 +2124,7 @@ export class MainForm {
             this.gameScene.ui.frameChat.appendChild(btnRobot);
             btnRobot.style.position = 'absolute';
 
-            btnRobot.style.width = `calc(25%)`;
+            btnRobot.style.width = `calc(${btnWid})`;
             btnRobot.style.left = '0px';
             btnRobot.style.transition = `0s`;
 
@@ -2085,7 +2139,7 @@ export class MainForm {
             this.gameScene.ui.frameChat.appendChild(btnShowLastTrick);
             btnShowLastTrick.style.position = 'absolute';
 
-            btnShowLastTrick.style.width = `calc(25%)`;
+            btnShowLastTrick.style.width = `calc(${btnWid})`;
             btnShowLastTrick.style.right = '0px';
             btnShowLastTrick.style.transition = `0s`;
 
@@ -2095,6 +2149,7 @@ export class MainForm {
         }
         this.gameScene.ui.btnRobot.hide();
         this.gameScene.ui.btnReady.hide();
+        this.gameScene.ui.btnQiangliang.hide();
         this.gameScene.ui.btnShowLastTrick.hide();
         // btnExitAndObserve
         if (!this.gameScene.ui.btnExitAndObserve) {
@@ -2462,6 +2517,10 @@ export class MainForm {
                     case 82:
                         if (this.tractorPlayer.isObserver) return;
                         this.btnRobot_Click();
+                        return;
+                    case 81:
+                        if (this.tractorPlayer.isObserver) return;
+                        this.btnQiangliang_Click();
                         return;
                     default:
                         break;

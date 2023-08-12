@@ -179,6 +179,7 @@ export class TractorPlayer {
             if (p.PlayerId == this.PlayerId) {
                 this.mainForm.NewPlayerReadyToStart(p.IsReadyToStart)
                 this.mainForm.PlayerToggleIsRobot(p.IsRobot)
+                this.mainForm.PlayerToggleIsQiangliang(p.IsQiangliang)
                 if (anyBecomesReady &&
                     (this.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards || this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.SpecialEnding)) {
                     if (CommonMethods.AllReady(this.CurrentGameState.Players)) this.mainForm.gameScene.playAudio(CommonMethods.audioTie);
