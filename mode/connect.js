@@ -10,6 +10,84 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			"step 1"
 			var directstartmode = lib.config.directstartmode;
 			ui.create.menu(true);
+
+			var cardsStyles = ["cardsclassic", "cards"];
+			var cardsBounds = [54, 64];
+			var totalResourceCount = 0;
+			for (var i = 0; i < cardsStyles.length; i++) {
+				totalResourceCount += (cardsBounds[i] + 1); // zero-based cardsBounds, hence add 1 to account for tile000.png
+			}
+
+			var loadResourcesAndGoToHome = function () {
+				var textEmail = ui.create.div('', '加载中...');
+				textEmail.style.width = '400px';
+				textEmail.style.height = '30px';
+				textEmail.style.lineHeight = '30px';
+				textEmail.style.fontFamily = 'xinwei';
+				textEmail.style.fontSize = '30px';
+				textEmail.style.padding = '10px';
+				textEmail.style.left = 'calc(50% - 200px)';
+				textEmail.style.top = 'calc(40%)';
+				textEmail.style.textAlign = 'center';
+				ui.window.appendChild(textEmail);
+				ui.emailtext = textEmail;
+
+				var tractorCard = ui.create.div('');
+				tractorCard.style.width = '90px';
+				tractorCard.style.height = '120px';
+				tractorCard.style.left = 'calc(50% - 45px)';
+				tractorCard.style.top = 'calc(50%)';
+				tractorCard.style['background-size'] = '100% 100%';
+				tractorCard.style['background-repeat'] = 'no-repeat';
+				ui.window.appendChild(tractorCard);
+				ui.tractorCard = tractorCard;
+
+				var timer = ui.create.div('.timerbar', ui.window);
+				timer.style.left = 'calc(50% - 50px)';
+				timer.style.top = 'calc(50%)';
+				var tdiv = ui.create.div(timer);
+				tdiv.style.left = '0px';
+				tdiv.style.top = '0px';
+				var bar = ui.create.div(timer);
+				bar.style.left = '0px';
+				bar.style.top = '0px';
+				bar.style.transition = `0s`;
+				ui.timer = timer;
+				ui.bar = bar;
+				bar.style.width = 0;
+				ui.refresh(bar);
+
+				loadCardResources(0, 0, 0, tractorCard);
+			}
+
+			var loadCardResources = function (styleIndex, cardIndex, loadedCount, tractorCard) {
+				imgURL = `image/tractor/${cardsStyles[styleIndex]}/tile0${cardIndex.toString().padStart(2, '0')}.png`;
+				var img = new Image();
+				img.onload = (e) => {
+					loadedCount++;
+					ui.bar.style.width = `${100 * (loadedCount / totalResourceCount)}px`
+
+					// tractorCard.setBackgroundImage(imgURL);
+					if (cardIndex == cardsBounds[styleIndex]) {
+						styleIndex++;
+						if (styleIndex < cardsBounds.length) {
+							loadCardResources(styleIndex, 0, loadedCount, tractorCard);
+						} else {
+							ui.emailtext.remove();
+							delete ui.emailtext;
+							ui.tractorCard.remove();
+							delete ui.tractorCard;
+							ui.timer.remove();
+							delete ui.timer;
+							createNode();
+						}
+					} else {
+						loadCardResources(styleIndex, cardIndex + 1, loadedCount, tractorCard);
+					}
+				}
+				img.src = imgURL;
+			}
+
 			var createNode = function () {
 				if (lib.version != lib.config.version || _status.extensionChangeLog) return;
 
@@ -274,7 +352,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				// _status.createNodeTimeout = setTimeout(createNode, 2000);
 			}
 			else {
-				createNode();
+				loadResourcesAndGoToHome();
 			}
 			if (!game.onlineKey) {
 				game.onlineKey = localStorage.getItem(lib.configprefix + 'key');
