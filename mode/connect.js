@@ -52,8 +52,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				bar.style.left = '0px';
 				bar.style.top = '0px';
 				bar.style.transition = `0s`;
-				ui.timer = timer;
-				ui.bar = bar;
+				ui.timerConnect = timer;
+				ui.barConnect = bar;
 				bar.style.width = 0;
 				ui.refresh(bar);
 
@@ -65,7 +65,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				var img = new Image();
 				img.onload = (e) => {
 					loadedCount++;
-					ui.bar.style.width = `${100 * (loadedCount / totalResourceCount)}px`
+					ui.barConnect.style.width = `${100 * (loadedCount / totalResourceCount)}px`
 
 					// tractorCard.setBackgroundImage(imgURL);
 					if (cardIndex == cardsBounds[styleIndex]) {
@@ -77,8 +77,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							delete ui.emailtext;
 							ui.tractorCard.remove();
 							delete ui.tractorCard;
-							ui.timer.remove();
-							delete ui.timer;
+							ui.timerConnect.remove();
+							delete ui.timerConnect;
 							createNode();
 						}
 					} else {
