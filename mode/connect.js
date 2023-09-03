@@ -11,12 +11,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var directstartmode = lib.config.directstartmode;
 			ui.create.menu(true);
 
-			var cardsStyles = ["cardsclassic", "cards"];
-			var cardsBounds = [54, 64];
+			var cardsStyles = ["cardsclassic", "cards", "toolbar"];
+			var cardsBounds = [54, 64, 9];
 			var totalResourceCount = 0;
 			for (var i = 0; i < cardsStyles.length; i++) {
 				totalResourceCount += (cardsBounds[i] + 1); // zero-based cardsBounds, hence add 1 to account for tile000.png
 			}
+			ui.storageFileForImages = JSON.parse(localStorage.getItem("storageFileForCards")) || {};
 
 			var loadResourcesAndGoToHome = function () {
 				var textEmail = ui.create.div('', '加载中...');
@@ -60,6 +61,21 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				loadCardResources(0, 0, 0, tractorCard);
 			}
 
+			var storeCardToDataURL = function (imageObj, imageStyle, imageIndex) {
+				var imgCanvas = document.createElement("canvas"),
+					imgContext = imgCanvas.getContext("2d");
+
+				// Make sure canvas is as big as the picture
+				imgCanvas.width = imageObj.width;
+				imgCanvas.height = imageObj.height;
+
+				// Draw image into canvas element
+				imgContext.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height);
+
+				// Save image as a data URL
+				ui.storageFileForImages[`${imageStyle}${imageIndex}`] = imgCanvas.toDataURL("image/png");
+			}
+
 			var loadCardResources = function (styleIndex, cardIndex, loadedCount, tractorCard) {
 				imgURL = `image/tractor/${cardsStyles[styleIndex]}/tile0${cardIndex.toString().padStart(2, '0')}.png`;
 				var img = new Image();
@@ -67,7 +83,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					loadedCount++;
 					ui.barConnect.style.width = `${100 * (loadedCount / totalResourceCount)}px`
 
-					// tractorCard.setBackgroundImage(imgURL);
+					storeCardToDataURL(img, cardsStyles[styleIndex], cardIndex);
+
+					// tractorCard.setBackgroundImage(ui.storageFileForImages[`${cardsStyles[styleIndex]}${cardIndex}`]);
 					if (cardIndex == cardsBounds[styleIndex]) {
 						styleIndex++;
 						if (styleIndex < cardsBounds.length) {

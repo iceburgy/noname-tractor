@@ -593,7 +593,7 @@ export class DrawingFormHelper {
         }
 
         let cardsStyle = this.mainForm.gameScene.useCardUIStyleClassic ? "cardsclassic" : "cards";
-        tractorCard.setBackgroundImage(`image/tractor/${cardsStyle}/tile0${uiCardNumber.toString().padStart(2, '0')}.png`);
+        tractorCard.setBackgroundImage(this.mainForm.gameScene.ui.storageFileForImages[`${cardsStyle}${uiCardNumber}`]);
         tractorCard.style['background-size'] = '100% 100%';
         tractorCard.style['background-repeat'] = 'no-repeat';
 
@@ -874,7 +874,7 @@ export class DrawingFormHelper {
             let suiteOffset = isSuiteAvailable ? 0 : 5;
             let classIsSuiteAvail = isSuiteAvailable ? `.${CommonMethods.classIsSuiteAvail}` : "";
             let imageToolBarSuit = this.mainForm.gameScene.ui.create.div(`.imageToolBarSuit${classIsSuiteAvail}`, imageToolBar);
-            imageToolBarSuit.setBackgroundImage(`image/tractor/toolbar/tile0${(i + suiteOffset).toString().padStart(2, '0')}.png`);
+            imageToolBarSuit.setBackgroundImage(this.mainForm.gameScene.ui.storageFileForImages[`toolbar${i + suiteOffset}`]);
             imageToolBarSuit.style['background-size'] = '100% 100%';
             imageToolBarSuit.style['background-repeat'] = 'no-repeat';
             imageToolBarSuit.style.width = `40px`;
@@ -1115,7 +1115,7 @@ export class DrawingFormHelper {
             let increment = 25;
             for (let i = 0; i < count; i++) {
                 var sidebarTrumpImage = this.mainForm.gameScene.ui.create.div('.sidebarTrumpImage', '', this.mainForm.gameScene.ui.frameGameRoom);
-                sidebarTrumpImage.setBackgroundImage(`image/tractor/toolbar/tile0${(trumpIndex - 1).toString().padStart(2, '0')}.png`);
+                sidebarTrumpImage.setBackgroundImage(this.mainForm.gameScene.ui.storageFileForImages[`toolbar${trumpIndex - 1}`]);
                 sidebarTrumpImage.style['background-size'] = '100% 100%';
                 sidebarTrumpImage.style['background-repeat'] = 'no-repeat';
                 sidebarTrumpImage.style.width = `25px`;

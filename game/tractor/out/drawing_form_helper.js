@@ -552,7 +552,7 @@ var DrawingFormHelper = /** @class */ (function () {
             cover: this.mainForm.gameScene.ui.create.div('.cover', tractorCard),
         };
         var cardsStyle = this.mainForm.gameScene.useCardUIStyleClassic ? "cardsclassic" : "cards";
-        tractorCard.setBackgroundImage("image/tractor/".concat(cardsStyle, "/tile0").concat(uiCardNumber.toString().padStart(2, '0'), ".png"));
+        tractorCard.setBackgroundImage(this.mainForm.gameScene.ui.storageFileForImages["".concat(cardsStyle).concat(uiCardNumber)]);
         tractorCard.style['background-size'] = '100% 100%';
         tractorCard.style['background-repeat'] = 'no-repeat';
         tractorCard.style.width = "".concat(this.mainForm.gameScene.coordinates.cardWidth * hcs, "px");
@@ -820,7 +820,7 @@ var DrawingFormHelper = /** @class */ (function () {
             var suiteOffset = isSuiteAvailable ? 0 : 5;
             var classIsSuiteAvail = isSuiteAvailable ? ".".concat(CommonMethods.classIsSuiteAvail) : "";
             var imageToolBarSuit = this_1.mainForm.gameScene.ui.create.div(".imageToolBarSuit".concat(classIsSuiteAvail), imageToolBar);
-            imageToolBarSuit.setBackgroundImage("image/tractor/toolbar/tile0".concat((i + suiteOffset).toString().padStart(2, '0'), ".png"));
+            imageToolBarSuit.setBackgroundImage(this_1.mainForm.gameScene.ui.storageFileForImages["toolbar".concat(i + suiteOffset)]);
             imageToolBarSuit.style['background-size'] = '100% 100%';
             imageToolBarSuit.style['background-repeat'] = 'no-repeat';
             imageToolBarSuit.style.width = "40px";
@@ -1047,7 +1047,7 @@ var DrawingFormHelper = /** @class */ (function () {
             var increment = 25;
             for (var i = 0; i < count; i++) {
                 var sidebarTrumpImage = this.mainForm.gameScene.ui.create.div('.sidebarTrumpImage', '', this.mainForm.gameScene.ui.frameGameRoom);
-                sidebarTrumpImage.setBackgroundImage("image/tractor/toolbar/tile0".concat((trumpIndex - 1).toString().padStart(2, '0'), ".png"));
+                sidebarTrumpImage.setBackgroundImage(this.mainForm.gameScene.ui.storageFileForImages["toolbar".concat(trumpIndex - 1)]);
                 sidebarTrumpImage.style['background-size'] = '100% 100%';
                 sidebarTrumpImage.style['background-repeat'] = 'no-repeat';
                 sidebarTrumpImage.style.width = "25px";
