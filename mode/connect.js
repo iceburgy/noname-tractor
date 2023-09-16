@@ -145,8 +145,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						loadedAudioCount++;
 						ui.barConnect.style.width = `${100 * (loadedAudioCount / totalResourceCount)}px`
 
-						// allow buffer of 2, just in case race condition causes loadedAudioCount to not be incremented fully
-						if (loadedAudioCount >= audioResourceCount - 2) {
+						if (loadedAudioCount === audioResourceCount) {
 							var tractorCard = ui.create.div('');
 							tractorCard.style.width = '90px';
 							tractorCard.style.height = '120px';
