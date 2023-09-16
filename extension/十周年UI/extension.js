@@ -1045,6 +1045,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						gameVolume.onchange = function () {
 							game.saveConfig('volumn_audio', gameVolume.value);
 							game.playAudio('skill', 'biyue1');
+
+							for (const [key, value] of Object.entries(ui.audioResourceObjects)) {
+								value.volume = gameVolume.value / 8;
+							}
 						};
 
 						setting.add('背景音量');

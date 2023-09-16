@@ -14,10 +14,43 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var cardsStyles = ["cardsclassic", "cards", "toolbar"];
 			var cardsBounds = [54, 64, 9];
 			var totalResourceCount = 0;
+			var imageResourceCount = 0;
 			for (var i = 0; i < cardsStyles.length; i++) {
-				totalResourceCount += (cardsBounds[i] + 1); // zero-based cardsBounds, hence add 1 to account for tile000.png
+				imageResourceCount += (cardsBounds[i] + 1); // zero-based cardsBounds, hence add 1 to account for tile000.png
 			}
+			totalResourceCount += imageResourceCount;
 			ui.storageFileForImages = JSON.parse(localStorage.getItem("storageFileForCards")) || {};
+			ui.audioPool = {};
+
+			ui.audioResources = {
+				"liangpai_m_shelie1": ["effect", "liangpai_m_shelie1"],
+				"liangpai_f_biyue1": ["effect", "liangpai_f_biyue1"],
+				"shuaicuo_m_fankui2": ["effect", "shuaicuo_m_fankui2"],
+				"shuaicuo_f_guose2": ["effect", "shuaicuo_f_guose2"],
+				"equip1": ["effect", "equip1"],
+				"equip2": ["effect", "equip2"],
+				"zhu_junlve": ["effect", "zhu_junlve"],
+				"zhu_lijian2": ["effect", "zhu_lijian2"],
+				"sha": ["effect", "sha"],
+				"f_sha": ["effect", "f_sha"],
+				"sha_fire": ["effect", "sha_fire"],
+				"f_sha_fire": ["effect", "f_sha_fire"],
+				"sha_thunder": ["effect", "sha_thunder"],
+				"f_sha_thunder": ["effect", "f_sha_thunder"],
+				"recover": ["effect", "recover"],
+				"draw": ["effect", "draw"],
+				"drawx": ["effect", "drawx"],
+				"tie": ["effect", "tie"],
+				"win": ["effect", "win"],
+				"game_start": ["effect", "game_start"],
+				"enter_hall_click": ["effect", "enter_hall_click"],
+				"enter_room_kongcheng11": ["effect", "enter_room_kongcheng11"],
+				"enter_room_kongcheng12": ["effect", "enter_room_kongcheng12"],
+			}
+			var audioResourceCount = Object.keys(ui.audioResources).length;
+			totalResourceCount += audioResourceCount;
+			ui.audioResourceObjects = {};
+			var loadedAudioCount = 0;
 
 			var loadResourcesAsync = function () {
 				var textLoading = ui.create.div('', '加载中...');
@@ -32,16 +65,6 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				textLoading.style.textAlign = 'center';
 				ui.window.appendChild(textLoading);
 				ui.loadingtext = textLoading;
-
-				var tractorCard = ui.create.div('');
-				tractorCard.style.width = '90px';
-				tractorCard.style.height = '120px';
-				tractorCard.style.left = 'calc(50% - 45px)';
-				tractorCard.style.top = 'calc(0% + 70px)';
-				tractorCard.style['background-size'] = '100% 100%';
-				tractorCard.style['background-repeat'] = 'no-repeat';
-				ui.window.appendChild(tractorCard);
-				ui.tractorCard = tractorCard;
 
 				var timer = ui.create.div('.timerbar', ui.window);
 				timer.style.left = 'calc(50% - 50px)';
@@ -58,7 +81,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				bar.style.width = 0;
 				ui.refresh(bar);
 
-				loadCardResources(0, 0, 0, tractorCard);
+				loadAudioPool();
 			}
 
 			var storeCardToDataURL = function (imageObj, imageStyle, imageIndex) {
@@ -81,7 +104,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				var img = new Image();
 				img.onload = (e) => {
 					loadedCount++;
-					ui.barConnect.style.width = `${100 * (loadedCount / totalResourceCount)}px`
+					ui.barConnect.style.width = `${100 * ((audioResourceCount + loadedCount) / totalResourceCount)}px`
 
 					storeCardToDataURL(img, cardsStyles[styleIndex], cardIndex);
 
@@ -103,6 +126,45 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 				}
 				img.src = imgURL;
+			}
+
+			function audioEndedHandler(e) {
+				if (e.target.muted === true) {
+					e.target.muted = false;
+				}
+				e.target.removeEventListener("ended", audioEndedHandler);
+			}
+
+			var loadAudioPool = function () {
+				for (const [key, value] of Object.entries(ui.audioResources)) {
+					var audioTemp = document.createElement('audio');
+					audioTemp.volume = lib.config.volumn_audio / 8;
+					audioTemp.muted = true;
+					audioTemp.src = `${lib.assetURL}audio/${value[0]}/${value[1]}.mp3`;
+					audioTemp.onloadeddata = function () {
+						loadedAudioCount++;
+						ui.barConnect.style.width = `${100 * (loadedAudioCount / totalResourceCount)}px`
+
+						// allow buffer of 2, just in case race condition causes loadedAudioCount to not be incremented fully
+						if (loadedAudioCount >= audioResourceCount - 2) {
+							var tractorCard = ui.create.div('');
+							tractorCard.style.width = '90px';
+							tractorCard.style.height = '120px';
+							tractorCard.style.left = 'calc(50% - 45px)';
+							tractorCard.style.top = 'calc(0% + 70px)';
+							tractorCard.style['background-size'] = '100% 100%';
+							tractorCard.style['background-repeat'] = 'no-repeat';
+							ui.window.appendChild(tractorCard);
+							ui.tractorCard = tractorCard;
+
+							loadCardResources(0, 0, 0, tractorCard);
+						}
+					};
+					audioTemp.addEventListener("ended", audioEndedHandler);
+					audioTemp.currentTime = 0;
+					audioTemp.play();
+					ui.audioResourceObjects[`${value[0]}${value[1]}`] = audioTemp;
+				}
 			}
 
 			var createNode = function () {
@@ -182,6 +244,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				ui.emailnode = nodeEmail;
 
 				var connect = function (e) {
+					loadResourcesAsync();
 					var isEnterHallDisabled = ui.ipbutton.classList.contains('disabled');
 					var isEnterHall = e.target.innerText === '进入大厅';
 					var isDoReplay = e.target.innerText === '录像回放';
@@ -369,7 +432,6 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				// _status.createNodeTimeout = setTimeout(createNode, 2000);
 			}
 			else {
-				loadResourcesAsync();
 				createNode();
 			}
 			if (!game.onlineKey) {

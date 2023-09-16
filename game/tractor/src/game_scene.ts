@@ -52,10 +52,6 @@ export class GameScene {
     public danmuMessages!: any[]
     // // public roomUIControls: { images: any[], texts: Phaser.GameObjects.Text[], imagesChair: Phaser.GameObjects.Image[] }
     public soundPool: any
-    public soundMaleLiangpai!: string[];
-    public soundFemaleLiangpai!: string[];
-    public soundMaleShuaicuo!: string[];
-    public soundFemaleShuaicuo!: string[];
 
     public soundRecoverhp!: string[];
     public sounddraw!: string[];
@@ -487,46 +483,31 @@ export class GameScene {
     }
 
     public loadAudioFiles() {
-        this.soundMaleLiangpai = ["effect", "liangpai_m_shelie1"];
-        this.soundFemaleLiangpai = ["effect", "liangpai_f_biyue1"];
-        this.soundMaleShuaicuo = ["effect", "shuaicuo_m_fankui2"];
-        this.soundFemaleShuaicuo = ["effect", "shuaicuo_f_guose2"];
-
-        let tempequip1 = ["effect", "equip1"];
-        let tempequip2 = ["effect", "equip2"];
-        let tempmalediaozhu = ["effect", "zhu_junlve"];
-        let tempfemalediaozhu = ["effect", "zhu_lijian2"];
-        let tempmalesha = ["effect", "sha"];
-        let tempfemalesha = ["effect", "f_sha"];
-        let tempmaleshafire = ["effect", "sha_fire"];
-        let tempfemaleshafire = ["effect", "f_sha_fire"];
-        let tempmaleshathunder = ["effect", "sha_thunder"];
-        let tempfemaleshathunder = ["effect", "f_sha_thunder"];
         this.soundPlayersShowCard = [
-            { "m": tempequip1, "f": tempequip1 },
-            { "m": tempequip2, "f": tempequip2 },
-            { "m": tempmalediaozhu, "f": tempfemalediaozhu },
-            { "m": tempmalesha, "f": tempfemalesha },
-            { "m": tempmaleshafire, "f": tempfemaleshafire },
-            { "m": tempmaleshathunder, "f": tempfemaleshathunder },
+            { "m": this.ui.audioResources.equip1, "f": this.ui.audioResources.equip1 },
+            { "m": this.ui.audioResources.equip2, "f": this.ui.audioResources.equip2 },
+            { "m": this.ui.audioResources.zhu_junlve, "f": this.ui.audioResources.zhu_lijian2 },
+            { "m": this.ui.audioResources.sha, "f": this.ui.audioResources.f_sha },
+            { "m": this.ui.audioResources.sha_fire, "f": this.ui.audioResources.f_sha_fire },
+            { "m": this.ui.audioResources.sha_thunder, "f": this.ui.audioResources.f_sha_thunder },
         ];
 
-        this.soundPool[CommonMethods.audioLiangpai] = { "m": this.soundMaleLiangpai, "f": this.soundFemaleLiangpai };
-        this.soundPool[CommonMethods.audioShuaicuo] = { "m": this.soundMaleShuaicuo, "f": this.soundFemaleShuaicuo };
+        this.soundPool[CommonMethods.audioLiangpai] = { "m": this.ui.audioResources.liangpai_m_shelie1, "f": this.ui.audioResources.liangpai_f_biyue1 };
+        this.soundPool[CommonMethods.audioShuaicuo] = { "m": this.ui.audioResources.shuaicuo_m_fankui2, "f": this.ui.audioResources.shuaicuo_f_guose2 };
 
-        this.soundPool[CommonMethods.audioRecoverhp] = ["effect", "recover"];
-        this.soundPool[CommonMethods.audioDraw] = ["effect", "draw"];
-        this.soundPool[CommonMethods.audioDrawx] = ["effect", "drawx"];
-        this.soundPool[CommonMethods.audioTie] = ["effect", "tie"];
-        this.soundPool[CommonMethods.audioWin] = ["effect", "win"];
-        this.soundPool[CommonMethods.audioGameStart] = ["effect", "game_start"];
-        this.soundPool[CommonMethods.audioEnterHall] = ["effect", "enter_hall_click"];
+        this.soundPool[CommonMethods.audioRecoverhp] = this.ui.audioResources.recover;
+        this.soundPool[CommonMethods.audioDraw] = this.ui.audioResources.draw;
+        this.soundPool[CommonMethods.audioDrawx] = this.ui.audioResources.drawx;
+        this.soundPool[CommonMethods.audioTie] = this.ui.audioResources.tie;
+        this.soundPool[CommonMethods.audioWin] = this.ui.audioResources.win;
+        this.soundPool[CommonMethods.audioGameStart] = this.ui.audioResources.game_start;
+        this.soundPool[CommonMethods.audioEnterHall] = this.ui.audioResources.enter_hall_click;
         this.soundPool[CommonMethods.audioEnterRoom] = [
             [],
             [],
-            ["effect", "enter_room_kongcheng11"],
-            ["effect", "enter_room_kongcheng12"],
-            ["effect", "game_start"],
+            this.ui.audioResources.enter_room_kongcheng11,
+            this.ui.audioResources.enter_room_kongcheng12,
+            this.ui.audioResources.game_start
         ];
     }
 
@@ -566,6 +547,8 @@ export class GameScene {
         } else {
             return;
         }
-        this.game.playAudio(audioInfo[0], audioInfo[1]);
+        if (audioInfo.length === 0) return;
+        this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].currentTime = 0;
+        this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].play();
     }
 }
