@@ -3874,6 +3874,11 @@
 						},
 						onclick:function(volume){
 							game.saveConfig('volumn_audio',parseInt(volume));
+							game.playAudio('skill', 'biyue1');
+
+							for (const [key, value] of Object.entries(ui.audioResourceObjects)) {
+								value.volume = volume / 8;
+							}
 						}
 					},
 					volumn_background:{
