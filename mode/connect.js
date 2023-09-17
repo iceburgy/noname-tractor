@@ -11,8 +11,6 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var directstartmode = lib.config.directstartmode;
 			ui.create.menu(true);
 
-			ui.loadResourcesAsyncStarted = false;
-
 			var cardsStyles = ["cardsclassic", "cards", "toolbar"];
 			var cardsBounds = [54, 64, 9];
 			var totalResourceCount = 0;
@@ -55,43 +53,73 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var loadedAudioCount = 0;
 
 			var loadResourcesAsync = function () {
-				if (ui.loadResourcesAsyncStarted === true) return;
+				var textLoadingCards = ui.create.div('', '加载卡牌');
+				textLoadingCards.style.width = '200px';
+				textLoadingCards.style.height = '30px';
+				textLoadingCards.style.lineHeight = '30px';
+				textLoadingCards.style.fontFamily = 'xinwei';
+				textLoadingCards.style.fontSize = '30px';
+				textLoadingCards.style.padding = '10px';
+				textLoadingCards.style.left = 'calc(43% - 100px)';
+				textLoadingCards.style.top = 'calc(0%)';
+				textLoadingCards.style.textAlign = 'center';
+				ui.window.appendChild(textLoadingCards);
+				ui.textLoadingCards = textLoadingCards;
 
-				if (ui.buttonLoadResourcesAsync) {
-					ui.buttonLoadResourcesAsync.remove();
-					delete ui.buttonLoadResourcesAsync;
-				}
+				var timerLoadingCards = ui.create.div('.timerbar', ui.window);
+				timerLoadingCards.style.left = 'calc(43% - 50px)';
+				timerLoadingCards.style.top = 'calc(0% + 50px)';
+				var tdivLoadingCards = ui.create.div(timerLoadingCards);
+				tdivLoadingCards.style.left = '0px';
+				tdivLoadingCards.style.top = '0px';
+				var barLoadingCards = ui.create.div(timerLoadingCards);
+				barLoadingCards.style.left = '0px';
+				barLoadingCards.style.top = '0px';
+				barLoadingCards.style.transition = `0s`;
+				ui.timerLoadingCards = timerLoadingCards;
+				ui.barLoadingCards = barLoadingCards;
+				barLoadingCards.style.width = 0;
+				ui.refresh(barLoadingCards);
 
-				ui.loadResourcesAsyncStarted = true;
-				var textLoading = ui.create.div('', '加载中...');
-				textLoading.style.width = '400px';
-				textLoading.style.height = '30px';
-				textLoading.style.lineHeight = '30px';
-				textLoading.style.fontFamily = 'xinwei';
-				textLoading.style.fontSize = '30px';
-				textLoading.style.padding = '10px';
-				textLoading.style.left = 'calc(50% - 200px)';
-				textLoading.style.top = 'calc(0%)';
-				textLoading.style.textAlign = 'center';
-				ui.window.appendChild(textLoading);
-				ui.loadingtext = textLoading;
+				var tractorCard = ui.create.div('');
+				tractorCard.style.width = '90px';
+				tractorCard.style.height = '120px';
+				tractorCard.style.left = 'calc(43% - 50px)';
+				tractorCard.style.top = 'calc(0% + 70px)';
+				tractorCard.style['background-size'] = '100% 100%';
+				tractorCard.style['background-repeat'] = 'no-repeat';
+				ui.window.appendChild(tractorCard);
+				ui.tractorCard = tractorCard;
 
-				var timer = ui.create.div('.timerbar', ui.window);
-				timer.style.left = 'calc(50% - 50px)';
-				timer.style.top = 'calc(0% + 50px)';
-				var tdiv = ui.create.div(timer);
-				tdiv.style.left = '0px';
-				tdiv.style.top = '0px';
-				var bar = ui.create.div(timer);
-				bar.style.left = '0px';
-				bar.style.top = '0px';
-				bar.style.transition = `0s`;
-				ui.timerConnect = timer;
-				ui.barConnect = bar;
-				bar.style.width = 0;
-				ui.refresh(bar);
+				loadCardResources(0, 0, 0, tractorCard);
 
-				loadAudioPool();
+				var textLoadingAudio = ui.create.div('', '加载音效');
+				textLoadingAudio.style.width = '200px';
+				textLoadingAudio.style.height = '30px';
+				textLoadingAudio.style.lineHeight = '30px';
+				textLoadingAudio.style.fontFamily = 'xinwei';
+				textLoadingAudio.style.fontSize = '30px';
+				textLoadingAudio.style.padding = '10px';
+				textLoadingAudio.style.left = 'calc(57% - 100px)';
+				textLoadingAudio.style.top = 'calc(0%)';
+				textLoadingAudio.style.textAlign = 'center';
+				ui.window.appendChild(textLoadingAudio);
+				ui.textLoadingAudio = textLoadingAudio;
+
+				var timerLoadingAudio = ui.create.div('.timerbar', ui.window);
+				timerLoadingAudio.style.left = 'calc(57% - 50px)';
+				timerLoadingAudio.style.top = 'calc(0% + 50px)';
+				var tdivLoadingAudio = ui.create.div(timerLoadingAudio);
+				tdivLoadingAudio.style.left = '0px';
+				tdivLoadingAudio.style.top = '0px';
+				var barLoadingAudio = ui.create.div(timerLoadingAudio);
+				barLoadingAudio.style.left = '0px';
+				barLoadingAudio.style.top = '0px';
+				barLoadingAudio.style.transition = `0s`;
+				ui.timerLoadingAudio = timerLoadingAudio;
+				ui.barLoadingAudio = barLoadingAudio;
+				barLoadingAudio.style.width = 0;
+				ui.refresh(barLoadingAudio);
 			}
 
 			var storeCardToDataURL = function (imageObj, imageStyle, imageIndex) {
@@ -114,7 +142,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				var img = new Image();
 				img.onload = (e) => {
 					loadedCount++;
-					ui.barConnect.style.width = `${100 * ((audioResourceCount + loadedCount) / totalResourceCount)}px`
+					ui.barLoadingCards.style.width = `${100 * (loadedCount / imageResourceCount)}px`
 
 					storeCardToDataURL(img, cardsStyles[styleIndex], cardIndex);
 
@@ -124,12 +152,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						if (styleIndex < cardsBounds.length) {
 							loadCardResources(styleIndex, 0, loadedCount, tractorCard);
 						} else {
-							ui.loadingtext.remove();
-							delete ui.loadingtext;
+							ui.textLoadingCards.remove();
+							delete ui.textLoadingCards;
 							ui.tractorCard.remove();
 							delete ui.tractorCard;
-							ui.timerConnect.remove();
-							delete ui.timerConnect;
+							ui.timerLoadingCards.remove();
+							delete ui.timerLoadingCards;
 						}
 					} else {
 						loadCardResources(styleIndex, cardIndex + 1, loadedCount, tractorCard);
@@ -153,20 +181,13 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					audioTemp.src = `${lib.assetURL}audio/${value[0]}/${value[1]}.mp3`;
 					audioTemp.onloadeddata = function () {
 						loadedAudioCount++;
-						ui.barConnect.style.width = `${100 * (loadedAudioCount / totalResourceCount)}px`
+						ui.barLoadingAudio.style.width = `${100 * (loadedAudioCount / audioResourceCount)}px`
 
 						if (loadedAudioCount === audioResourceCount) {
-							var tractorCard = ui.create.div('');
-							tractorCard.style.width = '90px';
-							tractorCard.style.height = '120px';
-							tractorCard.style.left = 'calc(50% - 45px)';
-							tractorCard.style.top = 'calc(0% + 70px)';
-							tractorCard.style['background-size'] = '100% 100%';
-							tractorCard.style['background-repeat'] = 'no-repeat';
-							ui.window.appendChild(tractorCard);
-							ui.tractorCard = tractorCard;
-
-							loadCardResources(0, 0, 0, tractorCard);
+							ui.textLoadingAudio.remove();
+							delete ui.textLoadingAudio;
+							ui.timerLoadingAudio.remove();
+							delete ui.timerLoadingAudio;
 						}
 					};
 					audioTemp.addEventListener("ended", audioEndedHandler);
@@ -253,7 +274,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				ui.emailnode = nodeEmail;
 
 				var connect = function (e) {
-					loadResourcesAsync();
+					loadAudioPool();
+
 					var isEnterHallDisabled = ui.ipbutton.classList.contains('disabled');
 					var isEnterHall = e.target.innerText === '进入大厅';
 					var isDoReplay = e.target.innerText === '录像回放';
@@ -292,12 +314,6 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					game.saveConfig('last_password', nodePassword.value.trim());
 					game.saveConfig('last_email', nodeEmail.value.trim());
 				};
-
-				var buttonLoadResourcesAsync = ui.create.div('.menubutton.highlight.large.pointerdiv', '加载资源', loadResourcesAsync);
-				buttonLoadResourcesAsync.style.left = 'calc(50% - 70px)';
-				buttonLoadResourcesAsync.style.top = 'calc(0% + 10px)';
-				ui.window.appendChild(buttonLoadResourcesAsync);
-				ui.buttonLoadResourcesAsync = buttonLoadResourcesAsync;
 
 				var button = ui.create.div('.menubutton.highlight.large.pointerdiv.disabled', '进入大厅', connect);
 				button.style.left = 'calc(50% - 70px)';
@@ -447,6 +463,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				// _status.createNodeTimeout = setTimeout(createNode, 2000);
 			}
 			else {
+				loadResourcesAsync();
 				createNode();
 			}
 			if (!game.onlineKey) {
