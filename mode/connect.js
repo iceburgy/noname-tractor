@@ -11,6 +11,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var directstartmode = lib.config.directstartmode;
 			ui.create.menu(true);
 
+			ui.loadResourcesAsyncStarted = false;
+
 			var cardsStyles = ["cardsclassic", "cards", "toolbar"];
 			var cardsBounds = [54, 64, 9];
 			var totalResourceCount = 0;
@@ -53,6 +55,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var loadedAudioCount = 0;
 
 			var loadResourcesAsync = function () {
+				if (ui.loadResourcesAsyncStarted === true) return;
+
+				if (ui.buttonLoadResourcesAsync) {
+					ui.buttonLoadResourcesAsync.remove();
+					delete ui.buttonLoadResourcesAsync;
+				}
+
+				ui.loadResourcesAsyncStarted = true;
 				var textLoading = ui.create.div('', '加载中...');
 				textLoading.style.width = '400px';
 				textLoading.style.height = '30px';
@@ -282,6 +292,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					game.saveConfig('last_password', nodePassword.value.trim());
 					game.saveConfig('last_email', nodeEmail.value.trim());
 				};
+
+				var buttonLoadResourcesAsync = ui.create.div('.menubutton.highlight.large.pointerdiv', '加载资源', loadResourcesAsync);
+				buttonLoadResourcesAsync.style.left = 'calc(50% - 70px)';
+				buttonLoadResourcesAsync.style.top = 'calc(0% + 10px)';
+				ui.window.appendChild(buttonLoadResourcesAsync);
+				ui.buttonLoadResourcesAsync = buttonLoadResourcesAsync;
 
 				var button = ui.create.div('.menubutton.highlight.large.pointerdiv.disabled', '进入大厅', connect);
 				button.style.left = 'calc(50% - 70px)';
