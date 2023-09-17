@@ -63,12 +63,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				textLoadingCards.style.left = 'calc(43% - 100px)';
 				textLoadingCards.style.top = 'calc(0%)';
 				textLoadingCards.style.textAlign = 'center';
+				textLoadingCards.style.zIndex = 100;
 				ui.window.appendChild(textLoadingCards);
 				ui.textLoadingCards = textLoadingCards;
 
 				var timerLoadingCards = ui.create.div('.timerbar', ui.window);
 				timerLoadingCards.style.left = 'calc(43% - 50px)';
 				timerLoadingCards.style.top = 'calc(0% + 50px)';
+				timerLoadingCards.style.zIndex = 100;
 				var tdivLoadingCards = ui.create.div(timerLoadingCards);
 				tdivLoadingCards.style.left = '0px';
 				tdivLoadingCards.style.top = '0px';
@@ -88,6 +90,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				tractorCard.style.top = 'calc(0% + 70px)';
 				tractorCard.style['background-size'] = '100% 100%';
 				tractorCard.style['background-repeat'] = 'no-repeat';
+				tractorCard.style.zIndex = 100;
 				ui.window.appendChild(tractorCard);
 				ui.tractorCard = tractorCard;
 
@@ -103,12 +106,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				textLoadingAudio.style.left = 'calc(57% - 100px)';
 				textLoadingAudio.style.top = 'calc(0%)';
 				textLoadingAudio.style.textAlign = 'center';
+				textLoadingAudio.style.zIndex = 100;
 				ui.window.appendChild(textLoadingAudio);
 				ui.textLoadingAudio = textLoadingAudio;
 
 				var timerLoadingAudio = ui.create.div('.timerbar', ui.window);
 				timerLoadingAudio.style.left = 'calc(57% - 50px)';
 				timerLoadingAudio.style.top = 'calc(0% + 50px)';
+				timerLoadingAudio.style.zIndex = 100;
 				var tdivLoadingAudio = ui.create.div(timerLoadingAudio);
 				tdivLoadingAudio.style.left = '0px';
 				tdivLoadingAudio.style.top = '0px';
