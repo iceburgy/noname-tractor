@@ -436,16 +436,14 @@ var GameScene = /** @class */ (function () {
                 audioInfo = this.soundPool[audioName];
             }
         }
-        else if (sex) {
+        else if (typeof audioName === "number" && sex) {
+            // 杀牌音效
             audioInfo = this.soundPlayersShowCard[audioName][sex];
         }
-        else {
-            return;
+        if (audioInfo && audioInfo.length >= 2 && this.ui.audioResourceObjects.hasOwnProperty("".concat(audioInfo[0]).concat(audioInfo[1]))) {
+            this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].currentTime = 0;
+            this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].play();
         }
-        if (audioInfo.length === 0)
-            return;
-        this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].currentTime = 0;
-        this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].play();
     };
     return GameScene;
 }());

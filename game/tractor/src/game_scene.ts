@@ -542,13 +542,13 @@ export class GameScene {
             } else {
                 audioInfo = this.soundPool[audioName];
             }
-        } else if (sex) {
+        } else if (typeof audioName === "number" && sex) {
+            // 杀牌音效
             audioInfo = this.soundPlayersShowCard[audioName][sex];
-        } else {
-            return;
         }
-        if (audioInfo.length === 0) return;
-        this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].currentTime = 0;
-        this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].play();
+        if (audioInfo && audioInfo.length >= 2 && this.ui.audioResourceObjects.hasOwnProperty(`${audioInfo[0]}${audioInfo[1]}`)) {
+            this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].currentTime = 0;
+            this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].play();
+        }
     }
 }
