@@ -15,6 +15,7 @@ var RoomSetting = /** @class */ (function () {
         this.secondsToDiscardCards = 0;
         this.DisplaySignalCardInfo = false;
         this.HideOverridingFlag = false;
+        this.RandomTeamUp = false;
     }
     RoomSetting.prototype.CloneFrom = function (from) {
         this.RoomName = from.RoomName;
@@ -31,6 +32,7 @@ var RoomSetting = /** @class */ (function () {
         this.secondsToDiscardCards = from.secondsToDiscardCards;
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo;
         this.HideOverridingFlag = from.HideOverridingFlag;
+        this.RandomTeamUp = from.RandomTeamUp;
     };
     return RoomSetting;
 }());

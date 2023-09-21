@@ -1313,6 +1313,13 @@ export class MainForm {
         }
 
         if (gs.isInGameRoom()) {
+            let cbxRandomTeamUp: any = document.getElementById("cbxRandomTeamUp");
+            cbxRandomTeamUp.checked = this.tractorPlayer.CurrentRoomSetting.RandomTeamUp;
+            cbxRandomTeamUp.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.RandomTeamUp = cbxRandomTeamUp.checked;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+            };
+
             let cbxNoOverridingFlag: any = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
             cbxNoOverridingFlag.onchange = () => {

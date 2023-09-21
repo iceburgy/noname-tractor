@@ -15,6 +15,7 @@ export class RoomSetting {
     public secondsToDiscardCards: number
     public DisplaySignalCardInfo: boolean
     public HideOverridingFlag: boolean
+    public RandomTeamUp: boolean
 
     constructor() {
         this.RoomName = ""
@@ -31,6 +32,7 @@ export class RoomSetting {
         this.secondsToDiscardCards = 0
         this.DisplaySignalCardInfo = false
         this.HideOverridingFlag = false
+        this.RandomTeamUp = false
     }
     public CloneFrom(from: RoomSetting) {
         this.RoomName = from.RoomName
@@ -47,5 +49,6 @@ export class RoomSetting {
         this.secondsToDiscardCards = from.secondsToDiscardCards
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo
         this.HideOverridingFlag = from.HideOverridingFlag
+        this.RandomTeamUp = from.RandomTeamUp
     }
 }

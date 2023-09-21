@@ -223,6 +223,7 @@ export class TractorPlayer {
             }
 
             msgs.push("房间设置：")
+            msgs.push(`开启随机组队模式：${roomSetting.RandomTeamUp ? "是" : "否"}`)
             msgs.push(`关闭大牌语音及画面提示：${roomSetting.HideOverridingFlag ? "是" : "否"}`)
             msgs.push(`断线重连等待时长：${roomSetting.secondsToWaitForReenter}秒`)
             msgs.push(`出牌时限：${roomSetting.secondsToShowCards > 0 ? roomSetting.secondsToShowCards + "秒" : "不限制"}`)
