@@ -1228,6 +1228,7 @@ var MainForm = /** @class */ (function () {
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+                cbxRandomTeamUp_1.disabled = true;
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
                 selectSecondsToShowCards_1.disabled = true;

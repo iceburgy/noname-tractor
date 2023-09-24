@@ -1358,6 +1358,7 @@ export class MainForm {
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+                cbxRandomTeamUp.disabled = true;
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
                 selectSecondsToShowCards.disabled = true;
