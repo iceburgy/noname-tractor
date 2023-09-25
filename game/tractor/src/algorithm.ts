@@ -81,13 +81,19 @@ export class Algorithm {
                 allSuitCards[i]--;
             }
         }
-        //其他花色的牌先跳过对子
+        //被迫选主牌：先跳过对子，和常主
+        for (let i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
+            if (allSuitCards[i] <= 0 || allSuitCards[i] == 2 || i % 13 == currentCards.Rank || i >= 52) continue;
+            selectedCards.push(i);
+            allSuitCards[i]--;
+        }
+        //被迫选主牌跳过对子
         for (let i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
             if (allSuitCards[i] <= 0 || allSuitCards[i] == 2) continue;
             selectedCards.push(i);
             allSuitCards[i]--;
         }
-        //其他花色的牌
+        //被迫选主牌
         for (let i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
             while (allSuitCards[i] > 0 && selectedCards.length < leadingCardsCp.Count()) {
                 selectedCards.push(i);
