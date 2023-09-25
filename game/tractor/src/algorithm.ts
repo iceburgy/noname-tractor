@@ -319,6 +319,14 @@ export class Algorithm {
             selectedCards.push(goodCards[i]);
             if (selectedCards.length == 8) return;
         }
+
+        //如果副牌总共不到8张，那就埋主
+        while (selectedCards.length < 8) {
+            let minMaster: number = currentCards.GetMinMasterCards(currentCards.Trump);
+            if (minMaster >= 0) {
+                selectedCards.push(minMaster);
+            }
+        }
     }
 
     public static TryExposingTrump(availableTrump: number[], qiangliangMin: number, isFirstHand: boolean, currentPoker: CurrentPoker, fullDebug: boolean): number {

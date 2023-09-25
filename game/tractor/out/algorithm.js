@@ -301,6 +301,13 @@ export var Algorithm = /** @class */ (function () {
             if (selectedCards.length == 8)
                 return;
         }
+        //如果副牌总共不到8张，那就埋主
+        while (selectedCards.length < 8) {
+            var minMaster = currentCards.GetMinMasterCards(currentCards.Trump);
+            if (minMaster >= 0) {
+                selectedCards.push(minMaster);
+            }
+        }
     };
     Algorithm.TryExposingTrump = function (availableTrump, qiangliangMin, isFirstHand, currentPoker, fullDebug) {
         var nonJokerMaxCount = 0;
