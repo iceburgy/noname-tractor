@@ -33,19 +33,34 @@ export var Algorithm = /** @class */ (function () {
             allSuitCards[currentTractors[i]] -= 2;
             leadingPairs = CommonMethods.ArrayRemoveOneByValue(leadingPairs, currentTractors[i]);
         }
-        //对子
+        //对子：先跳过常主
         var currentPairs = currentCards.GetPairsBySuit(leadingSuit);
         for (var i = 0; i < leadingPairs.length && i < currentPairs.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (selectedCards.includes(currentPairs[i]))
+            if (allSuitCards[currentPairs[i]] <= 0 || i % 13 == currentCards.Rank || i >= 52)
                 continue;
             selectedCards.push(currentPairs[i]);
             selectedCards.push(currentPairs[i]);
             allSuitCards[currentPairs[i]] -= 2;
         }
-        //单张先跳过对子
+        //对子
+        for (var i = 0; i < leadingPairs.length && i < currentPairs.length && selectedCards.length < leadingCardsCp.Count(); i++) {
+            if (allSuitCards[currentPairs[i]] <= 0)
+                continue;
+            selectedCards.push(currentPairs[i]);
+            selectedCards.push(currentPairs[i]);
+            allSuitCards[currentPairs[i]] -= 2;
+        }
+        //单张先跳过对子、常主
         var currentSuitCards = currentCards.GetSuitCardsWithJokerAndRank(leadingSuit);
         for (var i = 0; i < currentSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (currentPairs.includes(currentSuitCards[i]) || allSuitCards[currentSuitCards[i]] <= 0)
+            if (allSuitCards[currentSuitCards[i]] <= 0 || i % 13 == currentCards.Rank || i >= 52)
+                continue;
+            selectedCards.push(currentSuitCards[i]);
+            allSuitCards[currentSuitCards[i]]--;
+        }
+        //单张先跳过对子
+        for (var i = 0; i < currentSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
+            if (allSuitCards[currentSuitCards[i]] <= 0)
                 continue;
             selectedCards.push(currentSuitCards[i]);
             allSuitCards[currentSuitCards[i]]--;
@@ -89,7 +104,16 @@ export var Algorithm = /** @class */ (function () {
             selectedCards.push(i);
             allSuitCards[i]--;
         }
-        //被迫选主牌
+        //被迫选主牌对子：先跳过常主
+        for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
+            if (i % 13 == currentCards.Rank || i >= 52)
+                continue;
+            while (allSuitCards[i] > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                selectedCards.push(i);
+                allSuitCards[i]--;
+            }
+        }
+        //被迫选主牌对子
         for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
             while (allSuitCards[i] > 0 && selectedCards.length < leadingCardsCp.Count()) {
                 selectedCards.push(i);
