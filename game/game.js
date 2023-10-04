@@ -28787,7 +28787,7 @@
 			next.func=func;
 			next.setContent('waitForPlayer');
 		},
-		countDown:function(time,onEnd,skipMoonlight){
+		countDown:function(time,onEnd,skipMoonlight,playerUI,playCountDownAudio){
 			game.timerTime=parseInt(time);
 			if(!game.timerTime) return;
 			if(game.timerTime<=0) return;
@@ -28802,6 +28802,11 @@
 				var isDone=false;
 				if(--game.timerCurrent>0){
 					ui.timer.set(game.timerCurrent,game.timerCurrent/game.timerTime);
+
+					if(playerUI&&playCountDownAudio&&game.timerCurrent<=10){
+						playerUI.popup(`【${game.timerCurrent}】`, 'water', false);
+						if(game.timerCurrent===8) playCountDownAudio();
+					}
 					// if(!game.me.mlBalance){
 					// 	game.invokePlayMoonlightAlert(game.me,game.timerCurrent);
 					// }

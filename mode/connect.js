@@ -46,6 +46,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				"enter_hall_click": ["effect", "enter_hall_click"],
 				"enter_room_kongcheng11": ["effect", "enter_room_kongcheng11"],
 				"enter_room_kongcheng12": ["effect", "enter_room_kongcheng12"],
+				"countdown_8_sec": ["effect", "countdown_8_sec"],
 			}
 			var audioResourceCount = Object.keys(ui.audioResources).length;
 			totalResourceCount += audioResourceCount;

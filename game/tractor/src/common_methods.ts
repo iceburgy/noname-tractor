@@ -135,6 +135,7 @@ export class CommonMethods {
     public static audioGameStart = "audioGameStart";
     public static audioEnterHall = "audioEnterHall";
     public static audioEnterRoom = "audioEnterRoom";
+    public static audioCountdown8Sec = "audioCountdown8Sec";
 
     public static NotifyStateType_ObservePlayerById = "ObservePlayerById";
     public static classIsSuiteAvail = "classIsSuiteAvail";

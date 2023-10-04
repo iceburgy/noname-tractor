@@ -400,6 +400,7 @@ var GameScene = /** @class */ (function () {
         this.soundPool[CommonMethods.audioWin] = this.ui.audioResources.win;
         this.soundPool[CommonMethods.audioGameStart] = this.ui.audioResources.game_start;
         this.soundPool[CommonMethods.audioEnterHall] = this.ui.audioResources.enter_hall_click;
+        this.soundPool[CommonMethods.audioCountdown8Sec] = this.ui.audioResources.countdown_8_sec;
         this.soundPool[CommonMethods.audioEnterRoom] = [
             [],
             [],
@@ -443,6 +444,25 @@ var GameScene = /** @class */ (function () {
         if (audioInfo && audioInfo.length >= 2 && this.ui.audioResourceObjects.hasOwnProperty("".concat(audioInfo[0]).concat(audioInfo[1]))) {
             this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].currentTime = 0;
             this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].play();
+        }
+    };
+    GameScene.prototype.stopAudio = function (audioName, sex) {
+        var audioInfo = [];
+        if (typeof audioName === "string") {
+            if (sex) {
+                audioInfo = this.soundPool[audioName][sex];
+            }
+            else {
+                audioInfo = this.soundPool[audioName];
+            }
+        }
+        else if (typeof audioName === "number" && sex) {
+            // 杀牌音效
+            audioInfo = this.soundPlayersShowCard[audioName][sex];
+        }
+        if (audioInfo && audioInfo.length >= 2 && this.ui.audioResourceObjects.hasOwnProperty("".concat(audioInfo[0]).concat(audioInfo[1]))) {
+            this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].currentTime = 0;
+            this.ui.audioResourceObjects["".concat(audioInfo[0]).concat(audioInfo[1])].pause();
         }
     };
     return GameScene;

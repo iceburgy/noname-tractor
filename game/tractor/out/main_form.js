@@ -3197,30 +3197,41 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.WaitForPlayer = function (timerLength, playerID) {
         var _this = this;
+        this.ClearTimer();
+        var pos = this.PlayerPosition[playerID];
+        var playerUI = undefined;
+        var onend = undefined;
+        var playCountDownAudio = function () {
+            _this.gameScene.playAudio(CommonMethods.audioCountdown8Sec);
+        };
         if (playerID === this.tractorPlayer.PlayerId) {
-            this.ClearTimer();
             this.gameScene.ui.timer.show();
-            this.gameScene.game.countDown(timerLength, function () {
+            onend = function () {
                 _this.gameScene.ui.timer.hide();
                 // if actual player, trigger robot
                 if (!_this.tractorPlayer.isObserver) {
                     _this.btnRobot_Click();
                 }
-            }, true);
+            };
+            playerUI = this.gameScene.ui.gameMe;
         }
         else {
             if (playerID in this.PlayerPosition) {
-                var pos = this.PlayerPosition[playerID];
-                var playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
+                playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
                 playerUI.showTimer(1000 * timerLength);
             }
         }
+        // 如果游戏还没进行到到庄家埋底阶段，则无需触发倒计时提示特效（切牌无需倒计时提示）
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DiscardingLast8Cards) {
+            playerUI = undefined;
+            playCountDownAudio = undefined;
+        }
+        this.gameScene.game.countDown(timerLength, onend, true, playerUI, playCountDownAudio);
     };
     MainForm.prototype.UnwaitForPlayer = function (playerID) {
-        if (playerID === this.tractorPlayer.PlayerId) {
-            this.ClearTimer();
-        }
-        else {
+        this.ClearTimer();
+        this.gameScene.stopAudio(CommonMethods.audioCountdown8Sec);
+        if (playerID !== this.tractorPlayer.PlayerId) {
             if (playerID in this.PlayerPosition) {
                 var pos = this.PlayerPosition[playerID];
                 var playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];

@@ -3426,29 +3426,41 @@ export class MainForm {
     }
 
     public WaitForPlayer(timerLength: number, playerID: string) {
+        this.ClearTimer();
+        let pos = this.PlayerPosition[playerID];
+        let playerUI: any = undefined;
+        let onend: any = undefined;
+        let playCountDownAudio: any = () => {
+            this.gameScene.playAudio(CommonMethods.audioCountdown8Sec);
+        };
         if (playerID === this.tractorPlayer.PlayerId) {
-            this.ClearTimer();
             this.gameScene.ui.timer.show();
-            this.gameScene.game.countDown(timerLength, () => {
+            onend = () => {
                 this.gameScene.ui.timer.hide();
                 // if actual player, trigger robot
                 if (!this.tractorPlayer.isObserver) {
                     this.btnRobot_Click();
                 }
-            }, true);
+            };
+            playerUI = this.gameScene.ui.gameMe;
         } else {
             if (playerID in this.PlayerPosition) {
-                let pos = this.PlayerPosition[playerID];
-                let playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
+                playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
                 playerUI.showTimer(1000 * timerLength)
             }
         }
+        // 如果游戏还没进行到到庄家埋底阶段，则无需触发倒计时提示特效（切牌无需倒计时提示）
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep < SuitEnums.HandStep.DiscardingLast8Cards) {
+            playerUI = undefined;
+            playCountDownAudio = undefined;
+        }
+        this.gameScene.game.countDown(timerLength, onend, true, playerUI, playCountDownAudio);
     }
 
     public UnwaitForPlayer(playerID: string) {
-        if (playerID === this.tractorPlayer.PlayerId) {
-            this.ClearTimer();
-        } else {
+        this.ClearTimer();
+        this.gameScene.stopAudio(CommonMethods.audioCountdown8Sec);
+        if (playerID !== this.tractorPlayer.PlayerId) {
             if (playerID in this.PlayerPosition) {
                 let pos = this.PlayerPosition[playerID];
                 let playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];

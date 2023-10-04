@@ -502,6 +502,7 @@ export class GameScene {
         this.soundPool[CommonMethods.audioWin] = this.ui.audioResources.win;
         this.soundPool[CommonMethods.audioGameStart] = this.ui.audioResources.game_start;
         this.soundPool[CommonMethods.audioEnterHall] = this.ui.audioResources.enter_hall_click;
+        this.soundPool[CommonMethods.audioCountdown8Sec] = this.ui.audioResources.countdown_8_sec;
         this.soundPool[CommonMethods.audioEnterRoom] = [
             [],
             [],
@@ -549,6 +550,24 @@ export class GameScene {
         if (audioInfo && audioInfo.length >= 2 && this.ui.audioResourceObjects.hasOwnProperty(`${audioInfo[0]}${audioInfo[1]}`)) {
             this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].currentTime = 0;
             this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].play();
+        }
+    }
+
+    public stopAudio(audioName: string | number, sex?: string | number) {
+        let audioInfo: string[] = [];
+        if (typeof audioName === "string") {
+            if (sex) {
+                audioInfo = this.soundPool[audioName][sex];
+            } else {
+                audioInfo = this.soundPool[audioName];
+            }
+        } else if (typeof audioName === "number" && sex) {
+            // 杀牌音效
+            audioInfo = this.soundPlayersShowCard[audioName][sex];
+        }
+        if (audioInfo && audioInfo.length >= 2 && this.ui.audioResourceObjects.hasOwnProperty(`${audioInfo[0]}${audioInfo[1]}`)) {
+            this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].currentTime = 0;
+            this.ui.audioResourceObjects[`${audioInfo[0]}${audioInfo[1]}`].pause();
         }
     }
 }

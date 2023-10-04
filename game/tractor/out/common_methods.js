@@ -600,6 +600,7 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.audioGameStart = "audioGameStart";
     CommonMethods.audioEnterHall = "audioEnterHall";
     CommonMethods.audioEnterRoom = "audioEnterRoom";
+    CommonMethods.audioCountdown8Sec = "audioCountdown8Sec";
     CommonMethods.NotifyStateType_ObservePlayerById = "ObservePlayerById";
     CommonMethods.classIsSuiteAvail = "classIsSuiteAvail";
     CommonMethods.classCardProcessed = "classCardProcessed";
