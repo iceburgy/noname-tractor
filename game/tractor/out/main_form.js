@@ -1219,12 +1219,6 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = selectSecondsToDiscardCards_1.value;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
-            var selectSecondsToWaitForReenter_1 = document.getElementById("selectSecondsToWaitForReenter");
-            selectSecondsToWaitForReenter_1.value = this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter;
-            selectSecondsToWaitForReenter_1.onchange = function () {
-                _this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter = selectSecondsToWaitForReenter_1.value;
-                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
-            };
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
@@ -1233,7 +1227,6 @@ var MainForm = /** @class */ (function () {
                 cbxNoSignalCard_1.disabled = true;
                 selectSecondsToShowCards_1.disabled = true;
                 selectSecondsToDiscardCards_1.disabled = true;
-                selectSecondsToWaitForReenter_1.disabled = true;
             }
             else {
                 var divRoomSettings = document.getElementById("divRoomSettings");

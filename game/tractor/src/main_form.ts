@@ -1348,13 +1348,6 @@ export class MainForm {
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
-            let selectSecondsToWaitForReenter: any = document.getElementById("selectSecondsToWaitForReenter");
-            selectSecondsToWaitForReenter.value = this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter;
-            selectSecondsToWaitForReenter.onchange = () => {
-                this.tractorPlayer.CurrentRoomSetting.secondsToWaitForReenter = selectSecondsToWaitForReenter.value;
-                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
-            };
-
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
@@ -1363,7 +1356,6 @@ export class MainForm {
                 cbxNoSignalCard.disabled = true;
                 selectSecondsToShowCards.disabled = true;
                 selectSecondsToDiscardCards.disabled = true;
-                selectSecondsToWaitForReenter.disabled = true;
             } else {
                 let divRoomSettings: any = document.getElementById("divRoomSettings");
                 divRoomSettings.style.display = "block";
