@@ -1319,6 +1319,7 @@ export class MainForm {
                 this.tractorPlayer.CurrentRoomSetting.RandomTeamUp = cbxRandomTeamUp.checked;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
+            cbxRandomTeamUp.disabled = true;
 
             let cbxNoOverridingFlag: any = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;

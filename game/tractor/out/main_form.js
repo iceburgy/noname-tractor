@@ -1195,6 +1195,7 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.RandomTeamUp = cbxRandomTeamUp_1.checked;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
+            cbxRandomTeamUp_1.disabled = true;
             var cbxNoOverridingFlag_1 = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag_1.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
             cbxNoOverridingFlag_1.onchange = function () {
