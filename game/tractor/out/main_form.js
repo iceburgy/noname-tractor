@@ -1189,13 +1189,6 @@ var MainForm = /** @class */ (function () {
             }
         };
         if (gs.isInGameRoom()) {
-            var cbxRandomTeamUp_1 = document.getElementById("cbxRandomTeamUp");
-            cbxRandomTeamUp_1.checked = this.tractorPlayer.CurrentRoomSetting.RandomTeamUp;
-            cbxRandomTeamUp_1.onchange = function () {
-                _this.tractorPlayer.CurrentRoomSetting.RandomTeamUp = cbxRandomTeamUp_1.checked;
-                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
-            };
-            cbxRandomTeamUp_1.disabled = true;
             var cbxNoOverridingFlag_1 = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag_1.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
             cbxNoOverridingFlag_1.onchange = function () {
@@ -1223,7 +1216,6 @@ var MainForm = /** @class */ (function () {
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
-                cbxRandomTeamUp_1.disabled = true;
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
                 selectSecondsToShowCards_1.disabled = true;

@@ -1313,14 +1313,6 @@ export class MainForm {
         }
 
         if (gs.isInGameRoom()) {
-            let cbxRandomTeamUp: any = document.getElementById("cbxRandomTeamUp");
-            cbxRandomTeamUp.checked = this.tractorPlayer.CurrentRoomSetting.RandomTeamUp;
-            cbxRandomTeamUp.onchange = () => {
-                this.tractorPlayer.CurrentRoomSetting.RandomTeamUp = cbxRandomTeamUp.checked;
-                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
-            };
-            cbxRandomTeamUp.disabled = true;
-
             let cbxNoOverridingFlag: any = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
             cbxNoOverridingFlag.onchange = () => {
@@ -1352,7 +1344,6 @@ export class MainForm {
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
-                cbxRandomTeamUp.disabled = true;
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
                 selectSecondsToShowCards.disabled = true;
