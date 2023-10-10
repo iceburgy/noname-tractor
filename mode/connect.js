@@ -172,18 +172,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				img.src = imgURL;
 			}
 
-			function audioEndedHandler(e) {
-				if (e.target.muted === true) {
-					e.target.muted = false;
-				}
-				e.target.removeEventListener("ended", audioEndedHandler);
-			}
-
 			var loadAudioPool = function () {
 				for (const [key, value] of Object.entries(ui.audioResources)) {
 					var audioTemp = document.createElement('audio');
 					audioTemp.volume = lib.config.volumn_audio / 8;
-					audioTemp.muted = true;
 					audioTemp.src = `${lib.assetURL}audio/${value[0]}/${value[1]}.mp3`;
 					audioTemp.onloadeddata = function () {
 						loadedAudioCount++;
@@ -196,9 +188,11 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							delete ui.timerLoadingAudio;
 						}
 					};
-					audioTemp.addEventListener("ended", audioEndedHandler);
+					audioTemp.muted = true;
 					audioTemp.currentTime = 0;
 					audioTemp.play();
+					audioTemp.pause();
+					audioTemp.muted = false;
 					ui.audioResourceObjects[`${value[0]}${value[1]}`] = audioTemp;
 				}
 			}
