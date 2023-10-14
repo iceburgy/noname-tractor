@@ -190,7 +190,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					};
 					audioTemp.muted = true;
 					audioTemp.currentTime = 0;
-					audioTemp.play();
+					audioTemp.play().catch((e) => { });
 					audioTemp.pause();
 					audioTemp.muted = false;
 					ui.audioResourceObjects[`${value[0]}${value[1]}`] = audioTemp;
