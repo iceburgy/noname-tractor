@@ -1873,7 +1873,8 @@ var MainForm = /** @class */ (function () {
             }
         }
         // room name
-        var roomNameText = this.gameScene.ui.create.div('.roomNameText', '', this.gameScene.ui.frameGameRoom);
+        var roomNameString = "\u623F\u95F4\uFF1A".concat(this.tractorPlayer.CurrentRoomSetting.RoomName);
+        var roomNameText = this.gameScene.ui.create.div('.roomNameText', roomNameString, this.gameScene.ui.frameGameRoom);
         roomNameText.style.fontFamily = 'serif';
         roomNameText.style.fontSize = '20px';
         roomNameText.style.color = 'orange';
@@ -1882,7 +1883,8 @@ var MainForm = /** @class */ (function () {
         roomNameText.style.top = "calc(0px)";
         this.gameScene.ui.roomNameText = roomNameText;
         // room owner
-        var roomOwnerText = this.gameScene.ui.create.div('.roomOwnerText', '', this.gameScene.ui.frameGameRoom);
+        var roomOwnerString = "\u623F\u4E3B\uFF1A".concat(this.tractorPlayer.CurrentRoomSetting.RoomOwner);
+        var roomOwnerText = this.gameScene.ui.create.div('.roomOwnerText', roomOwnerString, this.gameScene.ui.frameGameRoom);
         roomOwnerText.style.fontFamily = 'serif';
         roomOwnerText.style.fontSize = '20px';
         roomOwnerText.style.color = 'orange';

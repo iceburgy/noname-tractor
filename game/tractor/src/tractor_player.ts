@@ -201,14 +201,13 @@ export class TractorPlayer {
     }
 
     public NotifyRoomSetting(roomSetting: RoomSetting, showMessage: boolean) {
-        if (!this.mainForm.gameScene.ui.frameGameRoom) {
-            this.mainForm.drawGameRoom();
-        }
-
         this.CurrentRoomSetting = roomSetting;
 
-        (this.mainForm.gameScene.ui.roomNameText as any).innerHTML = `房间：${roomSetting.RoomName}`;
-        (this.mainForm.gameScene.ui.roomOwnerText as any).innerHTML = `房主：${roomSetting.RoomOwner}`;
+        if (this.mainForm.gameScene.ui.roomNameText
+            && this.mainForm.gameScene.ui.roomOwnerText) {
+            (this.mainForm.gameScene.ui.roomNameText as any).innerHTML = `房间：${roomSetting.RoomName}`;
+            (this.mainForm.gameScene.ui.roomOwnerText as any).innerHTML = `房主：${roomSetting.RoomOwner}`;
+        }
 
         if (showMessage) {
             var msgs = []
