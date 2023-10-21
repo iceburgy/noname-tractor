@@ -3419,9 +3419,8 @@ export class MainForm {
         let playCountDownAudio: any = () => {
             this.gameScene.playAudio(CommonMethods.audioCountdown8Sec);
         };
-        let isMe: boolean
+        let isSomeoneElse: boolean = false;
         if (playerID === this.tractorPlayer.PlayerId) {
-            isMe = true;
             this.gameScene.ui.timer.show();
             onend = () => {
                 this.gameScene.ui.timer.hide();
@@ -3432,8 +3431,8 @@ export class MainForm {
             };
             playerUI = this.gameScene.ui.gameMe;
         } else {
-            isMe = false;
             if (playerID in this.PlayerPosition) {
+                isSomeoneElse = true;
                 playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
                 playerUI.showTimer(1000 * timerLength)
             }
@@ -3443,7 +3442,7 @@ export class MainForm {
             playerUI = undefined;
             playCountDownAudio = undefined;
         }
-        this.gameScene.game.countDown(timerLength, onend, true, playerUI, playCountDownAudio, isMe);
+        this.gameScene.game.countDown(timerLength, onend, true, playerUI, playCountDownAudio, isSomeoneElse);
     }
 
     public UnwaitForPlayer(playerID: string) {

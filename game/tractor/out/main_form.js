@@ -3192,9 +3192,8 @@ var MainForm = /** @class */ (function () {
         var playCountDownAudio = function () {
             _this.gameScene.playAudio(CommonMethods.audioCountdown8Sec);
         };
-        var isMe;
+        var isSomeoneElse = false;
         if (playerID === this.tractorPlayer.PlayerId) {
-            isMe = true;
             this.gameScene.ui.timer.show();
             onend = function () {
                 _this.gameScene.ui.timer.hide();
@@ -3206,8 +3205,8 @@ var MainForm = /** @class */ (function () {
             playerUI = this.gameScene.ui.gameMe;
         }
         else {
-            isMe = false;
             if (playerID in this.PlayerPosition) {
+                isSomeoneElse = true;
                 playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
                 playerUI.showTimer(1000 * timerLength);
             }
@@ -3217,7 +3216,7 @@ var MainForm = /** @class */ (function () {
             playerUI = undefined;
             playCountDownAudio = undefined;
         }
-        this.gameScene.game.countDown(timerLength, onend, true, playerUI, playCountDownAudio, isMe);
+        this.gameScene.game.countDown(timerLength, onend, true, playerUI, playCountDownAudio, isSomeoneElse);
     };
     MainForm.prototype.UnwaitForPlayer = function (playerID) {
         this.ClearTimer();

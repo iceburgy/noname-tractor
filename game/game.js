@@ -28787,12 +28787,12 @@
 			next.func=func;
 			next.setContent('waitForPlayer');
 		},
-		countDown:function(time,onEnd,skipMoonlight,playerUI,playCountDownAudio,isMe){
+		countDown:function(time,onEnd,skipMoonlight,playerUI,playCountDownAudio,isSomeoneElse){
 			game.timerTime=parseInt(time);
 			if(!game.timerTime) return;
 			if(game.timerTime<=0) return;
 			game.timerCurrent=game.timerTime;
-			if(isMe) ui.timer.set(game.timerCurrent,1);
+			if(!isSomeoneElse) ui.timer.set(game.timerCurrent,1);
 			// if(!game.me.mlBalance){
 			// 	game.invokePlayMoonlightAlert(game.me,game.timerCurrent);
 			// }
