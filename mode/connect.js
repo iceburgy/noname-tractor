@@ -86,7 +86,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 				var tractorCard = ui.create.div('');
 				tractorCard.style.width = '90px';
-				tractorCard.style.height = '120px';
+				// tractorCard.style.height = '120px';
 				tractorCard.style.left = 'calc(43% - 50px)';
 				tractorCard.style.top = 'calc(0% + 70px)';
 				tractorCard.style['background-size'] = '100% 100%';

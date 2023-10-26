@@ -8193,10 +8193,10 @@
 			reset:function(){
 				if(window.inSplash) return;
 				if(window.resetExtension){
-					if(confirm('游戏似乎未正常载入，是否禁用扩展并重新打开？')){
-						// window.resetExtension();
-						window.location.reload();
-					}
+					// if(confirm('游戏似乎未正常载入，是否禁用扩展并重新打开？')){
+					// 	// window.resetExtension();
+					// 	window.location.reload();
+					// }
 				}
 				else{
 					if(lib.device){
