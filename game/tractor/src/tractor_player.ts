@@ -201,6 +201,10 @@ export class TractorPlayer {
     }
 
     public NotifyRoomSetting(roomSetting: RoomSetting, showMessage: boolean) {
+        if (this.IsTryingReenter) {
+            this.mainForm.drawGameRoom();
+        }
+
         this.CurrentRoomSetting = roomSetting;
 
         if (this.mainForm.gameScene.ui.roomNameText

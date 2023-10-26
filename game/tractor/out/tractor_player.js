@@ -165,6 +165,9 @@ var TractorPlayer = /** @class */ (function () {
         }
     };
     TractorPlayer.prototype.NotifyRoomSetting = function (roomSetting, showMessage) {
+        if (this.IsTryingReenter) {
+            this.mainForm.drawGameRoom();
+        }
         this.CurrentRoomSetting = roomSetting;
         if (this.mainForm.gameScene.ui.roomNameText
             && this.mainForm.gameScene.ui.roomOwnerText) {
