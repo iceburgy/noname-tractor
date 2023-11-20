@@ -501,7 +501,7 @@ var MainForm = /** @class */ (function () {
         if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCards) {
             this.gameScene.playAudio(CommonMethods.audioDraw);
         }
-        this.drawingFormHelper.IGetCard();
+        this.drawingFormHelper.IGetCard(cardNumber);
         //托管代打：亮牌
         var shengbi = 0;
         if (this.DaojuInfo && this.DaojuInfo.daojuInfoByPlayer && this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId]) {

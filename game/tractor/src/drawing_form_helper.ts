@@ -28,12 +28,14 @@ export class DrawingFormHelper {
         this.suitSequence = 0
     }
 
-    public IGetCard() {
+    public IGetCard(cardNumber: number) {
         this.skipCheckCardImages = true;
         // this.destroyAllCards()
         this.resetAllCards();
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
-        this.reDrawToolbar(true);
+
+        let skipDestroy = (cardNumber !== 53 || this.mainForm.tractorPlayer.CurrentPoker.RedJoker() !== 2);
+        this.reDrawToolbar(skipDestroy);
     }
 
     // drawing cards without any tilt

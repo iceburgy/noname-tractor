@@ -17,12 +17,13 @@ var DrawingFormHelper = /** @class */ (function () {
         this.mainForm = mf;
         this.suitSequence = 0;
     }
-    DrawingFormHelper.prototype.IGetCard = function () {
+    DrawingFormHelper.prototype.IGetCard = function (cardNumber) {
         this.skipCheckCardImages = true;
         // this.destroyAllCards()
         this.resetAllCards();
         this.DrawHandCardsByPosition(1, this.mainForm.tractorPlayer.CurrentPoker, 1, SuitEnums.Suit.Joker);
-        this.reDrawToolbar(true);
+        var skipDestroy = (cardNumber !== 53 || this.mainForm.tractorPlayer.CurrentPoker.RedJoker() !== 2);
+        this.reDrawToolbar(skipDestroy);
     };
     // drawing cards without any tilt
     DrawingFormHelper.prototype.ResortMyHandCards = function (destroy) {

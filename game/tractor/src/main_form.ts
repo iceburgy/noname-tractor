@@ -570,7 +570,7 @@ export class MainForm {
             this.gameScene.playAudio(CommonMethods.audioDraw);
         }
 
-        this.drawingFormHelper.IGetCard();
+        this.drawingFormHelper.IGetCard(cardNumber);
 
         //托管代打：亮牌
         let shengbi = 0
