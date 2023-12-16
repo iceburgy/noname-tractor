@@ -1431,23 +1431,28 @@ export class MainForm {
     private handleSelectPresetMsgsClick(selectPresetMsgs: any) {
         if (this.selectPresetMsgsIsOpen) {
             this.selectPresetMsgsIsOpen = false;
-            let selectedIndex = selectPresetMsgs.selectedIndex;
-            let selectedValue = selectPresetMsgs.value;
-            let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-            this.sendEmojiWithCheck(args)
+            this.sendPresetMsgs(selectPresetMsgs);
         } else {
             this.selectPresetMsgsIsOpen = true;
         }
     }
 
+    private sendPresetMsgs(selectPresetMsgs: any) {
+        let selectedIndex = selectPresetMsgs.selectedIndex;
+        let selectedValue = selectPresetMsgs.value;
+        let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
+        this.sendEmojiWithCheck(args);
+    }
+
     private emojiSubmitEventhandler() {
         let emojiType = -1;
         let emojiIndex = -1;
-        let msgString = this.gameScene.ui.textAreaChatMsg.value;
-        if (msgString) {
-            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
-        }
-        this.gameScene.ui.textAreaChatMsg.value = "";
+        let msgString = "";
+        // let msgString = this.gameScene.ui.textAreaChatMsg.value;
+        // if (msgString) {
+        //     msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
+        // }
+        // this.gameScene.ui.textAreaChatMsg.value = "";
         if (!msgString) {
             msgString = this.gameScene.ui.selectPresetMsgs.value;
             emojiType = this.gameScene.ui.selectPresetMsgs.selectedIndex;
@@ -1944,12 +1949,15 @@ export class MainForm {
 
         let divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.bottom = 'calc(100px + 3em)';
+        // divChatHistory.style.bottom = 'calc(100px + 3em)';
+        divChatHistory.style.bottom = 'calc(90px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
 
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.bottom = 'calc(50px + 3em + 20px)';
+        // selectChatPresetMsgs.style.bottom = 'calc(50px + 3em + 20px)';
+        selectChatPresetMsgs.style.bottom = 'calc(50px)';
         selectChatPresetMsgs.style.height = 'calc(30px)';
+        selectChatPresetMsgs.style.width = 'calc(100% - 55px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(selectChatPresetMsgs);
         this.gameScene.ui.selectPresetMsgs = selectChatPresetMsgs;
@@ -1965,22 +1973,34 @@ export class MainForm {
             this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
         });
 
-        var textAreaChatMsg = document.createElement("textarea");
-        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = `每条消息消耗【聊天卡】（优先触发）或者【升币】x${CommonMethods.chatMessageCost}，消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
-        textAreaChatMsg.style.resize = 'none';
-        textAreaChatMsg.style.height = '3em';
-        textAreaChatMsg.style.bottom = 'calc(50px)';
-        textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
-        frameChat.appendChild(textAreaChatMsg);
-        this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
-        textAreaChatMsg.addEventListener('focus', () => {
-            if (!this.gameScene.chatMessageCostNoted) {
-                alert(`每次发言消耗【升币】x${CommonMethods.chatMessageCost}，余额不足时无法发言，快捷语除外`);
-                this.gameScene.chatMessageCostNoted = true;
-                this.gameScene.game.saveConfig("chatMessageCostNoted", true);
-            }
-        });
+        let btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', () => this.sendPresetMsgs(selectChatPresetMsgs));
+        btnSendChat.style.bottom = 'calc(50px)';
+        btnSendChat.style.height = 'calc(18px)';
+        btnSendChat.style.width = 'calc(40px)';
+        btnSendChat.style.right = 'calc(0px)';
+        btnSendChat.style.paddingTop = '6px';
+        btnSendChat.style.paddingBottom = '6px';
+        btnSendChat.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
+
+        frameChat.appendChild(btnSendChat);
+        this.gameScene.ui.btnSendChat = btnSendChat;
+
+        // var textAreaChatMsg = document.createElement("textarea");
+        // textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
+        // textAreaChatMsg.placeholder = `每条消息消耗【聊天卡】（优先触发）或者【升币】x${CommonMethods.chatMessageCost}，消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
+        // textAreaChatMsg.style.resize = 'none';
+        // textAreaChatMsg.style.height = '3em';
+        // textAreaChatMsg.style.bottom = 'calc(50px)';
+        // textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
+        // frameChat.appendChild(textAreaChatMsg);
+        // this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
+        // textAreaChatMsg.addEventListener('focus', () => {
+        //     if (!this.gameScene.chatMessageCostNoted) {
+        //         alert(`每次发言消耗【升币】x${CommonMethods.chatMessageCost}，余额不足时无法发言，快捷语除外`);
+        //         this.gameScene.chatMessageCostNoted = true;
+        //         this.gameScene.game.saveConfig("chatMessageCostNoted", true);
+        //     }
+        // });
     }
 
     public drawGameRoom() {
