@@ -2219,10 +2219,12 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.drawGameMe = function () {
         this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
         this.gameScene.ui.gameMe.style.zIndex = CommonMethods.zIndexGameMe;
-        var skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
-        var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
-        var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
-        this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+        if (!this.tractorPlayer.isObserver) {
+            var skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
+            var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+            var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
+            this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+        }
     };
     MainForm.prototype.drawHandZone = function () {
         this.gameScene.ui.create.me(); // creates ui.me, which is hand zone

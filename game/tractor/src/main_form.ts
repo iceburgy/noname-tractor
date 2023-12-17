@@ -2411,10 +2411,12 @@ export class MainForm {
     private drawGameMe() {
         this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
         this.gameScene.ui.gameMe.style.zIndex = CommonMethods.zIndexGameMe;
-        let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
-        let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
-        let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
-        this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+        if (!this.tractorPlayer.isObserver) {
+            let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
+            let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
+            let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
+            this.SetAvatarImage(false, this.gameScene, 0, skinTypeMe, skinURL, this.gameScene.ui.gameMe, this.gameScene.coordinates.cardHeight);
+        }
     }
 
     private drawHandZone() {
