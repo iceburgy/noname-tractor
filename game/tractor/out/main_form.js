@@ -1318,12 +1318,11 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.emojiSubmitEventhandler = function () {
         var emojiType = -1;
         var emojiIndex = -1;
-        var msgString = "";
-        // let msgString = this.gameScene.ui.textAreaChatMsg.value;
-        // if (msgString) {
-        //     msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
-        // }
-        // this.gameScene.ui.textAreaChatMsg.value = "";
+        var msgString = this.gameScene.ui.textAreaChatMsg.value;
+        if (msgString) {
+            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
+        }
+        this.gameScene.ui.textAreaChatMsg.value = "";
         if (!msgString) {
             msgString = this.gameScene.ui.selectPresetMsgs.value;
             emojiType = this.gameScene.ui.selectPresetMsgs.selectedIndex;
@@ -1786,12 +1785,10 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
         var divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        // divChatHistory.style.bottom = 'calc(100px + 3em)';
-        divChatHistory.style.bottom = 'calc(90px)';
+        divChatHistory.style.bottom = 'calc(100px + 3em)';
         this.gameScene.ui.divChatHistory = divChatHistory;
         var selectChatPresetMsgs = document.createElement("select");
-        // selectChatPresetMsgs.style.bottom = 'calc(50px + 3em + 20px)';
-        selectChatPresetMsgs.style.bottom = 'calc(50px)';
+        selectChatPresetMsgs.style.bottom = 'calc(50px + 3em + 20px)';
         selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.style.width = 'calc(100% - 55px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
@@ -1809,7 +1806,7 @@ var MainForm = /** @class */ (function () {
             _this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
         });
         var btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', function () { return _this.sendPresetMsgs(selectChatPresetMsgs); });
-        btnSendChat.style.bottom = 'calc(50px)';
+        btnSendChat.style.bottom = 'calc(50px + 3em + 20px - 8px)';
         btnSendChat.style.height = 'calc(18px)';
         btnSendChat.style.width = 'calc(40px)';
         btnSendChat.style.right = 'calc(0px)';
@@ -1818,22 +1815,22 @@ var MainForm = /** @class */ (function () {
         btnSendChat.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(btnSendChat);
         this.gameScene.ui.btnSendChat = btnSendChat;
-        // var textAreaChatMsg = document.createElement("textarea");
-        // textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        // textAreaChatMsg.placeholder = `每条消息消耗【聊天卡】（优先触发）或者【升币】x${CommonMethods.chatMessageCost}，消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
-        // textAreaChatMsg.style.resize = 'none';
-        // textAreaChatMsg.style.height = '3em';
-        // textAreaChatMsg.style.bottom = 'calc(50px)';
-        // textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
-        // frameChat.appendChild(textAreaChatMsg);
-        // this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
-        // textAreaChatMsg.addEventListener('focus', () => {
-        //     if (!this.gameScene.chatMessageCostNoted) {
-        //         alert(`每次发言消耗【升币】x${CommonMethods.chatMessageCost}，余额不足时无法发言，快捷语除外`);
-        //         this.gameScene.chatMessageCostNoted = true;
-        //         this.gameScene.game.saveConfig("chatMessageCostNoted", true);
-        //     }
-        // });
+        var textAreaChatMsg = document.createElement("textarea");
+        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
+        textAreaChatMsg.placeholder = "\u6BCF\u6761\u6D88\u606F\u6D88\u8017\u3010\u804A\u5929\u5361\u3011\uFF08\u4F18\u5148\u89E6\u53D1\uFF09\u6216\u8005\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7").concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u6D88\u606F\u4E3A\u7A7A\u65F6\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\u5F53\u524D\u9009\u4E2D\u7684\u5FEB\u6377\u6D88\u606F\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57/\u5B57\u6BCD\u952E");
+        textAreaChatMsg.style.resize = 'none';
+        textAreaChatMsg.style.height = '3em';
+        textAreaChatMsg.style.bottom = 'calc(50px)';
+        textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
+        frameChat.appendChild(textAreaChatMsg);
+        this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
+        textAreaChatMsg.addEventListener('focus', function () {
+            if (!_this.gameScene.chatMessageCostNoted) {
+                alert("\u6BCF\u6B21\u53D1\u8A00\u6D88\u8017\u3010\u5347\u5E01\u3011x".concat(CommonMethods.chatMessageCost, "\uFF0C\u4F59\u989D\u4E0D\u8DB3\u65F6\u65E0\u6CD5\u53D1\u8A00\uFF0C\u5FEB\u6377\u8BED\u9664\u5916"));
+                _this.gameScene.chatMessageCostNoted = true;
+                _this.gameScene.game.saveConfig("chatMessageCostNoted", true);
+            }
+        });
     };
     MainForm.prototype.drawGameRoom = function () {
         var _this = this;
