@@ -178,8 +178,8 @@ var TractorPlayer = /** @class */ (function () {
             var msgs = [];
             if (roomSetting.DisplaySignalCardInfo) {
                 msgs.push("信号牌机制声明：");
-                msgs.push("8、9、J、Q代表本门有进手张");
-                msgs.push("级牌调主代表寻求对家帮忙清主");
+                msgs.push("一方出A，同伴出8、9、J、Q代表有另一张A");
+                msgs.push("使用常主调主表示寻求对家帮忙清主");
                 msgs.push("");
             }
             else {
