@@ -3453,7 +3453,7 @@ export class MainForm {
             if (playerID in this.PlayerPosition) {
                 isSomeoneElse = true;
                 playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
-                playerUI.showTimer(1000 * timerLength)
+                if (playerUI) playerUI.showTimer(1000 * timerLength)
             }
         }
         // 如果游戏还没进行到到庄家埋底阶段，则无需触发倒计时提示特效（切牌无需倒计时提示）
