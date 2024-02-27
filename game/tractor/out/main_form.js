@@ -1905,7 +1905,7 @@ var MainForm = /** @class */ (function () {
         roomNameText.style.top = "calc(0px)";
         this.gameScene.ui.roomNameText = roomNameText;
         // room owner
-        var roomOwnerString = "\u623F\u4E3B\uFF1A".concat(this.tractorPlayer.CurrentRoomSetting.RoomOwner);
+        var roomOwnerString = "\u623F\u4E3B\uFF1A".concat(this.gameScene.hidePlayerID ? "" : this.tractorPlayer.CurrentRoomSetting.RoomOwner);
         var roomOwnerText = this.gameScene.ui.create.div('.roomOwnerText', roomOwnerString, this.gameScene.ui.frameGameRoom);
         roomOwnerText.style.fontFamily = 'serif';
         roomOwnerText.style.fontSize = '20px';

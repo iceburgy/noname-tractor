@@ -210,7 +210,7 @@ export class TractorPlayer {
         if (this.mainForm.gameScene.ui.roomNameText
             && this.mainForm.gameScene.ui.roomOwnerText) {
             (this.mainForm.gameScene.ui.roomNameText as any).innerHTML = `房间：${roomSetting.RoomName}`;
-            (this.mainForm.gameScene.ui.roomOwnerText as any).innerHTML = `房主：${roomSetting.RoomOwner}`;
+            (this.mainForm.gameScene.ui.roomOwnerText as any).innerHTML = `房主：${this.mainForm.gameScene.hidePlayerID ? "" : roomSetting.RoomOwner}`;
         }
 
         if (showMessage) {

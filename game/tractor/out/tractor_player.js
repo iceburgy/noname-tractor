@@ -172,7 +172,7 @@ var TractorPlayer = /** @class */ (function () {
         if (this.mainForm.gameScene.ui.roomNameText
             && this.mainForm.gameScene.ui.roomOwnerText) {
             this.mainForm.gameScene.ui.roomNameText.innerHTML = "\u623F\u95F4\uFF1A".concat(roomSetting.RoomName);
-            this.mainForm.gameScene.ui.roomOwnerText.innerHTML = "\u623F\u4E3B\uFF1A".concat(roomSetting.RoomOwner);
+            this.mainForm.gameScene.ui.roomOwnerText.innerHTML = "\u623F\u4E3B\uFF1A".concat(this.mainForm.gameScene.hidePlayerID ? "" : roomSetting.RoomOwner);
         }
         if (showMessage) {
             var msgs = [];

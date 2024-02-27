@@ -1071,8 +1071,8 @@ export class DrawingFormHelper {
         let starter = this.mainForm.tractorPlayer.CurrentHandState.Starter
         if (starter) {
             let isMyTeamStarter = this.mainForm.PlayerPosition[starter] % 2 == 1
-            if (isMyTeamStarter) meStarterString = `，做庄：${starter}`
-            else opStarterString = `，做庄：${starter}`
+            if (isMyTeamStarter) meStarterString = `，做庄：${this.mainForm.gameScene.hidePlayerID ? "" : starter}`
+            else opStarterString = `，做庄：${this.mainForm.gameScene.hidePlayerID ? "" : starter}`
         }
 
         let meString = `我方：${meRank}${meStarterString}`
@@ -1105,7 +1105,7 @@ export class DrawingFormHelper {
             trumpMakerString = trumpMaker
             trumpIndex = this.mainForm.tractorPlayer.CurrentHandState.Trump
         }
-        let exposerString = `亮牌：${trumpMakerString}`
+        let exposerString = `亮牌：${this.mainForm.gameScene.hidePlayerID ? "" : trumpMakerString}`
 
         var sidebarTrumpText = this.mainForm.gameScene.ui.create.div('.sidebarTrumpText', exposerString, this.mainForm.gameScene.ui.frameGameRoom);
         sidebarTrumpText.style.fontFamily = 'serif';

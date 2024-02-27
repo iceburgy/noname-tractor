@@ -1007,9 +1007,9 @@ var DrawingFormHelper = /** @class */ (function () {
         if (starter) {
             var isMyTeamStarter = this.mainForm.PlayerPosition[starter] % 2 == 1;
             if (isMyTeamStarter)
-                meStarterString = "\uFF0C\u505A\u5E84\uFF1A".concat(starter);
+                meStarterString = "\uFF0C\u505A\u5E84\uFF1A".concat(this.mainForm.gameScene.hidePlayerID ? "" : starter);
             else
-                opStarterString = "\uFF0C\u505A\u5E84\uFF1A".concat(starter);
+                opStarterString = "\uFF0C\u505A\u5E84\uFF1A".concat(this.mainForm.gameScene.hidePlayerID ? "" : starter);
         }
         var meString = "\u6211\u65B9\uFF1A".concat(meRank).concat(meStarterString);
         var opString = "\u5BF9\u65B9\uFF1A".concat(opRank).concat(opStarterString);
@@ -1039,7 +1039,7 @@ var DrawingFormHelper = /** @class */ (function () {
             trumpMakerString = trumpMaker;
             trumpIndex = this.mainForm.tractorPlayer.CurrentHandState.Trump;
         }
-        var exposerString = "\u4EAE\u724C\uFF1A".concat(trumpMakerString);
+        var exposerString = "\u4EAE\u724C\uFF1A".concat(this.mainForm.gameScene.hidePlayerID ? "" : trumpMakerString);
         var sidebarTrumpText = this.mainForm.gameScene.ui.create.div('.sidebarTrumpText', exposerString, this.mainForm.gameScene.ui.frameGameRoom);
         sidebarTrumpText.style.fontFamily = 'serif';
         sidebarTrumpText.style.fontSize = '20px';
