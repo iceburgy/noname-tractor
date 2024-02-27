@@ -65,6 +65,7 @@ export class GameScene {
     public noChat: boolean = false;
     public useCardUIStyleClassic: boolean = false;
     public noDanmu!: string
+    public hidePlayerID: boolean = false;
     public noTouchDevice!: string
     public noCutCards!: string
     public yesDragSelect!: string
@@ -126,6 +127,7 @@ export class GameScene {
         this.danmuMessages = [];
         this.noDongtu = "false";
         this.useCardUIStyleClassic = (this.lib && this.lib.config && this.lib.config.useCardUIStyleClassic) ? this.lib.config.useCardUIStyleClassic : false;
+        this.hidePlayerID = (this.lib && this.lib.config && this.lib.config.hidePlayerID) ? this.lib.config.hidePlayerID : false;
         this.noDanmu = (this.lib && this.lib.config && this.lib.config.noDanmu) ? this.lib.config.noDanmu : "false";
         this.noTouchDevice = (this.lib && this.lib.config && this.lib.config.noTouchDevice) ? this.lib.config.noTouchDevice : "false";
         this.noCutCards = (this.lib && this.lib.config && this.lib.config.noCutCards) ? this.lib.config.noCutCards : "false";

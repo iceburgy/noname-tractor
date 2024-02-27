@@ -474,6 +474,8 @@ export class TractorPlayer {
     }
 
     public NotifyMessage(msgs: string[]) {
+        if (this.mainForm.gameScene.hidePlayerID) return;
+
         if (msgs == null || msgs.length == 0) {
             return
         }

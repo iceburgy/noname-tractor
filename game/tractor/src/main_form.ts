@@ -309,7 +309,7 @@ export class MainForm {
                         this.SetAvatarImage(false, this.gameScene, i, skinType, skinURL, playerUI, this.gameScene.coordinates.cardHeight, this.SetObText, p);
                     }
                     else {
-                        this.gameScene.ui.gameMe.node.nameol.innerHTML = this.tractorPlayer.PlayerId;
+                        this.gameScene.ui.gameMe.node.nameol.innerHTML = this.gameScene.hidePlayerID ? "" : this.tractorPlayer.PlayerId;
                         let skinInUseMe = this.tractorPlayer.isObserver ? skinInUse : this.gameScene.skinInUse;
                         let skinTypeMe = this.GetSkinType(skinInUseMe);
                         let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
@@ -362,6 +362,7 @@ export class MainForm {
     }
 
     private SetObText(p: PlayerEntity, i: number, gs: GameScene, skinWid: number) {
+        if (gs.hidePlayerID) return;
         if (p.Observers && p.Observers.length > 0) {
             var obNameText = "";
             let tempWidOb = 0;
@@ -520,7 +521,7 @@ export class MainForm {
         this.tractorPlayer.PlayerId = this.tractorPlayer.MyOwnId;
         this.tractorPlayer.isObserver = false;
         if (this.gameScene.ui.gameMe) {
-            this.gameScene.ui.gameMe.node.nameol.innerHTML = this.tractorPlayer.MyOwnId;
+            this.gameScene.ui.gameMe.node.nameol.innerHTML = this.gameScene.hidePlayerID ? "" : this.tractorPlayer.MyOwnId;
             let skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
             let skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
             let skinURL = `image/tractor/skin/${this.gameScene.skinInUse}.${skinExtentionMe}`;
@@ -1177,6 +1178,13 @@ export class MainForm {
         noDanmu.onchange = () => {
             gs.noDanmu = noDanmu.checked.toString();
             gs.game.saveConfig("noDanmu", gs.noDanmu);
+        }
+
+        let cbxHidePlayerID: any = document.getElementById("cbxHidePlayerID");
+        cbxHidePlayerID.checked = gs.hidePlayerID;
+        cbxHidePlayerID.onchange = () => {
+            gs.hidePlayerID = cbxHidePlayerID.checked;
+            gs.game.saveConfig("hidePlayerID", gs.hidePlayerID);
         }
 
         let cbxCutCards: any = document.getElementById("cbxCutCards")
@@ -2434,7 +2442,7 @@ export class MainForm {
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
         playerDiv.node.avatar.show();
 
-        playerDiv.node.nameol.innerHTML = playerId;
+        playerDiv.node.nameol.innerHTML = this.gameScene.hidePlayerID ? "" : playerId;
         return playerDiv;
     }
 

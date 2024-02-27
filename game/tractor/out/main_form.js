@@ -252,7 +252,7 @@ var MainForm = /** @class */ (function () {
                         this_1.SetAvatarImage(false, this_1.gameScene, i, skinType, skinURL, playerUI, this_1.gameScene.coordinates.cardHeight, this_1.SetObText, p);
                     }
                     else {
-                        this_1.gameScene.ui.gameMe.node.nameol.innerHTML = this_1.tractorPlayer.PlayerId;
+                        this_1.gameScene.ui.gameMe.node.nameol.innerHTML = this_1.gameScene.hidePlayerID ? "" : this_1.tractorPlayer.PlayerId;
                         var skinInUseMe = this_1.tractorPlayer.isObserver ? skinInUse : this_1.gameScene.skinInUse;
                         var skinTypeMe = this_1.GetSkinType(skinInUseMe);
                         var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
@@ -310,6 +310,8 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.SetObText = function (p, i, gs, skinWid) {
+        if (gs.hidePlayerID)
+            return;
         if (p.Observers && p.Observers.length > 0) {
             var obNameText = "";
             var tempWidOb = 0;
@@ -456,7 +458,7 @@ var MainForm = /** @class */ (function () {
         this.tractorPlayer.PlayerId = this.tractorPlayer.MyOwnId;
         this.tractorPlayer.isObserver = false;
         if (this.gameScene.ui.gameMe) {
-            this.gameScene.ui.gameMe.node.nameol.innerHTML = this.tractorPlayer.MyOwnId;
+            this.gameScene.ui.gameMe.node.nameol.innerHTML = this.gameScene.hidePlayerID ? "" : this.tractorPlayer.MyOwnId;
             var skinTypeMe = this.GetSkinType(this.gameScene.skinInUse);
             var skinExtentionMe = skinTypeMe === 0 ? "webp" : "gif";
             var skinURL = "image/tractor/skin/".concat(this.gameScene.skinInUse, ".").concat(skinExtentionMe);
@@ -1064,6 +1066,12 @@ var MainForm = /** @class */ (function () {
         noDanmu.onchange = function () {
             gs.noDanmu = noDanmu.checked.toString();
             gs.game.saveConfig("noDanmu", gs.noDanmu);
+        };
+        var cbxHidePlayerID = document.getElementById("cbxHidePlayerID");
+        cbxHidePlayerID.checked = gs.hidePlayerID;
+        cbxHidePlayerID.onchange = function () {
+            gs.hidePlayerID = cbxHidePlayerID.checked;
+            gs.game.saveConfig("hidePlayerID", gs.hidePlayerID);
         };
         var cbxCutCards = document.getElementById("cbxCutCards");
         cbxCutCards.checked = gs.noCutCards.toLowerCase() === "true";
@@ -2239,7 +2247,7 @@ var MainForm = /** @class */ (function () {
         playerDiv.node.avatar.style['background-size'] = '100% 100%';
         playerDiv.node.avatar.style['background-repeat'] = 'no-repeat';
         playerDiv.node.avatar.show();
-        playerDiv.node.nameol.innerHTML = playerId;
+        playerDiv.node.nameol.innerHTML = this.gameScene.hidePlayerID ? "" : playerId;
         return playerDiv;
     };
     MainForm.prototype.EnableShortcutKeys = function () {
