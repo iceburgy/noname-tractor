@@ -3250,7 +3250,8 @@ var MainForm = /** @class */ (function () {
             if (playerID in this.PlayerPosition) {
                 var pos = this.PlayerPosition[playerID];
                 var playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
-                playerUI.hideTimer();
+                if (playerUI)
+                    playerUI.hideTimer();
             }
         }
     };

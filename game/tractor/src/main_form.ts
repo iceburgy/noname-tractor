@@ -3479,7 +3479,7 @@ export class MainForm {
             if (playerID in this.PlayerPosition) {
                 let pos = this.PlayerPosition[playerID];
                 let playerUI = this.gameScene.ui.gameRoomImagesChairOrPlayer[pos - 1];
-                playerUI.hideTimer()
+                if (playerUI) playerUI.hideTimer()
             }
         }
     }
