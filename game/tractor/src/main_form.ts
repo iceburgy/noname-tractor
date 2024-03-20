@@ -20,6 +20,7 @@ import { IDBHelper } from './idb_helper.js';
 import { ReplayEntity } from './replay_entity.js';
 import { FileHelper } from './file_helper.js';
 import { debug } from 'console';
+import { OnePlayerAtATime } from './one_player_at_a_time.js';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -92,6 +93,7 @@ export class MainForm {
     public btnPreviousTrick: any
     public btnNextTrick: any
     public btnLastTrick: any
+    public onePlayerAtATime!: OnePlayerAtATime
 
     constructor(gs: GameScene) {
         this.gameScene = gs
@@ -3153,56 +3155,117 @@ export class MainForm {
         if (this.tractorPlayer.replayEntity.CurrentTrickStates.length == 0) {
             return;
         }
-        let trick: CurrentTrickState = this.tractorPlayer.replayEntity.CurrentTrickStates[0];
-        this.tractorPlayer.replayEntity.CurrentTrickStates.shift();
-        this.tractorPlayer.replayedTricks.push(trick);
-        if (trick.Rank < 0) {
-            this.tractorPlayer.CurrentHandState.ScoreCards = CommonMethods.deepCopy<number[]>(this.tractorPlayer.replayEntity.CurrentHandState.ScoreCards);
-            this.tractorPlayer.CurrentHandState.Score = this.tractorPlayer.replayEntity.CurrentHandState.Score;
 
+        let isOnePlayerAtATime = this.onePlayerAtATime && this.onePlayerAtATime.curIndex < this.onePlayerAtATime.cardsListList.length || this.gameScene.yesFirstPersonView === "true" && this.tractorPlayer.replayEntity.CurrentTrickStates.length > 2;
+        let isOnePlayerAtATimeInit = isOnePlayerAtATime && (!this.onePlayerAtATime || this.onePlayerAtATime.curIndex >= this.onePlayerAtATime.cardsListList.length);
+        if (isOnePlayerAtATimeInit) {
+            this.onePlayerAtATime = new OnePlayerAtATime(this.drawingFormHelper);
+        }
+        let trick!: CurrentTrickState;
+        let isNormalShowCards = true;
+        if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
+            trick = this.tractorPlayer.replayEntity.CurrentTrickStates[0];
+            this.tractorPlayer.replayEntity.CurrentTrickStates.shift();
+            this.tractorPlayer.replayedTricks.push(trick);
+            if (trick.Rank < 0) {
+                // 已出完所有牌，结束画面
+                this.tractorPlayer.CurrentHandState.ScoreCards = CommonMethods.deepCopy<number[]>(this.tractorPlayer.replayEntity.CurrentHandState.ScoreCards);
+                this.tractorPlayer.CurrentHandState.Score = this.tractorPlayer.replayEntity.CurrentHandState.Score;
+
+                this.drawingFormHelper.resetReplay();
+                this.drawingFormHelper.DrawFinishedSendedCards();
+                return;
+            }
+            isNormalShowCards = Object.keys(trick.ShowedCards).length == 4;
+            if (isOnePlayerAtATimeInit && isNormalShowCards) {
+                this.onePlayerAtATime.winner = trick.Winner;
+                this.onePlayerAtATime.points = trick.Points();
+                this.onePlayerAtATime.scoreCards = trick.ScoreCards();
+            }
+        }
+
+        if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
             this.drawingFormHelper.resetReplay();
-            this.drawingFormHelper.DrawFinishedSendedCards();
-            return;
-        }
-        this.drawingFormHelper.resetReplay();
-
-        if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] == 1) {
-            this.DrawDumpFailureMessage(trick);
+            if (isOnePlayerAtATimeInit) {
+                this.drawAllPlayerHandCards();
+            }
         }
 
-        this.tractorPlayer.CurrentTrickState = trick;
-        let curPlayer: string = trick.Learder;
+        if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
+            if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] == 1) {
+                this.DrawDumpFailureMessage(trick);
+            }
+        }
+
+        let curPlayer!: string;
+        if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
+            this.tractorPlayer.CurrentTrickState = trick;
+            curPlayer = trick.Learder;
+        }
         let drawDelay = 100;
         let i = 1;
-        for (; i <= Object.keys(trick.ShowedCards).length; i++) {
-            let position = this.PlayerPosition[curPlayer];
-            if (Object.keys(trick.ShowedCards).length == 4) {
-                trick.ShowedCards[curPlayer].forEach((card: any) => {
-                    this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
-                })
+
+        if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
+            for (; i <= Object.keys(trick.ShowedCards).length; i++) {
+                let position = this.PlayerPosition[curPlayer];
+                if (isNormalShowCards) {
+                    trick.ShowedCards[curPlayer].forEach((card: any) => {
+                        this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
+                    })
+                }
+
+                let cardsList: number[] = CommonMethods.deepCopy<number[]>(trick.ShowedCards[curPlayer]);
+                if (isOnePlayerAtATimeInit) {
+                    this.onePlayerAtATime.cardsListList.push(cardsList);
+                    this.onePlayerAtATime.positionList.push(position);
+                } else {
+                    setTimeout(() => {
+                        this.drawingFormHelper.DrawShowedCardsByPosition(cardsList, position)
+                    }, i * drawDelay);
+                }
+                curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
             }
+        }
 
-            let cardsList: number[] = CommonMethods.deepCopy<number[]>(trick.ShowedCards[curPlayer]);
+        if (isOnePlayerAtATime) {
+            this.onePlayerAtATime.DrawShowedCardsOnePlayerAtATime();
+        }
+
+        if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
+            if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] != 1) {
+                this.DrawDumpFailureMessage(trick);
+            }
+        }
+
+        if (isOnePlayerAtATime) {
+            // 如果刚刚画完的出牌是自己的，则重画刷新自己的手牌
+            if (this.onePlayerAtATime.positionList[this.onePlayerAtATime.curIndex - 1] == 1) {
+                this.drawingFormHelper.destroyAllCards();
+                this.drawAllPlayerHandCards();
+            }
+        } else {
             setTimeout(() => {
-                this.drawingFormHelper.DrawShowedCardsByPosition(cardsList, position)
+                this.drawAllPlayerHandCards();
             }, i * drawDelay);
-            curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
         }
 
-        if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] != 1) {
-            this.DrawDumpFailureMessage(trick);
-        }
-
-        setTimeout(() => {
-            this.drawAllPlayerHandCards();
-        }, i * drawDelay);
-
-        if (trick.Winner) {
-            if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(
-                this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {
-                this.tractorPlayer.CurrentHandState.Score += trick.Points();
-                //收集得分牌
-                this.tractorPlayer.CurrentHandState.ScoreCards = this.tractorPlayer.CurrentHandState.ScoreCards.concat(trick.ScoreCards());
+        if (!isOnePlayerAtATime) {
+            if (trick.Winner) {
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(
+                    this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {
+                    this.tractorPlayer.CurrentHandState.Score += trick.Points();
+                    //收集得分牌
+                    this.tractorPlayer.CurrentHandState.ScoreCards = this.tractorPlayer.CurrentHandState.ScoreCards.concat(trick.ScoreCards());
+                }
+            }
+        } else {
+            if (this.onePlayerAtATime.curIndex == 4 && this.onePlayerAtATime.winner) {
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(
+                    this.tractorPlayer.CurrentHandState.Starter, this.onePlayerAtATime.winner)) {
+                    this.tractorPlayer.CurrentHandState.Score += this.onePlayerAtATime.points;
+                    //收集得分牌
+                    this.tractorPlayer.CurrentHandState.ScoreCards = this.tractorPlayer.CurrentHandState.ScoreCards.concat(this.onePlayerAtATime.scoreCards);
+                }
             }
         }
         this.drawingFormHelper.DrawScoreImageAndCards();
@@ -3232,6 +3295,9 @@ export class MainForm {
     }
 
     public btnFirstTrick_Click() {
+        if (this.onePlayerAtATime) {
+            this.onePlayerAtATime.curIndex = 4;
+        }
         if (this.tractorPlayer.replayedTricks.length > 0) this.loadReplayEntity(this.currentReplayEntities[1][this.selectTimes.selectedIndex], true);
         else {
             if (this.replayPreviousFile()) this.btnLastTrick_Click();
@@ -3239,6 +3305,9 @@ export class MainForm {
     }
 
     public btnPreviousTrick_Click() {
+        if (this.onePlayerAtATime) {
+            this.onePlayerAtATime.curIndex = 4;
+        }
         if (this.tractorPlayer.replayedTricks.length > 1) {
             this.drawingFormHelper.resetReplay();
             this.revertReplayTrick();
@@ -3262,6 +3331,9 @@ export class MainForm {
     }
 
     public btnLastTrick_Click() {
+        if (this.onePlayerAtATime) {
+            this.onePlayerAtATime.curIndex = 4;
+        }
         if (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 0) {
             while (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 1) {
                 let trick: CurrentTrickState = this.tractorPlayer.replayEntity.CurrentTrickStates[0];
