@@ -3,6 +3,8 @@ import { CurrentPoker } from './current_poker.js';
 import { PlayerEntity } from './player_entity.js';
 import { SuitEnums } from './suit_enums.js';
 export class CommonMethods {
+    public static storageFileForCardsKey = "storageFileForCards"
+
     public static SET_PLAYER_NAME_REQUEST = "set_player_name"
     public static PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb"
     public static PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp"

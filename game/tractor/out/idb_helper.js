@@ -3,14 +3,22 @@ export var IDBHelper = /** @class */ (function () {
     function IDBHelper() {
     }
     IDBHelper.InitIDB = function (callback) {
-        var dbReq = indexedDB.open('localDB', 1);
+        var dbReq = indexedDB.open('localDB', 2);
         dbReq.onupgradeneeded = function (event) {
             if (event && event.target) {
                 IDBHelper.LocalIDB = event.target.result;
             }
-            var res = IDBHelper.LocalIDB.createObjectStore(IDBHelper.ReplayEntityStore, { keyPath: IDBHelper.Key_datetime });
-            if (!res.indexNames.contains(IDBHelper.Key_datetime)) {
-                res.createIndex(IDBHelper.Key_datetime, IDBHelper.Key_datetime);
+            if (!IDBHelper.LocalIDB.objectStoreNames.contains(IDBHelper.ReplayEntityStore)) {
+                var res = IDBHelper.LocalIDB.createObjectStore(IDBHelper.ReplayEntityStore, { keyPath: IDBHelper.Key_datetime });
+                if (!res.indexNames.contains(IDBHelper.Key_datetime)) {
+                    res.createIndex(IDBHelper.Key_datetime, IDBHelper.Key_datetime);
+                }
+            }
+            if (!IDBHelper.LocalIDB.objectStoreNames.contains(IDBHelper.AvatarResourcesStore)) {
+                var resAvatar = IDBHelper.LocalIDB.createObjectStore(IDBHelper.AvatarResourcesStore, { keyPath: IDBHelper.AvatarResourcesIndex });
+                if (!resAvatar.indexNames.contains(IDBHelper.AvatarResourcesIndex)) {
+                    resAvatar.createIndex(IDBHelper.AvatarResourcesIndex, IDBHelper.AvatarResourcesIndex);
+                }
             }
         };
         dbReq.onsuccess = function (event) {
@@ -29,7 +37,7 @@ export var IDBHelper = /** @class */ (function () {
         var store = tx.objectStore(IDBHelper.ReplayEntityStore);
         tx.oncomplete = function () { };
         tx.onerror = function (event) {
-            console.log('error SaveReplayEntity');
+            console.log('error CleanupReplayEntity');
             console.log(event);
         };
         var index = store.index(IDBHelper.Key_datetime);
@@ -41,7 +49,7 @@ export var IDBHelper = /** @class */ (function () {
             };
         };
         getAllKeysRequest.onerror = function (event) {
-            console.log('error in getAllKeysRequest');
+            console.log('error in CleanupReplayEntity getAllKeysRequest');
             console.log(event);
         };
     };
@@ -157,9 +165,73 @@ export var IDBHelper = /** @class */ (function () {
             console.log(event);
         };
     };
+    IDBHelper.CleanupAvatarResources = function (callbackFunc) {
+        var tx = IDBHelper.LocalIDB.transaction([IDBHelper.AvatarResourcesStore], 'readwrite');
+        var store = tx.objectStore(IDBHelper.AvatarResourcesStore);
+        tx.oncomplete = function () { };
+        tx.onerror = function (event) {
+            console.log('error CleanupAvatarResources');
+            console.log(event);
+        };
+        var index = store.index(IDBHelper.AvatarResourcesIndex);
+        var getAllKeysRequest = index.getAllKeys(undefined);
+        getAllKeysRequest.onsuccess = function () {
+            var clearReq = store.clear();
+            clearReq.onsuccess = function () {
+                callbackFunc.apply();
+            };
+        };
+        getAllKeysRequest.onerror = function (event) {
+            console.log('error in CleanupAvatarResources getAllKeysRequest');
+            console.log(event);
+        };
+    };
+    IDBHelper.SaveAvatarResources = function (avatarResources, callback) {
+        var tx = IDBHelper.LocalIDB.transaction([IDBHelper.AvatarResourcesStore], 'readwrite');
+        var store = tx.objectStore(IDBHelper.AvatarResourcesStore);
+        tx.oncomplete = function () { };
+        tx.onerror = function (event) {
+            console.log('error SaveAvatarResources');
+            console.log(event);
+        };
+        var re = { AvatarResourcesIndex: IDBHelper.AvatarResourcesDataUrl, text: JSON.stringify(avatarResources) };
+        var req = store.add(re);
+        req.onerror = function (event) {
+            console.log('error in SaveAvatarResources');
+            console.log(event);
+        };
+        req.onsuccess = function () {
+            callback.apply();
+        };
+    };
+    IDBHelper.ReadAvatarResources = function (callback) {
+        var tx = IDBHelper.LocalIDB.transaction([IDBHelper.AvatarResourcesStore], 'readonly');
+        var store = tx.objectStore(IDBHelper.AvatarResourcesStore);
+        var index = store.index(IDBHelper.AvatarResourcesIndex);
+        var keyRange = IDBKeyRange.bound(IDBHelper.AvatarResourcesDataUrl, IDBHelper.AvatarResourcesDataUrl + '\uffff');
+        var req = index.openCursor(keyRange);
+        var avatarResourcesObj;
+        req.onsuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor != null) {
+                avatarResourcesObj = JSON.parse(cursor.value.text);
+                cursor.continue();
+            }
+            else {
+                callback(avatarResourcesObj);
+            }
+        };
+        req.onerror = function (event) {
+            console.log('error in ReadAvatarResources');
+            console.log(event);
+        };
+    };
     IDBHelper.ReplayEntityStore = 'ReplayEntityStore';
     IDBHelper.Key_datetime = 'datetime';
     IDBHelper.replaySeparator = "===";
     IDBHelper.maxReplays = 1000;
+    IDBHelper.AvatarResourcesStore = 'AvatarResourcesStore';
+    IDBHelper.AvatarResourcesIndex = 'AvatarResourcesIndex';
+    IDBHelper.AvatarResourcesDataUrl = 'AvatarResourcesDataUrl';
     return IDBHelper;
 }());

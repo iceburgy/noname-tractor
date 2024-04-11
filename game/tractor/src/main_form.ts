@@ -1136,6 +1136,18 @@ export class MainForm {
             this.resetGameRoomUI();
         }
 
+        let btnCleanupLocalResources: any = document.getElementById("btnCleanupLocalResources")
+        btnCleanupLocalResources.onclick = () => {
+            var c = window.confirm("你确定要清空缓存资源并刷新吗？");
+            if (c === false) {
+                return
+            }
+            IDBHelper.CleanupAvatarResources(() => {
+                localStorage.removeItem(CommonMethods.storageFileForCardsKey);
+                window.location.reload()
+            });
+        }
+
         let btnExportZipFile: any = document.getElementById("btnExportZipFile")
         btnExportZipFile.onclick = () => {
             FileHelper.ExportZipFile();
@@ -2613,7 +2625,13 @@ export class MainForm {
                 callback(p, pos, gs, skinWid);
             }
         };
-        img.src = skinURL;
+        let skinPath = "image/tractor/skin/";
+        let skinKey = skinURL.substring(skinPath.length)
+        if (gs.ui.avatarResources[skinKey]) {
+            img.src = gs.ui.avatarResources[skinKey];
+        } else {
+            img.src = skinURL;
+        }
     }
 
     public UpdateSkinStatus() {

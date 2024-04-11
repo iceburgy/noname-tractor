@@ -475,6 +475,7 @@ export var CommonMethods = /** @class */ (function () {
         result.setDate(result.getDate() + CommonMethods.cookieExpireInDays);
         return result;
     };
+    CommonMethods.storageFileForCardsKey = "storageFileForCards";
     CommonMethods.SET_PLAYER_NAME_REQUEST = "set_player_name";
     CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb";
     CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp";

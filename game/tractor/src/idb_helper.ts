@@ -14,18 +14,31 @@ export class IDBHelper {
     public static Key_datetime = 'datetime'
     public static replaySeparator = "===";
     public static maxReplays: number = 1000;
+    public static AvatarResourcesStore = 'AvatarResourcesStore'
+    public static AvatarResourcesIndex = 'AvatarResourcesIndex'
+    public static AvatarResourcesDataUrl = 'AvatarResourcesDataUrl'
 
     public static InitIDB(callback: any): any {
-        let dbReq = indexedDB.open('localDB', 1);
+        let dbReq = indexedDB.open('localDB', 2);
         dbReq.onupgradeneeded = function (event: any) {
             if (event && event.target) {
                 IDBHelper.LocalIDB = event.target.result;
             }
 
-            let res = IDBHelper.LocalIDB.createObjectStore(IDBHelper.ReplayEntityStore, { keyPath: IDBHelper.Key_datetime });
+            if (!IDBHelper.LocalIDB.objectStoreNames.contains(IDBHelper.ReplayEntityStore)) {
+                let res = IDBHelper.LocalIDB.createObjectStore(IDBHelper.ReplayEntityStore, { keyPath: IDBHelper.Key_datetime });
 
-            if (!res.indexNames.contains(IDBHelper.Key_datetime)) {
-                res.createIndex(IDBHelper.Key_datetime, IDBHelper.Key_datetime);
+                if (!res.indexNames.contains(IDBHelper.Key_datetime)) {
+                    res.createIndex(IDBHelper.Key_datetime, IDBHelper.Key_datetime);
+                }
+            }
+
+            if (!IDBHelper.LocalIDB.objectStoreNames.contains(IDBHelper.AvatarResourcesStore)) {
+                let resAvatar = IDBHelper.LocalIDB.createObjectStore(IDBHelper.AvatarResourcesStore, { keyPath: IDBHelper.AvatarResourcesIndex });
+
+                if (!resAvatar.indexNames.contains(IDBHelper.AvatarResourcesIndex)) {
+                    resAvatar.createIndex(IDBHelper.AvatarResourcesIndex, IDBHelper.AvatarResourcesIndex);
+                }
             }
         }
         dbReq.onsuccess = function (event: any) {
@@ -45,7 +58,7 @@ export class IDBHelper {
         let store = tx.objectStore(IDBHelper.ReplayEntityStore);
         tx.oncomplete = function () { }
         tx.onerror = function (event: any) {
-            console.log('error SaveReplayEntity');
+            console.log('error CleanupReplayEntity');
             console.log(event);
         }
 
@@ -58,7 +71,7 @@ export class IDBHelper {
             }
         }
         getAllKeysRequest.onerror = function (event: any) {
-            console.log('error in getAllKeysRequest');
+            console.log('error in CleanupReplayEntity getAllKeysRequest');
             console.log(event);
         }
     }
@@ -177,6 +190,71 @@ export class IDBHelper {
         }
         req.onerror = function (event: any) {
             console.log('error in ReadReplayEntityByDate');
+            console.log(event);
+        }
+    }
+
+    public static CleanupAvatarResources(callbackFunc: any) {
+        let tx = IDBHelper.LocalIDB.transaction([IDBHelper.AvatarResourcesStore], 'readwrite');
+        let store = tx.objectStore(IDBHelper.AvatarResourcesStore);
+        tx.oncomplete = function () { }
+        tx.onerror = function (event: any) {
+            console.log('error CleanupAvatarResources');
+            console.log(event);
+        }
+
+        let index = store.index(IDBHelper.AvatarResourcesIndex);
+        let getAllKeysRequest = index.getAllKeys(undefined);
+        getAllKeysRequest.onsuccess = function () {
+            let clearReq = store.clear();
+            clearReq.onsuccess = function () {
+                callbackFunc.apply();
+            }
+        }
+        getAllKeysRequest.onerror = function (event: any) {
+            console.log('error in CleanupAvatarResources getAllKeysRequest');
+            console.log(event);
+        }
+    }
+
+    public static SaveAvatarResources(avatarResources: any, callback: any) {
+        let tx = IDBHelper.LocalIDB.transaction([IDBHelper.AvatarResourcesStore], 'readwrite');
+        let store = tx.objectStore(IDBHelper.AvatarResourcesStore);
+        tx.oncomplete = function () { }
+        tx.onerror = function (event: any) {
+            console.log('error SaveAvatarResources');
+            console.log(event);
+        }
+        let re = { AvatarResourcesIndex: IDBHelper.AvatarResourcesDataUrl, text: JSON.stringify(avatarResources) };
+        var req = store.add(re);
+        req.onerror = function (event: any) {
+            console.log('error in SaveAvatarResources');
+            console.log(event);
+        }
+        req.onsuccess = function () {
+            callback.apply();
+        }
+    }
+
+    public static ReadAvatarResources(callback: any) {
+        let tx = IDBHelper.LocalIDB.transaction([IDBHelper.AvatarResourcesStore], 'readonly');
+        let store = tx.objectStore(IDBHelper.AvatarResourcesStore);
+        let index = store.index(IDBHelper.AvatarResourcesIndex);
+        let keyRange = IDBKeyRange.bound(IDBHelper.AvatarResourcesDataUrl, IDBHelper.AvatarResourcesDataUrl + '\uffff')
+        let req = index.openCursor(keyRange);
+
+        let avatarResourcesObj: any;
+        req.onsuccess = function (event: any) {
+            let cursor = event.target.result;
+            if (cursor != null) {
+                avatarResourcesObj = JSON.parse(cursor.value.text)
+                cursor.continue();
+            } else {
+                callback(avatarResourcesObj)
+            }
+        }
+        req.onerror = function (event: any) {
+            console.log('error in ReadAvatarResources');
             console.log(event);
         }
     }

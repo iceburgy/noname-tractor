@@ -1023,6 +1023,17 @@ var MainForm = /** @class */ (function () {
             });
             _this.resetGameRoomUI();
         };
+        var btnCleanupLocalResources = document.getElementById("btnCleanupLocalResources");
+        btnCleanupLocalResources.onclick = function () {
+            var c = window.confirm("你确定要清空缓存资源并刷新吗？");
+            if (c === false) {
+                return;
+            }
+            IDBHelper.CleanupAvatarResources(function () {
+                localStorage.removeItem(CommonMethods.storageFileForCardsKey);
+                window.location.reload();
+            });
+        };
         var btnExportZipFile = document.getElementById("btnExportZipFile");
         btnExportZipFile.onclick = function () {
             FileHelper.ExportZipFile();
@@ -2412,7 +2423,14 @@ var MainForm = /** @class */ (function () {
                 callback(p, pos, gs, skinWid);
             }
         };
-        img.src = skinURL;
+        var skinPath = "image/tractor/skin/";
+        var skinKey = skinURL.substring(skinPath.length);
+        if (gs.ui.avatarResources[skinKey]) {
+            img.src = gs.ui.avatarResources[skinKey];
+        }
+        else {
+            img.src = skinURL;
+        }
     };
     MainForm.prototype.UpdateSkinStatus = function () {
         if (this.gameScene.isInGameHall()) {

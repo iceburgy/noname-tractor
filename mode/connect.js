@@ -21,6 +21,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			}
 			totalResourceCount += imageResourceCount;
 			ui.storageFileForImages = JSON.parse(localStorage.getItem(storageFileForCardsKey)) || {};
+			ui.avatarResourcesChanged = false;
+			ui.avatarResources = {};
 
 			ui.audioResources = {
 				"liangpai_m_shelie1": ["effect", "liangpai_m_shelie1"],
@@ -148,13 +150,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					cardIndex = 0;
 					styleIndex++;
 					if (styleIndex == cardsBounds.length) {
-						ui.textLoadingCards.remove();
-						delete ui.textLoadingCards;
-						ui.tractorCard.remove();
-						delete ui.tractorCard;
-						ui.timerLoadingCards.remove();
-						delete ui.timerLoadingCards;
+						ui.textLoadingCards.innerText = "加载皮肤";
+						ui.barLoadingCards.style.width = `0px`;
 						localStorage.setItem(storageFileForCardsKey, JSON.stringify(ui.storageFileForImages));
+						loadAvatarResources(tractorCard);
 						return;
 					}
 				}
@@ -179,6 +178,85 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					loadCardResources(styleIndex, cardIndex + 1, loadedCount, tractorCard);
 				}
 				img.src = imgURL;
+			}
+
+			var loadAvatarResources = function (tractorCard) {
+				import('../game/tractor/out/idb_helper.js')
+					.then((IDBHelperClass) => {
+						IDBHelperClass.IDBHelper.InitIDB(() => {
+							IDBHelperClass.IDBHelper.ReadAvatarResources((avatarResourcesObj) => {
+								ui.avatarResources = avatarResourcesObj || {};
+
+								fetch('image/tractor/skin/skininfo.json')
+									.then(response => {
+										if (!response.ok) {
+											console.error("failed to load image/tractor/skin/skininfo.json!")
+										}
+										return response.json();
+									})
+									.then(skinInfo => {
+										var skinInfoKeys = Object.getOwnPropertyNames(skinInfo);
+										var skinCount = skinInfoKeys.length;
+										loadAvatarResourcesWorker(IDBHelperClass.IDBHelper, skinInfo, skinInfoKeys, skinCount, 0, 0, tractorCard);
+									})
+									.catch(error => {
+										console.log("尝试加载skininfo.json失败！");
+										console.log(error);
+									});
+							});
+						});
+					})
+					.catch(error => {
+						console.log("尝试加载idb_helper失败！");
+						console.log(error);
+					});
+			}
+
+			var loadAvatarResourcesWorker = function (IDBHelper, skinInfo, skinInfoKeys, skinCount, skinKeyIndex, loadedCount, tractorCard) {
+				if (skinKeyIndex == skinCount) {
+					ui.textLoadingCards.remove();
+					delete ui.textLoadingCards;
+					ui.tractorCard.remove();
+					delete ui.tractorCard;
+					ui.timerLoadingCards.remove();
+					delete ui.timerLoadingCards;
+					if (ui.avatarResourcesChanged) {
+						IDBHelper.CleanupAvatarResources(() => {
+							IDBHelper.SaveAvatarResources(ui.avatarResources, () => {console.log("===avatarResourcesChanged!") });
+						});
+					}
+					return;
+				}
+
+				var curSkinInfo = skinInfo[skinInfoKeys[skinKeyIndex]]
+				var skinExtention = curSkinInfo.skinType === 0 ? "webp" : "gif";
+
+				if (ui.avatarResources[`${curSkinInfo.skinName}.${skinExtention}`]) {
+					loadedCount++;
+					ui.barLoadingCards.style.width = `${100 * (loadedCount / skinCount)}px`
+					tractorCard.setBackgroundImage(ui.avatarResources[`${curSkinInfo.skinName}.${skinExtention}`]);
+					loadAvatarResourcesWorker(IDBHelper, skinInfo, skinInfoKeys, skinCount, skinKeyIndex + 1, loadedCount, tractorCard);
+					return;
+				}
+
+				ui.avatarResourcesChanged = true;
+				var skinURL = `image/tractor/skin/${curSkinInfo.skinName}.${skinExtention}`;
+				fetch(skinURL)
+					.then(response => response.arrayBuffer())
+					.then(buffer => {
+						loadedCount++;
+						ui.barLoadingCards.style.width = `${100 * (loadedCount / skinCount)}px`
+
+						// Convert the buffer to a Base64 encoded string
+						var base64 = btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+
+						// Create the Data URL
+						var dataURL = `data:image/gif;base64,${base64}`;
+						ui.avatarResources[`${curSkinInfo.skinName}.${skinExtention}`] = dataURL;
+
+						tractorCard.setBackgroundImage(ui.avatarResources[`${curSkinInfo.skinName}.${skinExtention}`]);
+						loadAvatarResourcesWorker(IDBHelper, skinInfo, skinInfoKeys, skinCount, skinKeyIndex + 1, loadedCount, tractorCard);
+					});
 			}
 
 			var loadAudioPool = function () {
