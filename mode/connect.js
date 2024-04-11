@@ -11,6 +11,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			var directstartmode = lib.config.directstartmode;
 			ui.create.menu(true);
 
+			var storageFileForCardsKey = "storageFileForCards"
 			var cardsStyles = ["cardsclassic", "cards", "toolbar"];
 			var cardsBounds = [54, 64, 9];
 			var totalResourceCount = 0;
@@ -19,8 +20,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				imageResourceCount += (cardsBounds[i] + 1); // zero-based cardsBounds, hence add 1 to account for tile000.png
 			}
 			totalResourceCount += imageResourceCount;
-			ui.storageFileForImages = JSON.parse(localStorage.getItem("storageFileForCards")) || {};
-			ui.audioPool = {};
+			ui.storageFileForImages = JSON.parse(localStorage.getItem(storageFileForCardsKey)) || {};
 
 			ui.audioResources = {
 				"liangpai_m_shelie1": ["effect", "liangpai_m_shelie1"],
@@ -144,6 +144,29 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			}
 
 			var loadCardResources = function (styleIndex, cardIndex, loadedCount, tractorCard) {
+				if (cardIndex == cardsBounds[styleIndex]) {
+					cardIndex = 0;
+					styleIndex++;
+					if (styleIndex == cardsBounds.length) {
+						ui.textLoadingCards.remove();
+						delete ui.textLoadingCards;
+						ui.tractorCard.remove();
+						delete ui.tractorCard;
+						ui.timerLoadingCards.remove();
+						delete ui.timerLoadingCards;
+						localStorage.setItem(storageFileForCardsKey, JSON.stringify(ui.storageFileForImages));
+						return;
+					}
+				}
+
+				if (ui.storageFileForImages[`${cardsStyles[styleIndex]}${cardIndex}`]) {
+					loadedCount++;
+					ui.barLoadingCards.style.width = `${100 * (loadedCount / imageResourceCount)}px`
+					// tractorCard.setBackgroundImage(ui.storageFileForImages[`${cardsStyles[styleIndex]}${cardIndex}`]);
+					loadCardResources(styleIndex, cardIndex + 1, loadedCount, tractorCard);
+					return;
+				}
+
 				imgURL = `image/tractor/${cardsStyles[styleIndex]}/tile0${cardIndex.toString().padStart(2, '0')}.png`;
 				var img = new Image();
 				img.onload = (e) => {
@@ -153,21 +176,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					storeCardToDataURL(img, cardsStyles[styleIndex], cardIndex);
 
 					// tractorCard.setBackgroundImage(ui.storageFileForImages[`${cardsStyles[styleIndex]}${cardIndex}`]);
-					if (cardIndex == cardsBounds[styleIndex]) {
-						styleIndex++;
-						if (styleIndex < cardsBounds.length) {
-							loadCardResources(styleIndex, 0, loadedCount, tractorCard);
-						} else {
-							ui.textLoadingCards.remove();
-							delete ui.textLoadingCards;
-							ui.tractorCard.remove();
-							delete ui.tractorCard;
-							ui.timerLoadingCards.remove();
-							delete ui.timerLoadingCards;
-						}
-					} else {
-						loadCardResources(styleIndex, cardIndex + 1, loadedCount, tractorCard);
-					}
+					loadCardResources(styleIndex, cardIndex + 1, loadedCount, tractorCard);
 				}
 				img.src = imgURL;
 			}
