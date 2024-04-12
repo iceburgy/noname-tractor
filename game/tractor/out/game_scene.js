@@ -316,7 +316,8 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleNotifyGameHall = function (objList) {
         var roomStateList = objList[0];
         var playerList = objList[1];
-        this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList);
+        var yuezhanList = objList[2];
+        this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList, yuezhanList);
     };
     GameScene.prototype.handleNotifyOnlinePlayerList = function (playerID, objList) {
         var isJoining = objList[0];

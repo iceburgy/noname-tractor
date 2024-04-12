@@ -4,6 +4,7 @@ import { PlayerEntity } from './player_entity.js';
 import { SuitEnums } from './suit_enums.js';
 export class CommonMethods {
     public static storageFileForCardsKey = "storageFileForCards"
+    public static SendJoinOrQuitYuezhan_REQUEST = "SendJoinOrQuitYuezhan"
 
     public static SET_PLAYER_NAME_REQUEST = "set_player_name"
     public static PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb"
@@ -55,6 +56,7 @@ export class CommonMethods {
     public static zIndexDanmu = 10;
     public static zIndexFrameChat = 11;
     public static zIndexSettingsForm = 100;
+    public static zIndexFrameGameHallOnliners = 9;
 
     public static gifferPrefix = "playerGiffer";
 
@@ -644,5 +646,30 @@ export class CommonMethods {
         var result = new Date();
         result.setDate(result.getDate() + CommonMethods.cookieExpireInDays);
         return result;
+    }
+
+    public static DateToISO8601(date: Date): string {
+        // Get the timezone offset in minutes and convert it to hours and minutes
+        let timezoneOffsetHours = Math.floor(date.getTimezoneOffset() / 60);
+        var timezoneOffsetMinutes = date.getTimezoneOffset() % 60;
+
+        // Function to add leading zeros to single-digit numbers
+        function pad(number: number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        }
+
+        // Format the date to ISO 8601 format with timezone
+        return date.getFullYear() +
+            '-' + pad(date.getMonth() + 1) +
+            '-' + pad(date.getDate()) +
+            'T' + pad(date.getHours()) +
+            ':' + pad(date.getMinutes()) +
+            ':' + pad(date.getSeconds()) +
+            (date.getTimezoneOffset() < 0 ? '+' : '-') +
+            pad(Math.abs(timezoneOffsetHours)) +
+            ':' + pad(Math.abs(timezoneOffsetMinutes));
     }
 }

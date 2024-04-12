@@ -222,7 +222,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					delete ui.timerLoadingCards;
 					if (ui.avatarResourcesChanged) {
 						IDBHelper.CleanupAvatarResources(() => {
-							IDBHelper.SaveAvatarResources(ui.avatarResources, () => {console.log("===avatarResourcesChanged!") });
+							IDBHelper.SaveAvatarResources(ui.avatarResources, () => { });
 						});
 					}
 					return;

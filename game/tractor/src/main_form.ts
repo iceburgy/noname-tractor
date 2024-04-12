@@ -21,6 +21,7 @@ import { ReplayEntity } from './replay_entity.js';
 import { FileHelper } from './file_helper.js';
 import { debug } from 'console';
 import { OnePlayerAtATime } from './one_player_at_a_time.js';
+import { YuezhanEntity } from './yuezhan_entity.js';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -1914,13 +1915,13 @@ export class MainForm {
         this.drawingFormHelper.DrawOverridingFlag(cardsCount, this.PlayerPosition[winnerID], tempIsWinByTrump - 1, false);
     }
 
-    public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[]) {
+    public NotifyGameHallEventHandler(roomStateList: RoomState[], playerList: string[], yuezhanList: YuezhanEntity[]) {
         this.updateOnlineAndRoomPlayerList(roomStateList, playerList);
         if (playerList.includes(this.tractorPlayer.MyOwnId)) {
             this.tractorPlayer.destroyAllClientMessages();
             this.destroyGameRoom();
             this.destroyGameHall();
-            this.drawGameHall(roomStateList, playerList);
+            this.drawGameHall(roomStateList, playerList, yuezhanList);
         }
     }
 
@@ -1932,6 +1933,14 @@ export class MainForm {
         if (this.gameScene.ui.frameGameHall) {
             this.gameScene.ui.frameGameHall.remove();
             delete this.gameScene.ui.frameGameHall;
+        }
+
+        if (this.gameScene.ui.yuezhanInterval) {
+            var yziKeys = Object.getOwnPropertyNames(this.gameScene.ui.yuezhanInterval);
+            for (let i = 0; i < yziKeys.length; i++) {
+                clearInterval(this.gameScene.ui.yuezhanInterval[yziKeys[i]]);
+            }
+            delete this.gameScene.ui.yuezhanInterval;
         }
     }
 
@@ -2191,7 +2200,7 @@ export class MainForm {
         }
     }
 
-    public drawGameHall(roomStateList: RoomState[], playerList: string[]) {
+    public drawGameHall(roomStateList: RoomState[], playerList: string[], yuezhanList: YuezhanEntity[]) {
         if (!this.gameScene.ui.gameMe) {
             this.drawGameMe();
         }
@@ -2206,22 +2215,33 @@ export class MainForm {
         frameGameHall.style.right = '0px';
         this.gameScene.ui.frameGameHall = frameGameHall;
 
+        let frameGameHallOnlinersHeader = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
+        frameGameHallOnlinersHeader.style.position = 'absolute';
+        frameGameHallOnlinersHeader.style.top = '0px';
+        frameGameHallOnlinersHeader.style.left = '0px';
+        frameGameHallOnlinersHeader.style.width = '15%';
+        frameGameHallOnlinersHeader.style.paddingLeft = '10px';
+        frameGameHallOnlinersHeader.style.overflow = 'visible';
+        frameGameHallOnlinersHeader.style.zIndex = CommonMethods.zIndexFrameGameHallOnliners;
+        this.gameScene.ui.frameGameHallOnlinersHeader = frameGameHallOnlinersHeader;
+
         let frameGameHallOnliners = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
         frameGameHallOnliners.style.position = 'absolute';
-        frameGameHallOnliners.style.top = '0px';
+        frameGameHallOnliners.style.top = '150px';
         frameGameHallOnliners.style.left = '0px';
         frameGameHallOnliners.style.bottom = '0px';
         frameGameHallOnliners.style.width = '15%';
+        frameGameHallOnliners.style.paddingLeft = '10px';
+        frameGameHallOnliners.style.overflow = 'auto';
         this.gameScene.ui.frameGameHallOnliners = frameGameHallOnliners;
 
-        let textHall = this.gameScene.ui.create.div('', '在线', this.gameScene.ui.frameGameHallOnliners);
-        textHall.style.width = '70px';
-        textHall.style.fontFamily = 'xinwei';
-        textHall.style.fontSize = '30px';
-        textHall.style.padding = '10px';
-        textHall.style.left = 'calc(10px)';
-        textHall.style.top = 'calc(60px)';
-        textHall.style.textAlign = 'left';
+        let pYuezhanHeader = document.createElement("p");
+        pYuezhanHeader.innerText = `约战(${yuezhanList.length})`;
+        pYuezhanHeader.style.fontFamily = 'xinwei';
+        pYuezhanHeader.style.fontSize = '30px';
+        pYuezhanHeader.style.textAlign = 'left';
+        pYuezhanHeader.style.whiteSpace = 'nowrap';
+        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(pYuezhanHeader);
 
         let playerListAll: string[] = CommonMethods.deepCopy<string[]>(playerList);
 
@@ -2414,17 +2434,141 @@ export class MainForm {
             }
         }
 
-        let topPx = 110;
-        for (let i = 0; i < playerListAll.length; i++) {
-            let textHallPlayer = this.gameScene.ui.create.div('', playerListAll[i], this.gameScene.ui.frameGameHallOnliners);
-            textHallPlayer.style.fontFamily = 'serif';
-            textHallPlayer.style.fontSize = '20px';
-            textHallPlayer.style.padding = '10px';
-            textHallPlayer.style.left = 'calc(10px)';
-            textHallPlayer.style.top = `calc(${topPx}px)`;
-            textHallPlayer.style.textAlign = 'left';
-            topPx += 30;
+        let IOwnYuezhan = false;
+        for (let i = 0; i < yuezhanList.length; i++) {
+            let yuezhanInfo = yuezhanList[i];
+            if (yuezhanInfo.owner === this.tractorPlayer.MyOwnId) {
+                IOwnYuezhan = true;
+            }
         }
+        if (!IOwnYuezhan) {
+            // pick a date time
+            let inputDueDate = document.createElement("input");
+            inputDueDate.style.position = 'static';
+            inputDueDate.style.display = 'block';
+            inputDueDate.setAttribute("type", "datetime-local");
+            inputDueDate.setAttribute("id", "inputDueDatePicker");
+            this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(inputDueDate);
+
+            let btnCreateYuezhan = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', "我要约战", () => {
+                let inputDueDate: any = document.getElementById("inputDueDatePicker")
+                let dateTimeValue = inputDueDate.value;
+                if (!dateTimeValue) {
+                    alert("约战时间不能为空");
+                    return;
+                }
+
+                let yzDueDate = new Date(dateTimeValue);
+                if (yzDueDate < new Date()) {
+                    alert("请选择未来作为约战时间");
+                    return;
+                }
+
+                let yzDueDateISO = CommonMethods.DateToISO8601(yzDueDate);
+
+                let yze = new YuezhanEntity();
+                yze.owner = this.tractorPlayer.MyOwnId;
+                yze.dueDate = yzDueDateISO;
+                yze.participants.push(this.tractorPlayer.MyOwnId);
+                this.joinOrQuitYuezhan(yze);
+            });
+            btnCreateYuezhan.style.marginTop = '10px';
+            btnCreateYuezhan.style.position = 'static';
+            btnCreateYuezhan.style.display = 'block';
+            btnCreateYuezhan.style.width = '80px';
+            this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(btnCreateYuezhan);
+        } else {
+            this.gameScene.ui.frameGameHallOnliners.style.top = '60px';
+        }
+
+        for (let i = 0; i < yuezhanList.length; i++) {
+            let yuezhanInfo = yuezhanList[i];
+
+            let now = new Date();
+            if (new Date(yuezhanInfo.dueDate) < now) {
+                continue;
+            }
+
+            let divTitle = document.createElement("div");
+            divTitle.style.marginTop = '20px';
+            divTitle.style.position = 'static';
+            divTitle.style.display = 'block';
+            divTitle.style.fontSize = '20px';
+            divTitle.innerText = `【${yuezhanInfo.owner}】的约战`;
+            this.gameScene.ui.frameGameHallOnliners.appendChild(divTitle);
+
+            let divDueDate = document.createElement("div");
+            divDueDate.style.position = 'static';
+            divDueDate.style.display = 'block';
+            let yzDueDate = new Date(yuezhanInfo.dueDate)
+            divDueDate.innerText = `${CommonMethods.DateToISO8601(yzDueDate)}`;
+            this.gameScene.ui.frameGameHallOnliners.appendChild(divDueDate);
+
+            let divCountdown = document.createElement("div");
+            divCountdown.style.position = 'static';
+            divCountdown.style.display = 'block';
+            this.gameScene.ui.frameGameHallOnliners.appendChild(divCountdown);
+
+            // Set the countdown date (in milliseconds)
+            // Update the countdown every second
+            if (!this.gameScene.ui.yuezhanInterval) {
+                this.gameScene.ui.yuezhanInterval = {};
+            }
+            this.gameScene.ui.yuezhanInterval[yuezhanInfo.owner] = setInterval(function (that, yzinfo, divcd) {
+                // Get the current date and time
+                // Calculate the remaining time
+                let now2 = new Date();
+                let countdownDate = new Date(yzinfo.dueDate).getTime();
+                var distance = countdownDate - now2.getTime();
+
+                // Calculate days, hours, minutes, and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Display the countdown in the div
+                divcd.innerHTML = `${days > 0 ? days + "天，" : ""}${hours > 0 ? hours : 0}:${minutes > 0 ? minutes : 0}:${seconds > 0 ? seconds : 0}`;
+
+                // If the countdown is over, display a message and clear the interval
+                if (distance < 0) {
+                    clearInterval(that.gameScene.ui.yuezhanInterval[yzinfo.owner]);
+                    delete that.gameScene.ui.yuezhanInterval[yzinfo.owner];
+                }
+            }, 1000, this, yuezhanInfo, divCountdown);
+
+            let divParticipantsHeader = document.createElement("div");
+            divParticipantsHeader.style.position = 'static';
+            divParticipantsHeader.style.display = 'block';
+            divParticipantsHeader.innerText = "参战玩家：";
+            this.gameScene.ui.frameGameHallOnliners.appendChild(divParticipantsHeader);
+
+            let isMeParticipant = false;
+            for (let i = 0; i < yuezhanInfo.participants.length; i++) {
+                let parID = yuezhanInfo.participants[i];
+                if (parID === this.tractorPlayer.MyOwnId) {
+                    isMeParticipant = true;
+                }
+                let d = document.createElement("div");
+                d.style.position = 'static';
+                d.style.display = 'block';
+                d.innerText = `【${parID}】`;
+                this.gameScene.ui.frameGameHallOnliners.appendChild(d);
+            }
+
+            let yze = new YuezhanEntity();
+            yze.owner = yuezhanInfo.owner;
+            let btnJoinOrQuitYuezhan = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', `${isMeParticipant ? "退战" : "参战"}`, () => this.joinOrQuitYuezhan(yze));
+            btnJoinOrQuitYuezhan.style.marginTop = '10px';
+            btnJoinOrQuitYuezhan.style.position = 'static';
+            btnJoinOrQuitYuezhan.style.display = 'block';
+            btnJoinOrQuitYuezhan.style.width = '40px';
+            this.gameScene.ui.frameGameHallOnliners.appendChild(btnJoinOrQuitYuezhan);
+        }
+    }
+
+    private joinOrQuitYuezhan(yuezhanEntity: YuezhanEntity) {
+        this.gameScene.sendMessageToServer(CommonMethods.SendJoinOrQuitYuezhan_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(yuezhanEntity));
     }
 
     private drawGameMe() {

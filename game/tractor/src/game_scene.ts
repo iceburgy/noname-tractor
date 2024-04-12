@@ -408,7 +408,8 @@ export class GameScene {
     public handleNotifyGameHall(objList: any) {
         var roomStateList = objList[0];
         var playerList = objList[1];
-        this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList)
+        var yuezhanList = objList[2];
+        this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList, yuezhanList)
     }
 
     public handleNotifyOnlinePlayerList(playerID: string, objList: any) {

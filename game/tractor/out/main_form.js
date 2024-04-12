@@ -15,6 +15,7 @@ import { PokerHelper } from './poker_helper.js';
 import { IDBHelper } from './idb_helper.js';
 import { FileHelper } from './file_helper.js';
 import { OnePlayerAtATime } from './one_player_at_a_time.js';
+import { YuezhanEntity } from './yuezhan_entity.js';
 var ReadyToStart_REQUEST = "ReadyToStart";
 var ToggleIsRobot_REQUEST = "ToggleIsRobot";
 var ToggleIsQiangliang_REQUEST = "ToggleIsQiangliang";
@@ -1756,13 +1757,13 @@ var MainForm = /** @class */ (function () {
         var tempIsWinByTrump = this.IsWinningWithTrump(trickState, winnerID);
         this.drawingFormHelper.DrawOverridingFlag(cardsCount, this.PlayerPosition[winnerID], tempIsWinByTrump - 1, false);
     };
-    MainForm.prototype.NotifyGameHallEventHandler = function (roomStateList, playerList) {
+    MainForm.prototype.NotifyGameHallEventHandler = function (roomStateList, playerList, yuezhanList) {
         this.updateOnlineAndRoomPlayerList(roomStateList, playerList);
         if (playerList.includes(this.tractorPlayer.MyOwnId)) {
             this.tractorPlayer.destroyAllClientMessages();
             this.destroyGameRoom();
             this.destroyGameHall();
-            this.drawGameHall(roomStateList, playerList);
+            this.drawGameHall(roomStateList, playerList, yuezhanList);
         }
     };
     MainForm.prototype.destroyGameHall = function () {
@@ -1773,6 +1774,13 @@ var MainForm = /** @class */ (function () {
         if (this.gameScene.ui.frameGameHall) {
             this.gameScene.ui.frameGameHall.remove();
             delete this.gameScene.ui.frameGameHall;
+        }
+        if (this.gameScene.ui.yuezhanInterval) {
+            var yziKeys = Object.getOwnPropertyNames(this.gameScene.ui.yuezhanInterval);
+            for (var i = 0; i < yziKeys.length; i++) {
+                clearInterval(this.gameScene.ui.yuezhanInterval[yziKeys[i]]);
+            }
+            delete this.gameScene.ui.yuezhanInterval;
         }
     };
     MainForm.prototype.drawFrameMain = function () {
@@ -2003,7 +2011,7 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnExitAndObserve.hide();
         }
     };
-    MainForm.prototype.drawGameHall = function (roomStateList, playerList) {
+    MainForm.prototype.drawGameHall = function (roomStateList, playerList, yuezhanList) {
         var _this = this;
         if (!this.gameScene.ui.gameMe) {
             this.drawGameMe();
@@ -2016,21 +2024,31 @@ var MainForm = /** @class */ (function () {
         frameGameHall.style.bottom = '0px';
         frameGameHall.style.right = '0px';
         this.gameScene.ui.frameGameHall = frameGameHall;
+        var frameGameHallOnlinersHeader = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
+        frameGameHallOnlinersHeader.style.position = 'absolute';
+        frameGameHallOnlinersHeader.style.top = '0px';
+        frameGameHallOnlinersHeader.style.left = '0px';
+        frameGameHallOnlinersHeader.style.width = '15%';
+        frameGameHallOnlinersHeader.style.paddingLeft = '10px';
+        frameGameHallOnlinersHeader.style.overflow = 'visible';
+        frameGameHallOnlinersHeader.style.zIndex = CommonMethods.zIndexFrameGameHallOnliners;
+        this.gameScene.ui.frameGameHallOnlinersHeader = frameGameHallOnlinersHeader;
         var frameGameHallOnliners = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
         frameGameHallOnliners.style.position = 'absolute';
-        frameGameHallOnliners.style.top = '0px';
+        frameGameHallOnliners.style.top = '150px';
         frameGameHallOnliners.style.left = '0px';
         frameGameHallOnliners.style.bottom = '0px';
         frameGameHallOnliners.style.width = '15%';
+        frameGameHallOnliners.style.paddingLeft = '10px';
+        frameGameHallOnliners.style.overflow = 'auto';
         this.gameScene.ui.frameGameHallOnliners = frameGameHallOnliners;
-        var textHall = this.gameScene.ui.create.div('', '在线', this.gameScene.ui.frameGameHallOnliners);
-        textHall.style.width = '70px';
-        textHall.style.fontFamily = 'xinwei';
-        textHall.style.fontSize = '30px';
-        textHall.style.padding = '10px';
-        textHall.style.left = 'calc(10px)';
-        textHall.style.top = 'calc(60px)';
-        textHall.style.textAlign = 'left';
+        var pYuezhanHeader = document.createElement("p");
+        pYuezhanHeader.innerText = "\u7EA6\u6218(".concat(yuezhanList.length, ")");
+        pYuezhanHeader.style.fontFamily = 'xinwei';
+        pYuezhanHeader.style.fontSize = '30px';
+        pYuezhanHeader.style.textAlign = 'left';
+        pYuezhanHeader.style.whiteSpace = 'nowrap';
+        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(pYuezhanHeader);
         var playerListAll = CommonMethods.deepCopy(playerList);
         var frameGameHallTables = this.gameScene.ui.create.div('.frameGameHallTables', this.gameScene.ui.frameGameHall);
         frameGameHallTables.style.position = 'absolute';
@@ -2081,7 +2099,7 @@ var MainForm = /** @class */ (function () {
                 e.target.style.top = "calc(".concat(topOffset, "% - 80px)");
                 e.target.previousSibling.style.top = "calc(".concat(topOffset, "% - 80px)");
             });
-            var _loop_3 = function (j) {
+            var _loop_4 = function (j) {
                 var leftOffsetChair = "calc(".concat(leftOffset, "% - 40px)");
                 var topOffsetChair = "calc(".concat(topOffset, "% - 40px)");
                 var topOffsetChairLifted = "calc(".concat(topOffset, "% - 45px)");
@@ -2214,24 +2232,136 @@ var MainForm = /** @class */ (function () {
                 }
             };
             for (var j = 0; j < 4; j++) {
-                _loop_3(j);
+                _loop_4(j);
             }
         };
         var this_2 = this, pokerTable, obCount, obTopOffset, pokerPlayer, obY, pokerPlayerOb, pokerChair;
         for (var i = 0; i < roomStateList.length; i++) {
             _loop_2(i);
         }
-        var topPx = 110;
-        for (var i = 0; i < playerListAll.length; i++) {
-            var textHallPlayer = this.gameScene.ui.create.div('', playerListAll[i], this.gameScene.ui.frameGameHallOnliners);
-            textHallPlayer.style.fontFamily = 'serif';
-            textHallPlayer.style.fontSize = '20px';
-            textHallPlayer.style.padding = '10px';
-            textHallPlayer.style.left = 'calc(10px)';
-            textHallPlayer.style.top = "calc(".concat(topPx, "px)");
-            textHallPlayer.style.textAlign = 'left';
-            topPx += 30;
+        var IOwnYuezhan = false;
+        for (var i = 0; i < yuezhanList.length; i++) {
+            var yuezhanInfo = yuezhanList[i];
+            if (yuezhanInfo.owner === this.tractorPlayer.MyOwnId) {
+                IOwnYuezhan = true;
+            }
         }
+        if (!IOwnYuezhan) {
+            // pick a date time
+            var inputDueDate = document.createElement("input");
+            inputDueDate.style.position = 'static';
+            inputDueDate.style.display = 'block';
+            inputDueDate.setAttribute("type", "datetime-local");
+            inputDueDate.setAttribute("id", "inputDueDatePicker");
+            this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(inputDueDate);
+            var btnCreateYuezhan = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', "我要约战", function () {
+                var inputDueDate = document.getElementById("inputDueDatePicker");
+                var dateTimeValue = inputDueDate.value;
+                if (!dateTimeValue) {
+                    alert("约战时间不能为空");
+                    return;
+                }
+                var yzDueDate = new Date(dateTimeValue);
+                if (yzDueDate < new Date()) {
+                    alert("请选择未来作为约战时间");
+                    return;
+                }
+                var yzDueDateISO = CommonMethods.DateToISO8601(yzDueDate);
+                var yze = new YuezhanEntity();
+                yze.owner = _this.tractorPlayer.MyOwnId;
+                yze.dueDate = yzDueDateISO;
+                yze.participants.push(_this.tractorPlayer.MyOwnId);
+                _this.joinOrQuitYuezhan(yze);
+            });
+            btnCreateYuezhan.style.marginTop = '10px';
+            btnCreateYuezhan.style.position = 'static';
+            btnCreateYuezhan.style.display = 'block';
+            btnCreateYuezhan.style.width = '80px';
+            this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(btnCreateYuezhan);
+        }
+        else {
+            this.gameScene.ui.frameGameHallOnliners.style.top = '60px';
+        }
+        var _loop_3 = function (i) {
+            var yuezhanInfo = yuezhanList[i];
+            var now = new Date();
+            if (new Date(yuezhanInfo.dueDate) < now) {
+                return "continue";
+            }
+            var divTitle = document.createElement("div");
+            divTitle.style.marginTop = '20px';
+            divTitle.style.position = 'static';
+            divTitle.style.display = 'block';
+            divTitle.style.fontSize = '20px';
+            divTitle.innerText = "\u3010".concat(yuezhanInfo.owner, "\u3011\u7684\u7EA6\u6218");
+            this_3.gameScene.ui.frameGameHallOnliners.appendChild(divTitle);
+            var divDueDate = document.createElement("div");
+            divDueDate.style.position = 'static';
+            divDueDate.style.display = 'block';
+            var yzDueDate = new Date(yuezhanInfo.dueDate);
+            divDueDate.innerText = "".concat(CommonMethods.DateToISO8601(yzDueDate));
+            this_3.gameScene.ui.frameGameHallOnliners.appendChild(divDueDate);
+            var divCountdown = document.createElement("div");
+            divCountdown.style.position = 'static';
+            divCountdown.style.display = 'block';
+            this_3.gameScene.ui.frameGameHallOnliners.appendChild(divCountdown);
+            // Set the countdown date (in milliseconds)
+            // Update the countdown every second
+            if (!this_3.gameScene.ui.yuezhanInterval) {
+                this_3.gameScene.ui.yuezhanInterval = {};
+            }
+            this_3.gameScene.ui.yuezhanInterval[yuezhanInfo.owner] = setInterval(function (that, yzinfo, divcd) {
+                // Get the current date and time
+                // Calculate the remaining time
+                var now2 = new Date();
+                var countdownDate = new Date(yzinfo.dueDate).getTime();
+                var distance = countdownDate - now2.getTime();
+                // Calculate days, hours, minutes, and seconds
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                // Display the countdown in the div
+                divcd.innerHTML = "".concat(days > 0 ? days + "天，" : "").concat(hours > 0 ? hours : 0, ":").concat(minutes > 0 ? minutes : 0, ":").concat(seconds > 0 ? seconds : 0);
+                // If the countdown is over, display a message and clear the interval
+                if (distance < 0) {
+                    clearInterval(that.gameScene.ui.yuezhanInterval[yzinfo.owner]);
+                    delete that.gameScene.ui.yuezhanInterval[yzinfo.owner];
+                }
+            }, 1000, this_3, yuezhanInfo, divCountdown);
+            var divParticipantsHeader = document.createElement("div");
+            divParticipantsHeader.style.position = 'static';
+            divParticipantsHeader.style.display = 'block';
+            divParticipantsHeader.innerText = "参战玩家：";
+            this_3.gameScene.ui.frameGameHallOnliners.appendChild(divParticipantsHeader);
+            var isMeParticipant = false;
+            for (var i_1 = 0; i_1 < yuezhanInfo.participants.length; i_1++) {
+                var parID = yuezhanInfo.participants[i_1];
+                if (parID === this_3.tractorPlayer.MyOwnId) {
+                    isMeParticipant = true;
+                }
+                var d = document.createElement("div");
+                d.style.position = 'static';
+                d.style.display = 'block';
+                d.innerText = "\u3010".concat(parID, "\u3011");
+                this_3.gameScene.ui.frameGameHallOnliners.appendChild(d);
+            }
+            var yze = new YuezhanEntity();
+            yze.owner = yuezhanInfo.owner;
+            var btnJoinOrQuitYuezhan = this_3.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', "".concat(isMeParticipant ? "退战" : "参战"), function () { return _this.joinOrQuitYuezhan(yze); });
+            btnJoinOrQuitYuezhan.style.marginTop = '10px';
+            btnJoinOrQuitYuezhan.style.position = 'static';
+            btnJoinOrQuitYuezhan.style.display = 'block';
+            btnJoinOrQuitYuezhan.style.width = '40px';
+            this_3.gameScene.ui.frameGameHallOnliners.appendChild(btnJoinOrQuitYuezhan);
+        };
+        var this_3 = this;
+        for (var i = 0; i < yuezhanList.length; i++) {
+            _loop_3(i);
+        }
+    };
+    MainForm.prototype.joinOrQuitYuezhan = function (yuezhanEntity) {
+        this.gameScene.sendMessageToServer(CommonMethods.SendJoinOrQuitYuezhan_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(yuezhanEntity));
     };
     MainForm.prototype.drawGameMe = function () {
         this.gameScene.ui.gameMe = this.CreatePlayer(0, this.tractorPlayer.PlayerId, this.gameScene.ui.arena); // creates ui.gameMe
@@ -2842,15 +2972,15 @@ var MainForm = /** @class */ (function () {
             playerRanks = [tempRank, tempRank, tempRank, tempRank];
         }
         this.destroyImagesChairOrPlayer();
-        var _loop_4 = function (i) {
-            var starterText = players[i] === this_3.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "".concat(i + 1);
-            this_3.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = starterText;
-            var playerUI = this_3.CreatePlayer(i, players[i], this_3.gameScene.ui.frameGameRoom);
-            this_3.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
+        var _loop_5 = function (i) {
+            var starterText = players[i] === this_4.tractorPlayer.replayEntity.CurrentHandState.Starter ? "庄家" : "".concat(i + 1);
+            this_4.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = starterText;
+            var playerUI = this_4.CreatePlayer(i, players[i], this_4.gameScene.ui.frameGameRoom);
+            this_4.gameScene.ui.gameRoomImagesChairOrPlayer[i] = playerUI;
             if (i === 0) {
-                this_3.gameScene.ui.gameMe = playerUI;
-                if (!this_3.gameScene.ui.handZone) {
-                    this_3.drawHandZone();
+                this_4.gameScene.ui.gameMe = playerUI;
+                if (!this_4.gameScene.ui.handZone) {
+                    this_4.drawHandZone();
                 }
                 return "continue";
             }
@@ -2880,9 +3010,9 @@ var MainForm = /** @class */ (function () {
                     targetUI.style.bottom = "calc(".concat(_this.gameScene.coordinates.playerSkinPositions[i].y, ")");
             });
         };
-        var this_3 = this;
+        var this_4 = this;
         for (var i = 0; i < 4; i++) {
-            _loop_4(i);
+            _loop_5(i);
         }
         this.tractorPlayer.PlayerId = players[0];
         this.tractorPlayer.CurrentGameState = new GameState();
@@ -2987,8 +3117,8 @@ var MainForm = /** @class */ (function () {
         var drawDelay = 100;
         var i = 1;
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
-            var _loop_5 = function () {
-                var position = this_4.PlayerPosition[curPlayer];
+            var _loop_6 = function () {
+                var position = this_5.PlayerPosition[curPlayer];
                 if (isNormalShowCards) {
                     trick.ShowedCards[curPlayer].forEach(function (card) {
                         _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
@@ -2996,19 +3126,19 @@ var MainForm = /** @class */ (function () {
                 }
                 var cardsList = CommonMethods.deepCopy(trick.ShowedCards[curPlayer]);
                 if (isOnePlayerAtATimeInit) {
-                    this_4.onePlayerAtATime.cardsListList.push(cardsList);
-                    this_4.onePlayerAtATime.positionList.push(position);
+                    this_5.onePlayerAtATime.cardsListList.push(cardsList);
+                    this_5.onePlayerAtATime.positionList.push(position);
                 }
                 else {
                     setTimeout(function () {
                         _this.drawingFormHelper.DrawShowedCardsByPosition(cardsList, position);
                     }, i * drawDelay);
                 }
-                curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_4.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
+                curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_5.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
             };
-            var this_4 = this;
+            var this_5 = this;
             for (; i <= Object.keys(trick.ShowedCards).length; i++) {
-                _loop_5();
+                _loop_6();
             }
         }
         if (isOnePlayerAtATime) {
@@ -3115,10 +3245,10 @@ var MainForm = /** @class */ (function () {
             this.onePlayerAtATime.curIndex = 4;
         }
         if (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 0) {
-            var _loop_6 = function () {
-                var trick = this_5.tractorPlayer.replayEntity.CurrentTrickStates[0];
-                this_5.tractorPlayer.replayedTricks.push(trick);
-                this_5.tractorPlayer.replayEntity.CurrentTrickStates.shift();
+            var _loop_7 = function () {
+                var trick = this_6.tractorPlayer.replayEntity.CurrentTrickStates[0];
+                this_6.tractorPlayer.replayedTricks.push(trick);
+                this_6.tractorPlayer.replayEntity.CurrentTrickStates.shift();
                 // 甩牌失败
                 if (Object.keys(trick.ShowedCards).length == 1)
                     return "continue";
@@ -3127,12 +3257,12 @@ var MainForm = /** @class */ (function () {
                     trick.ShowedCards[curPlayer].forEach(function (card) {
                         _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
                     });
-                    curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_5.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
+                    curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_6.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
                 }
             };
-            var this_5 = this;
+            var this_6 = this;
             while (this.tractorPlayer.replayEntity.CurrentTrickStates.length > 1) {
-                _loop_6();
+                _loop_7();
             }
             this.drawingFormHelper.DrawHandCardsByPosition(1, this.tractorPlayer.CurrentPoker, 1);
             this.replayNextTrick();
@@ -3180,14 +3310,14 @@ var MainForm = /** @class */ (function () {
                 this.drawingFormHelper.DrawDiscardedCards();
         }
         else if (Object.keys(trick.ShowedCards).length == 4) {
-            var _loop_7 = function (key, value) {
+            var _loop_8 = function (key, value) {
                 value.forEach(function (card) {
                     _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key].AddCard(card);
                 });
             };
             for (var _i = 0, _a = Object.entries(trick.ShowedCards); _i < _a.length; _i++) {
                 var _b = _a[_i], key = _b[0], value = _b[1];
-                _loop_7(key, value);
+                _loop_8(key, value);
             }
             if (trick.Winner) {
                 if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {
