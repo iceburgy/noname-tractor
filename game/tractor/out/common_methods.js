@@ -479,26 +479,26 @@ export var CommonMethods = /** @class */ (function () {
         // Get the timezone offset in minutes and convert it to hours and minutes
         var timezoneOffsetHours = Math.floor(date.getTimezoneOffset() / 60);
         var timezoneOffsetMinutes = date.getTimezoneOffset() % 60;
-        // Function to add leading zeros to single-digit numbers
-        function pad(number) {
-            if (number < 10) {
-                return '0' + number;
-            }
-            return number;
-        }
         // Format the date to ISO 8601 format with timezone
         return date.getFullYear() +
-            '-' + pad(date.getMonth() + 1) +
-            '-' + pad(date.getDate()) +
-            'T' + pad(date.getHours()) +
-            ':' + pad(date.getMinutes()) +
-            ':' + pad(date.getSeconds()) +
+            '-' + CommonMethods.Pad(date.getMonth() + 1) +
+            '-' + CommonMethods.Pad(date.getDate()) +
+            'T' + CommonMethods.Pad(date.getHours()) +
+            ':' + CommonMethods.Pad(date.getMinutes()) +
+            ':' + CommonMethods.Pad(date.getSeconds()) +
             (date.getTimezoneOffset() < 0 ? '+' : '-') +
-            pad(Math.abs(timezoneOffsetHours)) +
-            ':' + pad(Math.abs(timezoneOffsetMinutes));
+            CommonMethods.Pad(Math.abs(timezoneOffsetHours)) +
+            ':' + CommonMethods.Pad(Math.abs(timezoneOffsetMinutes));
+    }; // Function to add leading zeros to single-digit numbers
+    CommonMethods.Pad = function (number) {
+        if (number < 10) {
+            return '0' + number;
+        }
+        return number;
     };
     CommonMethods.storageFileForCardsKey = "storageFileForCards";
     CommonMethods.SendJoinOrQuitYuezhan_REQUEST = "SendJoinOrQuitYuezhan";
+    CommonMethods.SendAwardOnlineBonus_REQUEST = "SendAwardOnlineBonus";
     CommonMethods.SET_PLAYER_NAME_REQUEST = "set_player_name";
     CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb";
     CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp";
@@ -546,7 +546,9 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.zIndexDanmu = 10;
     CommonMethods.zIndexFrameChat = 11;
     CommonMethods.zIndexSettingsForm = 100;
-    CommonMethods.zIndexFrameGameHallOnliners = 9;
+    CommonMethods.zIndexFrameGameHallOnliners = 1;
+    CommonMethods.zeroDuration = "00:00:00";
+    CommonMethods.OnlineBonusMunitesRequired = 60;
     CommonMethods.gifferPrefix = "playerGiffer";
     CommonMethods.winEmojiLength = 4;
     CommonMethods.danmuDuration = 8;

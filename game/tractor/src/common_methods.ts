@@ -5,6 +5,7 @@ import { SuitEnums } from './suit_enums.js';
 export class CommonMethods {
     public static storageFileForCardsKey = "storageFileForCards"
     public static SendJoinOrQuitYuezhan_REQUEST = "SendJoinOrQuitYuezhan"
+    public static SendAwardOnlineBonus_REQUEST = "SendAwardOnlineBonus"
 
     public static SET_PLAYER_NAME_REQUEST = "set_player_name"
     public static PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb"
@@ -56,7 +57,9 @@ export class CommonMethods {
     public static zIndexDanmu = 10;
     public static zIndexFrameChat = 11;
     public static zIndexSettingsForm = 100;
-    public static zIndexFrameGameHallOnliners = 9;
+    public static zIndexFrameGameHallOnliners = 1;
+    public static zeroDuration = "00:00:00";
+    public static OnlineBonusMunitesRequired = 60;
 
     public static gifferPrefix = "playerGiffer";
 
@@ -653,23 +656,22 @@ export class CommonMethods {
         let timezoneOffsetHours = Math.floor(date.getTimezoneOffset() / 60);
         var timezoneOffsetMinutes = date.getTimezoneOffset() % 60;
 
-        // Function to add leading zeros to single-digit numbers
-        function pad(number: number) {
-            if (number < 10) {
-                return '0' + number;
-            }
-            return number;
-        }
-
         // Format the date to ISO 8601 format with timezone
         return date.getFullYear() +
-            '-' + pad(date.getMonth() + 1) +
-            '-' + pad(date.getDate()) +
-            'T' + pad(date.getHours()) +
-            ':' + pad(date.getMinutes()) +
-            ':' + pad(date.getSeconds()) +
+            '-' + CommonMethods.Pad(date.getMonth() + 1) +
+            '-' + CommonMethods.Pad(date.getDate()) +
+            'T' + CommonMethods.Pad(date.getHours()) +
+            ':' + CommonMethods.Pad(date.getMinutes()) +
+            ':' + CommonMethods.Pad(date.getSeconds()) +
             (date.getTimezoneOffset() < 0 ? '+' : '-') +
-            pad(Math.abs(timezoneOffsetHours)) +
-            ':' + pad(Math.abs(timezoneOffsetMinutes));
+            CommonMethods.Pad(Math.abs(timezoneOffsetHours)) +
+            ':' + CommonMethods.Pad(Math.abs(timezoneOffsetMinutes));
+    }        // Function to add leading zeros to single-digit numbers
+
+    public static Pad(number: number) {
+        if (number < 10) {
+            return '0' + number;
+        }
+        return number;
     }
 }

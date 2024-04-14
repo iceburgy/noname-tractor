@@ -1782,6 +1782,10 @@ var MainForm = /** @class */ (function () {
             }
             delete this.gameScene.ui.yuezhanInterval;
         }
+        if (this.gameScene.ui.onlineBonusCountdownInterval) {
+            clearInterval(this.gameScene.ui.onlineBonusCountdownInterval);
+            delete this.gameScene.ui.onlineBonusCountdownInterval;
+        }
     };
     MainForm.prototype.drawFrameMain = function () {
         var frameMain = this.gameScene.ui.create.div('.frameMain', this.gameScene.ui.window);
@@ -2026,6 +2030,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.frameGameHall = frameGameHall;
         var frameGameHallOnlinersHeader = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
         frameGameHallOnlinersHeader.style.position = 'absolute';
+        frameGameHallOnlinersHeader.style.paddingTop = '20px';
         frameGameHallOnlinersHeader.style.top = '0px';
         frameGameHallOnlinersHeader.style.left = '0px';
         frameGameHallOnlinersHeader.style.width = '15%';
@@ -2035,13 +2040,46 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.frameGameHallOnlinersHeader = frameGameHallOnlinersHeader;
         var frameGameHallOnliners = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
         frameGameHallOnliners.style.position = 'absolute';
-        frameGameHallOnliners.style.top = '150px';
+        frameGameHallOnliners.style.top = '220px';
         frameGameHallOnliners.style.left = '0px';
         frameGameHallOnliners.style.bottom = '0px';
         frameGameHallOnliners.style.width = '15%';
         frameGameHallOnliners.style.paddingLeft = '10px';
         frameGameHallOnliners.style.overflow = 'auto';
         this.gameScene.ui.frameGameHallOnliners = frameGameHallOnliners;
+        var divOnlineBonus = document.createElement("div");
+        divOnlineBonus.style.position = 'static';
+        divOnlineBonus.style.display = 'block';
+        divOnlineBonus.innerText = "\u5728\u7EBF\u5956\u52B1";
+        divOnlineBonus.style.fontFamily = 'xinwei';
+        divOnlineBonus.style.fontSize = '30px';
+        divOnlineBonus.style.textAlign = 'left';
+        divOnlineBonus.style.whiteSpace = 'nowrap';
+        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(divOnlineBonus);
+        var divOnlineBonusCountdown = document.createElement("div");
+        divOnlineBonusCountdown.style.position = 'static';
+        divOnlineBonusCountdown.style.display = 'block';
+        divOnlineBonusCountdown.innerText = CommonMethods.zeroDuration;
+        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(divOnlineBonusCountdown);
+        var onlineBonusDueDate = this.getPlayerOnlineBonusDueDate();
+        this.gameScene.ui.onlineBonusCountdownInterval = setInterval(function (that, olBonusDueDate, divcd) {
+            // Get the current date and time
+            // Calculate the remaining time
+            var nowForOnlineBonus = new Date();
+            var distance = olBonusDueDate.getTime() - nowForOnlineBonus.getTime();
+            // Calculate days, hours, minutes, and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // Display the countdown in the div
+            divcd.innerText = "".concat(days > 0 ? days + "天，" : "").concat(hours > 0 ? CommonMethods.Pad(hours) : "00", ":").concat(minutes > 0 ? CommonMethods.Pad(minutes) : "00", ":").concat(seconds > 0 ? CommonMethods.Pad(seconds) : "00");
+            if (distance < 0) {
+                clearInterval(that.gameScene.ui.onlineBonusCountdownInterval);
+                delete that.gameScene.ui.onlineBonusCountdownInterval;
+                that.gameScene.sendMessageToServer(CommonMethods.SendAwardOnlineBonus_REQUEST, that.tractorPlayer.MyOwnId, "");
+            }
+        }, 1000, this, onlineBonusDueDate, divOnlineBonusCountdown);
         var pYuezhanHeader = document.createElement("p");
         pYuezhanHeader.innerText = "\u7EA6\u6218(".concat(yuezhanList.length, ")");
         pYuezhanHeader.style.fontFamily = 'xinwei';
@@ -2280,7 +2318,7 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(btnCreateYuezhan);
         }
         else {
-            this.gameScene.ui.frameGameHallOnliners.style.top = '60px';
+            this.gameScene.ui.frameGameHallOnliners.style.top = '120px';
         }
         var _loop_3 = function (i) {
             var yuezhanInfo = yuezhanList[i];
@@ -2304,26 +2342,23 @@ var MainForm = /** @class */ (function () {
             var divCountdown = document.createElement("div");
             divCountdown.style.position = 'static';
             divCountdown.style.display = 'block';
+            divCountdown.innerText = CommonMethods.zeroDuration;
             this_3.gameScene.ui.frameGameHallOnliners.appendChild(divCountdown);
-            // Set the countdown date (in milliseconds)
-            // Update the countdown every second
             if (!this_3.gameScene.ui.yuezhanInterval) {
                 this_3.gameScene.ui.yuezhanInterval = {};
             }
             this_3.gameScene.ui.yuezhanInterval[yuezhanInfo.owner] = setInterval(function (that, yzinfo, divcd) {
                 // Get the current date and time
                 // Calculate the remaining time
-                var now2 = new Date();
-                var countdownDate = new Date(yzinfo.dueDate).getTime();
-                var distance = countdownDate - now2.getTime();
+                var nowForYuezhan = new Date();
+                var distance = new Date(yzinfo.dueDate).getTime() - nowForYuezhan.getTime();
                 // Calculate days, hours, minutes, and seconds
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
                 // Display the countdown in the div
-                divcd.innerHTML = "".concat(days > 0 ? days + "天，" : "").concat(hours > 0 ? hours : 0, ":").concat(minutes > 0 ? minutes : 0, ":").concat(seconds > 0 ? seconds : 0);
-                // If the countdown is over, display a message and clear the interval
+                divcd.innerText = "".concat(days > 0 ? days + "天，" : "").concat(hours > 0 ? CommonMethods.Pad(hours) : "00", ":").concat(minutes > 0 ? CommonMethods.Pad(minutes) : "00", ":").concat(seconds > 0 ? CommonMethods.Pad(seconds) : "00");
                 if (distance < 0) {
                     clearInterval(that.gameScene.ui.yuezhanInterval[yzinfo.owner]);
                     delete that.gameScene.ui.yuezhanInterval[yzinfo.owner];
@@ -2359,6 +2394,15 @@ var MainForm = /** @class */ (function () {
         for (var i = 0; i < yuezhanList.length; i++) {
             _loop_3(i);
         }
+    };
+    MainForm.prototype.getPlayerOnlineBonusDueDate = function () {
+        var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
+        var onlineBonusDueDate = new Date();
+        if (daojuInfoByPlayer && daojuInfoByPlayer.onlineSince) {
+            onlineBonusDueDate = new Date(daojuInfoByPlayer.onlineSince);
+        }
+        onlineBonusDueDate.setMinutes(onlineBonusDueDate.getMinutes() + CommonMethods.OnlineBonusMunitesRequired);
+        return onlineBonusDueDate;
     };
     MainForm.prototype.joinOrQuitYuezhan = function (yuezhanEntity) {
         this.gameScene.sendMessageToServer(CommonMethods.SendJoinOrQuitYuezhan_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(yuezhanEntity));
