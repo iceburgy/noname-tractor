@@ -2061,24 +2061,9 @@ var MainForm = /** @class */ (function () {
         divOnlineBonusCountdown.style.display = 'block';
         divOnlineBonusCountdown.innerText = CommonMethods.zeroDuration;
         this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(divOnlineBonusCountdown);
-        var onlineBonusDueDate = this.getPlayerOnlineBonusDueDate();
+        var onlineBonusDueDate = this.GetPlayerOnlineBonusDueDate();
         this.gameScene.ui.onlineBonusCountdownInterval = setInterval(function (that, olBonusDueDate, divcd) {
-            // Get the current date and time
-            // Calculate the remaining time
-            var nowForOnlineBonus = new Date();
-            var distance = olBonusDueDate.getTime() - nowForOnlineBonus.getTime();
-            // Calculate days, hours, minutes, and seconds
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            // Display the countdown in the div
-            divcd.innerText = "".concat(days > 0 ? days + "天，" : "").concat(hours > 0 ? CommonMethods.Pad(hours) : "00", ":").concat(minutes > 0 ? CommonMethods.Pad(minutes) : "00", ":").concat(seconds > 0 ? CommonMethods.Pad(seconds) : "00");
-            if (distance < 0) {
-                clearInterval(that.gameScene.ui.onlineBonusCountdownInterval);
-                delete that.gameScene.ui.onlineBonusCountdownInterval;
-                that.gameScene.sendMessageToServer(CommonMethods.SendAwardOnlineBonus_REQUEST, that.tractorPlayer.MyOwnId, "");
-            }
+            that.CheckOnlineBonusStatus(that, olBonusDueDate, divcd);
         }, 1000, this, onlineBonusDueDate, divOnlineBonusCountdown);
         var pYuezhanHeader = document.createElement("p");
         pYuezhanHeader.innerText = "\u7EA6\u6218(".concat(yuezhanList.length, ")");
@@ -2395,7 +2380,7 @@ var MainForm = /** @class */ (function () {
             _loop_3(i);
         }
     };
-    MainForm.prototype.getPlayerOnlineBonusDueDate = function () {
+    MainForm.prototype.GetPlayerOnlineBonusDueDate = function () {
         var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
         var onlineBonusDueDate = new Date();
         if (daojuInfoByPlayer && daojuInfoByPlayer.onlineSince) {
@@ -2403,6 +2388,26 @@ var MainForm = /** @class */ (function () {
         }
         onlineBonusDueDate.setMinutes(onlineBonusDueDate.getMinutes() + CommonMethods.OnlineBonusMunitesRequired);
         return onlineBonusDueDate;
+    };
+    MainForm.prototype.CheckOnlineBonusStatus = function (that, olBonusDueDate, divcd) {
+        // Get the current date and time
+        // Calculate the remaining time
+        var nowForOnlineBonus = new Date();
+        var distance = olBonusDueDate.getTime() - nowForOnlineBonus.getTime();
+        if (divcd) {
+            // Calculate days, hours, minutes, and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // Display the countdown in the div
+            divcd.innerText = "".concat(days > 0 ? days + "天，" : "").concat(hours > 0 ? CommonMethods.Pad(hours) : "00", ":").concat(minutes > 0 ? CommonMethods.Pad(minutes) : "00", ":").concat(seconds > 0 ? CommonMethods.Pad(seconds) : "00");
+        }
+        if (distance < 0) {
+            clearInterval(that.gameScene.ui.onlineBonusCountdownInterval);
+            delete that.gameScene.ui.onlineBonusCountdownInterval;
+            that.gameScene.sendMessageToServer(CommonMethods.SendAwardOnlineBonus_REQUEST, that.tractorPlayer.MyOwnId, "");
+        }
     };
     MainForm.prototype.joinOrQuitYuezhan = function (yuezhanEntity) {
         this.gameScene.sendMessageToServer(CommonMethods.SendJoinOrQuitYuezhan_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(yuezhanEntity));
