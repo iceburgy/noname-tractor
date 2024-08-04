@@ -3043,10 +3043,9 @@ export class MainForm {
         let players = this.tractorPlayer.CurrentGameState.Players;
         if (this.gameScene.isInGameRoom() &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards &&
-            // 有人加入大厅、房间未满
-            ((isJoiningGameHall && CommonMethods.GetPlayerCount(players) <= 3) ||
-                // 有人加入房间
-                CommonMethods.GetPlayerByID(players, playerID))) {
+            this.tractorPlayer.CurrentHandState.IsFirstHand &&
+            // 有人加入大厅 或者 有人加入我所在的房间
+            (isJoiningGameHall || CommonMethods.GetPlayerByID(players, playerID))) {
             return true;
         }
         return false;
