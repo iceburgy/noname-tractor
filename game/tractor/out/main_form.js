@@ -1116,14 +1116,14 @@ var MainForm = /** @class */ (function () {
         var pNoDongtu = document.getElementById("pNoDongtu");
         pNoDongtu.style.display = "block";
         var noDongtuUntilExpDate = document.getElementById("lblNoDongtuUntilExpDate");
-        if (!this.isNoDongtuUntilExpired()) {
+        if (!this.isNoDongtuUntilExpired(this.DaojuInfo)) {
             noDongtuUntilExpDate.style.display = "block";
             noDongtuUntilExpDate.innerHTML = "\u6709\u6548\u671F\u81F3".concat(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
         }
         var noDongtu = document.getElementById("cbxNoDongtu");
         noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
         noDongtu.onchange = function () {
-            if (noDongtu.checked && _this.isNoDongtuUntilExpired()) {
+            if (noDongtu.checked && _this.isNoDongtuUntilExpired(_this.DaojuInfo)) {
                 noDongtu.checked = false;
                 _this.buyNoDongtuUntil();
             }
@@ -1279,10 +1279,10 @@ var MainForm = /** @class */ (function () {
             }
         }
     };
-    MainForm.prototype.isNoDongtuUntilExpired = function () {
-        if (!this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil)
+    MainForm.prototype.isNoDongtuUntilExpired = function (daojuInfo) {
+        if (!daojuInfo || !daojuInfo.daojuInfoByPlayer || !daojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil)
             return true;
-        var dExp = new Date(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
+        var dExp = new Date(daojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
         var dNow = new Date();
         return dExp < dNow;
     };

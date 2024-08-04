@@ -1237,14 +1237,14 @@ export class MainForm {
         let pNoDongtu: any = document.getElementById("pNoDongtu");
         pNoDongtu.style.display = "block";
         let noDongtuUntilExpDate: any = document.getElementById("lblNoDongtuUntilExpDate");
-        if (!this.isNoDongtuUntilExpired()) {
+        if (!this.isNoDongtuUntilExpired(this.DaojuInfo)) {
             noDongtuUntilExpDate.style.display = "block";
             noDongtuUntilExpDate.innerHTML = `有效期至${this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil}`;
         }
         let noDongtu: any = document.getElementById("cbxNoDongtu");
         noDongtu.checked = gs.noDongtu.toLowerCase() === "true";
         noDongtu.onchange = () => {
-            if (noDongtu.checked && this.isNoDongtuUntilExpired()) {
+            if (noDongtu.checked && this.isNoDongtuUntilExpired(this.DaojuInfo)) {
                 noDongtu.checked = false;
                 this.buyNoDongtuUntil();
             }
@@ -1408,9 +1408,9 @@ export class MainForm {
         }
     }
 
-    public isNoDongtuUntilExpired(): boolean {
-        if (!this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil) return true;
-        let dExp = new Date(this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
+    public isNoDongtuUntilExpired(daojuInfo: any): boolean {
+        if (!daojuInfo || !daojuInfo.daojuInfoByPlayer || !daojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil) return true;
+        let dExp = new Date(daojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
         let dNow = new Date();
 
         return dExp < dNow;

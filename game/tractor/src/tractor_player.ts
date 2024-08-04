@@ -91,7 +91,7 @@ export class TractorPlayer {
         }, this.PingInterval + this.PingInterval / 2);
 
         // check noDongtuUntil
-        if (this.mainForm.gameScene.noDongtu.toLowerCase() === "true" && this.mainForm.isNoDongtuUntilExpired()) {
+        if (this.mainForm.gameScene.noDongtu.toLowerCase() === "true" && this.mainForm.isNoDongtuUntilExpired(this.mainForm.DaojuInfo)) {
             let finalMsg = `${CommonMethods.systemMsgPrefix}道具【关闭动图】已到期`;
             this.mainForm.drawingFormHelper.DrawDanmu(finalMsg);
             this.mainForm.appendChatMsg(finalMsg);
@@ -553,6 +553,12 @@ export class TractorPlayer {
     }
 
     public NotifyDaojuInfo(daojuInfo: any, updateQiandao: boolean, updateSkin: boolean) {
+        // 如果刚刚购买了道具“关闭动图”，则令其直接生效
+        if (this.mainForm.isNoDongtuUntilExpired(this.mainForm.DaojuInfo) && !this.mainForm.isNoDongtuUntilExpired(daojuInfo) && this.mainForm.gameScene.noDongtu === "false") {
+            this.mainForm.gameScene.noDongtu = "true";
+            this.mainForm.gameScene.game.saveConfig("noDongtu", this.mainForm.gameScene.noDongtu);
+        }
+
         this.mainForm.DaojuInfo = daojuInfo;
         this.mainForm.gameScene.noChat = this.mainForm.isChatBanned(this.MyOwnId);
         if (updateQiandao) this.mainForm.UpdateQiandaoStatus();

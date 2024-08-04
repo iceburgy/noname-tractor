@@ -63,7 +63,7 @@ var TractorPlayer = /** @class */ (function () {
             }
         }, this.PingInterval + this.PingInterval / 2);
         // check noDongtuUntil
-        if (this.mainForm.gameScene.noDongtu.toLowerCase() === "true" && this.mainForm.isNoDongtuUntilExpired()) {
+        if (this.mainForm.gameScene.noDongtu.toLowerCase() === "true" && this.mainForm.isNoDongtuUntilExpired(this.mainForm.DaojuInfo)) {
             var finalMsg = "".concat(CommonMethods.systemMsgPrefix, "\u9053\u5177\u3010\u5173\u95ED\u52A8\u56FE\u3011\u5DF2\u5230\u671F");
             this.mainForm.drawingFormHelper.DrawDanmu(finalMsg);
             this.mainForm.appendChatMsg(finalMsg);
@@ -484,6 +484,11 @@ var TractorPlayer = /** @class */ (function () {
         this.mainForm.gameScene.sendMessageToServer(UsedShengbi_REQUEST, this.PlayerId, usedShengbiType);
     };
     TractorPlayer.prototype.NotifyDaojuInfo = function (daojuInfo, updateQiandao, updateSkin) {
+        // 如果刚刚购买了道具“关闭动图”，则令其直接生效
+        if (this.mainForm.isNoDongtuUntilExpired(this.mainForm.DaojuInfo) && !this.mainForm.isNoDongtuUntilExpired(daojuInfo) && this.mainForm.gameScene.noDongtu === "false") {
+            this.mainForm.gameScene.noDongtu = "true";
+            this.mainForm.gameScene.game.saveConfig("noDongtu", this.mainForm.gameScene.noDongtu);
+        }
         this.mainForm.DaojuInfo = daojuInfo;
         this.mainForm.gameScene.noChat = this.mainForm.isChatBanned(this.MyOwnId);
         if (updateQiandao)
