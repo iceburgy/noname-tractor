@@ -2807,7 +2807,6 @@ var MainForm = /** @class */ (function () {
         var players = this.tractorPlayer.CurrentGameState.Players;
         if (this.gameScene.isInGameRoom() &&
             this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.BeforeDistributingCards &&
-            this.tractorPlayer.CurrentHandState.IsFirstHand &&
             // 有人加入大厅 或者 有人加入我所在的房间
             (isJoiningGameHall || CommonMethods.GetPlayerByID(players, playerID))) {
             return true;
