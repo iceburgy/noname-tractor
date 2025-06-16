@@ -1942,11 +1942,6 @@ export class MainForm {
             }
             delete this.gameScene.ui.yuezhanInterval;
         }
-
-        if (this.gameScene.ui.onlineBonusCountdownInterval) {
-            clearInterval(this.gameScene.ui.onlineBonusCountdownInterval);
-            delete this.gameScene.ui.onlineBonusCountdownInterval;
-        }
     }
 
     public drawFrameMain() {
@@ -2241,29 +2236,9 @@ export class MainForm {
         frameGameHallOnliners.style.overflow = 'auto';
         this.gameScene.ui.frameGameHallOnliners = frameGameHallOnliners;
 
-        let divOnlineBonus = document.createElement("div");
-        divOnlineBonus.style.position = 'static';
-        divOnlineBonus.style.display = 'block';
-        divOnlineBonus.innerText = `在线奖励`;
-        divOnlineBonus.style.fontFamily = 'xinwei';
-        divOnlineBonus.style.fontSize = '30px';
-        divOnlineBonus.style.textAlign = 'left';
-        divOnlineBonus.style.whiteSpace = 'nowrap';
-        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(divOnlineBonus);
-
-        let divOnlineBonusCountdown = document.createElement("div");
-        divOnlineBonusCountdown.style.position = 'static';
-        divOnlineBonusCountdown.style.display = 'block';
-        divOnlineBonusCountdown.innerText = CommonMethods.zeroDuration;
-        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(divOnlineBonusCountdown);
-
-        let onlineBonusDueDate: Date = this.GetPlayerOnlineBonusDueDate();
-        this.gameScene.ui.onlineBonusCountdownInterval = setInterval(function (that, olBonusDueDate, divcd) {
-            that.CheckOnlineBonusStatus(that, olBonusDueDate, divcd);
-        }, 1000, this, onlineBonusDueDate, divOnlineBonusCountdown);
-
         let pYuezhanHeader = document.createElement("p");
         pYuezhanHeader.innerText = `约战(${yuezhanList.length})`;
+        pYuezhanHeader.style.marginTop = '0px';
         pYuezhanHeader.style.fontFamily = 'xinwei';
         pYuezhanHeader.style.fontSize = '30px';
         pYuezhanHeader.style.textAlign = 'left';
@@ -2588,40 +2563,6 @@ export class MainForm {
             btnJoinOrQuitYuezhan.style.display = 'block';
             btnJoinOrQuitYuezhan.style.width = '40px';
             this.gameScene.ui.frameGameHallOnliners.appendChild(btnJoinOrQuitYuezhan);
-        }
-    }
-
-    public GetPlayerOnlineBonusDueDate(): Date {
-        let daojuInfoByPlayer: any = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-        let onlineBonusDueDate = new Date();
-        if (daojuInfoByPlayer && daojuInfoByPlayer.onlineSince) {
-            onlineBonusDueDate = new Date(daojuInfoByPlayer.onlineSince);
-        }
-        onlineBonusDueDate.setMinutes(onlineBonusDueDate.getMinutes() + CommonMethods.OnlineBonusMunitesRequired);
-        return onlineBonusDueDate;
-    }
-
-    public CheckOnlineBonusStatus(that: MainForm, olBonusDueDate: Date, divcd?: any) {
-        // Get the current date and time
-        // Calculate the remaining time
-        let nowForOnlineBonus = new Date();
-        var distance = olBonusDueDate.getTime() - nowForOnlineBonus.getTime();
-
-        if (divcd) {
-            // Calculate days, hours, minutes, and seconds
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Display the countdown in the div
-            divcd.innerText = `${days > 0 ? days + "天，" : ""}${hours > 0 ? CommonMethods.Pad(hours) : "00"}:${minutes > 0 ? CommonMethods.Pad(minutes) : "00"}:${seconds > 0 ? CommonMethods.Pad(seconds) : "00"}`;
-        }
-
-        if (distance < 0) {
-            clearInterval(that.gameScene.ui.onlineBonusCountdownInterval);
-            delete that.gameScene.ui.onlineBonusCountdownInterval;
-            that.gameScene.sendMessageToServer(CommonMethods.SendAwardOnlineBonus_REQUEST, that.tractorPlayer.MyOwnId, "");
         }
     }
 

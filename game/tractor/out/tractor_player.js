@@ -49,10 +49,6 @@ var TractorPlayer = /** @class */ (function () {
         // hence don't trigger health check if it is not fully loaded
         if (!(this.mainForm.gameScene.isInGameHall() || this.mainForm.gameScene.isInGameRoom()))
             return;
-        if (this.mainForm.gameScene.isInGameRoom()) {
-            var onlineBonusDueDate = this.mainForm.GetPlayerOnlineBonusDueDate();
-            this.mainForm.CheckOnlineBonusStatus(this.mainForm, onlineBonusDueDate);
-        }
         this.PingStatus = 1;
         setTimeout(function () {
             if (_this.PingStatus < 0) {

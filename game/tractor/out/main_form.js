@@ -1782,10 +1782,6 @@ var MainForm = /** @class */ (function () {
             }
             delete this.gameScene.ui.yuezhanInterval;
         }
-        if (this.gameScene.ui.onlineBonusCountdownInterval) {
-            clearInterval(this.gameScene.ui.onlineBonusCountdownInterval);
-            delete this.gameScene.ui.onlineBonusCountdownInterval;
-        }
     };
     MainForm.prototype.drawFrameMain = function () {
         var frameMain = this.gameScene.ui.create.div('.frameMain', this.gameScene.ui.window);
@@ -2047,26 +2043,9 @@ var MainForm = /** @class */ (function () {
         frameGameHallOnliners.style.paddingLeft = '10px';
         frameGameHallOnliners.style.overflow = 'auto';
         this.gameScene.ui.frameGameHallOnliners = frameGameHallOnliners;
-        var divOnlineBonus = document.createElement("div");
-        divOnlineBonus.style.position = 'static';
-        divOnlineBonus.style.display = 'block';
-        divOnlineBonus.innerText = "\u5728\u7EBF\u5956\u52B1";
-        divOnlineBonus.style.fontFamily = 'xinwei';
-        divOnlineBonus.style.fontSize = '30px';
-        divOnlineBonus.style.textAlign = 'left';
-        divOnlineBonus.style.whiteSpace = 'nowrap';
-        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(divOnlineBonus);
-        var divOnlineBonusCountdown = document.createElement("div");
-        divOnlineBonusCountdown.style.position = 'static';
-        divOnlineBonusCountdown.style.display = 'block';
-        divOnlineBonusCountdown.innerText = CommonMethods.zeroDuration;
-        this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(divOnlineBonusCountdown);
-        var onlineBonusDueDate = this.GetPlayerOnlineBonusDueDate();
-        this.gameScene.ui.onlineBonusCountdownInterval = setInterval(function (that, olBonusDueDate, divcd) {
-            that.CheckOnlineBonusStatus(that, olBonusDueDate, divcd);
-        }, 1000, this, onlineBonusDueDate, divOnlineBonusCountdown);
         var pYuezhanHeader = document.createElement("p");
         pYuezhanHeader.innerText = "\u7EA6\u6218(".concat(yuezhanList.length, ")");
+        pYuezhanHeader.style.marginTop = '0px';
         pYuezhanHeader.style.fontFamily = 'xinwei';
         pYuezhanHeader.style.fontSize = '30px';
         pYuezhanHeader.style.textAlign = 'left';
@@ -2378,35 +2357,6 @@ var MainForm = /** @class */ (function () {
         var this_3 = this;
         for (var i = 0; i < yuezhanList.length; i++) {
             _loop_3(i);
-        }
-    };
-    MainForm.prototype.GetPlayerOnlineBonusDueDate = function () {
-        var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
-        var onlineBonusDueDate = new Date();
-        if (daojuInfoByPlayer && daojuInfoByPlayer.onlineSince) {
-            onlineBonusDueDate = new Date(daojuInfoByPlayer.onlineSince);
-        }
-        onlineBonusDueDate.setMinutes(onlineBonusDueDate.getMinutes() + CommonMethods.OnlineBonusMunitesRequired);
-        return onlineBonusDueDate;
-    };
-    MainForm.prototype.CheckOnlineBonusStatus = function (that, olBonusDueDate, divcd) {
-        // Get the current date and time
-        // Calculate the remaining time
-        var nowForOnlineBonus = new Date();
-        var distance = olBonusDueDate.getTime() - nowForOnlineBonus.getTime();
-        if (divcd) {
-            // Calculate days, hours, minutes, and seconds
-            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            // Display the countdown in the div
-            divcd.innerText = "".concat(days > 0 ? days + "天，" : "").concat(hours > 0 ? CommonMethods.Pad(hours) : "00", ":").concat(minutes > 0 ? CommonMethods.Pad(minutes) : "00", ":").concat(seconds > 0 ? CommonMethods.Pad(seconds) : "00");
-        }
-        if (distance < 0) {
-            clearInterval(that.gameScene.ui.onlineBonusCountdownInterval);
-            delete that.gameScene.ui.onlineBonusCountdownInterval;
-            that.gameScene.sendMessageToServer(CommonMethods.SendAwardOnlineBonus_REQUEST, that.tractorPlayer.MyOwnId, "");
         }
     };
     MainForm.prototype.joinOrQuitYuezhan = function (yuezhanEntity) {
