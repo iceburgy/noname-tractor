@@ -2282,7 +2282,7 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(btnCreateYuezhan);
         }
         else {
-            this.gameScene.ui.frameGameHallOnliners.style.top = '120px';
+            this.gameScene.ui.frameGameHallOnliners.style.top = '50px';
         }
         var _loop_3 = function (i) {
             var yuezhanInfo = yuezhanList[i];

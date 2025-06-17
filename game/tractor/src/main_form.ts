@@ -2480,7 +2480,7 @@ export class MainForm {
             btnCreateYuezhan.style.width = '80px';
             this.gameScene.ui.frameGameHallOnlinersHeader.appendChild(btnCreateYuezhan);
         } else {
-            this.gameScene.ui.frameGameHallOnliners.style.top = '120px';
+            this.gameScene.ui.frameGameHallOnliners.style.top = '50px';
         }
 
         for (let i = 0; i < yuezhanList.length; i++) {
