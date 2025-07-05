@@ -82,6 +82,7 @@ export class GameScene {
     public ui: any
     public get: any
     public _status: any
+    public clientVersion: string = ""
 
     constructor(irm: boolean, hostName: string, playerName: string, nickNameOverridePass: string, playerEmail: string, gameIn: any, libIn: any, uiIn: any, getIn: any, _statusIn: any) {
         this.game = gameIn;
@@ -136,6 +137,7 @@ export class GameScene {
         this.chatMessageCostNoted = (this.lib && this.lib.config && this.lib.config.chatMessageCostNoted !== undefined) ? this.lib.config.chatMessageCostNoted : false;
         this.yesFirstPersonView = (this.lib && this.lib.config && this.lib.config.yesFirstPersonView) ? this.lib.config.yesFirstPersonView : "false";
         this.qiangliangMin = (this.lib && this.lib.config && this.lib.config.qiangliangMin) ? this.lib.config.qiangliangMin : "5";
+        this.clientVersion = (this.lib && this.lib.version) ? this.lib.version : CommonMethods.PLAYER_ENTER_HALL_VERSION_UNKNOWN;
         // // if (this.qiangliangMin === undefined) this.qiangliangMin = '5'
 
         IDBHelper.maxReplays = (this.lib && this.lib.config && this.lib.config.maxReplays) ? this.lib.config.maxReplays : IDBHelper.maxReplays;
@@ -202,7 +204,7 @@ export class GameScene {
                         this.gs.playerName = "";
                     }
                 }
-                let enterHallInfo: EnterHallInfo = new EnterHallInfo(this.gs.nickNameOverridePass, this.gs.playerEmail, CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP);
+                let enterHallInfo: EnterHallInfo = new EnterHallInfo(this.gs.nickNameOverridePass, this.gs.playerEmail, `${CommonMethods.PLAYER_CLIENT_TYPE_TLJAPP}${CommonMethods.PLAYER_ENTER_HALL_DELIMITER}${this.gs.clientVersion}`);
                 this.gs.sendMessageToServer(CommonMethods.PLAYER_ENTER_HALL_REQUEST, this.gs.playerName, JSON.stringify(enterHallInfo));
 
                 this.gs.mainForm = new MainForm(this.gs)

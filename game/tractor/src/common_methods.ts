@@ -11,6 +11,8 @@ export class CommonMethods {
     public static SET_PLAYER_NAME_REQUEST = "set_player_name"
     public static PLAYER_CLIENT_TYPE_shengjiweb = "PlayerClientType_shengjiweb"
     public static PLAYER_CLIENT_TYPE_TLJAPP = "PlayerClientType_tljapp"
+    public static PLAYER_ENTER_HALL_DELIMITER = "-version-"
+    public static PLAYER_ENTER_HALL_VERSION_UNKNOWN = "unknown"
     public static PLAYER_ENTER_HALL_REQUEST = "PlayerEnterHall"
     public static JOIN_ROOM_REQUEST = "join_room"
     public static PREPARE_REQUEST = "prepare"
