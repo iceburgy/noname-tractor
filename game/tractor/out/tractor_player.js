@@ -289,7 +289,7 @@ var TractorPlayer = /** @class */ (function () {
             return;
         // 显示确定按钮，提示当前回合玩家出牌
         var isMeNextPlayer = this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing &&
-            Object.keys(this.CurrentTrickState.ShowedCards).length > 0 &&
+            this.CurrentTrickState.ShowedCards.length > 0 &&
             this.CurrentTrickState.NextPlayer() == this.MyOwnId;
         if (!this.isObserver && isMeNextPlayer) {
             this.mainForm.gameScene.ui.btnPig.show();

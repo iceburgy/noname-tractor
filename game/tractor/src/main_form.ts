@@ -22,6 +22,7 @@ import { FileHelper } from './file_helper.js';
 import { debug } from 'console';
 import { OnePlayerAtATime } from './one_player_at_a_time.js';
 import { YuezhanEntity } from './yuezhan_entity.js';
+import { ShowedCardKeyValue } from './showed_card_key_value.js';
 
 const ReadyToStart_REQUEST = "ReadyToStart"
 const ToggleIsRobot_REQUEST = "ToggleIsRobot"
@@ -445,7 +446,7 @@ export class MainForm {
         this.drawingFormHelper.DrawSidebarFull();
         if (!drawCards) return;
         this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick = CommonMethods.deepCopy<any>(this.tractorPlayer.CurrentTrickState.ShowedCards);
-        if (this.tractorPlayer.CurrentTrickState.ShowedCards && Object.keys(this.tractorPlayer.CurrentTrickState.ShowedCards).length == 4) {
+        if (this.tractorPlayer.CurrentTrickState.ShowedCards && this.tractorPlayer.CurrentTrickState.ShowedCards.length == 4) {
             this.tractorPlayer.playerLocalCache.WinnderID = TractorRules.GetWinner(this.tractorPlayer.CurrentTrickState);
             this.tractorPlayer.playerLocalCache.WinResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, this.tractorPlayer.playerLocalCache.WinnderID);
         }
@@ -687,7 +688,7 @@ export class MainForm {
         this.tractorPlayer.playerLocalCache = new PlayerLocalCache();
         // this.btnSurrender.Visible = false;
         // this.btnRiot.Visible = false;
-        this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {}
+        this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = []
         this.gameScene.game.timerCurrent = 0;
         if (this.gameScene.ui.btnPig) {
             this.gameScene.ui.btnPig.hide();
@@ -766,7 +767,7 @@ export class MainForm {
         }
         let winnerID = TractorRules.GetWinner(trickState);
         if (playerID == winnerID) {
-            let isWinnerTrump = PokerHelper.IsTrump(trickState.ShowedCards[winnerID][0], this.tractorPlayer.CurrentHandState.Trump, this.tractorPlayer.CurrentHandState.Rank);
+            let isWinnerTrump = PokerHelper.IsTrump(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, winnerID)[0], this.tractorPlayer.CurrentHandState.Trump, this.tractorPlayer.CurrentHandState.Rank);
             if (!isLeaderTrump && isWinnerTrump) return 3;
             return 1;
         }
@@ -792,7 +793,7 @@ export class MainForm {
 
         let winResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, latestPlayer);
         let position = this.PlayerPosition[latestPlayer];
-        let showedCards: number[] = this.tractorPlayer.CurrentTrickState.ShowedCards[latestPlayer]
+        let showedCards: number[] = CommonMethods.GetShowedCardsByPlayerID(this.tractorPlayer.CurrentTrickState.ShowedCards, latestPlayer)
         //如果大牌变更，更新缓存相关信息
         if (winResult >= this.firstWinNormal) {
             if (winResult < this.firstWinBySha || this.tractorPlayer.playerLocalCache.WinResult < this.firstWinBySha) {
@@ -983,7 +984,7 @@ export class MainForm {
             onesTurnPlayerID = this.tractorPlayer.CurrentHandState.Last8Holder;
             isShowCards = false;
         } else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing &&
-            Object.keys(this.tractorPlayer.CurrentTrickState.ShowedCards).length > 0) {
+            this.tractorPlayer.CurrentTrickState.ShowedCards.length > 0) {
             onesTurnPlayerID = this.tractorPlayer.CurrentTrickState.NextPlayer();
             isShowCards = true;
         }
@@ -1353,14 +1354,14 @@ export class MainForm {
             let selectSecondsToShowCards: any = document.getElementById("selectSecondsToShowCards");
             selectSecondsToShowCards.value = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards;
             selectSecondsToShowCards.onchange = () => {
-                this.tractorPlayer.CurrentRoomSetting.secondsToShowCards = selectSecondsToShowCards.value;
+                this.tractorPlayer.CurrentRoomSetting.secondsToShowCards = Number(selectSecondsToShowCards.value);
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
             let selectSecondsToDiscardCards: any = document.getElementById("selectSecondsToDiscardCards");
             selectSecondsToDiscardCards.value = this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards;
             selectSecondsToDiscardCards.onchange = () => {
-                this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = selectSecondsToDiscardCards.value;
+                this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = Number(selectSecondsToDiscardCards.value);
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
@@ -1742,7 +1743,7 @@ export class MainForm {
 
     public ShowCards() {
         if (this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId) {
-            this.tractorPlayer.CurrentTrickState.ShowedCards[this.tractorPlayer.PlayerId] = CommonMethods.deepCopy<number[]>(this.SelectedCards);
+            this.tractorPlayer.CurrentTrickState.ShowedCards = CommonMethods.SetShowedCardsByPlayerID(this.tractorPlayer.CurrentTrickState.ShowedCards, this.tractorPlayer.PlayerId, CommonMethods.deepCopy<number[]>(this.SelectedCards));
             this.gameScene.sendMessageToServer(PlayerShowCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentTrickState));
         }
     }
@@ -1835,10 +1836,11 @@ export class MainForm {
         this.tractorPlayer.destroyAllClientMessages()
         let cardsCount = 0
         if (this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick != null) {
-            for (const [key, value] of Object.entries(this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick)) {
-                let cards: number[] = value as number[]
+            for (let i = 0; i < this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick.length; i++) {
+                let keyValue: ShowedCardKeyValue = this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick[i]
+                let cards: number[] = keyValue.Cards
                 if (!cards || cards.length == 0) continue;
-                let player: string = key;
+                let player: string = keyValue.PlayerID;
                 cardsCount = cards.length
                 let position = this.PlayerPosition[player];
                 this.drawingFormHelper.DrawShowedCardsByPosition(cards, position)
@@ -1899,14 +1901,16 @@ export class MainForm {
         trickState.Trump = this.tractorPlayer.CurrentTrickState.Trump;
         trickState.Rank = this.tractorPlayer.CurrentTrickState.Rank;
         let cardsCount = 0
-        for (const [key, value] of Object.entries(this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards)) {
-            trickState.ShowedCards[key] = CommonMethods.deepCopy<number[]>(value as number[])
+        for (let i = 0; i < this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards[i]
+            trickState.ShowedCards = CommonMethods.SetShowedCardsByPlayerID(trickState.ShowedCards, keyValue.PlayerID, CommonMethods.deepCopy<number[]>(keyValue.Cards))
         }
 
-        for (const [key, value] of Object.entries(trickState.ShowedCards)) {
-            let cards: number[] = value as number[]
+        for (let i = 0; i < trickState.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = trickState.ShowedCards[i]
+            let cards: number[] = keyValue.Cards
             if (!cards || cards.length == 0) continue;
-            let position = this.PlayerPosition[key];
+            let position = this.PlayerPosition[keyValue.PlayerID];
             cardsCount = cards.length
             this.drawingFormHelper.DrawShowedCardsByPosition(cards, position)
         }
@@ -2228,7 +2232,7 @@ export class MainForm {
 
         let frameGameHallOnliners = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
         frameGameHallOnliners.style.position = 'absolute';
-        frameGameHallOnliners.style.top = '220px';
+        frameGameHallOnliners.style.top = '140px';
         frameGameHallOnliners.style.left = '0px';
         frameGameHallOnliners.style.bottom = '0px';
         frameGameHallOnliners.style.width = '15%';
@@ -3335,7 +3339,7 @@ export class MainForm {
                 this.drawingFormHelper.DrawFinishedSendedCards();
                 return;
             }
-            isNormalShowCards = Object.keys(trick.ShowedCards).length == 4;
+            isNormalShowCards = trick.ShowedCards.length == 4;
             if (isOnePlayerAtATimeInit && isNormalShowCards) {
                 this.onePlayerAtATime.winner = trick.Winner;
                 this.onePlayerAtATime.points = trick.Points();
@@ -3351,7 +3355,7 @@ export class MainForm {
         }
 
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
-            if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] == 1) {
+            if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] == 1) {
                 this.DrawDumpFailureMessage(trick);
             }
         }
@@ -3365,15 +3369,15 @@ export class MainForm {
         let i = 1;
 
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
-            for (; i <= Object.keys(trick.ShowedCards).length; i++) {
+            for (; i <= trick.ShowedCards.length; i++) {
                 let position = this.PlayerPosition[curPlayer];
                 if (isNormalShowCards) {
-                    trick.ShowedCards[curPlayer].forEach((card: any) => {
+                    CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, curPlayer).forEach((card: any) => {
                         this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
                     })
                 }
 
-                let cardsList: number[] = CommonMethods.deepCopy<number[]>(trick.ShowedCards[curPlayer]);
+                let cardsList: number[] = CommonMethods.deepCopy<number[]>(CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, curPlayer));
                 if (isOnePlayerAtATimeInit) {
                     this.onePlayerAtATime.cardsListList.push(cardsList);
                     this.onePlayerAtATime.positionList.push(position);
@@ -3391,7 +3395,7 @@ export class MainForm {
         }
 
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
-            if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] != 1) {
+            if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] != 1) {
                 this.DrawDumpFailureMessage(trick);
             }
         }
@@ -3433,8 +3437,8 @@ export class MainForm {
     private DrawDumpFailureMessage(trick: CurrentTrickState) {
         this.tractorPlayer.NotifyMessage([
             `玩家【${trick.Learder}】`,
-            `甩牌${trick.ShowedCards[trick.Learder].length}张失败`,
-            `罚分：${trick.ShowedCards[trick.Learder].length * 10}`,
+            `甩牌${CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, trick.Learder).length}张失败`,
+            `罚分：${CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, trick.Learder).length * 10}`,
             "",
             "",
             "",
@@ -3500,11 +3504,11 @@ export class MainForm {
                 this.tractorPlayer.replayEntity.CurrentTrickStates.shift();
 
                 // 甩牌失败
-                if (Object.keys(trick.ShowedCards).length == 1) continue;
+                if (trick.ShowedCards.length == 1) continue;
 
                 let curPlayer: string = trick.Learder;
-                for (let i = 0; i < Object.keys(trick.ShowedCards).length; i++) {
-                    trick.ShowedCards[curPlayer].forEach((card: any) => {
+                for (let i = 0; i < trick.ShowedCards.length; i++) {
+                    CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, curPlayer).forEach((card: any) => {
                         this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
                     })
                     curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
@@ -3556,9 +3560,10 @@ export class MainForm {
             if (this.shouldShowLast8Cards()) this.drawingFormHelper.DrawDiscardedCards();
         }
         else if (Object.keys(trick.ShowedCards).length == 4) {
-            for (const [key, value] of Object.entries(trick.ShowedCards)) {
-                (value as number[]).forEach(card => {
-                    this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key].AddCard(card);
+            for (let i = 0; i < trick.ShowedCards.length; i++) {
+                let keyValue: ShowedCardKeyValue = trick.ShowedCards[i];
+                (keyValue.Cards as number[]).forEach(card => {
+                    this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[keyValue.PlayerID].AddCard(card);
                 })
             }
             if (trick.Winner) {

@@ -622,7 +622,7 @@ var DrawingFormHelper = /** @class */ (function () {
         }
         var isDiscardingLast8 = this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards;
         var isFollowing = this.mainForm.tractorPlayer.CurrentTrickState.IsStarted() &&
-            this.mainForm.tractorPlayer.CurrentTrickState.ShowedCards[this.mainForm.tractorPlayer.MyOwnId].length == 0 &&
+            CommonMethods.GetShowedCardsByPlayerID(this.mainForm.tractorPlayer.CurrentTrickState.ShowedCards, this.mainForm.tractorPlayer.MyOwnId).length == 0 &&
             this.mainForm.tractorPlayer.CurrentTrickState.Learder !== this.mainForm.tractorPlayer.MyOwnId;
         var isLeader = !isDiscardingLast8 && !isFollowing;
         if (isDiscardingLast8) {

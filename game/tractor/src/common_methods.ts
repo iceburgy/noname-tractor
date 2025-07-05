@@ -1,6 +1,7 @@
 
 import { CurrentPoker } from './current_poker.js';
 import { PlayerEntity } from './player_entity.js';
+import { ShowedCardKeyValue } from './showed_card_key_value.js';
 import { SuitEnums } from './suit_enums.js';
 export class CommonMethods {
     public static storageFileForCardsKey = "storageFileForCards"
@@ -673,5 +674,43 @@ export class CommonMethods {
             return '0' + number;
         }
         return number;
+    }
+
+    public static GetShowedCardsByPlayerID(
+        showedCards: ShowedCardKeyValue[],
+        id: string
+    ): number[] {
+        for (let i = 0; i < showedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = showedCards[i]
+            if (keyValue.PlayerID.toLowerCase() === id.toLowerCase()) {
+                return keyValue.Cards;
+            }
+        }
+        return [];
+    }
+
+    public static SetShowedCardsByPlayerID(
+        showedCards: ShowedCardKeyValue[],
+        id: string,
+        cards: number[]
+    ): ShowedCardKeyValue[] {
+        let newEntry = new ShowedCardKeyValue();
+        newEntry.PlayerID = id;
+        newEntry.Cards = cards;
+
+        let isFound = false
+        for (let i = 0; i < showedCards.length; i++) {
+            if (showedCards[i].PlayerID.toLowerCase() === id.toLowerCase()) {
+                showedCards[i] = newEntry; // if found Replace
+                isFound = true;
+                break;
+            }
+        }
+
+        if (!isFound) {
+            showedCards.push(newEntry); // otherwise Append
+        }
+
+        return showedCards;
     }
 }

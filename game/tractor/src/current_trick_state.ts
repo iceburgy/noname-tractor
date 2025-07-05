@@ -2,18 +2,19 @@
 import { CommonMethods } from './common_methods.js';
 import { PokerHelper } from './poker_helper.js';
 import { ServerLocalCache } from './server_local_cache.js';
+import { ShowedCardKeyValue } from './showed_card_key_value.js';
 import { SuitEnums } from './suit_enums.js';
 export class CurrentTrickState {
     public Learder: string
     public Winner: string
-    public ShowedCards: any
+    public ShowedCards: ShowedCardKeyValue[]
     public serverLocalCache: ServerLocalCache
     public Trump: number
     public Rank: number
     constructor() {
         this.Learder = ""
         this.Winner = ""
-        this.ShowedCards = {}
+        this.ShowedCards = []
         this.serverLocalCache = new ServerLocalCache()
         this.Trump = 0
         this.Rank = 0
@@ -22,7 +23,9 @@ export class CurrentTrickState {
     public CloneFrom(from: CurrentTrickState) {
         this.Learder = from.Learder
         this.Winner = from.Winner
-        this.ShowedCards = CommonMethods.deepCopy<any>(from.ShowedCards)
+        if (from.ShowedCards) {
+            this.ShowedCards = CommonMethods.deepCopy<any>(from.ShowedCards)
+        }
         this.serverLocalCache.CloneFrom(from.serverLocalCache)
         this.Trump = from.Trump
         this.Rank = from.Rank
@@ -30,36 +33,40 @@ export class CurrentTrickState {
 
     public LatestPlayerShowedCard(): string {
         let playerId = "";
-        if (!this.Learder || !this.ShowedCards[this.Learder] || this.ShowedCards[this.Learder].length == 0)
-            return playerId;
+        if (this.Learder) {
+            let sc = CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder)
+            if (sc.length == 0)
+                return playerId;
+        }
 
         let afterLeader = false;
         //find next player to show card after learder
-        for (const [key, value] of Object.entries(this.ShowedCards)) {
-            if (key != this.Learder && afterLeader == false)
+        for (let i = 0; i < this.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+
+            if (keyValue.PlayerID != this.Learder && afterLeader == false)
                 continue;
-            else if (key == this.Learder) //search from leader;
+            else if (keyValue.PlayerID == this.Learder) //search from leader;
             {
                 playerId = this.Learder;
                 afterLeader = true;
             }
             else if (afterLeader) {
-                if ((value as number[]).length == 0)
+                if (keyValue.Cards.length == 0)
                     return playerId;
-                playerId = key;
+                playerId = keyValue.PlayerID;
             }
         }
 
-        for (const [key, value] of Object.entries(this.ShowedCards)) {
-            {
-                if (key != this.Learder) {
-                    if ((value as number[]).length == 0)
-                        return playerId;
-                    playerId = key;
-                }
-                else //search end before leader
-                    break;
+        for (let i = 0; i < this.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+            if (keyValue.PlayerID != this.Learder) {
+                if (keyValue.Cards.length == 0)
+                    return playerId;
+                playerId = keyValue.PlayerID;
             }
+            else //search end before leader
+                break;
         }
         return playerId;
     }
@@ -69,14 +76,15 @@ export class CurrentTrickState {
             return false;
         if (!this.ShowedCards || Object.keys(this.ShowedCards).length == 0)
             return false;
-        return this.ShowedCards[this.Learder].length > 0;
+        return CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder).length > 0;
     }
 
     public CountOfPlayerShowedCards(): number {
         let result = 0;
         if (!this.ShowedCards) return result
-        for (const [key, value] of Object.entries(this.ShowedCards)) {
-            if ((value as number[]).length > 0)
+        for (let i = 0; i < this.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+            if (keyValue.Cards.length > 0)
                 result++;
         }
         return result;
@@ -84,42 +92,46 @@ export class CurrentTrickState {
 
     public ScoreCards(): number[] {
         let scorecards: number[] = []
-        Object.values(this.ShowedCards).forEach(cardsList => {
-            (cardsList as number[]).forEach(card => {
+        for (let i = 0; i < this.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+            for (let j = 0; j < keyValue.Cards.length; j++) {
+                let card = keyValue.Cards[j]
                 if (card % 13 == 3 || card % 13 == 8 || card % 13 == 11)
                     scorecards.push(card);
-            })
-        })
+            }
+        }
         return scorecards;
     }
 
     public NextPlayer(): string {
         let playerId: string = "";
-        if (this.ShowedCards[this.Learder].length == 0)
+        if (CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder).length == 0)
             playerId = this.Learder;
 
         else {
             let afterLeader = false;
             //find next player to show card after learder
-            for (const [key, value] of Object.entries(this.ShowedCards)) {
-                if (key != this.Learder && afterLeader == false)
+            for (let i = 0; i < this.ShowedCards.length; i++) {
+                let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+                if (keyValue.PlayerID != this.Learder && afterLeader == false)
                     continue;
-                if (key == this.Learder) { // search from learder
+                if (keyValue.PlayerID == this.Learder) { // search from learder
                     afterLeader = true;
                 }
                 if (afterLeader) {
-                    if ((value as number[]).length == 0) {
-                        playerId = key;
+                    if (keyValue.Cards.length == 0) {
+                        playerId = keyValue.PlayerID;
                         break;
                     }
                 }
             }
 
             if (!playerId) {
-                for (const [key, value] of Object.entries(this.ShowedCards)) {
-                    if (key != this.Learder) {
-                        if ((value as number[]).length == 0) {
-                            playerId = key;
+                for (let i = 0; i < this.ShowedCards.length; i++) {
+                    let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+                    if (keyValue.PlayerID != this.Learder) {
+                        if (keyValue.Cards.length == 0) {
+                            playerId = keyValue.PlayerID;
                             break;
                         }
                     }
@@ -133,30 +145,32 @@ export class CurrentTrickState {
 
     public NextPlayerByID(playerId: string): string {
         let nextPlayer = "";
-        if (!this.ShowedCards || !this.ShowedCards[playerId])
+        if (!this.ShowedCards || CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, playerId).length == 0)
             return "";
 
 
         let afterLeader = false;
         //find next player to show card after learder
-        for (const [key, value] of Object.entries(this.ShowedCards)) {
-            if (key != playerId && afterLeader == false)
+        for (let i = 0; i < this.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+            if (keyValue.PlayerID != playerId && afterLeader == false)
                 continue;
-            else if (key == playerId) // search from learder
+            else if (keyValue.PlayerID == playerId) // search from learder
             {
                 afterLeader = true;
             }
             else if (afterLeader) {
-                nextPlayer = key;
+                nextPlayer = keyValue.PlayerID;
                 break;
             }
         }
 
 
         if (!nextPlayer) {
-            for (const [key, value] of Object.entries(this.ShowedCards)) {
-                if (key != playerId) {
-                    nextPlayer = key;
+            for (let i = 0; i < this.ShowedCards.length; i++) {
+                let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+                if (keyValue.PlayerID != playerId) {
+                    nextPlayer = keyValue.PlayerID;
                 }
                 break;
             }
@@ -165,8 +179,9 @@ export class CurrentTrickState {
     }
 
     public AllPlayedShowedCards(): boolean {
-        for (const [key, value] of Object.entries(this.ShowedCards)) {
-            if ((value as number[]).length == 0)
+        for (let i = 0; i < this.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+            if (keyValue.Cards.length == 0)
                 return false;
         }
         return true;
@@ -174,7 +189,7 @@ export class CurrentTrickState {
 
     public LeadingCards(): number[] {
         if (this.IsStarted()) {
-            return this.ShowedCards[this.Learder];
+            return CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder);
         }
         return []
     }
@@ -189,8 +204,9 @@ export class CurrentTrickState {
 
     public Points(): number {
         let points = 0;
-        for (const cardsList of Object.values(this.ShowedCards)) {
-            for (const card of (cardsList as number[])) {
+        for (let i = 0; i < this.ShowedCards.length; i++) {
+            let keyValue: ShowedCardKeyValue = this.ShowedCards[i]
+            for (const card of (keyValue.Cards as number[])) {
                 if (card % 13 == 3)
                     points += 5;
                 else if (card % 13 == 8)

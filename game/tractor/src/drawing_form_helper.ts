@@ -666,7 +666,7 @@ export class DrawingFormHelper {
 
         let isDiscardingLast8 = this.mainForm.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8Cards;
         let isFollowing = this.mainForm.tractorPlayer.CurrentTrickState.IsStarted() &&
-            this.mainForm.tractorPlayer.CurrentTrickState.ShowedCards[this.mainForm.tractorPlayer.MyOwnId].length == 0 &&
+            CommonMethods.GetShowedCardsByPlayerID(this.mainForm.tractorPlayer.CurrentTrickState.ShowedCards, this.mainForm.tractorPlayer.MyOwnId).length == 0 &&
             this.mainForm.tractorPlayer.CurrentTrickState.Learder !== this.mainForm.tractorPlayer.MyOwnId;
         let isLeader = !isDiscardingLast8 && !isFollowing;
         if (isDiscardingLast8) {

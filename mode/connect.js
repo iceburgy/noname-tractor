@@ -308,17 +308,28 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				var nodeHostName = document.createElement("INPUT");
 				nodeHostName.value = lib.config.last_ip || "";
 				nodeHostName.classList.add('tractor-connect-input');
+				nodeHostName.style.display = 'none';
 				nodeHostName.style.top = 'calc(16%)';
 				nodeHostName.setAttribute("type", "text");
 				nodeHostName.setAttribute("placeholder", "访问密钥");
 				ui.window.appendChild(nodeHostName);
 				ui.ipnode = nodeHostName;
 
+				var nodeEmail = document.createElement("INPUT");
+				nodeEmail.value = "";
+				nodeEmail.classList.add('tractor-connect-input');
+				nodeEmail.style.display = 'none';
+				nodeEmail.style.top = 'calc(26%)';
+				nodeEmail.setAttribute("type", "text");
+				nodeEmail.setAttribute("placeholder", "邮箱");
+				ui.window.appendChild(nodeEmail);
+				ui.emailnode = nodeEmail;
+
 				// 用户名
 				var nodePlayerName = document.createElement("INPUT");
 				nodePlayerName.value = lib.config.last_player_name || "";
 				nodePlayerName.classList.add('tractor-connect-input');
-				nodePlayerName.style.top = 'calc(26%)';
+				nodePlayerName.style.top = 'calc(36%)';
 				nodePlayerName.setAttribute("type", "text");
 				nodePlayerName.setAttribute("maxlength", "10");
 				nodePlayerName.setAttribute("placeholder", "用户名-不超过10个字符");
@@ -331,34 +342,11 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				var nodePassword = document.createElement("INPUT");
 				nodePassword.value = lib.config.NickNameOverridePass || lib.config.last_password || "";
 				nodePassword.classList.add('tractor-connect-input');
-				nodePassword.style.top = 'calc(36%)';
+				nodePassword.style.top = 'calc(46%)';
 				nodePassword.setAttribute("type", "password");
 				nodePassword.setAttribute("placeholder", "密码");
 				ui.window.appendChild(nodePassword);
 				ui.passwordnode = nodePassword;
-
-				// 邮箱
-				// var textEmail = ui.create.div('', '邮箱');
-				// textEmail.style.width = '400px';
-				// textEmail.style.height = '30px';
-				// textEmail.style.lineHeight = '30px';
-				// textEmail.style.fontFamily = 'xinwei';
-				// textEmail.style.fontSize = '30px';
-				// textEmail.style.padding = '10px';
-				// textEmail.style.left = 'calc(50% - 200px)';
-				// textEmail.style.top = 'calc(56%)';
-				// textEmail.style.textAlign = 'center';
-				// ui.window.appendChild(textEmail);
-				// ui.emailtext = textEmail;
-
-				var nodeEmail = document.createElement("INPUT");
-				nodeEmail.value = "";
-				nodeEmail.classList.add('tractor-connect-input');
-				nodeEmail.style.top = 'calc(46%)';
-				nodeEmail.setAttribute("type", "text");
-				nodeEmail.setAttribute("placeholder", "邮箱-正常登录时无需填写");
-				ui.window.appendChild(nodeEmail);
-				ui.emailnode = nodeEmail;
 
 				var connect = function (e) {
 					loadAudioPool();
@@ -366,6 +354,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					var isEnterHallDisabled = ui.ipbutton.classList.contains('disabled');
 					var isEnterHall = e.target.innerText === '进入大厅';
 					var isDoReplay = e.target.innerText === '录像回放';
+					var isRegister = e.target.innerText === '注册用户';
 					if (isEnterHall && isEnterHallDisabled) return;
 
 					clearTimeout(event.timeout);
@@ -396,10 +385,14 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						});
 
 					if (e) e.preventDefault();
-					game.saveConfig('last_ip', nodeHostName.value.trim());
-					game.saveConfig('last_player_name', nodePlayerName.value.trim());
-					game.saveConfig('last_password', nodePassword.value.trim());
-					game.saveConfig('last_email', nodeEmail.value.trim());
+					if (!isDoReplay) {
+						game.saveConfig('last_ip', nodeHostName.value.trim());
+						game.saveConfig('last_player_name', nodePlayerName.value.trim());
+						if (!isRegister) {
+							game.saveConfig('last_password', nodePassword.value.trim());
+						}
+						game.saveConfig('last_email', nodeEmail.value.trim());
+					}
 				};
 
 				var button = ui.create.div('.menubutton.highlight.large.pointerdiv.disabled', '进入大厅', connect);
@@ -408,31 +401,111 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				ui.window.appendChild(button);
 				ui.ipbutton = button;
 
-				var buttonReplay = ui.create.div('.menubutton.highlight.large.pointerdiv', '录像回放', connect);
-				buttonReplay.style.left = 'calc(50% - 70px)';
-				buttonReplay.style.top = 'calc(64%)';
-				ui.window.appendChild(buttonReplay);
-				ui.buttonReplay = buttonReplay;
+				// var buttonReplay = ui.create.div('.menubutton.highlight.large.pointerdiv', '录像回放', connect);
+				// buttonReplay.style.left = 'calc(50% - 70px)';
+				// buttonReplay.style.top = 'calc(64%)';
+				// ui.window.appendChild(buttonReplay);
+				// ui.buttonReplay = buttonReplay;
+
+				// user choices
+				var userChoices = ui.create.div(".userChoices", ui.window);
+				userChoices.innerHTML = `<a href="javascript:void(0)" id="loginLink">登录</a> | 
+											<a href="javascript:void(0)" id="registerLink">注册用户</a> | 
+											<a href="javascript:void(0)" id="findPasswordLink">找回密码</a> | 
+											<a href="javascript:void(0)" id="findUsernameLink">找回用户名</a> | 
+											<a href="javascript:void(0)" id="doReplayLink">录像回放</a> | 
+											<a href="javascript:void(0)" id="inputAccessKeyLink">输入密钥</a>`;
+				userChoices.style.fontSize = '20px';
+				userChoices.style.padding = '10px';
+				userChoices.style.width = 'calc(100%)';
+				userChoices.style.top = 'calc(64%)';
+				userChoices.style.textAlign = 'center';
+				ui.userChoices = userChoices;
+				const links = document.querySelectorAll('.userChoices a');
+				links.forEach(link => {
+					link.style.color = "white";
+				});
+
+				displayButton = function (event) {
+					nodePassword.setAttribute("placeholder", "密码");
+					const id = event.target.id;
+					switch (id) {
+						case 'loginLink':
+							nodePlayerName.style.display = 'inline-block';
+							nodePlayerName.value = lib.config.last_player_name || "";
+							nodePassword.style.display = 'inline-block';
+							nodePassword.value = lib.config.NickNameOverridePass || lib.config.last_password || "";
+							nodeEmail.style.display = 'none';
+							nodeEmail.value = '';
+							button.innerHTML = "进入大厅";
+							break;
+						case 'registerLink':
+							nodePlayerName.style.display = 'inline-block';
+							nodePlayerName.value = '';
+							nodePassword.style.display = 'inline-block';
+							nodePassword.value = '';
+							nodePassword.setAttribute("placeholder", "邀请码");
+							nodeEmail.style.display = 'inline-block';
+							nodeEmail.value = '';
+							button.innerHTML = "注册用户";
+							break;
+						case 'findPasswordLink':
+							nodePlayerName.style.display = 'inline-block';
+							nodePlayerName.value = lib.config.last_player_name || "";
+							nodePassword.style.display = 'none';
+							nodePassword.value = '';
+							nodeEmail.style.display = 'inline-block';
+							nodeEmail.value = '';
+							button.innerHTML = "找回密码";
+							break;
+						case 'findUsernameLink':
+							nodePlayerName.style.display = 'none';
+							nodePlayerName.value = '';
+							nodePassword.style.display = 'none';
+							nodePassword.value = '';
+							nodeEmail.style.display = 'inline-block';
+							nodeEmail.value = '';
+							button.innerHTML = "找回用户名";
+							break;
+						case 'inputAccessKeyLink':
+							if (nodeHostName.style.display === 'none') {
+								nodeHostName.style.display = 'inline-block';
+								nodeHostName.value = lib.config.last_ip || "";
+							} else {
+								nodeHostName.style.display = 'none';
+							}
+							break;
+						default:
+							console.log('Unknown link clicked');
+					}
+				}
+
+				document.getElementById("loginLink").addEventListener('click', displayButton);
+				document.getElementById("registerLink").addEventListener('click', displayButton);
+				document.getElementById("findPasswordLink").addEventListener('click', displayButton);
+				document.getElementById("findUsernameLink").addEventListener('click', displayButton);
+				document.getElementById("doReplayLink").addEventListener('click', connect);
+				document.getElementById("inputAccessKeyLink").addEventListener('click', displayButton);
 
 				updateButtonStatus = function () {
-					if (nodeHostName.value && nodePlayerName.value && nodePassword.value && nodeEmail.value) {
-						button.innerHTML = "注册用户";
+					if (nodePlayerName.value && nodePassword.value && nodeEmail.value) {
+						// button.innerHTML = "注册用户";
 						button.classList.remove('disabled');
 					}
-					else if (nodeHostName.value && nodePlayerName.value && nodePassword.value && !nodeEmail.value) {
-						button.innerHTML = "进入大厅";
+					else if (nodePlayerName.value && nodePassword.value && !nodeEmail.value) {
+						// button.innerHTML = "进入大厅";
 						button.classList.remove('disabled');
 					}
-					else if (nodeHostName.value && nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
-						button.innerHTML = "找回密码";
+					else if (nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
+						// button.innerHTML = "找回密码";
 						button.classList.remove('disabled');
 					}
-					else if (nodeHostName.value && !nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
-						button.innerHTML = "找回用户";
+					else if (!nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
+						// button.innerHTML = "找回用户名";
 						button.classList.remove('disabled');
 					}
 					else {
-						button.innerHTML = "进入大厅";
+						// button.innerHTML = "进入大厅";
 						if (!button.classList.contains('disabled')) button.classList.add('disabled');
 					}
 				}
@@ -465,7 +538,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 				// user notes
 				var userNotes = ui.create.div(".userNotes", ui.window);
-				userNotes.innerHTML = '初次访问？忘记用户名或密码？<br/>请点击<a href="javascript:void(0)" id="userManualLink">使用手册</a>查看如何注册新用户、找回用户名、密码';
+				userNotes.innerHTML = '欢迎来到西村升级小馆！<br/>注册新用户前，请先从管理员处获取一个邀请码';
 				userNotes.style.fontFamily = 'xinwei';
 				userNotes.style.fontSize = '20px';
 				userNotes.style.padding = '10px';
@@ -474,10 +547,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				userNotes.style.textAlign = 'center';
 				ui.userNotes = userNotes;
 
-				var nodeUserManualLink = document.getElementById("userManualLink");
-				nodeUserManualLink.addEventListener('click', function (e) {
-					window.open("https://docs.google.com/document/d/12rgDuEzwhc8OZXU5Whygjwnqqz4xacm0BCqrLF5AsGY/edit?usp=sharing");
-				});
+				// var nodeUserManualLink = document.getElementById("userManualLink");
+				// nodeUserManualLink.addEventListener('click', function (e) {
+				// 	window.open("https://docs.google.com/document/d/12rgDuEzwhc8OZXU5Whygjwnqqz4xacm0BCqrLF5AsGY/edit?usp=sharing");
+				// });
 
 				// ui.hall_button=ui.create.system('联机大厅',function(){
 				// 	node.innerHTML=get.config('hall_ip')||lib.hallURL;

@@ -389,7 +389,7 @@ var MainForm = /** @class */ (function () {
         if (!drawCards)
             return;
         this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick = CommonMethods.deepCopy(this.tractorPlayer.CurrentTrickState.ShowedCards);
-        if (this.tractorPlayer.CurrentTrickState.ShowedCards && Object.keys(this.tractorPlayer.CurrentTrickState.ShowedCards).length == 4) {
+        if (this.tractorPlayer.CurrentTrickState.ShowedCards && this.tractorPlayer.CurrentTrickState.ShowedCards.length == 4) {
             this.tractorPlayer.playerLocalCache.WinnderID = TractorRules.GetWinner(this.tractorPlayer.CurrentTrickState);
             this.tractorPlayer.playerLocalCache.WinResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, this.tractorPlayer.playerLocalCache.WinnderID);
         }
@@ -605,7 +605,7 @@ var MainForm = /** @class */ (function () {
         this.tractorPlayer.playerLocalCache = new PlayerLocalCache();
         // this.btnSurrender.Visible = false;
         // this.btnRiot.Visible = false;
-        this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = {};
+        this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards = [];
         this.gameScene.game.timerCurrent = 0;
         if (this.gameScene.ui.btnPig) {
             this.gameScene.ui.btnPig.hide();
@@ -674,7 +674,7 @@ var MainForm = /** @class */ (function () {
         }
         var winnerID = TractorRules.GetWinner(trickState);
         if (playerID == winnerID) {
-            var isWinnerTrump = PokerHelper.IsTrump(trickState.ShowedCards[winnerID][0], this.tractorPlayer.CurrentHandState.Trump, this.tractorPlayer.CurrentHandState.Rank);
+            var isWinnerTrump = PokerHelper.IsTrump(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, winnerID)[0], this.tractorPlayer.CurrentHandState.Trump, this.tractorPlayer.CurrentHandState.Rank);
             if (!isLeaderTrump && isWinnerTrump)
                 return 3;
             return 1;
@@ -697,7 +697,7 @@ var MainForm = /** @class */ (function () {
         this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick = CommonMethods.deepCopy(this.tractorPlayer.CurrentTrickState.ShowedCards);
         var winResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, latestPlayer);
         var position = this.PlayerPosition[latestPlayer];
-        var showedCards = this.tractorPlayer.CurrentTrickState.ShowedCards[latestPlayer];
+        var showedCards = CommonMethods.GetShowedCardsByPlayerID(this.tractorPlayer.CurrentTrickState.ShowedCards, latestPlayer);
         //如果大牌变更，更新缓存相关信息
         if (winResult >= this.firstWinNormal) {
             if (winResult < this.firstWinBySha || this.tractorPlayer.playerLocalCache.WinResult < this.firstWinBySha) {
@@ -878,7 +878,7 @@ var MainForm = /** @class */ (function () {
             isShowCards = false;
         }
         else if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing &&
-            Object.keys(this.tractorPlayer.CurrentTrickState.ShowedCards).length > 0) {
+            this.tractorPlayer.CurrentTrickState.ShowedCards.length > 0) {
             onesTurnPlayerID = this.tractorPlayer.CurrentTrickState.NextPlayer();
             isShowCards = true;
         }
@@ -1225,13 +1225,13 @@ var MainForm = /** @class */ (function () {
             var selectSecondsToShowCards_1 = document.getElementById("selectSecondsToShowCards");
             selectSecondsToShowCards_1.value = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards;
             selectSecondsToShowCards_1.onchange = function () {
-                _this.tractorPlayer.CurrentRoomSetting.secondsToShowCards = selectSecondsToShowCards_1.value;
+                _this.tractorPlayer.CurrentRoomSetting.secondsToShowCards = Number(selectSecondsToShowCards_1.value);
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
             var selectSecondsToDiscardCards_1 = document.getElementById("selectSecondsToDiscardCards");
             selectSecondsToDiscardCards_1.value = this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards;
             selectSecondsToDiscardCards_1.onchange = function () {
-                _this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = selectSecondsToDiscardCards_1.value;
+                _this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = Number(selectSecondsToDiscardCards_1.value);
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
@@ -1598,7 +1598,7 @@ var MainForm = /** @class */ (function () {
     };
     MainForm.prototype.ShowCards = function () {
         if (this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId) {
-            this.tractorPlayer.CurrentTrickState.ShowedCards[this.tractorPlayer.PlayerId] = CommonMethods.deepCopy(this.SelectedCards);
+            this.tractorPlayer.CurrentTrickState.ShowedCards = CommonMethods.SetShowedCardsByPlayerID(this.tractorPlayer.CurrentTrickState.ShowedCards, this.tractorPlayer.PlayerId, CommonMethods.deepCopy(this.SelectedCards));
             this.gameScene.sendMessageToServer(PlayerShowCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentTrickState));
         }
     };
@@ -1685,12 +1685,12 @@ var MainForm = /** @class */ (function () {
         this.tractorPlayer.destroyAllClientMessages();
         var cardsCount = 0;
         if (this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick != null) {
-            for (var _i = 0, _a = Object.entries(this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick); _i < _a.length; _i++) {
-                var _b = _a[_i], key = _b[0], value = _b[1];
-                var cards = value;
+            for (var i = 0; i < this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick.length; i++) {
+                var keyValue = this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick[i];
+                var cards = keyValue.Cards;
                 if (!cards || cards.length == 0)
                     continue;
-                var player = key;
+                var player = keyValue.PlayerID;
                 cardsCount = cards.length;
                 var position = this.PlayerPosition[player];
                 this.drawingFormHelper.DrawShowedCardsByPosition(cards, position);
@@ -1740,16 +1740,16 @@ var MainForm = /** @class */ (function () {
         trickState.Trump = this.tractorPlayer.CurrentTrickState.Trump;
         trickState.Rank = this.tractorPlayer.CurrentTrickState.Rank;
         var cardsCount = 0;
-        for (var _i = 0, _a = Object.entries(this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards); _i < _a.length; _i++) {
-            var _b = _a[_i], key = _b[0], value = _b[1];
-            trickState.ShowedCards[key] = CommonMethods.deepCopy(value);
+        for (var i = 0; i < this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards.length; i++) {
+            var keyValue = this.tractorPlayer.CurrentTrickState.serverLocalCache.lastShowedCards[i];
+            trickState.ShowedCards = CommonMethods.SetShowedCardsByPlayerID(trickState.ShowedCards, keyValue.PlayerID, CommonMethods.deepCopy(keyValue.Cards));
         }
-        for (var _c = 0, _d = Object.entries(trickState.ShowedCards); _c < _d.length; _c++) {
-            var _e = _d[_c], key = _e[0], value = _e[1];
-            var cards = value;
+        for (var i = 0; i < trickState.ShowedCards.length; i++) {
+            var keyValue = trickState.ShowedCards[i];
+            var cards = keyValue.Cards;
             if (!cards || cards.length == 0)
                 continue;
-            var position = this.PlayerPosition[key];
+            var position = this.PlayerPosition[keyValue.PlayerID];
             cardsCount = cards.length;
             this.drawingFormHelper.DrawShowedCardsByPosition(cards, position);
         }
@@ -2036,7 +2036,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.frameGameHallOnlinersHeader = frameGameHallOnlinersHeader;
         var frameGameHallOnliners = this.gameScene.ui.create.div('.frameGameHallOnliners', this.gameScene.ui.frameGameHall);
         frameGameHallOnliners.style.position = 'absolute';
-        frameGameHallOnliners.style.top = '220px';
+        frameGameHallOnliners.style.top = '140px';
         frameGameHallOnliners.style.left = '0px';
         frameGameHallOnliners.style.bottom = '0px';
         frameGameHallOnliners.style.width = '15%';
@@ -3088,7 +3088,7 @@ var MainForm = /** @class */ (function () {
                 this.drawingFormHelper.DrawFinishedSendedCards();
                 return;
             }
-            isNormalShowCards = Object.keys(trick.ShowedCards).length == 4;
+            isNormalShowCards = trick.ShowedCards.length == 4;
             if (isOnePlayerAtATimeInit && isNormalShowCards) {
                 this.onePlayerAtATime.winner = trick.Winner;
                 this.onePlayerAtATime.points = trick.Points();
@@ -3102,7 +3102,7 @@ var MainForm = /** @class */ (function () {
             }
         }
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
-            if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] == 1) {
+            if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] == 1) {
                 this.DrawDumpFailureMessage(trick);
             }
         }
@@ -3117,11 +3117,11 @@ var MainForm = /** @class */ (function () {
             var _loop_6 = function () {
                 var position = this_5.PlayerPosition[curPlayer];
                 if (isNormalShowCards) {
-                    trick.ShowedCards[curPlayer].forEach(function (card) {
+                    CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, curPlayer).forEach(function (card) {
                         _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
                     });
                 }
-                var cardsList = CommonMethods.deepCopy(trick.ShowedCards[curPlayer]);
+                var cardsList = CommonMethods.deepCopy(CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, curPlayer));
                 if (isOnePlayerAtATimeInit) {
                     this_5.onePlayerAtATime.cardsListList.push(cardsList);
                     this_5.onePlayerAtATime.positionList.push(position);
@@ -3134,7 +3134,7 @@ var MainForm = /** @class */ (function () {
                 curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_5.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
             };
             var this_5 = this;
-            for (; i <= Object.keys(trick.ShowedCards).length; i++) {
+            for (; i <= trick.ShowedCards.length; i++) {
                 _loop_6();
             }
         }
@@ -3142,7 +3142,7 @@ var MainForm = /** @class */ (function () {
             this.onePlayerAtATime.DrawShowedCardsOnePlayerAtATime();
         }
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
-            if (Object.keys(trick.ShowedCards).length == 1 && this.PlayerPosition[trick.Learder] != 1) {
+            if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] != 1) {
                 this.DrawDumpFailureMessage(trick);
             }
         }
@@ -3181,8 +3181,8 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.DrawDumpFailureMessage = function (trick) {
         this.tractorPlayer.NotifyMessage([
             "\u73A9\u5BB6\u3010".concat(trick.Learder, "\u3011"),
-            "\u7529\u724C".concat(trick.ShowedCards[trick.Learder].length, "\u5F20\u5931\u8D25"),
-            "\u7F5A\u5206\uFF1A".concat(trick.ShowedCards[trick.Learder].length * 10),
+            "\u7529\u724C".concat(CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, trick.Learder).length, "\u5F20\u5931\u8D25"),
+            "\u7F5A\u5206\uFF1A".concat(CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, trick.Learder).length * 10),
             "",
             "",
             "",
@@ -3247,11 +3247,11 @@ var MainForm = /** @class */ (function () {
                 this_6.tractorPlayer.replayedTricks.push(trick);
                 this_6.tractorPlayer.replayEntity.CurrentTrickStates.shift();
                 // 甩牌失败
-                if (Object.keys(trick.ShowedCards).length == 1)
+                if (trick.ShowedCards.length == 1)
                     return "continue";
                 var curPlayer = trick.Learder;
-                for (var i = 0; i < Object.keys(trick.ShowedCards).length; i++) {
-                    trick.ShowedCards[curPlayer].forEach(function (card) {
+                for (var i = 0; i < trick.ShowedCards.length; i++) {
+                    CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, curPlayer).forEach(function (card) {
                         _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[curPlayer].RemoveCard(card);
                     });
                     curPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this_6.tractorPlayer.CurrentGameState.Players, curPlayer).PlayerId;
@@ -3307,14 +3307,14 @@ var MainForm = /** @class */ (function () {
                 this.drawingFormHelper.DrawDiscardedCards();
         }
         else if (Object.keys(trick.ShowedCards).length == 4) {
-            var _loop_8 = function (key, value) {
-                value.forEach(function (card) {
-                    _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key].AddCard(card);
+            var _loop_8 = function (i) {
+                var keyValue = trick.ShowedCards[i];
+                keyValue.Cards.forEach(function (card) {
+                    _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[keyValue.PlayerID].AddCard(card);
                 });
             };
-            for (var _i = 0, _a = Object.entries(trick.ShowedCards); _i < _a.length; _i++) {
-                var _b = _a[_i], key = _b[0], value = _b[1];
-                _loop_8(key, value);
+            for (var i = 0; i < trick.ShowedCards.length; i++) {
+                _loop_8(i);
             }
             if (trick.Winner) {
                 if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.Winner)) {

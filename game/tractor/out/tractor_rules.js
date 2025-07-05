@@ -126,18 +126,18 @@ var TractorRules = /** @class */ (function () {
         var trump = trickState.Trump;
         var trumpInt = trickState.Trump;
         var rank = trickState.Rank;
-        cp[0] = new CurrentPoker(trickState.ShowedCards[trickState.Learder], trumpInt, rank);
+        cp[0] = new CurrentPoker(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, trickState.Learder), trumpInt, rank);
         var nextPlayer1 = trickState.NextPlayerByID(trickState.Learder);
-        cp[1] = new CurrentPoker(trickState.ShowedCards[nextPlayer1], trumpInt, rank);
+        cp[1] = new CurrentPoker(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1), trumpInt, rank);
         var nextPlayer2 = trickState.NextPlayerByID(nextPlayer1);
-        cp[2] = new CurrentPoker(trickState.ShowedCards[nextPlayer2], trumpInt, rank);
+        cp[2] = new CurrentPoker(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2), trumpInt, rank);
         var nextPlayer3 = trickState.NextPlayerByID(nextPlayer2);
-        cp[3] = new CurrentPoker(trickState.ShowedCards[nextPlayer3], trumpInt, rank);
+        cp[3] = new CurrentPoker(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3), trumpInt, rank);
         //cp[0].Sort();
         //cp[1].Sort();
         //cp[2].Sort();
         //cp[3].Sort();
-        var leadingCardsCount = trickState.ShowedCards[trickState.Learder].length;
+        var leadingCardsCount = CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, trickState.Learder).length;
         var winderNumber = 0;
         var leadingSuit = trickState.LeadingSuit();
         var leadingTractor = cp[0].GetTractorOfAnySuit();
@@ -145,7 +145,7 @@ var TractorRules = /** @class */ (function () {
         if ((leadingTractor.length > 1) && (cp[0].Count() > leadingTractor.length * 2)) //甩拖拉机
          {
             var maxCard_1 = CommonMethods.GetMaxCard(leadingTractor, trump, rank);
-            if (trickState.ShowedCards[nextPlayer1].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1).length > 0) {
                 var tractor1 = cp[1].GetTractorBySuit(trump);
                 if (tractor1.length >= leadingTractor.length &&
                     (!cp[1].IsMixed() && cp[1].GetPairs().length >= cp[0].GetPairs().length)) {
@@ -156,7 +156,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer2].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2).length > 0) {
                 var tractor2 = cp[2].GetTractorBySuit(trump);
                 if (tractor2.length >= leadingTractor.length &&
                     (!cp[2].IsMixed() && cp[2].GetPairs().length >= cp[0].GetPairs().length)) {
@@ -167,7 +167,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer3].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3).length > 0) {
                 var tractor3 = cp[3].GetTractorBySuit(trump);
                 if (tractor3.length >= leadingTractor.length &&
                     (!cp[3].IsMixed() && cp[3].GetPairs().length >= cp[0].GetPairs().length)) {
@@ -181,7 +181,7 @@ var TractorRules = /** @class */ (function () {
         //甩牌 对
         else if ((2 < leadingCardsCount) && (cp[0].GetPairs().length > 0) && leadingTractor.length < 2) {
             var maxCard_2 = CommonMethods.GetMaxCard(cp[0].GetPairs(), trump, rank);
-            if (trickState.ShowedCards[nextPlayer1].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1).length > 0) {
                 if (cp[1].GetPairs().length >= cp[0].GetPairs().length && (!cp[1].IsMixed())) {
                     var tmpMax_4 = CommonMethods.GetMaxCard(cp[1].GetPairs(), trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_2, tmpMax_4, trumpInt, rank, leadingSuit)) {
@@ -190,7 +190,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer2].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2).length > 0) {
                 if (cp[2].GetPairs().length >= cp[0].GetPairs().length && (!cp[2].IsMixed())) {
                     var tmpMax_5 = CommonMethods.GetMaxCard(cp[2].GetPairs(), trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_2, tmpMax_5, trumpInt, rank, leadingSuit)) {
@@ -199,7 +199,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer3].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3).length > 0) {
                 if (cp[3].GetPairs().length >= cp[0].GetPairs().length && (!cp[3].IsMixed())) {
                     var tmpMax_6 = CommonMethods.GetMaxCard(cp[3].GetPairs(), trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_2, tmpMax_6, trumpInt, rank, leadingSuit)) {
@@ -210,32 +210,32 @@ var TractorRules = /** @class */ (function () {
         }
         //甩多个单张牌
         else if ((leadingCardsCount > 1) && (cp[0].GetPairs().length == 0)) {
-            var maxCard_3 = CommonMethods.GetMaxCard(trickState.ShowedCards[trickState.Learder], trump, rank);
+            var maxCard_3 = CommonMethods.GetMaxCard(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, trickState.Learder), trump, rank);
             var tmpMax_7 = 0;
-            if (trickState.ShowedCards[nextPlayer1].length > 0) {
-                tmpMax_7 = CommonMethods.GetMaxCard(trickState.ShowedCards[nextPlayer1], trump, rank);
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1).length > 0) {
+                tmpMax_7 = CommonMethods.GetMaxCard(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1), trump, rank);
                 if (cp[1].GetSuitCardsWithJokerAndRank(trumpInt).length ==
-                    trickState.ShowedCards[trickState.Learder].length) {
+                    CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, trickState.Learder).length) {
                     if (!CommonMethods.CompareTo(maxCard_3, tmpMax_7, trumpInt, rank, leadingSuit)) {
                         winderNumber = 1;
                         maxCard_3 = tmpMax_7;
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer2].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2).length > 0) {
                 if (cp[2].GetSuitCardsWithJokerAndRank(trumpInt).length ==
-                    trickState.ShowedCards[trickState.Learder].length) {
-                    tmpMax_7 = CommonMethods.GetMaxCard(trickState.ShowedCards[nextPlayer2], trump, rank);
+                    CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, trickState.Learder).length) {
+                    tmpMax_7 = CommonMethods.GetMaxCard(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2), trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_3, tmpMax_7, trumpInt, rank, leadingSuit)) {
                         winderNumber = 2;
                         maxCard_3 = tmpMax_7;
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer3].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3).length > 0) {
                 if (cp[3].GetSuitCardsWithJokerAndRank(trumpInt).length ==
-                    trickState.ShowedCards[trickState.Learder].length) {
-                    tmpMax_7 = CommonMethods.GetMaxCard(trickState.ShowedCards[nextPlayer3], trump, rank);
+                    CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, trickState.Learder).length) {
+                    tmpMax_7 = CommonMethods.GetMaxCard(CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3), trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_3, tmpMax_7, trumpInt, rank, leadingSuit)) {
                         winderNumber = 3;
                     }
@@ -249,14 +249,14 @@ var TractorRules = /** @class */ (function () {
             var tractor1 = [];
             var tractor2 = [];
             var tractor3 = [];
-            if (trickState.ShowedCards[nextPlayer1].length > 0)
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1).length > 0)
                 tractor1 = cp[1].GetTractorOfAnySuit();
-            if (trickState.ShowedCards[nextPlayer2].length > 0)
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2).length > 0)
                 tractor2 = cp[2].GetTractorOfAnySuit();
-            if (trickState.ShowedCards[nextPlayer3].length > 0)
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3).length > 0)
                 tractor3 = cp[3].GetTractorOfAnySuit();
             var maxCard_4 = CommonMethods.GetMaxCard(tractor0, trump, rank);
-            if (trickState.ShowedCards[nextPlayer1].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1).length > 0) {
                 if (tractor1.length >= tractor0.length) {
                     var tmpMax_8 = CommonMethods.GetMaxCard(tractor1, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_4, tmpMax_8, trumpInt, rank, leadingSuit)) {
@@ -265,7 +265,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer2].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2).length > 0) {
                 if (tractor2.length >= tractor0.length) {
                     var tmpMax_9 = CommonMethods.GetMaxCard(tractor2, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_4, tmpMax_9, trumpInt, rank, leadingSuit)) {
@@ -274,7 +274,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer3].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3).length > 0) {
                 if (tractor3.length >= tractor0.length) {
                     var tmpMax_10 = CommonMethods.GetMaxCard(tractor3, trump, rank);
                     if (!CommonMethods.CompareTo(maxCard_4, tmpMax_10, trumpInt, rank, leadingSuit)) {
@@ -286,7 +286,7 @@ var TractorRules = /** @class */ (function () {
         else if (cp[0].GetPairs().length == 1 && (leadingCardsCount == 2)) //如果有一个对
          {
             var maxCard = cp[0].GetPairs()[0];
-            if (trickState.ShowedCards[nextPlayer1].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1).length > 0) {
                 if (cp[1].GetPairs().length > 0) {
                     var tmpMax = cp[1].GetPairs()[0];
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
@@ -295,7 +295,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer2].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2).length > 0) {
                 if (cp[2].GetPairs().length > 0) {
                     var tmpMax = cp[2].GetPairs()[0];
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
@@ -304,7 +304,7 @@ var TractorRules = /** @class */ (function () {
                     }
                 }
             }
-            if (trickState.ShowedCards[nextPlayer3].length > 0) {
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3).length > 0) {
                 if (cp[3].GetPairs().length > 0) {
                     var tmpMax = cp[3].GetPairs()[0];
                     if (!CommonMethods.CompareTo(maxCard, tmpMax, trumpInt, rank, leadingSuit)) {
@@ -315,24 +315,24 @@ var TractorRules = /** @class */ (function () {
         }
         else if (leadingCardsCount == 1) //如果是单张牌
          {
-            var maxCard_5 = trickState.ShowedCards[trickState.Learder][0];
+            var maxCard_5 = CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, trickState.Learder)[0];
             var tmpMax_11 = 0;
-            if (trickState.ShowedCards[nextPlayer1].length > 0) {
-                tmpMax_11 = trickState.ShowedCards[nextPlayer1][0];
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1).length > 0) {
+                tmpMax_11 = CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer1)[0];
                 if (!CommonMethods.CompareTo(maxCard_5, tmpMax_11, trumpInt, rank, leadingSuit)) {
                     winderNumber = 1;
                     maxCard_5 = tmpMax_11;
                 }
             }
-            if (trickState.ShowedCards[nextPlayer2].length > 0) {
-                tmpMax_11 = trickState.ShowedCards[nextPlayer2][0];
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2).length > 0) {
+                tmpMax_11 = CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer2)[0];
                 if (!CommonMethods.CompareTo(maxCard_5, tmpMax_11, trumpInt, rank, leadingSuit)) {
                     winderNumber = 2;
                     maxCard_5 = tmpMax_11;
                 }
             }
-            if (trickState.ShowedCards[nextPlayer3].length > 0) {
-                tmpMax_11 = trickState.ShowedCards[nextPlayer3][0];
+            if (CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3).length > 0) {
+                tmpMax_11 = CommonMethods.GetShowedCardsByPlayerID(trickState.ShowedCards, nextPlayer3)[0];
                 if (!CommonMethods.CompareTo(maxCard_5, tmpMax_11, trumpInt, rank, leadingSuit)) {
                     winderNumber = 3;
                 }

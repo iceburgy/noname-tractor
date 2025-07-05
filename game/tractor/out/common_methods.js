@@ -10,6 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 import { CurrentPoker } from './current_poker.js';
+import { ShowedCardKeyValue } from './showed_card_key_value.js';
 import { SuitEnums } from './suit_enums.js';
 export var CommonMethods = /** @class */ (function () {
     function CommonMethods() {
@@ -495,6 +496,32 @@ export var CommonMethods = /** @class */ (function () {
             return '0' + number;
         }
         return number;
+    };
+    CommonMethods.GetShowedCardsByPlayerID = function (showedCards, id) {
+        for (var i = 0; i < showedCards.length; i++) {
+            var keyValue = showedCards[i];
+            if (keyValue.PlayerID.toLowerCase() === id.toLowerCase()) {
+                return keyValue.Cards;
+            }
+        }
+        return [];
+    };
+    CommonMethods.SetShowedCardsByPlayerID = function (showedCards, id, cards) {
+        var newEntry = new ShowedCardKeyValue();
+        newEntry.PlayerID = id;
+        newEntry.Cards = cards;
+        var isFound = false;
+        for (var i = 0; i < showedCards.length; i++) {
+            if (showedCards[i].PlayerID.toLowerCase() === id.toLowerCase()) {
+                showedCards[i] = newEntry; // if found Replace
+                isFound = true;
+                break;
+            }
+        }
+        if (!isFound) {
+            showedCards.push(newEntry); // otherwise Append
+        }
+        return showedCards;
     };
     CommonMethods.storageFileForCardsKey = "storageFileForCards";
     CommonMethods.SendJoinOrQuitYuezhan_REQUEST = "SendJoinOrQuitYuezhan";

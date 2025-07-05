@@ -6,7 +6,7 @@ var CurrentTrickState = /** @class */ (function () {
     function CurrentTrickState() {
         this.Learder = "";
         this.Winner = "";
-        this.ShowedCards = {};
+        this.ShowedCards = [];
         this.serverLocalCache = new ServerLocalCache();
         this.Trump = 0;
         this.Rank = 0;
@@ -14,43 +14,46 @@ var CurrentTrickState = /** @class */ (function () {
     CurrentTrickState.prototype.CloneFrom = function (from) {
         this.Learder = from.Learder;
         this.Winner = from.Winner;
-        this.ShowedCards = CommonMethods.deepCopy(from.ShowedCards);
+        if (from.ShowedCards) {
+            this.ShowedCards = CommonMethods.deepCopy(from.ShowedCards);
+        }
         this.serverLocalCache.CloneFrom(from.serverLocalCache);
         this.Trump = from.Trump;
         this.Rank = from.Rank;
     };
     CurrentTrickState.prototype.LatestPlayerShowedCard = function () {
         var playerId = "";
-        if (!this.Learder || !this.ShowedCards[this.Learder] || this.ShowedCards[this.Learder].length == 0)
-            return playerId;
+        if (this.Learder) {
+            var sc = CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder);
+            if (sc.length == 0)
+                return playerId;
+        }
         var afterLeader = false;
         //find next player to show card after learder
-        for (var _i = 0, _a = Object.entries(this.ShowedCards); _i < _a.length; _i++) {
-            var _b = _a[_i], key = _b[0], value = _b[1];
-            if (key != this.Learder && afterLeader == false)
+        for (var i = 0; i < this.ShowedCards.length; i++) {
+            var keyValue = this.ShowedCards[i];
+            if (keyValue.PlayerID != this.Learder && afterLeader == false)
                 continue;
-            else if (key == this.Learder) //search from leader;
+            else if (keyValue.PlayerID == this.Learder) //search from leader;
              {
                 playerId = this.Learder;
                 afterLeader = true;
             }
             else if (afterLeader) {
-                if (value.length == 0)
+                if (keyValue.Cards.length == 0)
                     return playerId;
-                playerId = key;
+                playerId = keyValue.PlayerID;
             }
         }
-        for (var _c = 0, _d = Object.entries(this.ShowedCards); _c < _d.length; _c++) {
-            var _e = _d[_c], key = _e[0], value = _e[1];
-            {
-                if (key != this.Learder) {
-                    if (value.length == 0)
-                        return playerId;
-                    playerId = key;
-                }
-                else //search end before leader
-                    break;
+        for (var i = 0; i < this.ShowedCards.length; i++) {
+            var keyValue = this.ShowedCards[i];
+            if (keyValue.PlayerID != this.Learder) {
+                if (keyValue.Cards.length == 0)
+                    return playerId;
+                playerId = keyValue.PlayerID;
             }
+            else //search end before leader
+                break;
         }
         return playerId;
     };
@@ -59,56 +62,58 @@ var CurrentTrickState = /** @class */ (function () {
             return false;
         if (!this.ShowedCards || Object.keys(this.ShowedCards).length == 0)
             return false;
-        return this.ShowedCards[this.Learder].length > 0;
+        return CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder).length > 0;
     };
     CurrentTrickState.prototype.CountOfPlayerShowedCards = function () {
         var result = 0;
         if (!this.ShowedCards)
             return result;
-        for (var _i = 0, _a = Object.entries(this.ShowedCards); _i < _a.length; _i++) {
-            var _b = _a[_i], key = _b[0], value = _b[1];
-            if (value.length > 0)
+        for (var i = 0; i < this.ShowedCards.length; i++) {
+            var keyValue = this.ShowedCards[i];
+            if (keyValue.Cards.length > 0)
                 result++;
         }
         return result;
     };
     CurrentTrickState.prototype.ScoreCards = function () {
         var scorecards = [];
-        Object.values(this.ShowedCards).forEach(function (cardsList) {
-            cardsList.forEach(function (card) {
+        for (var i = 0; i < this.ShowedCards.length; i++) {
+            var keyValue = this.ShowedCards[i];
+            for (var j = 0; j < keyValue.Cards.length; j++) {
+                var card = keyValue.Cards[j];
                 if (card % 13 == 3 || card % 13 == 8 || card % 13 == 11)
                     scorecards.push(card);
-            });
-        });
+            }
+        }
         return scorecards;
     };
     CurrentTrickState.prototype.NextPlayer = function () {
         var playerId = "";
-        if (this.ShowedCards[this.Learder].length == 0)
+        if (CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder).length == 0)
             playerId = this.Learder;
         else {
             var afterLeader = false;
             //find next player to show card after learder
-            for (var _i = 0, _a = Object.entries(this.ShowedCards); _i < _a.length; _i++) {
-                var _b = _a[_i], key = _b[0], value = _b[1];
-                if (key != this.Learder && afterLeader == false)
+            for (var i = 0; i < this.ShowedCards.length; i++) {
+                var keyValue = this.ShowedCards[i];
+                if (keyValue.PlayerID != this.Learder && afterLeader == false)
                     continue;
-                if (key == this.Learder) { // search from learder
+                if (keyValue.PlayerID == this.Learder) { // search from learder
                     afterLeader = true;
                 }
                 if (afterLeader) {
-                    if (value.length == 0) {
-                        playerId = key;
+                    if (keyValue.Cards.length == 0) {
+                        playerId = keyValue.PlayerID;
                         break;
                     }
                 }
             }
             if (!playerId) {
-                for (var _c = 0, _d = Object.entries(this.ShowedCards); _c < _d.length; _c++) {
-                    var _e = _d[_c], key = _e[0], value = _e[1];
-                    if (key != this.Learder) {
-                        if (value.length == 0) {
-                            playerId = key;
+                for (var i = 0; i < this.ShowedCards.length; i++) {
+                    var keyValue = this.ShowedCards[i];
+                    if (keyValue.PlayerID != this.Learder) {
+                        if (keyValue.Cards.length == 0) {
+                            playerId = keyValue.PlayerID;
                             break;
                         }
                     }
@@ -121,28 +126,28 @@ var CurrentTrickState = /** @class */ (function () {
     };
     CurrentTrickState.prototype.NextPlayerByID = function (playerId) {
         var nextPlayer = "";
-        if (!this.ShowedCards || !this.ShowedCards[playerId])
+        if (!this.ShowedCards || CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, playerId).length == 0)
             return "";
         var afterLeader = false;
         //find next player to show card after learder
-        for (var _i = 0, _a = Object.entries(this.ShowedCards); _i < _a.length; _i++) {
-            var _b = _a[_i], key = _b[0], value = _b[1];
-            if (key != playerId && afterLeader == false)
+        for (var i = 0; i < this.ShowedCards.length; i++) {
+            var keyValue = this.ShowedCards[i];
+            if (keyValue.PlayerID != playerId && afterLeader == false)
                 continue;
-            else if (key == playerId) // search from learder
+            else if (keyValue.PlayerID == playerId) // search from learder
              {
                 afterLeader = true;
             }
             else if (afterLeader) {
-                nextPlayer = key;
+                nextPlayer = keyValue.PlayerID;
                 break;
             }
         }
         if (!nextPlayer) {
-            for (var _c = 0, _d = Object.entries(this.ShowedCards); _c < _d.length; _c++) {
-                var _e = _d[_c], key = _e[0], value = _e[1];
-                if (key != playerId) {
-                    nextPlayer = key;
+            for (var i = 0; i < this.ShowedCards.length; i++) {
+                var keyValue = this.ShowedCards[i];
+                if (keyValue.PlayerID != playerId) {
+                    nextPlayer = keyValue.PlayerID;
                 }
                 break;
             }
@@ -150,16 +155,16 @@ var CurrentTrickState = /** @class */ (function () {
         return nextPlayer;
     };
     CurrentTrickState.prototype.AllPlayedShowedCards = function () {
-        for (var _i = 0, _a = Object.entries(this.ShowedCards); _i < _a.length; _i++) {
-            var _b = _a[_i], key = _b[0], value = _b[1];
-            if (value.length == 0)
+        for (var i = 0; i < this.ShowedCards.length; i++) {
+            var keyValue = this.ShowedCards[i];
+            if (keyValue.Cards.length == 0)
                 return false;
         }
         return true;
     };
     CurrentTrickState.prototype.LeadingCards = function () {
         if (this.IsStarted()) {
-            return this.ShowedCards[this.Learder];
+            return CommonMethods.GetShowedCardsByPlayerID(this.ShowedCards, this.Learder);
         }
         return [];
     };
@@ -174,10 +179,10 @@ var CurrentTrickState = /** @class */ (function () {
     };
     CurrentTrickState.prototype.Points = function () {
         var points = 0;
-        for (var _i = 0, _a = Object.values(this.ShowedCards); _i < _a.length; _i++) {
-            var cardsList = _a[_i];
-            for (var _b = 0, _c = cardsList; _b < _c.length; _b++) {
-                var card = _c[_b];
+        for (var i = 0; i < this.ShowedCards.length; i++) {
+            var keyValue = this.ShowedCards[i];
+            for (var _i = 0, _a = keyValue.Cards; _i < _a.length; _i++) {
+                var card = _a[_i];
                 if (card % 13 == 3)
                     points += 5;
                 else if (card % 13 == 8)

@@ -35322,6 +35322,10 @@
 			game.me=null;
 		},
 		clearConnect:function(){
+			if(ui.userChoices){
+				ui.userChoices.remove();
+				delete ui.userChoices;
+			}
 			if(ui.userNotes){
 				ui.userNotes.remove();
 				delete ui.userNotes;

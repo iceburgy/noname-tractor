@@ -78,6 +78,9 @@ var GameScene = /** @class */ (function () {
             return;
         }
         this.hostName = hostName.trim();
+        if (!this.hostName) {
+            this.hostName = "xicuntractor.ddnsfree.com:889";
+        }
         this.hostNameOriginal = this.hostName;
         this.playerName = playerName.trim();
         if (this.playerName && CommonMethods.IsNumber(this.playerName)) {
