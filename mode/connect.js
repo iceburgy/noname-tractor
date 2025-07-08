@@ -409,12 +409,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 
 				// user choices
 				var userChoices = ui.create.div(".userChoices", ui.window);
-				userChoices.innerHTML = `<a href="javascript:void(0)" id="loginLink">登录</a> | 
-											<a href="javascript:void(0)" id="registerLink">注册用户</a> | 
-											<a href="javascript:void(0)" id="findPasswordLink">找回密码</a> | 
-											<a href="javascript:void(0)" id="findUsernameLink">找回用户名</a> | 
-											<a href="javascript:void(0)" id="doReplayLink">录像回放</a> | 
-											<a href="javascript:void(0)" id="inputAccessKeyLink">输入密钥</a>`;
+				userChoices.innerHTML = `<a href="javascript:void(0)" id="loginLink">返回首页</a>
+											<a href="javascript:void(0)" id="registerLink">注册用户</a>
+											<a href="javascript:void(0)" id="findPasswordLink">找回密码</a>
+											<a href="javascript:void(0)" id="findUsernameLink">找回用户名</a>
+											<a href="javascript:void(0)" id="doReplayLink">录像回放</a>
+											<a href="javascript:void(0)" id="inputAccessKeyLink">旧版</a>`;
 				userChoices.style.fontSize = '20px';
 				userChoices.style.padding = '10px';
 				userChoices.style.width = 'calc(100%)';
@@ -426,9 +426,29 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					link.style.color = "white";
 				});
 
+				document.getElementById("loginLink").style.display = 'none';
+
+				var specialLinks = ["registerLink", "findPasswordLink", "findUsernameLink"];
+				toggleButton = function (eleID) {
+					if (specialLinks.includes(eleID)) {
+						const links = document.querySelectorAll('.userChoices a');
+						links.forEach(link => {
+							link.style.display = 'none';
+						});
+						document.getElementById("loginLink").style.display = 'inline-block';
+					} else if (eleID == "loginLink") {
+						const links = document.querySelectorAll('.userChoices a');
+						links.forEach(link => {
+							link.style.display = 'inline-block';
+						});
+						document.getElementById("loginLink").style.display = 'none';
+					}
+				}
+
 				displayButton = function (event) {
 					nodePassword.setAttribute("placeholder", "密码");
 					const id = event.target.id;
+					toggleButton(id);
 					switch (id) {
 						case 'loginLink':
 							nodePlayerName.style.display = 'inline-block';
@@ -478,6 +498,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						default:
 							console.log('Unknown link clicked');
 					}
+					updateButtonStatus();
 				}
 
 				document.getElementById("loginLink").addEventListener('click', displayButton);
@@ -488,25 +509,37 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				document.getElementById("inputAccessKeyLink").addEventListener('click', displayButton);
 
 				updateButtonStatus = function () {
-					if (nodePlayerName.value && nodePassword.value && nodeEmail.value) {
-						// button.innerHTML = "注册用户";
-						button.classList.remove('disabled');
-					}
-					else if (nodePlayerName.value && nodePassword.value && !nodeEmail.value) {
-						// button.innerHTML = "进入大厅";
-						button.classList.remove('disabled');
-					}
-					else if (nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
-						// button.innerHTML = "找回密码";
-						button.classList.remove('disabled');
-					}
-					else if (!nodePlayerName.value && !nodePassword.value && nodeEmail.value) {
-						// button.innerHTML = "找回用户名";
-						button.classList.remove('disabled');
-					}
-					else {
-						// button.innerHTML = "进入大厅";
-						if (!button.classList.contains('disabled')) button.classList.add('disabled');
+					switch (button.innerHTML) {
+						case '进入大厅':
+							if (!nodePlayerName.value || !nodePassword.value) {
+								button.classList.add('disabled');
+							} else {
+								button.classList.remove('disabled');
+							}
+							break;
+						case '注册用户':
+							if (!nodePlayerName.value || !nodePassword.value || !nodeEmail.value) {
+								button.classList.add('disabled');
+							} else {
+								button.classList.remove('disabled');
+							}
+							break;
+						case '找回密码':
+							if (!nodePlayerName.value || !nodeEmail.value) {
+								button.classList.add('disabled');
+							} else {
+								button.classList.remove('disabled');
+							}
+							break;
+						case '找回用户名':
+							if (!nodeEmail.value) {
+								button.classList.add('disabled');
+							} else {
+								button.classList.remove('disabled');
+							}
+							break;
+						default:
+							break;
 					}
 				}
 				updateButtonStatus();
