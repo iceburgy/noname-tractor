@@ -1569,31 +1569,13 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.ToShowCards = function () {
-        var _this = this;
         if ((this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing || this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8CardsFinished) &&
             this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId) {
-            var selectedCardsValidationResult = TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
-            //如果我准备出的牌合法
-            if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
-                //擦去小猪
-                this.gameScene.ui.btnPig.hide();
-                this.gameScene.ui.btnPig.classList.add('disabled');
-                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
-                this.SelectedCards.forEach(function (card) {
-                    _this.tractorPlayer.CurrentPoker.RemoveCard(card);
-                });
-                this.drawingFormHelper.removeCardImage(this.SelectedCards);
-                this.ShowCards();
-                this.drawingFormHelper.ResortMyHandCards();
-                this.SelectedCards = [];
-            }
-            else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
-                //擦去小猪
-                this.gameScene.ui.btnPig.hide();
-                this.gameScene.ui.btnPig.classList.add('disabled');
-                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
-                this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards));
-            }
+            //擦去小猪
+            this.gameScene.ui.btnPig.hide();
+            this.gameScene.ui.btnPig.classList.add('disabled');
+            this.gameScene.ui.btnPig.classList.remove('pointerdiv');
+            this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards));
         }
     };
     MainForm.prototype.ShowCards = function () {
@@ -1616,7 +1598,8 @@ var MainForm = /** @class */ (function () {
     // handle both
     MainForm.prototype.NotifyTryToDumpResultEventHandler = function (result) {
         var _this = this;
-        if (result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.DumpingSuccess) { //甩牌成功.
+        if (result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.DumpingSuccess || //甩牌成功.
+            result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) { //出牌成功.
             this.SelectedCards.forEach(function (card) {
                 _this.tractorPlayer.CurrentPoker.RemoveCard(card);
             });
@@ -1625,8 +1608,28 @@ var MainForm = /** @class */ (function () {
             this.drawingFormHelper.ResortMyHandCards();
             this.SelectedCards = [];
         }
-        //甩牌失败
+        else if (result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Invalid) {
+            //出牌失败
+            var msgs = [
+                "\u51FA\u724C".concat(this.SelectedCards.length, "\u5F20\u5931\u8D25"),
+            ];
+            this.tractorPlayer.NotifyMessage(msgs);
+            //暂时关闭托管功能，以免甩牌失败后立即点托管，会出别的牌
+            this.gameScene.ui.btnRobot.hide();
+            setTimeout(function () {
+                result.MustShowCardsForDumpingFail.forEach(function (card) {
+                    _this.tractorPlayer.CurrentPoker.RemoveCard(card);
+                });
+                _this.drawingFormHelper.removeCardImage(result.MustShowCardsForDumpingFail);
+                _this.SelectedCards = CommonMethods.deepCopy(result.MustShowCardsForDumpingFail);
+                _this.ShowCards();
+                _this.drawingFormHelper.ResortMyHandCards();
+                _this.SelectedCards = [];
+                _this.gameScene.ui.btnRobot.show();
+            }, 3000);
+        }
         else {
+            //甩牌失败
             var msgs = [
                 "\u7529\u724C".concat(this.SelectedCards.length, "\u5F20\u5931\u8D25"),
                 "\"\u7F5A\u5206\uFF1A".concat(this.SelectedCards.length * 10),

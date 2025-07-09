@@ -1714,30 +1714,12 @@ export class MainForm {
     private ToShowCards() {
         if ((this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing || this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8CardsFinished) &&
             this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId) {
-            var selectedCardsValidationResult = TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
-            //如果我准备出的牌合法
-            if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
-                //擦去小猪
-                this.gameScene.ui.btnPig.hide();
-                this.gameScene.ui.btnPig.classList.add('disabled')
-                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
+            //擦去小猪
+            this.gameScene.ui.btnPig.hide();
+            this.gameScene.ui.btnPig.classList.add('disabled')
+            this.gameScene.ui.btnPig.classList.remove('pointerdiv');
+            this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
 
-                this.SelectedCards.forEach(card => {
-                    this.tractorPlayer.CurrentPoker.RemoveCard(card);
-                })
-                this.drawingFormHelper.removeCardImage(this.SelectedCards);
-
-                this.ShowCards();
-                this.drawingFormHelper.ResortMyHandCards();
-                this.SelectedCards = []
-            }
-            else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
-                //擦去小猪
-                this.gameScene.ui.btnPig.hide();
-                this.gameScene.ui.btnPig.classList.add('disabled')
-                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
-                this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards))
-            }
         }
     }
 
@@ -1764,7 +1746,8 @@ export class MainForm {
 
     // handle both
     public NotifyTryToDumpResultEventHandler(result: ShowingCardsValidationResult) {
-        if (result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.DumpingSuccess) { //甩牌成功.
+        if (result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.DumpingSuccess || //甩牌成功.
+            result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) { //出牌成功.
             this.SelectedCards.forEach(card => {
                 this.tractorPlayer.CurrentPoker.RemoveCard(card);
             })
@@ -1773,9 +1756,29 @@ export class MainForm {
             this.ShowCards();
             this.drawingFormHelper.ResortMyHandCards();
             this.SelectedCards = []
-        }
-        //甩牌失败
-        else {
+        } else if (result.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Invalid) {
+            //出牌失败
+            let msgs: string[] = [
+                `出牌${this.SelectedCards.length}张失败`,
+            ]
+            this.tractorPlayer.NotifyMessage(msgs)
+
+            //暂时关闭托管功能，以免甩牌失败后立即点托管，会出别的牌
+            this.gameScene.ui.btnRobot.hide();
+
+            setTimeout(() => {
+                result.MustShowCardsForDumpingFail.forEach(card => {
+                    this.tractorPlayer.CurrentPoker.RemoveCard(card);
+                })
+                this.drawingFormHelper.removeCardImage(result.MustShowCardsForDumpingFail);
+                this.SelectedCards = CommonMethods.deepCopy<number[]>(result.MustShowCardsForDumpingFail)
+                this.ShowCards();
+                this.drawingFormHelper.ResortMyHandCards();
+                this.SelectedCards = []
+                this.gameScene.ui.btnRobot.show();
+            }, 3000);
+        } else {
+            //甩牌失败
             let msgs: string[] = [
                 `甩牌${this.SelectedCards.length}张失败`,
                 `"罚分：${this.SelectedCards.length * 10}`,
