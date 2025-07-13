@@ -523,6 +523,12 @@ export var CommonMethods = /** @class */ (function () {
         }
         return showedCards;
     };
+    CommonMethods.RemoveFirstValueFromArray = function (arr, value) {
+        var index = arr.indexOf(value);
+        if (index !== -1) {
+            arr.splice(index, 1);
+        }
+    };
     CommonMethods.storageFileForCardsKey = "storageFileForCards";
     CommonMethods.SendJoinOrQuitYuezhan_REQUEST = "SendJoinOrQuitYuezhan";
     CommonMethods.SendAwardOnlineBonus_REQUEST = "SendAwardOnlineBonus";

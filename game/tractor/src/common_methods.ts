@@ -715,4 +715,11 @@ export class CommonMethods {
 
         return showedCards;
     }
+
+    public static RemoveFirstValueFromArray<T>(arr: T[], value: T): void {
+        const index = arr.indexOf(value);
+        if (index !== -1) {
+            arr.splice(index, 1);
+        }
+    }
 }

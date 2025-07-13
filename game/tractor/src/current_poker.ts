@@ -1509,7 +1509,47 @@ export class CurrentPoker {
         return rt;
     }
 
-    public GetMinMasterCards(asuit: number): number {
+    public GetMinCards(asuit: number): number {
+        if (asuit == this.Trump) {
+            return this.GetMinMasterCards()
+        }
+        let rt = -1;
+
+        switch (asuit) {
+            case 1:
+                for (let i = 0; i < 13; i++) {
+                    if (this.HeartsNoRank()[i] > 0) {
+                        return i;
+                    }
+                }
+                break;
+            case 2:
+                for (let i = 0; i < 13; i++) {
+                    if (this.SpadesNoRank()[i] > 0) {
+                        return i + 13;
+                    }
+                }
+                break;
+            case 3:
+                for (let i = 0; i < 13; i++) {
+                    if (this.DiamondsNoRank()[i] > 0) {
+                        return i + 26;
+                    }
+                }
+                break;
+            case 4:
+                for (let i = 0; i < 13; i++) {
+                    if (this.ClubsNoRank()[i] > 0) {
+                        return i + 39;
+                    }
+                }
+                break;
+        }
+        return rt;
+    }
+
+    public GetMinMasterCards(): number {
+        let asuit = this.Trump
         let rt = -1;
 
         if (asuit == 1) {

@@ -7,117 +7,130 @@ export var Algorithm = /** @class */ (function () {
     }
     //跟出
     Algorithm.MustSelectedCards = function (selectedCards, currentTrickState, currentPoker) {
-        var currentCards = new CurrentPoker();
-        currentCards.CloneFrom(currentPoker);
-        var leadingCardsCp = new CurrentPoker();
-        leadingCardsCp.Trump = currentTrickState.Trump;
-        leadingCardsCp.Rank = currentTrickState.Rank;
-        currentTrickState.LeadingCards().forEach(function (card) {
-            leadingCardsCp.AddCard(card);
-        });
+        var leadingCardsCp = new CurrentPoker(currentTrickState.LeadingCards(), currentTrickState.Trump, currentTrickState.Rank);
         var leadingSuit = currentTrickState.LeadingSuit();
-        var isTrump = PokerHelper.IsTrump(currentTrickState.LeadingCards()[0], currentCards.Trump, currentCards.Rank);
-        if (isTrump)
-            leadingSuit = currentCards.Trump;
         selectedCards.length = 0;
         var allSuitCardsCp = new CurrentPoker();
         allSuitCardsCp.CloneFrom(currentPoker);
-        var allSuitCards = allSuitCardsCp.Cards;
+        // 本花色
+        //如果别人出拖拉机，我如果有，也应该出拖拉机，且优先选择最小的
         var leadingTractors = leadingCardsCp.GetTractorBySuit(leadingSuit);
+        var currentTractors = allSuitCardsCp.GetTractorBySuit(leadingSuit);
         var leadingPairs = leadingCardsCp.GetPairsBySuit(leadingSuit);
-        //如果别人出拖拉机，我如果有，也应该出拖拉机
-        var currentTractors = currentCards.GetTractorBySuit(leadingSuit);
         for (var i = 0; i < leadingTractors.length && i < currentTractors.length && selectedCards.length < leadingCardsCp.Count(); i++) {
+            if (allSuitCardsCp.Cards[i] <= 0)
+                continue;
             selectedCards.push(currentTractors[i]);
             selectedCards.push(currentTractors[i]);
-            allSuitCards[currentTractors[i]] -= 2;
-            leadingPairs = CommonMethods.ArrayRemoveOneByValue(leadingPairs, currentTractors[i]);
+            allSuitCardsCp.RemoveCard(currentTractors[i]);
+            allSuitCardsCp.RemoveCard(currentTractors[i]);
+            CommonMethods.RemoveFirstValueFromArray(leadingPairs, leadingTractors[i]);
         }
-        //对子：先跳过常主
-        var currentPairs = currentCards.GetPairsBySuit(leadingSuit);
-        for (var i = 0; i < leadingPairs.length && i < currentPairs.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCards[currentPairs[i]] <= 0 || i % 13 == currentCards.Rank || i >= 52)
-                continue;
-            selectedCards.push(currentPairs[i]);
-            selectedCards.push(currentPairs[i]);
-            allSuitCards[currentPairs[i]] -= 2;
+        //对子：优先选择最小的
+        var currentPairs = allSuitCardsCp.GetPairsBySuit(leadingSuit);
+        if (leadingPairs.length > 0 && currentPairs.length > 0) {
+            var currentPairsCp = new CurrentPoker(currentPairs, currentPoker.Trump, currentPoker.Rank);
+            for (var i = 0; i < leadingPairs.length && i < currentPairs.length && selectedCards.length < leadingCardsCp.Count(); i++) {
+                var minPair = currentPairsCp.GetMinCards(leadingSuit);
+                currentPairsCp.RemoveCard(minPair);
+                currentPairsCp.RemoveCard(minPair);
+                if (allSuitCardsCp.Cards[minPair] <= 0)
+                    continue;
+                selectedCards.push(minPair);
+                selectedCards.push(minPair);
+                allSuitCardsCp.RemoveCard(minPair);
+                allSuitCardsCp.RemoveCard(minPair);
+            }
         }
-        //对子
-        for (var i = 0; i < leadingPairs.length && i < currentPairs.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCards[currentPairs[i]] <= 0)
-                continue;
-            selectedCards.push(currentPairs[i]);
-            selectedCards.push(currentPairs[i]);
-            allSuitCards[currentPairs[i]] -= 2;
+        //单张：先跳过对子、常主，优先选择最小的
+        var currentSuitCards = allSuitCardsCp.GetSuitCardsWithJokerAndRank(leadingSuit);
+        if (currentSuitCards.length > 0 && selectedCards.length < leadingCardsCp.Count()) {
+            var currentSuitCardsCp = new CurrentPoker(currentSuitCards, currentPoker.Trump, currentPoker.Rank);
+            while (currentSuitCardsCp.Count() > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                var minCard = currentSuitCardsCp.GetMinCards(leadingSuit);
+                currentSuitCardsCp.RemoveCard(minCard);
+                if (allSuitCardsCp.Cards[minCard] <= 0 || minCard % 13 == currentTrickState.Rank || minCard >= 52 || allSuitCardsCp.Cards[minCard] == 2)
+                    continue;
+                selectedCards.push(minCard);
+                allSuitCardsCp.RemoveCard(minCard);
+            }
         }
-        //单张先跳过对子、常主
-        var currentSuitCards = currentCards.GetSuitCardsWithJokerAndRank(leadingSuit);
-        for (var i = 0; i < currentSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCards[currentSuitCards[i]] <= 0 || i % 13 == currentCards.Rank || i >= 52)
-                continue;
-            selectedCards.push(currentSuitCards[i]);
-            allSuitCards[currentSuitCards[i]]--;
+        //单张：优先选择最小的
+        var currentSuitCards = allSuitCardsCp.GetSuitCardsWithJokerAndRank(leadingSuit);
+        if (currentSuitCards.length > 0 && selectedCards.length < leadingCardsCp.Count()) {
+            var currentSuitCardsCp = new CurrentPoker(currentSuitCards, currentPoker.Trump, currentPoker.Rank);
+            while (currentSuitCardsCp.Count() > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                var minCard = currentSuitCardsCp.GetMinCards(leadingSuit);
+                currentSuitCardsCp.RemoveCard(minCard);
+                if (allSuitCardsCp.Cards[minCard] <= 0)
+                    continue;
+                selectedCards.push(minCard);
+                allSuitCardsCp.RemoveCard(minCard);
+            }
         }
-        //单张先跳过对子
-        for (var i = 0; i < currentSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCards[currentSuitCards[i]] <= 0)
+        // 其他花色
+        // 先跳过所有主牌，和副牌对子，即副牌单张
+        for (var curSuit = 1; curSuit <= 4; curSuit++) {
+            if (curSuit == currentPoker.Trump)
                 continue;
-            selectedCards.push(currentSuitCards[i]);
-            allSuitCards[currentSuitCards[i]]--;
-        }
-        //单张
-        for (var i = 0; i < currentSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCards[currentSuitCards[i]] <= 0)
-                continue;
-            selectedCards.push(currentSuitCards[i]);
-            allSuitCards[currentSuitCards[i]]--;
-        }
-        //其他花色的牌先跳过所有主牌，和副牌对子，即副牌单张
-        for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            var isITrump = PokerHelper.IsTrump(i, currentCards.Trump, currentCards.Rank);
-            if (isITrump || allSuitCards[i] <= 0 || allSuitCards[i] == 2)
-                continue;
-            selectedCards.push(i);
-            allSuitCards[i]--;
+            var currentSuitCards = allSuitCardsCp.GetSuitCardsWithJokerAndRank(curSuit);
+            if (currentSuitCards.length > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                var currentSuitCardsCp = new CurrentPoker(currentSuitCards, currentPoker.Trump, currentPoker.Rank);
+                while (currentSuitCardsCp.Count() > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                    var minCard = currentSuitCardsCp.GetMinCards(curSuit);
+                    currentSuitCardsCp.RemoveCard(minCard);
+                    if (allSuitCardsCp.Cards[minCard] <= 0 || allSuitCardsCp.Cards[minCard] == 2)
+                        continue;
+                    selectedCards.push(minCard);
+                    allSuitCardsCp.RemoveCard(minCard);
+                }
+            }
         }
         //其他花色的牌跳过所有主牌
-        for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            var isITrump = PokerHelper.IsTrump(i, currentCards.Trump, currentCards.Rank);
-            if (isITrump || allSuitCards[i] <= 0)
+        for (var curSuit = 1; curSuit <= 4; curSuit++) {
+            if (curSuit == currentPoker.Trump)
                 continue;
-            while (allSuitCards[i] > 0 && selectedCards.length < leadingCardsCp.Count()) {
-                selectedCards.push(i);
-                allSuitCards[i]--;
+            var currentSuitCards = allSuitCardsCp.GetSuitCardsWithJokerAndRank(curSuit);
+            if (currentSuitCards.length > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                var currentSuitCardsCp = new CurrentPoker(currentSuitCards, currentPoker.Trump, currentPoker.Rank);
+                while (currentSuitCardsCp.Count() > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                    var minCard = currentSuitCardsCp.GetMinCards(curSuit);
+                    currentSuitCardsCp.RemoveCard(minCard);
+                    if (allSuitCardsCp.Cards[minCard] <= 0)
+                        continue;
+                    selectedCards.push(minCard);
+                    allSuitCardsCp.RemoveCard(minCard);
+                }
             }
         }
-        //被迫选主牌：先跳过对子，和常主
-        for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCards[i] <= 0 || allSuitCards[i] == 2 || i % 13 == currentCards.Rank || i >= 52)
-                continue;
-            selectedCards.push(i);
-            allSuitCards[i]--;
-        }
-        //被迫选主牌跳过对子
-        for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCards[i] <= 0 || allSuitCards[i] == 2)
-                continue;
-            selectedCards.push(i);
-            allSuitCards[i]--;
-        }
-        //被迫选主牌对子：先跳过常主
-        for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (i % 13 == currentCards.Rank || i >= 52)
-                continue;
-            while (allSuitCards[i] > 0 && selectedCards.length < leadingCardsCp.Count()) {
-                selectedCards.push(i);
-                allSuitCards[i]--;
+        //被迫选主牌：先跳过对子、常主
+        for (var curSuit = 1; curSuit <= 4; curSuit++) {
+            var currentSuitCards = allSuitCardsCp.GetSuitCardsWithJokerAndRank(curSuit);
+            if (currentSuitCards.length > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                var currentSuitCardsCp = new CurrentPoker(currentSuitCards, currentPoker.Trump, currentPoker.Rank);
+                while (currentSuitCardsCp.Count() > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                    var minCard = currentSuitCardsCp.GetMinCards(curSuit);
+                    currentSuitCardsCp.RemoveCard(minCard);
+                    if (allSuitCardsCp.Cards[minCard] <= 0 || minCard % 13 == currentTrickState.Rank || minCard >= 52 || allSuitCardsCp.Cards[minCard] == 2)
+                        continue;
+                    selectedCards.push(minCard);
+                    allSuitCardsCp.RemoveCard(minCard);
+                }
             }
         }
-        //被迫选主牌对子
-        for (var i = 0; i < allSuitCards.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            while (allSuitCards[i] > 0 && selectedCards.length < leadingCardsCp.Count()) {
-                selectedCards.push(i);
-                allSuitCards[i]--;
+        //被迫选主牌：优先选择最小的
+        for (var curSuit = 1; curSuit <= 4; curSuit++) {
+            var currentSuitCards = allSuitCardsCp.GetSuitCardsWithJokerAndRank(curSuit);
+            if (currentSuitCards.length > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                var currentSuitCardsCp = new CurrentPoker(currentSuitCards, currentPoker.Trump, currentPoker.Rank);
+                while (currentSuitCardsCp.Count() > 0 && selectedCards.length < leadingCardsCp.Count()) {
+                    var minCard = currentSuitCardsCp.GetMinCards(curSuit);
+                    currentSuitCardsCp.RemoveCard(minCard);
+                    if (allSuitCardsCp.Cards[minCard] <= 0)
+                        continue;
+                    selectedCards.push(minCard);
+                    allSuitCardsCp.RemoveCard(minCard);
+                }
             }
         }
     };
@@ -237,7 +250,7 @@ export var Algorithm = /** @class */ (function () {
             selectedCards.push(masterPair[masterPair.length - 1]);
             return;
         }
-        var minMaster = currentCards.GetMinMasterCards(currentTrickState.Trump);
+        var minMaster = currentCards.GetMinMasterCards();
         if (minMaster >= 0) {
             selectedCards.push(minMaster);
             return;
@@ -327,7 +340,7 @@ export var Algorithm = /** @class */ (function () {
         }
         //如果副牌总共不到8张，那就埋主
         while (selectedCards.length < 8) {
-            var minMaster = currentCards.GetMinMasterCards(currentCards.Trump);
+            var minMaster = currentCards.GetMinMasterCards();
             if (minMaster >= 0) {
                 selectedCards.push(minMaster);
             }

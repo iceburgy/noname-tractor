@@ -1363,7 +1363,45 @@ var CurrentPoker = /** @class */ (function () {
         }
         return rt;
     };
-    CurrentPoker.prototype.GetMinMasterCards = function (asuit) {
+    CurrentPoker.prototype.GetMinCards = function (asuit) {
+        if (asuit == this.Trump) {
+            return this.GetMinMasterCards();
+        }
+        var rt = -1;
+        switch (asuit) {
+            case 1:
+                for (var i = 0; i < 13; i++) {
+                    if (this.HeartsNoRank()[i] > 0) {
+                        return i;
+                    }
+                }
+                break;
+            case 2:
+                for (var i = 0; i < 13; i++) {
+                    if (this.SpadesNoRank()[i] > 0) {
+                        return i + 13;
+                    }
+                }
+                break;
+            case 3:
+                for (var i = 0; i < 13; i++) {
+                    if (this.DiamondsNoRank()[i] > 0) {
+                        return i + 26;
+                    }
+                }
+                break;
+            case 4:
+                for (var i = 0; i < 13; i++) {
+                    if (this.ClubsNoRank()[i] > 0) {
+                        return i + 39;
+                    }
+                }
+                break;
+        }
+        return rt;
+    };
+    CurrentPoker.prototype.GetMinMasterCards = function () {
+        var asuit = this.Trump;
         var rt = -1;
         if (asuit == 1) {
             for (var i = 0; i < 13; i++) {
