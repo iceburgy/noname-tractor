@@ -130,7 +130,7 @@ export class CommonMethods {
     public static cookieExpireInDays = 3650;
     public static recoverLoginPassFlag = "RecoverLoginPass";
     public static loginSuccessFlag = "LoginSuccess";
-    public static qiangliangkaCost = 10;
+    public static qiangliangkaCost = 3;
     public static sendBroadcastPrefix = "@all";
     public static sendBroadcastCost = 10;
     public static buyNoDongtuUntilCost = 0;
