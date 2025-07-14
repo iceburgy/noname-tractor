@@ -33,6 +33,22 @@ html {
 	word-wrap: break-word;
 }
 
+.popup-link {
+	position: relative;
+	display: inline-block;
+	color: #0066cc;
+	/* text-decoration: none; */
+	padding-right: 18px; /* space for icon */
+}
+
+.popup-icon {
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-size: 0.65em;
+	color: #999;
+}
+
 .chatcomp{
 	border-radius: 6px;
 	position: absolute;

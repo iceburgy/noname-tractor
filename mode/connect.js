@@ -580,6 +580,26 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				userNotes.style.textAlign = 'center';
 				ui.userNotes = userNotes;
 
+				// friend websites
+				var friendWebsites = ui.create.div(".friendWebsites", ui.window);
+				friendWebsites.innerHTML = `友站链接：
+				<a href="javascript:void(0)" class="popup-link" id="friendWebsites_freeblueplanet">自由蓝星<span class="popup-icon">🔗</span></a>`;
+				friendWebsites.style.fontSize = '20px';
+				friendWebsites.style.padding = '10px';
+				friendWebsites.style.width = 'calc(100%)';
+				friendWebsites.style.top = 'calc(80%)';
+				friendWebsites.style.textAlign = 'center';
+				ui.friendWebsites = friendWebsites;
+				let friendWebsitesLinks = document.querySelectorAll('.friendWebsites a');
+				friendWebsitesLinks.forEach(link => {
+					link.style.color = "white";
+				});
+
+				document.getElementById("friendWebsites_freeblueplanet").addEventListener('click', function (event) {
+					event.preventDefault(); // prevent default link behavior, if this is inside an <a>
+					window.open('https://www.freeblueplanet.com', '_blank');
+				});
+
 				// var nodeUserManualLink = document.getElementById("userManualLink");
 				// nodeUserManualLink.addEventListener('click', function (e) {
 				// 	window.open("https://docs.google.com/document/d/12rgDuEzwhc8OZXU5Whygjwnqqz4xacm0BCqrLF5AsGY/edit?usp=sharing");

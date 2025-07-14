@@ -35326,6 +35326,10 @@
 				ui.userChoices.remove();
 				delete ui.userChoices;
 			}
+			if(ui.friendWebsites){
+				ui.friendWebsites.remove();
+				delete ui.friendWebsites;
+			}
 			if(ui.userNotes){
 				ui.userNotes.remove();
 				delete ui.userNotes;
