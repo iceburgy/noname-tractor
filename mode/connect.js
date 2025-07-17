@@ -583,7 +583,9 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				// friend websites
 				var friendWebsites = ui.create.div(".friendWebsites", ui.window);
 				friendWebsites.innerHTML = `友站链接：
-				<a href="javascript:void(0)" class="popup-link" id="friendWebsites_freeblueplanet">自由蓝星<span class="popup-icon">🔗</span></a>`;
+				<a href="javascript:void(0)" class="popup-link" id="friendWebsites_newmitbbs" data-address="https://newmitbbs.com">新未名空间<span class="popup-icon">🔗</span></a>
+				<a href="javascript:void(0)" class="popup-link" id="friendWebsites_freeblueplanet" data-address="https://www.freeblueplanet.com">自由蓝星<span class="popup-icon">🔗</span></a>
+				`;
 				friendWebsites.style.fontSize = '20px';
 				friendWebsites.style.padding = '10px';
 				friendWebsites.style.width = 'calc(100%)';
@@ -595,9 +597,12 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					link.style.color = "white";
 				});
 
-				document.getElementById("friendWebsites_freeblueplanet").addEventListener('click', function (event) {
-					event.preventDefault(); // prevent default link behavior, if this is inside an <a>
-					window.open('https://www.freeblueplanet.com', '_blank');
+				document.querySelectorAll('.popup-link').forEach(link => {
+					link.addEventListener('click', function (event) {
+						event.preventDefault();
+						const address = this.dataset.address;
+						window.open(address, '_blank');
+					});
 				});
 
 				// var nodeUserManualLink = document.getElementById("userManualLink");
