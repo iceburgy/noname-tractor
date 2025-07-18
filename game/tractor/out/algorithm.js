@@ -119,7 +119,7 @@ export var Algorithm = /** @class */ (function () {
             }
         }
         //被迫选主牌：优先选择最小的
-        for (var curSuit = 1; curSuit <= 4; curSuit++) {
+        for (var curSuit = 1; curSuit <= 5; curSuit++) {
             var currentSuitCards = allSuitCardsCp.GetSuitCardsWithJokerAndRank(curSuit);
             if (currentSuitCards.length > 0 && selectedCards.length < leadingCardsCp.Count()) {
                 var currentSuitCardsCp = new CurrentPoker(currentSuitCards, currentPoker.Trump, currentPoker.Rank);

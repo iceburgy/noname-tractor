@@ -1510,7 +1510,7 @@ export class CurrentPoker {
     }
 
     public GetMinCards(asuit: number): number {
-        if (asuit == this.Trump) {
+        if (asuit == this.Trump || asuit == 5) {
             return this.GetMinMasterCards()
         }
         let rt = -1;

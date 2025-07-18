@@ -1364,7 +1364,7 @@ var CurrentPoker = /** @class */ (function () {
         return rt;
     };
     CurrentPoker.prototype.GetMinCards = function (asuit) {
-        if (asuit == this.Trump) {
+        if (asuit == this.Trump || asuit == 5) {
             return this.GetMinMasterCards();
         }
         var rt = -1;
