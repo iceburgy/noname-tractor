@@ -180,6 +180,20 @@ export class CommonMethods {
         return true
     }
 
+    public static DeepEqualArray(a: any[], b: any[]): boolean {
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    public static FindDiffCards(a: number[], b: number[]): number[] {
+        let diffCards: number[] = []
+        for (let i = 0; i < a.length; i++) {
+            if (a[i] !== b[i]) {
+                diffCards.push(i)
+            }
+        }
+        return diffCards
+    }
+
     public static IncludesByPlayerID(a: PlayerEntity[], b: string): boolean {
         for (let i = 0; i < a.length; i++) {
             var p = a[i]

@@ -16,6 +16,7 @@ import { IDBHelper } from './idb_helper.js';
 const PlayerMakeTrump_REQUEST = "PlayerMakeTrump"
 const UsedShengbi_REQUEST = "UsedShengbi"
 const NotifyPong_REQUEST = "NotifyPong"
+const NotifyGetCardACK_REQUEST = "NotifyGetCardACK"
 
 declare let decadeUI: any;
 
@@ -293,6 +294,7 @@ export class TractorPlayer {
         }
         else if (newHandStep) {
             if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished) {
+                this.VerifyHandCards();
                 this.mainForm.ResetBtnRobot();
                 this.mainForm.drawingFormHelper.ResortMyHandCards();
             }
@@ -330,6 +332,20 @@ export class TractorPlayer {
         if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished && starterChanged) {
             this.CurrentPoker.Rank = this.CurrentHandState.Rank;
             this.mainForm.StarterFailedForTrump()
+        }
+    }
+    public VerifyHandCards() {
+        let expectedCurrentPoker: CurrentPoker = this.CurrentHandState.PlayerHoldingCards[this.PlayerId]
+        let expectedCards: number[] = expectedCurrentPoker.Cards
+        let actualCards: number[] = this.CurrentPoker.Cards
+        let diffCards: number[] = CommonMethods.FindDiffCards(expectedCards, actualCards)
+        if (diffCards.length > 0) {
+            this.CurrentPoker.Cards = CommonMethods.deepCopy(expectedCards)
+            this.mainForm.gameScene.sendMessageToServer(NotifyGetCardACK_REQUEST, this.PlayerId, JSON.stringify({
+                DiffCards: diffCards,
+                ExpectedCards: expectedCards,
+                ActualCards: actualCards,
+            }))
         }
     }
 

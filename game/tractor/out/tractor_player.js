@@ -11,6 +11,7 @@ import { ReplayEntity } from './replay_entity.js';
 var PlayerMakeTrump_REQUEST = "PlayerMakeTrump";
 var UsedShengbi_REQUEST = "UsedShengbi";
 var NotifyPong_REQUEST = "NotifyPong";
+var NotifyGetCardACK_REQUEST = "NotifyGetCardACK";
 var TractorPlayer = /** @class */ (function () {
     function TractorPlayer(mf) {
         this.PingInterval = 17000;
@@ -246,6 +247,7 @@ var TractorPlayer = /** @class */ (function () {
         }
         else if (newHandStep) {
             if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished) {
+                this.VerifyHandCards();
                 this.mainForm.ResetBtnRobot();
                 this.mainForm.drawingFormHelper.ResortMyHandCards();
             }
@@ -281,6 +283,20 @@ var TractorPlayer = /** @class */ (function () {
         if (currentHandState.CurrentHandStep == SuitEnums.HandStep.DistributingCardsFinished && starterChanged) {
             this.CurrentPoker.Rank = this.CurrentHandState.Rank;
             this.mainForm.StarterFailedForTrump();
+        }
+    };
+    TractorPlayer.prototype.VerifyHandCards = function () {
+        var expectedCurrentPoker = this.CurrentHandState.PlayerHoldingCards[this.PlayerId];
+        var expectedCards = expectedCurrentPoker.Cards;
+        var actualCards = this.CurrentPoker.Cards;
+        var diffCards = CommonMethods.FindDiffCards(expectedCards, actualCards);
+        if (diffCards.length > 0) {
+            this.CurrentPoker.Cards = CommonMethods.deepCopy(expectedCards);
+            this.mainForm.gameScene.sendMessageToServer(NotifyGetCardACK_REQUEST, this.PlayerId, JSON.stringify({
+                DiffCards: diffCards,
+                ExpectedCards: expectedCards,
+                ActualCards: actualCards,
+            }));
         }
     };
     TractorPlayer.prototype.NotifyCurrentTrickState = function (currentTrickState, notifyType) {

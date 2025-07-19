@@ -34,6 +34,18 @@ export var CommonMethods = /** @class */ (function () {
         }
         return true;
     };
+    CommonMethods.DeepEqualArray = function (a, b) {
+        return JSON.stringify(a) === JSON.stringify(b);
+    };
+    CommonMethods.FindDiffCards = function (a, b) {
+        var diffCards = [];
+        for (var i = 0; i < a.length; i++) {
+            if (a[i] !== b[i]) {
+                diffCards.push(i);
+            }
+        }
+        return diffCards;
+    };
     CommonMethods.IncludesByPlayerID = function (a, b) {
         for (var i = 0; i < a.length; i++) {
             var p = a[i];
