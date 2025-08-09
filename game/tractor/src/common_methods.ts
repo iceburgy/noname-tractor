@@ -736,4 +736,13 @@ export class CommonMethods {
             arr.splice(index, 1);
         }
     }
+
+    public static GetRankByTeam(a: PlayerEntity[], team: number): number {
+        let index = team == 1 ? 0 : 1;
+        let p = a[index];
+        if (p) {
+            return p.Rank;
+        }
+        return 0;
+    }
 }

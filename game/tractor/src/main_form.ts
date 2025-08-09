@@ -36,6 +36,8 @@ const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
 const CardsReady_REQUEST = "CardsReady"
 const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
 const SaveRoomSetting_REQUEST = "SaveRoomSetting"
+const SetRankByTeam_REQUEST = "SetRankByTeam"
+const SetStarter_REQUEST = "SetStarter"
 const RandomSeat_REQUEST = "RandomSeat"
 const SwapSeat_REQUEST = "SwapSeat"
 const PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom"
@@ -1365,6 +1367,26 @@ export class MainForm {
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
+            let selectStarter: any = document.getElementById("selectStarter");
+            for (let i = 0; i < this.tractorPlayer.CurrentGameState.Players.length; i++) {
+                let p = this.tractorPlayer.CurrentGameState.Players[i];
+                if (p) {
+                    let optionElement = document.createElement("option");
+                    optionElement.value = p.PlayerId;
+                    optionElement.text = p.PlayerId;
+                    selectStarter.add(optionElement);
+                }
+            }
+            if (this.tractorPlayer.CurrentGameState.startNextHandStarter) {
+                selectStarter.value = this.tractorPlayer.CurrentGameState.startNextHandStarter.PlayerId;
+            }
+
+            let selectTeam1Rank: any = document.getElementById("selectTeam1Rank");
+            selectTeam1Rank.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 1);
+
+            let selectTeam2Rank: any = document.getElementById("selectTeam2Rank");
+            selectTeam2Rank.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 2);
+
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
@@ -1372,6 +1394,9 @@ export class MainForm {
                 cbxNoSignalCard.disabled = true;
                 selectSecondsToShowCards.disabled = true;
                 selectSecondsToDiscardCards.disabled = true;
+                selectStarter.disabled = true;
+                selectTeam1Rank.disabled = true;
+                selectTeam2Rank.disabled = true;
             } else {
                 let divRoomSettings: any = document.getElementById("divRoomSettings");
                 divRoomSettings.style.display = "block";
@@ -1405,6 +1430,36 @@ export class MainForm {
                     }
                     this.resetGameRoomUI();
                 }
+                let btnStarter: any = document.getElementById("btnStarter")
+                btnStarter.style.display = "inline";
+                btnStarter.onclick = () => {
+                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许设置谁坐庄,请完成此盘游戏后重试")
+                    } else {
+                        gs.sendMessageToServer(SetStarter_REQUEST, this.tractorPlayer.MyOwnId, `${selectStarter.value}`);
+                    }
+                    this.resetGameRoomUI();
+                };
+                let btnTeam1RankOK: any = document.getElementById("btnTeam1RankOK")
+                btnTeam1RankOK.style.display = "inline";
+                btnTeam1RankOK.onclick = () => {
+                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试")
+                    } else {
+                        gs.sendMessageToServer(SetRankByTeam_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([1, Number(selectTeam1Rank.value)]));
+                    }
+                    this.resetGameRoomUI();
+                };
+                let btnTeam2RankOK: any = document.getElementById("btnTeam2RankOK")
+                btnTeam2RankOK.style.display = "inline";
+                btnTeam2RankOK.onclick = () => {
+                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试")
+                    } else {
+                        gs.sendMessageToServer(SetRankByTeam_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([2, Number(selectTeam2Rank.value)]));
+                    }
+                    this.resetGameRoomUI();
+                };
             }
         }
     }

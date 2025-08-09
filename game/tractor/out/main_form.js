@@ -28,6 +28,8 @@ var ValidateDumpingCards_REQUEST = "ValidateDumpingCards";
 var CardsReady_REQUEST = "CardsReady";
 var ResumeGameFromFile_REQUEST = "ResumeGameFromFile";
 var SaveRoomSetting_REQUEST = "SaveRoomSetting";
+var SetRankByTeam_REQUEST = "SetRankByTeam";
+var SetStarter_REQUEST = "SetStarter";
 var RandomSeat_REQUEST = "RandomSeat";
 var SwapSeat_REQUEST = "SwapSeat";
 var PLAYER_ENTER_ROOM_REQUEST = "PlayerEnterRoom";
@@ -1234,6 +1236,23 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.secondsToDiscardCards = Number(selectSecondsToDiscardCards_1.value);
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
+            var selectStarter_1 = document.getElementById("selectStarter");
+            for (var i = 0; i < this.tractorPlayer.CurrentGameState.Players.length; i++) {
+                var p = this.tractorPlayer.CurrentGameState.Players[i];
+                if (p) {
+                    var optionElement = document.createElement("option");
+                    optionElement.value = p.PlayerId;
+                    optionElement.text = p.PlayerId;
+                    selectStarter_1.add(optionElement);
+                }
+            }
+            if (this.tractorPlayer.CurrentGameState.startNextHandStarter) {
+                selectStarter_1.value = this.tractorPlayer.CurrentGameState.startNextHandStarter.PlayerId;
+            }
+            var selectTeam1Rank_1 = document.getElementById("selectTeam1Rank");
+            selectTeam1Rank_1.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 1);
+            var selectTeam2Rank_1 = document.getElementById("selectTeam2Rank");
+            selectTeam2Rank_1.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 2);
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
@@ -1241,6 +1260,9 @@ var MainForm = /** @class */ (function () {
                 cbxNoSignalCard_1.disabled = true;
                 selectSecondsToShowCards_1.disabled = true;
                 selectSecondsToDiscardCards_1.disabled = true;
+                selectStarter_1.disabled = true;
+                selectTeam1Rank_1.disabled = true;
+                selectTeam2Rank_1.disabled = true;
             }
             else {
                 var divRoomSettings = document.getElementById("divRoomSettings");
@@ -1273,6 +1295,39 @@ var MainForm = /** @class */ (function () {
                     else {
                         var selectSwapSeat = document.getElementById("selectSwapSeat");
                         gs.sendMessageToServer(SwapSeat_REQUEST, _this.tractorPlayer.MyOwnId, selectSwapSeat.value);
+                    }
+                    _this.resetGameRoomUI();
+                };
+                var btnStarter = document.getElementById("btnStarter");
+                btnStarter.style.display = "inline";
+                btnStarter.onclick = function () {
+                    if (CommonMethods.AllOnline(_this.tractorPlayer.CurrentGameState.Players) && !_this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= _this.tractorPlayer.CurrentHandState.CurrentHandStep && _this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许设置谁坐庄,请完成此盘游戏后重试");
+                    }
+                    else {
+                        gs.sendMessageToServer(SetStarter_REQUEST, _this.tractorPlayer.MyOwnId, "".concat(selectStarter_1.value));
+                    }
+                    _this.resetGameRoomUI();
+                };
+                var btnTeam1RankOK = document.getElementById("btnTeam1RankOK");
+                btnTeam1RankOK.style.display = "inline";
+                btnTeam1RankOK.onclick = function () {
+                    if (CommonMethods.AllOnline(_this.tractorPlayer.CurrentGameState.Players) && !_this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= _this.tractorPlayer.CurrentHandState.CurrentHandStep && _this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试");
+                    }
+                    else {
+                        gs.sendMessageToServer(SetRankByTeam_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([1, Number(selectTeam1Rank_1.value)]));
+                    }
+                    _this.resetGameRoomUI();
+                };
+                var btnTeam2RankOK = document.getElementById("btnTeam2RankOK");
+                btnTeam2RankOK.style.display = "inline";
+                btnTeam2RankOK.onclick = function () {
+                    if (CommonMethods.AllOnline(_this.tractorPlayer.CurrentGameState.Players) && !_this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= _this.tractorPlayer.CurrentHandState.CurrentHandStep && _this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                        alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试");
+                    }
+                    else {
+                        gs.sendMessageToServer(SetRankByTeam_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([2, Number(selectTeam2Rank_1.value)]));
                     }
                     _this.resetGameRoomUI();
                 };

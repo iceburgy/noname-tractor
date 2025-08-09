@@ -541,6 +541,14 @@ export var CommonMethods = /** @class */ (function () {
             arr.splice(index, 1);
         }
     };
+    CommonMethods.GetRankByTeam = function (a, team) {
+        var index = team == 1 ? 0 : 1;
+        var p = a[index];
+        if (p) {
+            return p.Rank;
+        }
+        return 0;
+    };
     CommonMethods.storageFileForCardsKey = "storageFileForCards";
     CommonMethods.SendJoinOrQuitYuezhan_REQUEST = "SendJoinOrQuitYuezhan";
     CommonMethods.SendAwardOnlineBonus_REQUEST = "SendAwardOnlineBonus";
