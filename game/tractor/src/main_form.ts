@@ -1397,6 +1397,14 @@ export class MainForm {
                 selectStarter.disabled = true;
                 selectTeam1Rank.disabled = true;
                 selectTeam2Rank.disabled = true;
+
+                let btnBecomeRoomOwner: any = document.getElementById("btnBecomeRoomOwner");
+                btnBecomeRoomOwner.style.display = "inline";
+                btnBecomeRoomOwner.onclick = () => {
+                    this.tractorPlayer.CurrentRoomSetting.RoomOwner = this.tractorPlayer.MyOwnId
+                    gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+                    this.resetGameRoomUI();
+                };
             } else {
                 let divRoomSettings: any = document.getElementById("divRoomSettings");
                 divRoomSettings.style.display = "block";
