@@ -891,7 +891,9 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.pokerPlayerStartersLabel[i].style.color = "orange";
             var curPlayer = this.tractorPlayer.CurrentGameState.Players[curIndex];
             var isUsingQiangliangka = false;
-            if (curPlayer && curPlayer.IsQiangliang && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
+            if (curPlayer &&
+                curPlayer.IsQiangliang &&
+                (this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards || this.tractorPlayer.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.SpecialEnding)) {
                 var shengbi = 0;
                 if (this.DaojuInfo && this.DaojuInfo.daojuInfoByPlayer && this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId]) {
                     shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId].Shengbi);
@@ -901,28 +903,27 @@ var MainForm = /** @class */ (function () {
             if (curPlayer && curPlayer.IsOffline) {
                 this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "离线中";
             }
-            else if (curPlayer && curPlayer.PlayingSG) {
-                this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = curPlayer.PlayingSG;
-            }
-            else if (curPlayer && curPlayer.IsRobot) {
-                this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "托管中";
-            }
-            else if (isUsingQiangliangka) {
-                this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "抢亮卡";
-            }
-            else if (curPlayer && !curPlayer.IsReadyToStart) {
-                this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "思索中";
-            }
             else {
-                if (curPlayer && onesTurnPlayerID && curPlayer.PlayerId === onesTurnPlayerID) {
-                    this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = isShowCards ? "出牌中" : "埋底中";
-                    this.gameScene.ui.pokerPlayerStartersLabel[i].style.color = "yellow";
-                }
-                else if (curPlayer && this.tractorPlayer.CurrentHandState.Starter && curPlayer.PlayerId == this.tractorPlayer.CurrentHandState.Starter) {
-                    this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "庄家";
+                if (curPlayer && !curPlayer.IsReadyToStart) {
+                    this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "\u601D\u7D22\u4E2D";
                 }
                 else {
-                    this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "".concat(curIndex + 1);
+                    if (curPlayer && onesTurnPlayerID && curPlayer.PlayerId === onesTurnPlayerID) {
+                        this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = isShowCards ? "出牌中" : "埋底中";
+                        this.gameScene.ui.pokerPlayerStartersLabel[i].style.color = "yellow";
+                    }
+                    else if (curPlayer && this.tractorPlayer.CurrentHandState.Starter && curPlayer.PlayerId == this.tractorPlayer.CurrentHandState.Starter) {
+                        this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "庄家";
+                    }
+                    else {
+                        this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "".concat(curIndex + 1);
+                    }
+                }
+                if (curPlayer && curPlayer.IsRobot) {
+                    this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "".concat(this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML, "\u3010\u6258\u3011");
+                }
+                if (isUsingQiangliangka) {
+                    this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML = "".concat(this.gameScene.ui.pokerPlayerStartersLabel[i].innerHTML, "\u3010\u62A2\u3011");
                 }
             }
             curIndex = (curIndex + 1) % 4;
@@ -1546,11 +1547,31 @@ var MainForm = /** @class */ (function () {
         if (daojuInfoByPlayer) {
             if (fullSkinInfo) {
                 if (selectFullSkinInfo.options.length === 0) {
-                    for (var _i = 0, _a = Object.entries(fullSkinInfo); _i < _a.length; _i++) {
-                        var _b = _a[_i], key = _b[0], value = _b[1];
+                    // Convert to array of entries
+                    var fullSkinInfoKeyValuePairSorted = Object.entries(fullSkinInfo).sort(function (_a, _b) {
+                        var a = _a[1];
+                        var b = _b[1];
+                        // 1. sort by skinCost
+                        if (a.skinCost !== b.skinCost) {
+                            return a.skinCost - b.skinCost;
+                        }
+                        // 2. then by skinSex (lexicographically)
+                        if (a.skinSex !== b.skinSex) {
+                            return a.skinSex.localeCompare(b.skinSex);
+                        }
+                        // 3. then by skinType
+                        if (a.skinType !== b.skinType) {
+                            return a.skinType - b.skinType;
+                        }
+                        // 4. finally by skinDesc (lexicographically)
+                        return a.skinDesc.localeCompare(b.skinDesc);
+                    });
+                    for (var i = 0; i < fullSkinInfoKeyValuePairSorted.length; i++) {
+                        var entryKey = fullSkinInfoKeyValuePairSorted[i][0];
+                        var entryValue = fullSkinInfoKeyValuePairSorted[i][1];
                         var option = document.createElement("option");
-                        option.value = key;
-                        option.text = value.skinDesc;
+                        option.value = entryKey;
+                        option.text = "".concat(entryValue.skinDesc, " - \u4EF7\u683C\u3010").concat(entryValue.skinCost, "\u3011\u5347\u5E01");
                         selectFullSkinInfo.add(option);
                     }
                     selectFullSkinInfo.value = this.gameScene.skinInUse;

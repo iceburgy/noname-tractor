@@ -998,7 +998,9 @@ export class MainForm {
             var curPlayer = this.tractorPlayer.CurrentGameState.Players[curIndex];
 
             let isUsingQiangliangka = false;
-            if (curPlayer && curPlayer.IsQiangliang && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards) {
+            if (curPlayer &&
+                curPlayer.IsQiangliang &&
+                (this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.DistributingCards || this.tractorPlayer.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.SpecialEnding)) {
                 let shengbi = 0
                 if (this.DaojuInfo && this.DaojuInfo.daojuInfoByPlayer && this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId]) {
                     shengbi = parseInt(this.DaojuInfo.daojuInfoByPlayer[curPlayer.PlayerId].Shengbi);
@@ -1009,27 +1011,25 @@ export class MainForm {
             if (curPlayer && curPlayer.IsOffline) {
                 (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "离线中";
             }
-            else if (curPlayer && curPlayer.PlayingSG) {
-                (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = curPlayer.PlayingSG;
-            }
-            else if (curPlayer && curPlayer.IsRobot) {
-                (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "托管中";
-            }
-            else if (isUsingQiangliangka) {
-                (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "抢亮卡";
-            }
-            else if (curPlayer && !curPlayer.IsReadyToStart) {
-                (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "思索中";
-            }
             else {
-                if (curPlayer && onesTurnPlayerID && curPlayer.PlayerId === onesTurnPlayerID) {
-                    (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = isShowCards ? "出牌中" : "埋底中";
-                    (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).style.color = "yellow";
-                } else if (curPlayer && this.tractorPlayer.CurrentHandState.Starter && curPlayer.PlayerId == this.tractorPlayer.CurrentHandState.Starter) {
-                    (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "庄家";
+                if (curPlayer && !curPlayer.IsReadyToStart) {
+                    (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = `思索中`;
+                } else {
+                    if (curPlayer && onesTurnPlayerID && curPlayer.PlayerId === onesTurnPlayerID) {
+                        (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = isShowCards ? "出牌中" : "埋底中";
+                        (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).style.color = "yellow";
+                    } else if (curPlayer && this.tractorPlayer.CurrentHandState.Starter && curPlayer.PlayerId == this.tractorPlayer.CurrentHandState.Starter) {
+                        (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = "庄家";
+                    }
+                    else {
+                        (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = `${curIndex + 1}`;
+                    }
                 }
-                else {
-                    (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = `${curIndex + 1}`;
+                if (curPlayer && curPlayer.IsRobot) {
+                    (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = `${(this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML}【托】`;
+                }
+                if (isUsingQiangliangka) {
+                    (this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML = `${(this.gameScene.ui.pokerPlayerStartersLabel[i] as any).innerHTML}【抢】`;
                 }
             }
             curIndex = (curIndex + 1) % 4
@@ -1683,15 +1683,38 @@ export class MainForm {
         let lblSkinSex: any = document.getElementById("lblSkinSex");
         let btnBuyOrUseSelectedSkin: any = document.getElementById("btnBuyOrUseSelectedSkin");
         let curSkinInfo: any;
-        let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        let fullSkinInfo: Record<string, any> = this.DaojuInfo.fullSkinInfo;
         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
         if (daojuInfoByPlayer) {
             if (fullSkinInfo) {
                 if (selectFullSkinInfo.options.length === 0) {
-                    for (const [key, value] of Object.entries(fullSkinInfo)) {
+                    // Convert to array of entries
+                    const fullSkinInfoKeyValuePairSorted = Object.entries(fullSkinInfo).sort(([, a], [, b]) => {
+                        // 1. sort by skinCost
+                        if (a.skinCost !== b.skinCost) {
+                            return a.skinCost - b.skinCost;
+                        }
+
+                        // 2. then by skinSex (lexicographically)
+                        if (a.skinSex !== b.skinSex) {
+                            return a.skinSex.localeCompare(b.skinSex);
+                        }
+
+                        // 3. then by skinType
+                        if (a.skinType !== b.skinType) {
+                            return a.skinType - b.skinType;
+                        }
+
+                        // 4. finally by skinDesc (lexicographically)
+                        return a.skinDesc.localeCompare(b.skinDesc);
+                    });
+
+                    for (let i = 0; i < fullSkinInfoKeyValuePairSorted.length; i++) {
+                        let entryKey: string = fullSkinInfoKeyValuePairSorted[i][0];
+                        let entryValue: any = fullSkinInfoKeyValuePairSorted[i][1];
                         var option = document.createElement("option");
-                        option.value = key;
-                        option.text = (value as any).skinDesc;
+                        option.value = entryKey;
+                        option.text = `${entryValue.skinDesc} - 价格【${entryValue.skinCost}】升币`;
                         selectFullSkinInfo.add(option);
                     }
                     selectFullSkinInfo.value = this.gameScene.skinInUse;
