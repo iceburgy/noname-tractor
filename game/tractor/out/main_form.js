@@ -115,22 +115,20 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.btnRobot.innerHTML = (isRobot ? "取消" : "托管");
         this.setStartLabels();
         // this.IsDebug 才是实际的托管控制flag
-        var shouldTrigger = isRobot && isRobot != this.IsDebug;
+        var changedFromFalseToTrue = isRobot && !this.IsDebug;
+        var changedFromTrueToFalse = !isRobot && this.IsDebug;
         this.IsDebug = isRobot;
         var handZone;
-        var handZoneOverlay;
-        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
-            var handZones = document.getElementsByClassName("hand-zone");
-            if (handZones.length == 1) {
-                handZone = handZones[0];
-            }
+        var handZones = document.getElementsByClassName("hand-zone");
+        if (handZones.length == 1) {
+            handZone = handZones[0];
         }
+        var handZoneOverlay;
         var handZoneOverlays = document.getElementsByClassName("hand-zone-overlay");
         if (handZoneOverlays.length == 1) {
             handZoneOverlay = handZoneOverlays[0];
-            handZoneOverlay.remove();
         }
-        if (shouldTrigger) {
+        if (changedFromFalseToTrue) {
             if (handZone) {
                 // avoid duplicate overlays
                 if (!handZoneOverlay) {
@@ -167,7 +165,7 @@ var MainForm = /** @class */ (function () {
             else
                 this.RobotPlayFollowing();
         }
-        else {
+        if (changedFromTrueToFalse) {
             if (handZoneOverlay) {
                 handZoneOverlay.remove();
             }

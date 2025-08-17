@@ -173,24 +173,22 @@ export class MainForm {
         this.setStartLabels()
 
         // this.IsDebug 才是实际的托管控制flag
-        let shouldTrigger = isRobot && isRobot != this.IsDebug;
+        let changedFromFalseToTrue = isRobot && !this.IsDebug;
+        let changedFromTrueToFalse = !isRobot && this.IsDebug;
         this.IsDebug = isRobot;
 
         let handZone: any;
-        let handZoneOverlay: any;
-        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
-            let handZones = document.getElementsByClassName("hand-zone");
-            if (handZones.length == 1) {
-                handZone = handZones[0];
-            }
+        let handZones = document.getElementsByClassName("hand-zone");
+        if (handZones.length == 1) {
+            handZone = handZones[0];
         }
+        let handZoneOverlay: any;
         let handZoneOverlays = document.getElementsByClassName("hand-zone-overlay");
         if (handZoneOverlays.length == 1) {
             handZoneOverlay = handZoneOverlays[0];
-            handZoneOverlay.remove();
         }
 
-        if (shouldTrigger) {
+        if (changedFromFalseToTrue) {
             if (handZone) {
                 // avoid duplicate overlays
                 if (!handZoneOverlay) {
@@ -228,7 +226,8 @@ export class MainForm {
                 this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) this.DiscardingLast8();
             else if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
             else this.RobotPlayFollowing();
-        } else {
+        }
+        if (changedFromTrueToFalse) {
             if (handZoneOverlay) {
                 handZoneOverlay.remove();
             }
