@@ -111,11 +111,45 @@ var MainForm = /** @class */ (function () {
         this.setStartLabels();
     };
     MainForm.prototype.PlayerToggleIsRobot = function (isRobot) {
+        var _this = this;
         this.gameScene.ui.btnRobot.innerHTML = (isRobot ? "取消" : "托管");
         this.setStartLabels();
+        // this.IsDebug 才是实际的托管控制flag
         var shouldTrigger = isRobot && isRobot != this.IsDebug;
         this.IsDebug = isRobot;
+        var handZone;
+        var handZoneOverlay;
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+            var handZones = document.getElementsByClassName("hand-zone");
+            if (handZones.length == 1) {
+                handZone = handZones[0];
+            }
+        }
+        var handZoneOverlays = document.getElementsByClassName("hand-zone-overlay");
+        if (handZoneOverlays.length == 1) {
+            handZoneOverlay = handZoneOverlays[0];
+            handZoneOverlay.remove();
+        }
         if (shouldTrigger) {
+            if (handZone) {
+                // avoid duplicate overlays
+                if (!handZoneOverlay) {
+                    // create overlay div
+                    var overlay = document.createElement("div");
+                    overlay.className = "hand-zone-overlay";
+                    // text
+                    var text = document.createElement("span");
+                    text.innerText = "托管中...";
+                    // button
+                    var btn = document.createElement("button");
+                    btn.innerText = "取消托管";
+                    btn.onclick = function () { return _this.btnRobot_Click(); };
+                    // append elements
+                    overlay.appendChild(text);
+                    overlay.appendChild(btn);
+                    handZone.appendChild(overlay);
+                }
+            }
             // 等待玩家切牌
             var btnRandom = document.getElementById("btnRandom");
             if (btnRandom) {
@@ -132,6 +166,11 @@ var MainForm = /** @class */ (function () {
                 this.RobotPlayStarting();
             else
                 this.RobotPlayFollowing();
+        }
+        else {
+            if (handZoneOverlay) {
+                handZoneOverlay.remove();
+            }
         }
     };
     MainForm.prototype.PlayerToggleIsQiangliang = function (isQiangliang) {

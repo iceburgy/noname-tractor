@@ -172,10 +172,48 @@ export class MainForm {
         this.gameScene.ui.btnRobot.innerHTML = (isRobot ? "取消" : "托管");
         this.setStartLabels()
 
+        // this.IsDebug 才是实际的托管控制flag
         let shouldTrigger = isRobot && isRobot != this.IsDebug;
         this.IsDebug = isRobot;
 
+        let handZone: any;
+        let handZoneOverlay: any;
+        if (this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing) {
+            let handZones = document.getElementsByClassName("hand-zone");
+            if (handZones.length == 1) {
+                handZone = handZones[0];
+            }
+        }
+        let handZoneOverlays = document.getElementsByClassName("hand-zone-overlay");
+        if (handZoneOverlays.length == 1) {
+            handZoneOverlay = handZoneOverlays[0];
+            handZoneOverlay.remove();
+        }
+
         if (shouldTrigger) {
+            if (handZone) {
+                // avoid duplicate overlays
+                if (!handZoneOverlay) {
+                    // create overlay div
+                    let overlay = document.createElement("div");
+                    overlay.className = "hand-zone-overlay";
+
+                    // text
+                    let text = document.createElement("span");
+                    text.innerText = "托管中...";
+
+                    // button
+                    let btn = document.createElement("button");
+                    btn.innerText = "取消托管";
+                    btn.onclick = () => this.btnRobot_Click();
+
+                    // append elements
+                    overlay.appendChild(text);
+                    overlay.appendChild(btn);
+                    handZone.appendChild(overlay);
+                }
+            }
+
             // 等待玩家切牌
             let btnRandom: any = document.getElementById("btnRandom");
             if (btnRandom) {
@@ -190,6 +228,10 @@ export class MainForm {
                 this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) this.DiscardingLast8();
             else if (!this.tractorPlayer.CurrentTrickState.IsStarted()) this.RobotPlayStarting();
             else this.RobotPlayFollowing();
+        } else {
+            if (handZoneOverlay) {
+                handZoneOverlay.remove();
+            }
         }
     }
 
