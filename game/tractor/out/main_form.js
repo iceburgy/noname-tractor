@@ -1301,13 +1301,15 @@ var MainForm = /** @class */ (function () {
                 selectStarter_1.disabled = true;
                 selectTeam1Rank_1.disabled = true;
                 selectTeam2Rank_1.disabled = true;
-                var btnBecomeRoomOwner = document.getElementById("btnBecomeRoomOwner");
-                btnBecomeRoomOwner.style.display = "inline";
-                btnBecomeRoomOwner.onclick = function () {
-                    _this.tractorPlayer.CurrentRoomSetting.RoomOwner = _this.tractorPlayer.MyOwnId;
-                    gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
-                    _this.resetGameRoomUI();
-                };
+                if (!this.tractorPlayer.isObserver) {
+                    var btnBecomeRoomOwner = document.getElementById("btnBecomeRoomOwner");
+                    btnBecomeRoomOwner.style.display = "inline";
+                    btnBecomeRoomOwner.onclick = function () {
+                        _this.tractorPlayer.CurrentRoomSetting.RoomOwner = _this.tractorPlayer.MyOwnId;
+                        gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+                        _this.resetGameRoomUI();
+                    };
+                }
             }
             else {
                 var divRoomSettings = document.getElementById("divRoomSettings");

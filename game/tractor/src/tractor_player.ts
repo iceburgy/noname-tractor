@@ -214,6 +214,9 @@ export class TractorPlayer {
             (this.mainForm.gameScene.ui.roomOwnerText as any).innerHTML = `房主：${this.mainForm.gameScene.hidePlayerID ? "" : roomSetting.RoomOwner}`;
         }
 
+        // 重画头像这样新任房主可将玩家请出房间
+        this.mainForm.NewPlayerJoined(true);
+
         if (showMessage) {
             var msgs = []
             if (roomSetting.DisplaySignalCardInfo) {
