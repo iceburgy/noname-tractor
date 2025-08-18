@@ -1422,11 +1422,11 @@ export class MainForm {
                 selectStarter.value = this.tractorPlayer.CurrentGameState.startNextHandStarter.PlayerId;
             }
 
-            let selectTeam1Rank: any = document.getElementById("selectTeam1Rank");
-            selectTeam1Rank.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 1);
+            // let selectTeam1Rank: any = document.getElementById("selectTeam1Rank");
+            // selectTeam1Rank.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 1);
 
-            let selectTeam2Rank: any = document.getElementById("selectTeam2Rank");
-            selectTeam2Rank.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 2);
+            // let selectTeam2Rank: any = document.getElementById("selectTeam2Rank");
+            // selectTeam2Rank.value = CommonMethods.GetRankByTeam(this.tractorPlayer.CurrentGameState.Players, 2);
 
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
@@ -1436,8 +1436,8 @@ export class MainForm {
                 selectSecondsToShowCards.disabled = true;
                 selectSecondsToDiscardCards.disabled = true;
                 selectStarter.disabled = true;
-                selectTeam1Rank.disabled = true;
-                selectTeam2Rank.disabled = true;
+                // selectTeam1Rank.disabled = true;
+                // selectTeam2Rank.disabled = true;
 
                 if (!this.tractorPlayer.isObserver) {
                     let btnBecomeRoomOwner: any = document.getElementById("btnBecomeRoomOwner");
@@ -1491,26 +1491,26 @@ export class MainForm {
                     }
                     this.resetGameRoomUI();
                 };
-                let btnTeam1RankOK: any = document.getElementById("btnTeam1RankOK")
-                btnTeam1RankOK.style.display = "inline";
-                btnTeam1RankOK.onclick = () => {
-                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-                        alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试")
-                    } else {
-                        gs.sendMessageToServer(SetRankByTeam_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([1, Number(selectTeam1Rank.value)]));
-                    }
-                    this.resetGameRoomUI();
-                };
-                let btnTeam2RankOK: any = document.getElementById("btnTeam2RankOK")
-                btnTeam2RankOK.style.display = "inline";
-                btnTeam2RankOK.onclick = () => {
-                    if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-                        alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试")
-                    } else {
-                        gs.sendMessageToServer(SetRankByTeam_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([2, Number(selectTeam2Rank.value)]));
-                    }
-                    this.resetGameRoomUI();
-                };
+                // let btnTeam1RankOK: any = document.getElementById("btnTeam1RankOK")
+                // btnTeam1RankOK.style.display = "inline";
+                // btnTeam1RankOK.onclick = () => {
+                //     if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                //         alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试")
+                //     } else {
+                //         gs.sendMessageToServer(SetRankByTeam_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([1, Number(selectTeam1Rank.value)]));
+                //     }
+                //     this.resetGameRoomUI();
+                // };
+                // let btnTeam2RankOK: any = document.getElementById("btnTeam2RankOK")
+                // btnTeam2RankOK.style.display = "inline";
+                // btnTeam2RankOK.onclick = () => {
+                //     if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DistributingCards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+                //         alert("游戏中途不允许设置队伍打几,请完成此盘游戏后重试")
+                //     } else {
+                //         gs.sendMessageToServer(SetRankByTeam_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([2, Number(selectTeam2Rank.value)]));
+                //     }
+                //     this.resetGameRoomUI();
+                // };
             }
         }
     }
