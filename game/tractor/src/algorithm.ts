@@ -25,7 +25,7 @@ export class Algorithm {
         let currentTractors: number[] = allSuitCardsCp.GetTractorBySuit(leadingSuit);
         var leadingPairs = leadingCardsCp.GetPairsBySuit(leadingSuit);
         for (let i = 0; i < leadingTractors.length && i < currentTractors.length && selectedCards.length < leadingCardsCp.Count(); i++) {
-            if (allSuitCardsCp.Cards[i] <= 0) continue;
+            if (allSuitCardsCp.Cards[currentTractors[i]] <= 0) continue;
             selectedCards.push(currentTractors[i]);
             selectedCards.push(currentTractors[i]);
             allSuitCardsCp.RemoveCard(currentTractors[i]);
