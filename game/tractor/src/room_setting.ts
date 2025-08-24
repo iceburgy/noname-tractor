@@ -14,6 +14,7 @@ export class RoomSetting {
     public secondsToShowCards: number
     public secondsToDiscardCards: number
     public DisplaySignalCardInfo: boolean
+    public IsGameCasual: number
     public HideOverridingFlag: boolean
     public RandomTeamUp: boolean
 
@@ -31,6 +32,7 @@ export class RoomSetting {
         this.secondsToShowCards = 0
         this.secondsToDiscardCards = 0
         this.DisplaySignalCardInfo = false
+        this.IsGameCasual = 0
         this.HideOverridingFlag = false
         this.RandomTeamUp = false
     }
@@ -48,6 +50,7 @@ export class RoomSetting {
         this.secondsToShowCards = from.secondsToShowCards
         this.secondsToDiscardCards = from.secondsToDiscardCards
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo
+        this.IsGameCasual = from.IsGameCasual
         this.HideOverridingFlag = from.HideOverridingFlag
         this.RandomTeamUp = from.RandomTeamUp
     }

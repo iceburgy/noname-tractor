@@ -1394,6 +1394,13 @@ export class MainForm {
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
+            let selectIsGameCasual: any = document.getElementById("selectIsGameCasual");
+            selectIsGameCasual.value = this.tractorPlayer.CurrentRoomSetting.IsGameCasual;
+            selectIsGameCasual.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.IsGameCasual = Number(selectIsGameCasual.value);
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+            };
+
             let selectSecondsToShowCards: any = document.getElementById("selectSecondsToShowCards");
             selectSecondsToShowCards.value = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards;
             selectSecondsToShowCards.onchange = () => {
@@ -1433,6 +1440,7 @@ export class MainForm {
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
+                selectIsGameCasual.disabled = true;
                 selectSecondsToShowCards.disabled = true;
                 selectSecondsToDiscardCards.disabled = true;
                 selectStarter.disabled = true;
@@ -2405,7 +2413,7 @@ export class MainForm {
             pokerTable.style['background-size'] = '100% 100%';
             pokerTable.style['background-repeat'] = 'no-repeat';
 
-            let noSignalStr = roomStateList[i].roomSetting.DisplaySignalCardInfo ? "" : "<br/>（不打信号牌）";
+            let noSignalStr = roomStateList[i].roomSetting.IsGameCasual == 0 ? "<br/>严肃活泼局" : "<br/>休闲娱乐局";
             let pokerTableName = this.gameScene.ui.create.div('', `${i + 1}号房间${noSignalStr}`, this.gameScene.ui.frameGameHallTables);
             pokerTableName.style.fontFamily = 'serif';
             pokerTableName.style.fontSize = '18px';
@@ -2414,7 +2422,6 @@ export class MainForm {
             pokerTableName.style.left = `calc(${leftOffset}% - 80px)`;
             pokerTableName.style.top = `calc(${topOffset}% - 80px)`;
             pokerTableName.style.textAlign = 'center';
-            if (roomStateList[i].roomSetting.DisplaySignalCardInfo) pokerTableName.style['line-height'] = '55px';
             pokerTableName.style.cursor = 'pointer';
 
             // click

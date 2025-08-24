@@ -14,6 +14,7 @@ var RoomSetting = /** @class */ (function () {
         this.secondsToShowCards = 0;
         this.secondsToDiscardCards = 0;
         this.DisplaySignalCardInfo = false;
+        this.IsGameCasual = 0;
         this.HideOverridingFlag = false;
         this.RandomTeamUp = false;
     }
@@ -31,6 +32,7 @@ var RoomSetting = /** @class */ (function () {
         this.secondsToShowCards = from.secondsToShowCards;
         this.secondsToDiscardCards = from.secondsToDiscardCards;
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo;
+        this.IsGameCasual = from.IsGameCasual;
         this.HideOverridingFlag = from.HideOverridingFlag;
         this.RandomTeamUp = from.RandomTeamUp;
     };

@@ -1262,6 +1262,12 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo = !cbxNoSignalCard_1.checked;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
+            var selectIsGameCasual_1 = document.getElementById("selectIsGameCasual");
+            selectIsGameCasual_1.value = this.tractorPlayer.CurrentRoomSetting.IsGameCasual;
+            selectIsGameCasual_1.onchange = function () {
+                _this.tractorPlayer.CurrentRoomSetting.IsGameCasual = Number(selectIsGameCasual_1.value);
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+            };
             var selectSecondsToShowCards_1 = document.getElementById("selectSecondsToShowCards");
             selectSecondsToShowCards_1.value = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards;
             selectSecondsToShowCards_1.onchange = function () {
@@ -1296,6 +1302,7 @@ var MainForm = /** @class */ (function () {
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
+                selectIsGameCasual_1.disabled = true;
                 selectSecondsToShowCards_1.disabled = true;
                 selectSecondsToDiscardCards_1.disabled = true;
                 selectStarter_1.disabled = true;
@@ -2194,7 +2201,7 @@ var MainForm = /** @class */ (function () {
             pokerTable.style.height = '160px';
             pokerTable.style['background-size'] = '100% 100%';
             pokerTable.style['background-repeat'] = 'no-repeat';
-            var noSignalStr = roomStateList[i].roomSetting.DisplaySignalCardInfo ? "" : "<br/>（不打信号牌）";
+            var noSignalStr = roomStateList[i].roomSetting.IsGameCasual == 0 ? "<br/>严肃活泼局" : "<br/>休闲娱乐局";
             var pokerTableName = this_2.gameScene.ui.create.div('', "".concat(i + 1, "\u53F7\u623F\u95F4").concat(noSignalStr), this_2.gameScene.ui.frameGameHallTables);
             pokerTableName.style.fontFamily = 'serif';
             pokerTableName.style.fontSize = '18px';
@@ -2203,8 +2210,6 @@ var MainForm = /** @class */ (function () {
             pokerTableName.style.left = "calc(".concat(leftOffset, "% - 80px)");
             pokerTableName.style.top = "calc(".concat(topOffset, "% - 80px)");
             pokerTableName.style.textAlign = 'center';
-            if (roomStateList[i].roomSetting.DisplaySignalCardInfo)
-                pokerTableName.style['line-height'] = '55px';
             pokerTableName.style.cursor = 'pointer';
             // click
             pokerTableName.addEventListener("click", function (e) {
