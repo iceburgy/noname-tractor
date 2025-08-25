@@ -322,9 +322,19 @@ var GameScene = /** @class */ (function () {
         var roomStateList = objList[0];
         var playerList = objList[1];
         var yuezhanList = objList[2];
+        console.log("received NotifyGameHall with roomStateList:");
+        console.log(roomStateList);
+        console.log("received NotifyGameHall with playerList:");
+        console.log(playerList);
+        console.log("received NotifyGameHall with yuezhanList:");
+        console.log(yuezhanList);
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList, yuezhanList);
     };
     GameScene.prototype.handleNotifyOnlinePlayerList = function (playerID, objList) {
+        console.log("received handleNotifyOnlinePlayerList with playerID:");
+        console.log(playerID);
+        console.log("received NotifyGameHall with objList:");
+        console.log(objList);
         var isJoining = objList[0];
         this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining);
     };

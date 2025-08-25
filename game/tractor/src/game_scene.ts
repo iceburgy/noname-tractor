@@ -9,6 +9,7 @@ import { ShowingCardsValidationResult } from "./showing_cards_validation_result.
 import { ReplayEntity } from "./replay_entity.js";
 import { IDBHelper } from "./idb_helper.js";
 import { EnterHallInfo } from './enter_hall_info.js';
+import { RoomState } from "./room_state.js";
 
 const dummyValue = "dummyValue"
 const IPPort = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):(6553[0-5]|655[0-2][0-9]|65[0-4][0-9][0-9]|6[0-4][0-9][0-9][0-9][0-9]|[1-5](\d){4}|[1-9](\d){0,3})$/;
@@ -411,13 +412,23 @@ export class GameScene {
     }
 
     public handleNotifyGameHall(objList: any) {
-        var roomStateList = objList[0];
+        var roomStateList: RoomState[] = objList[0];
         var playerList = objList[1];
         var yuezhanList = objList[2];
+        console.log("received NotifyGameHall with roomStateList:");
+        console.log(roomStateList);
+        console.log("received NotifyGameHall with playerList:");
+        console.log(playerList);
+        console.log("received NotifyGameHall with yuezhanList:");
+        console.log(yuezhanList);
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList, yuezhanList)
     }
 
     public handleNotifyOnlinePlayerList(playerID: string, objList: any) {
+        console.log("received handleNotifyOnlinePlayerList with playerID:");
+        console.log(playerID);
+        console.log("received NotifyGameHall with objList:");
+        console.log(objList);
         var isJoining: boolean = objList[0];
         this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining)
     }
