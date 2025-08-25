@@ -427,7 +427,7 @@ export class GameScene {
     public handleNotifyOnlinePlayerList(playerID: string, objList: any) {
         console.log("received handleNotifyOnlinePlayerList with playerID:");
         console.log(playerID);
-        console.log("received NotifyGameHall with objList:");
+        console.log("received handleNotifyOnlinePlayerList with objList:");
         console.log(objList);
         var isJoining: boolean = objList[0];
         this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining)
@@ -447,6 +447,10 @@ export class GameScene {
     public handleNotifyRoomSetting(objList: any) {
         var roomSetting: RoomSetting = objList[0];
         var showMessage: boolean = objList[1];
+        console.log("received handleNotifyRoomSetting with roomSetting:");
+        console.log(roomSetting);
+        console.log("received handleNotifyRoomSetting with showMessage:");
+        console.log(showMessage);
         this.mainForm.tractorPlayer.NotifyRoomSetting(roomSetting, showMessage)
     }
 

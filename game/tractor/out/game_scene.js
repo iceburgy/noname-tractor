@@ -333,7 +333,7 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleNotifyOnlinePlayerList = function (playerID, objList) {
         console.log("received handleNotifyOnlinePlayerList with playerID:");
         console.log(playerID);
-        console.log("received NotifyGameHall with objList:");
+        console.log("received handleNotifyOnlinePlayerList with objList:");
         console.log(objList);
         var isJoining = objList[0];
         this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining);
@@ -350,6 +350,10 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleNotifyRoomSetting = function (objList) {
         var roomSetting = objList[0];
         var showMessage = objList[1];
+        console.log("received handleNotifyRoomSetting with roomSetting:");
+        console.log(roomSetting);
+        console.log("received handleNotifyRoomSetting with showMessage:");
+        console.log(showMessage);
         this.mainForm.tractorPlayer.NotifyRoomSetting(roomSetting, showMessage);
     };
     GameScene.prototype.handleNotifyGameState = function (objList) {
