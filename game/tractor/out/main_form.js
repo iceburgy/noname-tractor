@@ -1696,13 +1696,31 @@ var MainForm = /** @class */ (function () {
         }
     };
     MainForm.prototype.ToShowCards = function () {
+        var _this = this;
         if ((this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Playing || this.tractorPlayer.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.DiscardingLast8CardsFinished) &&
             this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId) {
-            //擦去小猪
-            this.gameScene.ui.btnPig.hide();
-            this.gameScene.ui.btnPig.classList.add('disabled');
-            this.gameScene.ui.btnPig.classList.remove('pointerdiv');
-            this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards));
+            var selectedCardsValidationResult = TractorRules.IsValid(this.tractorPlayer.CurrentTrickState, this.SelectedCards, this.tractorPlayer.CurrentPoker);
+            //如果我准备出的牌合法
+            if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.Valid) {
+                //擦去小猪
+                this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled');
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
+                this.SelectedCards.forEach(function (card) {
+                    _this.tractorPlayer.CurrentPoker.RemoveCard(card);
+                });
+                this.drawingFormHelper.removeCardImage(this.SelectedCards);
+                this.ShowCards();
+                this.drawingFormHelper.ResortMyHandCards();
+                this.SelectedCards = [];
+            }
+            else if (selectedCardsValidationResult.ResultType == ShowingCardsValidationResult.ShowingCardsValidationResultType.TryToDump) {
+                //擦去小猪
+                this.gameScene.ui.btnPig.hide();
+                this.gameScene.ui.btnPig.classList.add('disabled');
+                this.gameScene.ui.btnPig.classList.remove('pointerdiv');
+                this.gameScene.sendMessageToServer(ValidateDumpingCards_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.SelectedCards));
+            }
         }
     };
     MainForm.prototype.ShowCards = function () {
