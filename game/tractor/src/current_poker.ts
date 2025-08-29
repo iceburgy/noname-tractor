@@ -363,48 +363,6 @@ export class CurrentPoker {
         return -1;
     }
 
-    public GetTractorBySuitInt(asuit: number): number {
-        if (asuit == this.Trump) {
-            return this.GetMasterTractor();
-        }
-        //顺序比较
-        for (let i = 12; i > 0; i--) {
-            if (i == this.Rank) {
-                continue;
-            }
-            let m = i - 1;
-            if (m == this.Rank) {
-                m--;
-            }
-            if (m < 0) {
-                break;
-            }
-
-            if (asuit == 1) {
-                if ((this.HeartsNoRank()[i] > 1) && (this.HeartsNoRank()[m] > 1)) {
-                    return i;
-                }
-            }
-            if (asuit == 2) {
-                if ((this.SpadesNoRank()[i] > 1) && (this.SpadesNoRank()[m] > 1)) {
-                    return (i + 13);
-                }
-            }
-            if (asuit == 3) {
-                if ((this.DiamondsNoRank()[i] > 1) && (this.DiamondsNoRank()[m] > 1)) {
-                    return (i + 26);
-                }
-            }
-            if (asuit == 4) {
-                if ((this.ClubsNoRank()[i] > 1) && (this.ClubsNoRank()[m] > 1)) {
-                    return (i + 39);
-                }
-            }
-        }
-
-        return -1;
-    }
-
     public GetTractorOfAnySuit(): number[] {
         let result: number[] = this.GetTractorBySuit(SuitEnums.Suit.Club);
         if (result.length > 1)
@@ -568,83 +526,6 @@ export class CurrentPoker {
         if (result.length <= 1)
             result = []
         return result;
-    }
-
-    public GetMasterTractor(): number {
-        //大小王
-        if ((this.BlackJoker() == 2) && (this.RedJoker() == 2)) {
-            return 53;
-        }
-        //小王主花色
-        if ((this.BlackJoker() == 2) && (this.MasterRank() == 2)) {
-            return 52;
-        }
-
-
-        //主花色副花色
-        if ((this.MasterRank() == 2) && this.HasSubRankPairs()) {
-            return ((this.Trump - 1) * 13 + this.Rank);
-        }
-
-        //副花色A时
-        if (this.HasSubRankPairs()) {
-            let a: number[] = this.GetSubRankPairs();
-            let m = this.Rank;
-            if (this.Rank == 12) {
-                m = 11;
-            }
-
-            if ((this.Trump == 1) && (this.Hearts()[m] > 1)) {
-                return a[0];
-            }
-            if ((this.Trump == 2) && (this.Spades()[m] > 1)) {
-                return a[0];
-            }
-            if ((this.Trump == 3) && (this.Diamonds()[m] > 1)) {
-                return a[0];
-            }
-            if ((this.Trump == 4) && (this.Clubs()[m] > 1)) {
-                return a[0];
-            }
-        }
-
-
-        //顺序比较
-        for (let i = 12; i > 0; i--) {
-            if (i == this.Rank) {
-                continue;
-            }
-            let m = i - 1;
-            if (m == this.Rank) {
-                m--;
-            }
-            if (m < 0) {
-                break;
-            }
-
-            if (this.Trump == 1) {
-                if ((this.HeartsNoRank()[i] > 1) && (this.HeartsNoRank()[m] > 1)) {
-                    return i;
-                }
-            }
-            if (this.Trump == 2) {
-                if ((this.SpadesNoRank()[i] > 1) && (this.SpadesNoRank()[m] > 1)) {
-                    return (i + 13);
-                }
-            }
-            if (this.Trump == 3) {
-                if ((this.DiamondsNoRank()[i] > 1) && (this.DiamondsNoRank()[m] > 1)) {
-                    return (i + 26);
-                }
-            }
-            if (this.Trump == 4) {
-                if ((this.ClubsNoRank()[i] > 1) && (this.ClubsNoRank()[m] > 1)) {
-                    return (i + 39);
-                }
-            }
-        }
-
-        return -1;
     }
 
     public GetSubRankPairs(): number[] {

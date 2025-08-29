@@ -113,7 +113,8 @@ export class TractorRules {
 
         //2.如果别人出拖拉机，我如果有，也应该出拖拉机
         if (leadingCardsCp.HasTractors()) {
-            if ((!showingCardsCp.HasTractors()) && (currentCards.GetTractorBySuitInt(leadingSuit) > -1)) {
+            let currentTractors: number[] = currentCards.GetTractorBySuit(leadingSuit);
+            if ((!showingCardsCp.HasTractors()) && (currentTractors.length > 0)) {
                 res.ResultType = ShowingCardsValidationResult.ShowingCardsValidationResultType.Invalid
                 return res
             }
