@@ -570,9 +570,10 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				});
 
 				// user notes
-				var userNotes = ui.create.div(".userNotes", ui.window);
-				userNotes.innerHTML = '欢迎来到西村升级小馆！<br/>注册新用户前，请先从管理员处获取一个邀请码';
-				userNotes.style.fontFamily = 'xinwei';
+				var userNotes = ui.create.div(".friendWebsites", ui.window);
+				userNotes.innerHTML = `欢迎来到西村升级小馆！<br/>注册新用户需要先从
+				<a href="javascript:void(0)" class="popup-link" id="toptopicinvite_newmitbbs" data-address="https://newmitbbs.com/viewtopic.php?t=825158">新未名空间邀请贴<span class="popup-icon">🔗</span></a>
+				联系楼主获取一个邀请码`;
 				userNotes.style.fontSize = '20px';
 				userNotes.style.padding = '10px';
 				userNotes.style.width = 'calc(100%)';
@@ -586,7 +587,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				<a href="javascript:void(0)" class="popup-link" id="friendWebsites_newmitbbs" data-address="https://newmitbbs.com">新未名空间<span class="popup-icon">🔗</span></a>
 				<a href="javascript:void(0)" class="popup-link" id="friendWebsites_freeblueplanet" data-address="https://www.freeblueplanet.com">自由蓝星<span class="popup-icon">🔗</span></a>
 				`;
-				friendWebsites.style.fontSize = '20px';
+				friendWebsites.style.fontSize = '16px';
 				friendWebsites.style.padding = '10px';
 				friendWebsites.style.width = 'calc(100%)';
 				friendWebsites.style.top = 'calc(80%)';
