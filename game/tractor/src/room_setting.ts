@@ -12,6 +12,7 @@ export class RoomSetting {
     public IsFullDebug: boolean
     public secondsToWaitForReenter: number
     public secondsToShowCards: number
+    public secondsToShowCardsPrev: number
     public secondsToDiscardCards: number
     public DisplaySignalCardInfo: boolean
     public IsGameCasual: number
@@ -30,6 +31,7 @@ export class RoomSetting {
         this.IsFullDebug = false
         this.secondsToWaitForReenter = 60
         this.secondsToShowCards = 0
+        this.secondsToShowCardsPrev = 0
         this.secondsToDiscardCards = 0
         this.DisplaySignalCardInfo = false
         this.IsGameCasual = 0
@@ -48,6 +50,7 @@ export class RoomSetting {
         this.IsFullDebug = from.IsFullDebug
         this.secondsToWaitForReenter = from.secondsToWaitForReenter
         this.secondsToShowCards = from.secondsToShowCards
+        this.secondsToShowCardsPrev = from.secondsToShowCardsPrev
         this.secondsToDiscardCards = from.secondsToDiscardCards
         this.DisplaySignalCardInfo = from.DisplaySignalCardInfo
         this.IsGameCasual = from.IsGameCasual

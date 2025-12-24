@@ -295,6 +295,25 @@ export class MainForm {
             this.gameScene.ui.btnExitAndObserve.show();
         }
 
+        // btnPauseOrContinueGame
+        if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
+            let btnName = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards == 0 ? "继续" : "暂停"
+            if (!this.gameScene.ui.btnPauseOrContinueGame) {
+                this.gameScene.ui.btnPauseOrContinueGame = this.gameScene.ui.create.system(btnName, () => this.PauseOrContinueGame(), true, true);
+            } else {
+                this.gameScene.ui.btnPauseOrContinueGame.hide();
+                setTimeout(() => {
+                    this.gameScene.ui.btnPauseOrContinueGame.show();
+                    this.gameScene.ui.btnPauseOrContinueGame.innerHTML = btnName
+                }, 3000);
+            }
+        } else {
+            if (this.gameScene.ui.btnPauseOrContinueGame) {
+                this.gameScene.ui.btnPauseOrContinueGame.remove();
+                delete this.gameScene.ui.btnPauseOrContinueGame;
+            }
+        }
+
         // // small games
         // this.btnSmallGames.setVisible(!this.tractorPlayer.isObserver);
         // if (this.tractorPlayer.isObserver) {
@@ -481,6 +500,26 @@ export class MainForm {
         this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
     }
 
+    public PauseOrContinueGame() {
+        if (!this.gameScene.ui.btnPauseOrContinueGame || this.gameScene.ui.btnPauseOrContinueGame.classList.contains('hidden') || this.gameScene.ui.btnPauseOrContinueGame.classList.contains('disabled')) return;
+        this.gameScene.ui.btnPauseOrContinueGame.hide();
+
+        let newVal = 0
+        if (this.tractorPlayer.CurrentRoomSetting.secondsToShowCards == 0) {
+            // 如果是从0变为正数，则是继续，则取上次的值：secondsToShowCardsPrev
+            if (this.tractorPlayer.CurrentRoomSetting.secondsToShowCardsPrev == 0) {
+                // 如果是初次设置，secondsToShowCardsPrev将会是0，则赋予secondsToShowCardsPrev一个默认非0的值
+                this.tractorPlayer.CurrentRoomSetting.secondsToShowCardsPrev = 30
+            }
+            newVal = this.tractorPlayer.CurrentRoomSetting.secondsToShowCardsPrev
+        } else {
+            // 否则是从正数变为0，则是暂停，则将当前的正数赋予上次的值：secondsToShowCardsPrev，以便下次继续时还原为此正数值
+            this.tractorPlayer.CurrentRoomSetting.secondsToShowCardsPrev = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards
+        }
+        this.tractorPlayer.CurrentRoomSetting.secondsToShowCards = newVal
+        this.gameScene.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+    }
+
     //     public SmallGamesHandler() {
     //         this.groupSmallGames.toggleVisible();
     //     }
@@ -558,6 +597,10 @@ export class MainForm {
         if (this.gameScene.ui.btnExitAndObserve) {
             this.gameScene.ui.btnExitAndObserve.remove();
             delete this.gameScene.ui.btnExitAndObserve;
+        }
+        if (this.gameScene.ui.btnPauseOrContinueGame) {
+            this.gameScene.ui.btnPauseOrContinueGame.remove();
+            delete this.gameScene.ui.btnPauseOrContinueGame;
         }
 
         if (this.gameScene.ui.frameGameRoom) {
