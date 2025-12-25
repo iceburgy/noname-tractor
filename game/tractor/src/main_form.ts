@@ -258,7 +258,7 @@ export class MainForm {
         }
     }
 
-    public NewPlayerJoined(shouldReDrawChairOrPlayer: boolean) {
+    public NewPlayerJoined(shouldReDrawChairOrPlayer: boolean, shouldReDrawBtnPauseOrContinueGame: boolean) {
         if (this.gameScene.isInGameHall()) {
             this.destroyGameHall()
             this.init();
@@ -296,21 +296,24 @@ export class MainForm {
         }
 
         // btnPauseOrContinueGame
-        if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
-            let btnName = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards == 0 ? "继续" : "暂停"
-            if (!this.gameScene.ui.btnPauseOrContinueGame) {
-                this.gameScene.ui.btnPauseOrContinueGame = this.gameScene.ui.create.system(btnName, () => this.PauseOrContinueGame(), true, true);
+        if (shouldReDrawBtnPauseOrContinueGame) {
+            // only do this if the call comes from NotifyRoomSetting
+            if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
+                let btnName = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards == 0 ? "继续" : "暂停"
+                if (!this.gameScene.ui.btnPauseOrContinueGame) {
+                    this.gameScene.ui.btnPauseOrContinueGame = this.gameScene.ui.create.system(btnName, () => this.PauseOrContinueGame(), true, true);
+                } else {
+                    this.gameScene.ui.btnPauseOrContinueGame.hide();
+                    setTimeout(() => {
+                        this.gameScene.ui.btnPauseOrContinueGame.show();
+                        this.gameScene.ui.btnPauseOrContinueGame.innerHTML = btnName
+                    }, 3000);
+                }
             } else {
-                this.gameScene.ui.btnPauseOrContinueGame.hide();
-                setTimeout(() => {
-                    this.gameScene.ui.btnPauseOrContinueGame.show();
-                    this.gameScene.ui.btnPauseOrContinueGame.innerHTML = btnName
-                }, 3000);
-            }
-        } else {
-            if (this.gameScene.ui.btnPauseOrContinueGame) {
-                this.gameScene.ui.btnPauseOrContinueGame.remove();
-                delete this.gameScene.ui.btnPauseOrContinueGame;
+                if (this.gameScene.ui.btnPauseOrContinueGame) {
+                    this.gameScene.ui.btnPauseOrContinueGame.remove();
+                    delete this.gameScene.ui.btnPauseOrContinueGame;
+                }
             }
         }
 

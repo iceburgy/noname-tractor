@@ -171,7 +171,7 @@ export class TractorPlayer {
         if ((playerChanged || observerChanged)) {
             this.mainForm.PlayerPosition = newPlayerPosition;
             this.mainForm.PositionPlayer = newPositionPlayer;
-            this.mainForm.NewPlayerJoined(shouldReDrawChairOrPlayer)
+            this.mainForm.NewPlayerJoined(shouldReDrawChairOrPlayer, false)
         }
 
         for (let i = 0; i < gameState.Players.length; i++) {
@@ -215,7 +215,7 @@ export class TractorPlayer {
         }
 
         // 重画头像这样新任房主可将玩家请出房间
-        this.mainForm.NewPlayerJoined(true);
+        this.mainForm.NewPlayerJoined(true, true);
 
         if (showMessage) {
             var msgs = []

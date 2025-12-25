@@ -192,7 +192,7 @@ var MainForm = /** @class */ (function () {
             nextPlayer = CommonMethods.GetNextPlayerAfterThePlayer(this.tractorPlayer.CurrentGameState.Players, nextPlayer).PlayerId;
         }
     };
-    MainForm.prototype.NewPlayerJoined = function (shouldReDrawChairOrPlayer) {
+    MainForm.prototype.NewPlayerJoined = function (shouldReDrawChairOrPlayer, shouldReDrawBtnPauseOrContinueGame) {
         var _this = this;
         if (this.gameScene.isInGameHall()) {
             this.destroyGameHall();
@@ -226,23 +226,26 @@ var MainForm = /** @class */ (function () {
             this.gameScene.ui.btnExitAndObserve.show();
         }
         // btnPauseOrContinueGame
-        if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
-            var btnName_1 = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards == 0 ? "继续" : "暂停";
-            if (!this.gameScene.ui.btnPauseOrContinueGame) {
-                this.gameScene.ui.btnPauseOrContinueGame = this.gameScene.ui.create.system(btnName_1, function () { return _this.PauseOrContinueGame(); }, true, true);
+        if (shouldReDrawBtnPauseOrContinueGame) {
+            // only do this if the call comes from NotifyRoomSetting
+            if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
+                var btnName_1 = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards == 0 ? "继续" : "暂停";
+                if (!this.gameScene.ui.btnPauseOrContinueGame) {
+                    this.gameScene.ui.btnPauseOrContinueGame = this.gameScene.ui.create.system(btnName_1, function () { return _this.PauseOrContinueGame(); }, true, true);
+                }
+                else {
+                    this.gameScene.ui.btnPauseOrContinueGame.hide();
+                    setTimeout(function () {
+                        _this.gameScene.ui.btnPauseOrContinueGame.show();
+                        _this.gameScene.ui.btnPauseOrContinueGame.innerHTML = btnName_1;
+                    }, 3000);
+                }
             }
             else {
-                this.gameScene.ui.btnPauseOrContinueGame.hide();
-                setTimeout(function () {
-                    _this.gameScene.ui.btnPauseOrContinueGame.show();
-                    _this.gameScene.ui.btnPauseOrContinueGame.innerHTML = btnName_1;
-                }, 3000);
-            }
-        }
-        else {
-            if (this.gameScene.ui.btnPauseOrContinueGame) {
-                this.gameScene.ui.btnPauseOrContinueGame.remove();
-                delete this.gameScene.ui.btnPauseOrContinueGame;
+                if (this.gameScene.ui.btnPauseOrContinueGame) {
+                    this.gameScene.ui.btnPauseOrContinueGame.remove();
+                    delete this.gameScene.ui.btnPauseOrContinueGame;
+                }
             }
         }
         // // small games
