@@ -148,7 +148,6 @@ export class MainForm {
                 this.gameScene.ui.btnReady.show();
                 this.gameScene.ui.btnReady.classList.remove('disabled');
                 this.gameScene.ui.btnReady.classList.add('pointerdiv');
-                this.gameScene.ui.btnExitAndObserve.show();
             }
 
             // small games
@@ -157,7 +156,6 @@ export class MainForm {
         } else {
             this.gameScene.ui.btnReady.classList.add('disabled');
             this.gameScene.ui.btnReady.classList.remove('pointerdiv');
-            this.gameScene.ui.btnExitAndObserve.hide()
 
             // small games
             // this.btnSmallGames.disableInteractive()
@@ -282,17 +280,18 @@ export class MainForm {
             this.gameScene.ui.btnReady.classList.remove('pointerdiv');
             this.gameScene.ui.btnRobot.hide();
             this.gameScene.ui.btnQiangliang.hide();
+
+            this.gameScene.ui.btnExitAndObserve.remove();
+            delete this.gameScene.ui.btnExitAndObserve;
         } else {
             this.gameScene.ui.btnReady.show();
             this.gameScene.ui.btnReady.classList.add('pointerdiv');
             this.gameScene.ui.btnRobot.show();
             this.gameScene.ui.btnQiangliang.show();
-        }
 
-        if (this.tractorPlayer.isObserver) {
-            this.gameScene.ui.btnExitAndObserve.hide();
-        } else {
-            this.gameScene.ui.btnExitAndObserve.show();
+            if (!this.gameScene.ui.btnExitAndObserve) {
+                this.gameScene.ui.btnExitAndObserve = this.gameScene.ui.create.system('上树', () => this.ExitAndObserve(), true, true);
+            }
         }
 
         // btnPauseOrContinueGame
@@ -491,16 +490,12 @@ export class MainForm {
     }
 
     public ExitAndObserve() {
-        if (!this.gameScene.ui.btnExitAndObserve || this.gameScene.ui.btnExitAndObserve.classList.contains('hidden') || this.gameScene.ui.btnExitAndObserve.classList.contains('disabled')) return;
-        this.gameScene.ui.btnExitAndObserve.show();
-
-        // small games
-        // this.btnSmallGames.disableInteractive()
-        // this.btnSmallGames.setColor('gray')
-        // this.groupSmallGames.setVisible(false);
-
-        this.destroyGameRoom();
-        this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
+        if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DiscardingLast8Cards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
+            alert("游戏中途不允许上树,请完成此盘游戏后重试")
+        } else {
+            this.destroyGameRoom();
+            this.gameScene.sendMessageToServer(PLAYER_EXIT_AND_OBSERVE_REQUEST, this.tractorPlayer.MyOwnId, "");
+        }
     }
 
     public PauseOrContinueGame() {
@@ -1599,7 +1594,7 @@ export class MainForm {
             return
         }
         if (CommonMethods.AllOnline(this.tractorPlayer.CurrentGameState.Players) && !this.tractorPlayer.isObserver && SuitEnums.HandStep.DiscardingLast8Cards <= this.tractorPlayer.CurrentHandState.CurrentHandStep && this.tractorPlayer.CurrentHandState.CurrentHandStep <= SuitEnums.HandStep.Playing) {
-            var c = window.confirm("游戏进行中退出将会重启游戏，是否确定退出？");
+            var c = window.confirm("游戏中途退出将会重启游戏，是否确定退出？");
             if (c == true) {
                 window.location.reload()
             }
@@ -2401,11 +2396,6 @@ export class MainForm {
         this.gameScene.ui.btnReady.hide();
         this.gameScene.ui.btnQiangliang.hide();
         this.gameScene.ui.btnShowLastTrick.hide();
-        // btnExitAndObserve
-        if (!this.gameScene.ui.btnExitAndObserve) {
-            this.gameScene.ui.btnExitAndObserve = this.gameScene.ui.create.system('上树', () => this.ExitAndObserve(), true, true);
-            this.gameScene.ui.btnExitAndObserve.hide();
-        }
     }
 
     public drawGameHall(roomStateList: RoomState[], playerList: string[], yuezhanList: YuezhanEntity[]) {
