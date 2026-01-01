@@ -281,8 +281,10 @@ export class MainForm {
             this.gameScene.ui.btnRobot.hide();
             this.gameScene.ui.btnQiangliang.hide();
 
-            this.gameScene.ui.btnExitAndObserve.remove();
-            delete this.gameScene.ui.btnExitAndObserve;
+            if (this.gameScene.ui.btnExitAndObserve) {
+                this.gameScene.ui.btnExitAndObserve.remove();
+                delete this.gameScene.ui.btnExitAndObserve;
+            }
         } else {
             this.gameScene.ui.btnReady.show();
             this.gameScene.ui.btnReady.classList.add('pointerdiv');
