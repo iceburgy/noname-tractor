@@ -238,6 +238,10 @@ var GameScene = /** @class */ (function () {
                 document.body.innerHTML = "<div>!!! \u5C1D\u8BD5\u4E0E\u670D\u52A1\u5668\u5EFA\u7ACB\u8FDE\u63A5\u5931\u8D25\uFF0C\u8BF7\u786E\u8BA4\u8F93\u5165\u4FE1\u606F\u65E0\u8BEF\uFF1A".concat(this.gs.hostNameOriginal, "</div>");
                 console.error(JSON.stringify(e));
             };
+            this.websocket.onclose = function (e) {
+                console.log("WS closed by the server. ", e.code, e.reason);
+                console.error(JSON.stringify(e));
+            };
         }
         catch (e) {
             document.body.innerHTML = "<div>!!! \u5C1D\u8BD5\u8FDE\u63A5\u670D\u52A1\u5668\u51FA\u9519\uFF0C\u8BF7\u786E\u8BA4\u8F93\u5165\u4FE1\u606F\u65E0\u8BEF\uFF1A".concat(this.hostNameOriginal, "</div>");

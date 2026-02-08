@@ -315,6 +315,10 @@ export class GameScene {
                 document.body.innerHTML = `<div>!!! 尝试与服务器建立连接失败，请确认输入信息无误：${this.gs.hostNameOriginal}</div>`
                 console.error(JSON.stringify(e));
             }
+            this.websocket.onclose = function (e: any) {
+                console.log("WS closed by the server. ", e.code, e.reason)
+                console.error(JSON.stringify(e));
+            }
         } catch (e: any) {
             document.body.innerHTML = `<div>!!! 尝试连接服务器出错，请确认输入信息无误：${this.hostNameOriginal}</div>`
             console.log(e);
