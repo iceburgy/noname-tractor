@@ -361,6 +361,7 @@ var GameScene = /** @class */ (function () {
         this.mainForm.tractorPlayer.NotifyRoomSetting(roomSetting, showMessage);
     };
     GameScene.prototype.handleNotifyGameState = function (objList) {
+        console.log("===received handleNotifyGameState");
         var gameState = objList[0];
         var notifyType = objList[1];
         this.mainForm.tractorPlayer.NotifyGameState(gameState, notifyType);
@@ -371,6 +372,7 @@ var GameScene = /** @class */ (function () {
         this.mainForm.tractorPlayer.NotifyCurrentHandState(currentHandState, notifyType);
     };
     GameScene.prototype.handleNotifyCurrentTrickState = function (objList) {
+        console.log("===received handleNotifyCurrentTrickState");
         var currentTrickState = objList[0];
         var notifyType = objList[1];
         this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState, notifyType);

@@ -1017,6 +1017,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.btnReady.classList.add('disabled');
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "");
+        console.log("===btnReady_Click done");
     };
     MainForm.prototype.btnQiangliang_Click = function () {
         if (!this.gameScene.ui.btnQiangliang || this.gameScene.ui.btnQiangliang.classList.contains('hidden') || this.gameScene.ui.btnQiangliang.classList.contains('disabled'))

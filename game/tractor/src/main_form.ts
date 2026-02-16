@@ -1127,6 +1127,7 @@ export class MainForm {
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
 
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
+        console.log(`===btnReady_Click done`);
     }
 
     private btnQiangliang_Click() {

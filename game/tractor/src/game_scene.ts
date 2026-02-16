@@ -459,6 +459,7 @@ export class GameScene {
     }
 
     public handleNotifyGameState(objList: any) {
+        console.log("===received handleNotifyGameState");
         var gameState: GameState = objList[0];
         var notifyType: string = objList[1];
         this.mainForm.tractorPlayer.NotifyGameState(gameState, notifyType)
@@ -471,6 +472,7 @@ export class GameScene {
     }
 
     public handleNotifyCurrentTrickState(objList: any) {
+        console.log("===received handleNotifyCurrentTrickState");
         var currentTrickState: CurrentTrickState = objList[0];
         var notifyType: string = objList[1];
         this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState, notifyType)
