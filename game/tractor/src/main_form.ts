@@ -1126,6 +1126,7 @@ export class MainForm {
         this.gameScene.ui.btnReady.classList.add('disabled');
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
 
+        console.log(`===btnReady_Click attempted`);
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
         console.log(`===btnReady_Click done`);
     }

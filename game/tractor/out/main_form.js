@@ -1016,6 +1016,7 @@ var MainForm = /** @class */ (function () {
         //为防止以外连续点两下开始按钮，造成重复发牌，点完一下就立即disable开始按钮
         this.gameScene.ui.btnReady.classList.add('disabled');
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
+        console.log("===btnReady_Click attempted");
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "");
         console.log("===btnReady_Click done");
     };
