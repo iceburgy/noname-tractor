@@ -19,6 +19,7 @@ var GameScene = /** @class */ (function () {
         this.hidePlayerID = false;
         this.wsprotocal = "wss";
         this.clientVersion = "";
+        this.parserWorker = new Worker(new URL("./parser_worker.js", import.meta.url), { type: "module" });
         this.game = gameIn;
         this.lib = libIn;
         this.ui = uiIn;
@@ -110,6 +111,7 @@ var GameScene = /** @class */ (function () {
     }
     // non-replay mode, online
     GameScene.prototype.connect = function () {
+        var _this = this;
         if (!this.hostName)
             return;
         try {
@@ -145,94 +147,97 @@ var GameScene = /** @class */ (function () {
                 //     document.body.innerHTML = `<div>!!! onopen Error: ${e}</div>`
                 // }
             };
-            this.websocket.onmessage = function (message) {
-                // try {
-                var data = JSON.parse(message.data);
-                var messageType = data["messageType"];
-                var playerID = data["playerID"];
-                var content = data["content"];
-                // console.log(messageType)
-                // console.log(content)
-                var objList = JSON.parse(content);
-                if (objList == null || objList.length == 0)
-                    return;
-                switch (messageType) {
-                    case CommonMethods.NotifyGameHall_RESPONSE:
-                        this.gs.handleNotifyGameHall(objList);
-                        break;
-                    case CommonMethods.NotifyOnlinePlayerList_RESPONSE:
-                        this.gs.handleNotifyOnlinePlayerList(playerID, objList);
-                        break;
-                    case CommonMethods.NotifyGameRoomPlayerList_RESPONSE:
-                        this.gs.handleNotifyGameRoomPlayerList(playerID, objList);
-                        break;
-                    case CommonMethods.NotifyMessage_RESPONSE:
-                        this.gs.handleNotifyMessage(objList);
-                        break;
-                    case CommonMethods.NotifyRoomSetting_RESPONSE:
-                        this.gs.handleNotifyRoomSetting(objList);
-                        break;
-                    case CommonMethods.NotifyGameState_RESPONSE:
-                        this.gs.handleNotifyGameState(objList);
-                        break;
-                    case CommonMethods.NotifyCurrentHandState_RESPONSE:
-                        this.gs.handleNotifyCurrentHandState(objList);
-                        break;
-                    case CommonMethods.NotifyCurrentTrickState_RESPONSE:
-                        this.gs.handleNotifyCurrentTrickState(objList);
-                        break;
-                    case CommonMethods.GetDistributedCard_RESPONSE:
-                        this.gs.handleGetDistributedCard(objList);
-                        break;
-                    case CommonMethods.NotifyCardsReady_RESPONSE:
-                        this.gs.handleNotifyCardsReady(objList);
-                        break;
-                    case CommonMethods.NotifyDumpingValidationResult_RESPONSE:
-                        this.gs.handleNotifyDumpingValidationResult(objList);
-                        break;
-                    case CommonMethods.NotifyTryToDumpResult_RESPONSE:
-                        this.gs.handleNotifyTryToDumpResult(objList);
-                        break;
-                    case CommonMethods.NotifyStartTimer_RESPONSE:
-                        this.gs.handleNotifyStartTimer(objList);
-                        break;
-                    case CommonMethods.NotifyEmoji_RESPONSE:
-                        this.gs.handleNotifyEmoji(objList);
-                        break;
-                    case CommonMethods.CutCardShoeCards_RESPONSE:
-                        this.gs.handleCutCardShoeCards();
-                        break;
-                    case CommonMethods.NotifyReplayState_RESPONSE:
-                        this.gs.handleNotifyReplayState(objList);
-                        break;
-                    case CommonMethods.NotifyPing_RESPONSE:
-                        this.gs.handleNotifyPing_RESPONSE();
-                        break;
-                    // case CommonMethods.NotifySgcsPlayerUpdated_RESPONSE:
-                    //     this.gs.handleNotifySgcsPlayerUpdated_RESPONSE(objList);
-                    //     break;
-                    // case CommonMethods.NotifyCreateCollectStar_RESPONSE:
-                    //     this.gs.handleNotifyCreateCollectStar_RESPONSE(objList);
-                    //     break;
-                    // case CommonMethods.NotifyEndCollectStar_RESPONSE:
-                    //     this.gs.handleNotifyEndCollectStar(objList);
-                    //     break;
-                    // case CommonMethods.NotifyGrabStar_RESPONSE:
-                    //     this.gs.handleNotifyGrabStar_RESPONSE(objList);
-                    //     break;
-                    case CommonMethods.NotifyDaojuInfo_RESPONSE:
-                        this.gs.handleNotifyDaojuInfo(objList);
-                        break;
-                    // case CommonMethods.NotifyUpdateGobang_RESPONSE:
-                    //     this.gs.handleNotifyUpdateGobang_RESPONSE(objList);
-                    //     break;
-                    default:
-                        break;
+            this.websocket.onmessage = function (event) {
+                // Instead of JSON.parse(event.data) here, send it to the worker
+                _this.parserWorker.postMessage(event.data);
+            };
+            this.parserWorker.onmessage = function (e) {
+                if (e.data.success) {
+                    var messageType = e.data.messageType;
+                    var playerID = e.data.playerID;
+                    var objList = e.data.objList;
+                    switch (messageType) {
+                        case CommonMethods.NotifyGameHall_RESPONSE:
+                            _this.handleNotifyGameHall(objList);
+                            break;
+                        case CommonMethods.NotifyOnlinePlayerList_RESPONSE:
+                            _this.handleNotifyOnlinePlayerList(playerID, objList);
+                            break;
+                        case CommonMethods.NotifyGameRoomPlayerList_RESPONSE:
+                            _this.handleNotifyGameRoomPlayerList(playerID, objList);
+                            break;
+                        case CommonMethods.NotifyMessage_RESPONSE:
+                            _this.handleNotifyMessage(objList);
+                            break;
+                        case CommonMethods.NotifyRoomSetting_RESPONSE:
+                            _this.handleNotifyRoomSetting(objList);
+                            break;
+                        case CommonMethods.NotifyGameState_RESPONSE:
+                            _this.handleNotifyGameState(objList);
+                            break;
+                        case CommonMethods.NotifyCurrentHandState_RESPONSE:
+                            _this.handleNotifyCurrentHandState(objList);
+                            break;
+                        case CommonMethods.NotifyCurrentTrickState_RESPONSE:
+                            _this.handleNotifyCurrentTrickState(objList);
+                            break;
+                        case CommonMethods.GetDistributedCard_RESPONSE:
+                            _this.handleGetDistributedCard(objList);
+                            break;
+                        case CommonMethods.NotifyCardsReady_RESPONSE:
+                            _this.handleNotifyCardsReady(objList);
+                            break;
+                        case CommonMethods.NotifyDumpingValidationResult_RESPONSE:
+                            _this.handleNotifyDumpingValidationResult(objList);
+                            break;
+                        case CommonMethods.NotifyTryToDumpResult_RESPONSE:
+                            _this.handleNotifyTryToDumpResult(objList);
+                            break;
+                        case CommonMethods.NotifyStartTimer_RESPONSE:
+                            _this.handleNotifyStartTimer(objList);
+                            break;
+                        case CommonMethods.NotifyEmoji_RESPONSE:
+                            _this.handleNotifyEmoji(objList);
+                            break;
+                        case CommonMethods.CutCardShoeCards_RESPONSE:
+                            _this.handleCutCardShoeCards();
+                            break;
+                        case CommonMethods.NotifyReplayState_RESPONSE:
+                            _this.handleNotifyReplayState(objList);
+                            break;
+                        case CommonMethods.NotifyPing_RESPONSE:
+                            _this.handleNotifyPing_RESPONSE();
+                            break;
+                        // case CommonMethods.NotifySgcsPlayerUpdated_RESPONSE:
+                        //     this.handleNotifySgcsPlayerUpdated_RESPONSE(objList);
+                        //     break;
+                        // case CommonMethods.NotifyCreateCollectStar_RESPONSE:
+                        //     this.handleNotifyCreateCollectStar_RESPONSE(objList);
+                        //     break;
+                        // case CommonMethods.NotifyEndCollectStar_RESPONSE:
+                        //     this.handleNotifyEndCollectStar(objList);
+                        //     break;
+                        // case CommonMethods.NotifyGrabStar_RESPONSE:
+                        //     this.handleNotifyGrabStar_RESPONSE(objList);
+                        //     break;
+                        case CommonMethods.NotifyDaojuInfo_RESPONSE:
+                            _this.handleNotifyDaojuInfo(objList);
+                            break;
+                        // case CommonMethods.NotifyUpdateGobang_RESPONSE:
+                        //     this.handleNotifyUpdateGobang_RESPONSE(objList);
+                        //     break;
+                        default:
+                            break;
+                    }
+                    // } catch (e) {
+                    //     // alert("error")
+                    //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
+                    // }
                 }
-                // } catch (e) {
-                //     // alert("error")
-                //     document.body.innerHTML = `<div>!!! onmessage Error: ${e}</div>`
-                // }
+                else {
+                    console.log("this.parserWorker.onmessage failed", e.data.error);
+                    console.error(JSON.stringify(e));
+                }
             };
             this.websocket.onerror = function (e) {
                 document.body.innerHTML = "<div>!!! \u5C1D\u8BD5\u4E0E\u670D\u52A1\u5668\u5EFA\u7ACB\u8FDE\u63A5\u5931\u8D25\uFF0C\u8BF7\u786E\u8BA4\u8F93\u5165\u4FE1\u606F\u65E0\u8BEF\uFF1A".concat(this.gs.hostNameOriginal, "</div>");

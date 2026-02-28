@@ -2222,20 +2222,13 @@ export class MainForm {
 
         var textAreaChatMsg = document.createElement("textarea");
         textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = `每条消息消耗【聊天卡】（优先触发）或者【升币】x${CommonMethods.chatMessageCost}，消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
+        textAreaChatMsg.placeholder = `消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
         textAreaChatMsg.style.resize = 'none';
         textAreaChatMsg.style.height = '3em';
         textAreaChatMsg.style.bottom = 'calc(50px)';
         textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
         frameChat.appendChild(textAreaChatMsg);
         this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
-        textAreaChatMsg.addEventListener('focus', () => {
-            if (!this.gameScene.chatMessageCostNoted) {
-                alert(`每次发言消耗【升币】x${CommonMethods.chatMessageCost}，余额不足时无法发言，快捷语除外`);
-                this.gameScene.chatMessageCostNoted = true;
-                this.gameScene.game.saveConfig("chatMessageCostNoted", true);
-            }
-        });
     }
 
     public drawGameRoom() {
