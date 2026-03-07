@@ -234,6 +234,9 @@ export class GameScene {
                     let messageType = e.data.messageType
                     let playerID = e.data.playerID
                     let objList = e.data.objList
+                    if (messageType != CommonMethods.NotifyPing_RESPONSE) {
+                        console.log(`received messageType: ${messageType}`);
+                    }
 
                     switch (messageType) {
                         case CommonMethods.NotifyGameHall_RESPONSE:

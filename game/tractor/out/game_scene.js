@@ -156,6 +156,9 @@ var GameScene = /** @class */ (function () {
                     var messageType = e.data.messageType;
                     var playerID = e.data.playerID;
                     var objList = e.data.objList;
+                    if (messageType != CommonMethods.NotifyPing_RESPONSE) {
+                        console.log("received messageType: ".concat(messageType));
+                    }
                     switch (messageType) {
                         case CommonMethods.NotifyGameHall_RESPONSE:
                             _this.handleNotifyGameHall(objList);
