@@ -334,19 +334,9 @@ var GameScene = /** @class */ (function () {
         var roomStateList = objList[0];
         var playerList = objList[1];
         var yuezhanList = objList[2];
-        console.log("received NotifyGameHall with roomStateList:");
-        console.log(roomStateList);
-        console.log("received NotifyGameHall with playerList:");
-        console.log(playerList);
-        console.log("received NotifyGameHall with yuezhanList:");
-        console.log(yuezhanList);
         this.mainForm.NotifyGameHallEventHandler(roomStateList, playerList, yuezhanList);
     };
     GameScene.prototype.handleNotifyOnlinePlayerList = function (playerID, objList) {
-        console.log("received handleNotifyOnlinePlayerList with playerID:");
-        console.log(playerID);
-        console.log("received handleNotifyOnlinePlayerList with objList:");
-        console.log(objList);
         var isJoining = objList[0];
         this.mainForm.NotifyOnlinePlayerListEventHandler(playerID, isJoining);
     };
@@ -362,14 +352,9 @@ var GameScene = /** @class */ (function () {
     GameScene.prototype.handleNotifyRoomSetting = function (objList) {
         var roomSetting = objList[0];
         var showMessage = objList[1];
-        console.log("received handleNotifyRoomSetting with roomSetting:");
-        console.log(roomSetting);
-        console.log("received handleNotifyRoomSetting with showMessage:");
-        console.log(showMessage);
         this.mainForm.tractorPlayer.NotifyRoomSetting(roomSetting, showMessage);
     };
     GameScene.prototype.handleNotifyGameState = function (objList) {
-        console.log("===received handleNotifyGameState");
         var gameState = objList[0];
         var notifyType = objList[1];
         this.mainForm.tractorPlayer.NotifyGameState(gameState, notifyType);
@@ -380,7 +365,6 @@ var GameScene = /** @class */ (function () {
         this.mainForm.tractorPlayer.NotifyCurrentHandState(currentHandState, notifyType);
     };
     GameScene.prototype.handleNotifyCurrentTrickState = function (objList) {
-        console.log("===received handleNotifyCurrentTrickState");
         var currentTrickState = objList[0];
         var notifyType = objList[1];
         this.mainForm.tractorPlayer.NotifyCurrentTrickState(currentTrickState, notifyType);
