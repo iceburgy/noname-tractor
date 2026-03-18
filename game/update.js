@@ -1,8 +1,8 @@
 window.noname_update = {
-	version: '2025.12.24',
+	version: '2026.03.18',
 	update: '2020.11.06.2',
 	changeLog: [
-		'新增房主技能“暂停游戏”',
+		'尝试解决客户端无故掉线问题',
 	],
 	files: []
 };

@@ -1587,7 +1587,7 @@ var MainForm = /** @class */ (function () {
         return false;
     };
     MainForm.prototype.IsSkinAfordableWithConfMsg = function (skinName) {
-        var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        var fullSkinInfo = this.gameScene.ui.fullSkinInfoResources;
         var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
         if (fullSkinInfo && daojuInfoByPlayer.Shengbi >= fullSkinInfo[skinName].skinCost) {
             var msg = "";
@@ -1599,7 +1599,7 @@ var MainForm = /** @class */ (function () {
         return [false, ""];
     };
     MainForm.prototype.GetSkinType = function (skinName) {
-        var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        var fullSkinInfo = this.gameScene.ui.fullSkinInfoResources;
         if (fullSkinInfo) {
             var targetSkinInfo = fullSkinInfo[skinName];
             if (targetSkinInfo) {
@@ -1612,7 +1612,7 @@ var MainForm = /** @class */ (function () {
         var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
         if (daojuInfoByPlayer) {
             var skinInUse = daojuInfoByPlayer.skinInUse;
-            var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+            var fullSkinInfo = this.gameScene.ui.fullSkinInfoResources;
             if (fullSkinInfo) {
                 var targetSkinInfo = fullSkinInfo[skinInUse];
                 if (targetSkinInfo) {
@@ -1632,7 +1632,7 @@ var MainForm = /** @class */ (function () {
         var lblSkinSex = document.getElementById("lblSkinSex");
         var btnBuyOrUseSelectedSkin = document.getElementById("btnBuyOrUseSelectedSkin");
         var curSkinInfo;
-        var fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        var fullSkinInfo = this.gameScene.ui.fullSkinInfoResources;
         var daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
         if (daojuInfoByPlayer) {
             if (fullSkinInfo) {

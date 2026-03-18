@@ -23,6 +23,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			ui.storageFileForImages = JSON.parse(localStorage.getItem(storageFileForCardsKey)) || {};
 			ui.avatarResourcesChanged = false;
 			ui.avatarResources = {};
+			ui.fullSkinInfoResources = {};
 
 			ui.audioResources = {
 				"liangpai_m_shelie1": ["effect", "liangpai_m_shelie1"],
@@ -195,6 +196,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 										return response.json();
 									})
 									.then(skinInfo => {
+										ui.fullSkinInfoResources = skinInfo;
 										var skinInfoKeys = Object.getOwnPropertyNames(skinInfo);
 										var skinCount = skinInfoKeys.length;
 										loadAvatarResourcesWorker(IDBHelperClass.IDBHelper, skinInfo, skinInfoKeys, skinCount, 0, 0, tractorCard);

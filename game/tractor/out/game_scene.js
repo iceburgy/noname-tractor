@@ -158,6 +158,7 @@ var GameScene = /** @class */ (function () {
                     var objList = e.data.objList;
                     if (messageType != CommonMethods.NotifyPing_RESPONSE) {
                         console.log("received messageType: ".concat(messageType));
+                        console.log("received objList: ".concat(JSON.stringify(objList)));
                     }
                     switch (messageType) {
                         case CommonMethods.NotifyGameHall_RESPONSE:

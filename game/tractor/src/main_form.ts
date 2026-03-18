@@ -1732,7 +1732,7 @@ export class MainForm {
     }
 
     private IsSkinAfordableWithConfMsg(skinName: string): any[] {
-        let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        let fullSkinInfo = this.gameScene.ui.fullSkinInfoResources;
         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
         if (fullSkinInfo && daojuInfoByPlayer.Shengbi >= fullSkinInfo[skinName].skinCost) {
             let msg = "";
@@ -1745,7 +1745,7 @@ export class MainForm {
     }
 
     private GetSkinType(skinName: string): number {
-        let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+        let fullSkinInfo = this.gameScene.ui.fullSkinInfoResources;
         if (fullSkinInfo) {
             let targetSkinInfo = fullSkinInfo[skinName];
             if (targetSkinInfo) {
@@ -1759,7 +1759,7 @@ export class MainForm {
         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[playerID];
         if (daojuInfoByPlayer) {
             let skinInUse = daojuInfoByPlayer.skinInUse
-            let fullSkinInfo = this.DaojuInfo.fullSkinInfo;
+            let fullSkinInfo = this.gameScene.ui.fullSkinInfoResources;
             if (fullSkinInfo) {
                 let targetSkinInfo = fullSkinInfo[skinInUse];
                 if (targetSkinInfo) {
@@ -1779,7 +1779,7 @@ export class MainForm {
         let lblSkinSex: any = document.getElementById("lblSkinSex");
         let btnBuyOrUseSelectedSkin: any = document.getElementById("btnBuyOrUseSelectedSkin");
         let curSkinInfo: any;
-        let fullSkinInfo: Record<string, any> = this.DaojuInfo.fullSkinInfo;
+        let fullSkinInfo: Record<string, any> = this.gameScene.ui.fullSkinInfoResources;
         let daojuInfoByPlayer = this.DaojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId];
         if (daojuInfoByPlayer) {
             if (fullSkinInfo) {
