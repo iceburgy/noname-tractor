@@ -236,7 +236,6 @@ export class GameScene {
                     let objList = e.data.objList
                     if (messageType != CommonMethods.NotifyPing_RESPONSE) {
                         console.log(`received messageType: ${messageType}`);
-                        console.log(`received objList: ${JSON.stringify(objList)}`);
                     }
 
                     switch (messageType) {
