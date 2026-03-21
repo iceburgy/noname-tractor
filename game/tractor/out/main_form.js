@@ -2856,6 +2856,7 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.divOnlinePlayerList.innerHTML = '';
         // players in game hall
         if (playersInGameHall && playersInGameHall.length > 0) {
+            playersInGameHall.sort();
             var headerGameHall = document.createElement("p");
             headerGameHall.innerText = "大厅";
             headerGameHall.style.fontWeight = 'bold';
@@ -2876,7 +2877,9 @@ var MainForm = /** @class */ (function () {
         for (var _i = 0, _a = Object.entries(playersInGameRoomPlaying); _i < _a.length; _i++) {
             var _b = _a[_i], key = _b[0], value = _b[1];
             var players = value;
+            players.sort();
             var obs = playersInGameRoomObserving[key];
+            obs.sort();
             var headerGameRoomPlaying = document.createElement("p");
             headerGameRoomPlaying.innerText = "\u623F\u95F4\u3010".concat(key, "\u3011\u684C\u4E0A");
             headerGameRoomPlaying.style.fontWeight = 'bold';

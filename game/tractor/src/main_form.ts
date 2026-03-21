@@ -3094,6 +3094,8 @@ export class MainForm {
 
         // players in game hall
         if (playersInGameHall && playersInGameHall.length > 0) {
+            playersInGameHall.sort();
+
             let headerGameHall = document.createElement("p");
             headerGameHall.innerText = "大厅";
             headerGameHall.style.fontWeight = 'bold';
@@ -3115,7 +3117,9 @@ export class MainForm {
         // players in game room playing or observing
         for (const [key, value] of Object.entries(playersInGameRoomPlaying)) {
             let players: string[] = value as string[];
+            players.sort();
             let obs: string[] = playersInGameRoomObserving[key]
+            obs.sort();
 
             let headerGameRoomPlaying = document.createElement("p");
             headerGameRoomPlaying.innerText = `房间【${key}】桌上`;
