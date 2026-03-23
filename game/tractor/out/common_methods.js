@@ -290,11 +290,12 @@ export var CommonMethods = /** @class */ (function () {
         return true;
     };
     CommonMethods.SomeoneBecomesReady = function (oldOnes, newOnes) {
+        var becomeReadyCount = 0;
         for (var i = 0; i < 4; i++) {
             if ((oldOnes[i] == null || !oldOnes[i].IsReadyToStart) && (newOnes[i] != null && newOnes[i].IsReadyToStart))
-                return true;
+                becomeReadyCount++;
         }
-        return false;
+        return becomeReadyCount == 1;
     };
     /// <summary>
     ///     比较两张牌孰大孰小

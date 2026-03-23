@@ -448,10 +448,11 @@ export class CommonMethods {
     }
 
     public static SomeoneBecomesReady(oldOnes: PlayerEntity[], newOnes: PlayerEntity[]): boolean {
+        let becomeReadyCount: number = 0
         for (let i = 0; i < 4; i++) {
-            if ((oldOnes[i] == null || !oldOnes[i].IsReadyToStart) && (newOnes[i] != null && newOnes[i].IsReadyToStart)) return true;
+            if ((oldOnes[i] == null || !oldOnes[i].IsReadyToStart) && (newOnes[i] != null && newOnes[i].IsReadyToStart)) becomeReadyCount++;
         }
-        return false;
+        return becomeReadyCount == 1;
     }
 
     /// <summary>
