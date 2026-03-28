@@ -211,9 +211,7 @@ export class TractorPlayer {
         }
 
         // 重画头像这样新任房主可将玩家请出房间
-        if (!this.IsTryingReenter) {
-            this.mainForm.NewPlayerJoined(true, true);
-        }
+        this.mainForm.NewPlayerJoined(!this.IsTryingReenter, true);
 
         if (showMessage) {
             var msgs = []

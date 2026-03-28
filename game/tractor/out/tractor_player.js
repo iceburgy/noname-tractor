@@ -173,9 +173,7 @@ var TractorPlayer = /** @class */ (function () {
             this.mainForm.gameScene.ui.roomOwnerText.innerHTML = "\u623F\u4E3B\uFF1A".concat(this.mainForm.gameScene.hidePlayerID ? "" : roomSetting.RoomOwner);
         }
         // 重画头像这样新任房主可将玩家请出房间
-        if (!this.IsTryingReenter) {
-            this.mainForm.NewPlayerJoined(true, true);
-        }
+        this.mainForm.NewPlayerJoined(!this.IsTryingReenter, true);
         if (showMessage) {
             var msgs = [];
             if (roomSetting.DisplaySignalCardInfo) {

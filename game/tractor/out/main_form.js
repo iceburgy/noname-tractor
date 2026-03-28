@@ -226,7 +226,6 @@ var MainForm = /** @class */ (function () {
         }
         // btnPauseOrContinueGame
         if (shouldReDrawBtnPauseOrContinueGame) {
-            // only do this if the call comes from NotifyRoomSetting
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner === this.tractorPlayer.MyOwnId) {
                 var btnName_1 = this.tractorPlayer.CurrentRoomSetting.secondsToShowCards == 0 ? "继续" : "暂停";
                 if (!this.gameScene.ui.btnPauseOrContinueGame) {
