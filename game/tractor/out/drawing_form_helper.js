@@ -771,12 +771,9 @@ var DrawingFormHelper = /** @class */ (function () {
                 }
             }
         }
-        this.mainForm.SelectedCards.length = 0;
         for (var k = 0; k < crlength; k++) {
             var toAddImage = this.mainForm.gameScene.cardImages[k];
             if (this.mainForm.myCardIsReady[k]) {
-                var toAddCardNumber = parseInt(toAddImage.getAttribute("serverCardNumber"));
-                this.mainForm.SelectedCards.push(toAddCardNumber);
                 //将选定的牌向上提升 via gameScene.cardImages
                 if (!toAddImage || !toAddImage.getAttribute("status") || toAddImage.getAttribute("status") === "down") {
                     toAddImage.setAttribute("status", "up");
