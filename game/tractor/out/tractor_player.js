@@ -23,7 +23,6 @@ var TractorPlayer = /** @class */ (function () {
         this.MyOwnId = mf.gameScene.playerName;
         this.isObserver = false;
         this.IsTryingReenter = false;
-        this.IsOtherTryingReenter = false;
         this.IsTryingResumeGame = false;
         this.ShowLastTrickCards = false;
         this.CurrentGameState = new GameState();
@@ -160,9 +159,6 @@ var TractorPlayer = /** @class */ (function () {
             this.mainForm.ReenterOrResumeOrObservePlayerByIDEvent(true);
             this.IsTryingReenter = false;
             this.IsTryingResumeGame = false;
-        }
-        if (this.IsOtherTryingReenter) {
-            this.IsOtherTryingReenter = false;
         }
     };
     TractorPlayer.prototype.NotifyRoomSetting = function (roomSetting, showMessage) {
@@ -316,7 +312,7 @@ var TractorPlayer = /** @class */ (function () {
         if (this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.Playing) {
             this.mainForm.setStartLabels();
         }
-        if (this.IsOtherTryingReenter || this.IsTryingReenter || this.IsTryingResumeGame)
+        if (this.IsTryingReenter || this.IsTryingResumeGame)
             return;
         if (this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending || this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.SpecialEnding) {
             return;
@@ -448,9 +444,6 @@ var TractorPlayer = /** @class */ (function () {
             else if (m.includes(CommonMethods.reenterRoomSignal)) {
                 if (m.includes("\u3010".concat(this.MyOwnId, "\u3011"))) {
                     this.IsTryingReenter = true;
-                }
-                else {
-                    this.IsOtherTryingReenter = true;
                 }
             }
             else if (m == CommonMethods.resumeGameSignal) {

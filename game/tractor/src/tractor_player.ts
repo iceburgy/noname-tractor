@@ -28,7 +28,6 @@ export class TractorPlayer {
     public MyOwnId: string
     public isObserver: boolean
     public IsTryingReenter: boolean
-    public IsOtherTryingReenter: boolean
     public IsTryingResumeGame: boolean
     public ShowLastTrickCards: boolean
 
@@ -50,7 +49,6 @@ export class TractorPlayer {
         this.MyOwnId = mf.gameScene.playerName
         this.isObserver = false
         this.IsTryingReenter = false
-        this.IsOtherTryingReenter = false
         this.IsTryingResumeGame = false
         this.ShowLastTrickCards = false
         this.CurrentGameState = new GameState()
@@ -195,9 +193,6 @@ export class TractorPlayer {
             this.mainForm.ReenterOrResumeOrObservePlayerByIDEvent(true)
             this.IsTryingReenter = false;
             this.IsTryingResumeGame = false;
-        }
-        if (this.IsOtherTryingReenter) {
-            this.IsOtherTryingReenter = false;
         }
     }
 
@@ -367,7 +362,7 @@ export class TractorPlayer {
         if (this.CurrentHandState.CurrentHandStep >= SuitEnums.HandStep.Playing) {
             this.mainForm.setStartLabels();
         }
-        if (this.IsOtherTryingReenter || this.IsTryingReenter || this.IsTryingResumeGame) return;
+        if (this.IsTryingReenter || this.IsTryingResumeGame) return;
 
         if (this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.Ending || this.CurrentHandState.CurrentHandStep == SuitEnums.HandStep.SpecialEnding) {
             return;
@@ -514,8 +509,6 @@ export class TractorPlayer {
             else if (m.includes(CommonMethods.reenterRoomSignal)) {
                 if (m.includes(`【${this.MyOwnId}】`)) {
                     this.IsTryingReenter = true;
-                } else {
-                    this.IsOtherTryingReenter = true;
                 }
             }
             else if (m == CommonMethods.resumeGameSignal) {
