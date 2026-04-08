@@ -24,6 +24,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 			ui.avatarResourcesChanged = false;
 			ui.avatarResources = {};
 			ui.fullSkinInfoResources = {};
+			ui.criticalResourceLoaded = false;
 
 			ui.audioResources = {
 				"liangpai_m_shelie1": ["effect", "liangpai_m_shelie1"],
@@ -227,6 +228,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 							IDBHelper.SaveAvatarResources(ui.avatarResources, () => { });
 						});
 					}
+					ui.criticalResourceLoaded = true;
+					updateButtonStatus();
 					return;
 				}
 
@@ -351,6 +354,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				ui.passwordnode = nodePassword;
 
 				var connect = function (e) {
+					if (document.getElementById("btnEnterHall").classList.contains('disabled')) return;
 					loadAudioPool();
 
 					var isEnterHallDisabled = ui.ipbutton.classList.contains('disabled');
@@ -397,7 +401,8 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 					}
 				};
 
-				var button = ui.create.div('.menubutton.highlight.large.pointerdiv.disabled', '进入大厅', connect);
+				var button = ui.create.div('.menubutton.highlight.large.disabled', '进入大厅', connect);
+				button.id = "btnEnterHall";
 				button.style.left = 'calc(50% - 70px)';
 				button.style.top = 'calc(56%)';
 				ui.window.appendChild(button);
@@ -511,33 +516,46 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				document.getElementById("inputAccessKeyLink").addEventListener('click', displayButton);
 
 				updateButtonStatus = function () {
+					if (!ui.criticalResourceLoaded) {
+						button.classList.add('disabled');
+						button.classList.remove('pointerdiv');
+						return;
+					}
 					switch (button.innerHTML) {
 						case '进入大厅':
 							if (!nodePlayerName.value || !nodePassword.value) {
 								button.classList.add('disabled');
+								button.classList.remove('pointerdiv');
 							} else {
 								button.classList.remove('disabled');
+								button.classList.add('pointerdiv');
 							}
 							break;
 						case '注册用户':
 							if (!nodePlayerName.value || !nodePassword.value || !nodeEmail.value) {
 								button.classList.add('disabled');
+								button.classList.remove('pointerdiv');
 							} else {
 								button.classList.remove('disabled');
+								button.classList.add('pointerdiv');
 							}
 							break;
 						case '找回密码':
 							if (!nodePlayerName.value || !nodeEmail.value) {
 								button.classList.add('disabled');
+								button.classList.remove('pointerdiv');
 							} else {
 								button.classList.remove('disabled');
+								button.classList.add('pointerdiv');
 							}
 							break;
 						case '找回用户名':
 							if (!nodeEmail.value) {
 								button.classList.add('disabled');
+								button.classList.remove('pointerdiv');
 							} else {
 								button.classList.remove('disabled');
+								button.classList.add('pointerdiv');
 							}
 							break;
 						default:
