@@ -1491,11 +1491,7 @@ var MainForm = /** @class */ (function () {
     MainForm.prototype.emojiSubmitEventhandler = function () {
         var emojiType = -1;
         var emojiIndex = -1;
-        var msgString = this.gameScene.ui.textAreaChatMsg.value;
-        if (msgString) {
-            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
-        }
-        this.gameScene.ui.textAreaChatMsg.value = "";
+        var msgString = "";
         if (!msgString) {
             msgString = this.gameScene.ui.selectPresetMsgs.value;
             emojiType = this.gameScene.ui.selectPresetMsgs.selectedIndex;
@@ -2006,10 +2002,10 @@ var MainForm = /** @class */ (function () {
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
         var divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.bottom = 'calc(100px + 3em)';
+        divChatHistory.style.bottom = 'calc(90px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.bottom = 'calc(50px + 3em + 20px)';
+        selectChatPresetMsgs.style.bottom = 'calc(50px)';
         selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.style.width = 'calc(100% - 55px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
@@ -2027,7 +2023,7 @@ var MainForm = /** @class */ (function () {
             _this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
         });
         var btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', function () { return _this.sendPresetMsgs(selectChatPresetMsgs); });
-        btnSendChat.style.bottom = 'calc(50px + 3em + 20px - 8px)';
+        btnSendChat.style.bottom = 'calc(50px)';
         btnSendChat.style.height = 'calc(18px)';
         btnSendChat.style.width = 'calc(40px)';
         btnSendChat.style.right = 'calc(0px)';
@@ -2036,15 +2032,6 @@ var MainForm = /** @class */ (function () {
         btnSendChat.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(btnSendChat);
         this.gameScene.ui.btnSendChat = btnSendChat;
-        var textAreaChatMsg = document.createElement("textarea");
-        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = "\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7".concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u6D88\u606F\u4E3A\u7A7A\u65F6\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\u5F53\u524D\u9009\u4E2D\u7684\u5FEB\u6377\u6D88\u606F\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57/\u5B57\u6BCD\u952E");
-        textAreaChatMsg.style.resize = 'none';
-        textAreaChatMsg.style.height = '3em';
-        textAreaChatMsg.style.bottom = 'calc(50px)';
-        textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
-        frameChat.appendChild(textAreaChatMsg);
-        this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
     };
     MainForm.prototype.drawGameRoom = function () {
         var _this = this;

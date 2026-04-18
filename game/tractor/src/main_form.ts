@@ -1629,11 +1629,7 @@ export class MainForm {
     private emojiSubmitEventhandler() {
         let emojiType = -1;
         let emojiIndex = -1;
-        let msgString = this.gameScene.ui.textAreaChatMsg.value;
-        if (msgString) {
-            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
-        }
-        this.gameScene.ui.textAreaChatMsg.value = "";
+        let msgString = "";
         if (!msgString) {
             msgString = this.gameScene.ui.selectPresetMsgs.value;
             emojiType = this.gameScene.ui.selectPresetMsgs.selectedIndex;
@@ -2185,11 +2181,11 @@ export class MainForm {
 
         let divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.bottom = 'calc(100px + 3em)';
+        divChatHistory.style.bottom = 'calc(90px)';
         this.gameScene.ui.divChatHistory = divChatHistory;
 
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.bottom = 'calc(50px + 3em + 20px)';
+        selectChatPresetMsgs.style.bottom = 'calc(50px)';
         selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.style.width = 'calc(100% - 55px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
@@ -2208,7 +2204,7 @@ export class MainForm {
         });
 
         let btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', () => this.sendPresetMsgs(selectChatPresetMsgs));
-        btnSendChat.style.bottom = 'calc(50px + 3em + 20px - 8px)';
+        btnSendChat.style.bottom = 'calc(50px)';
         btnSendChat.style.height = 'calc(18px)';
         btnSendChat.style.width = 'calc(40px)';
         btnSendChat.style.right = 'calc(0px)';
@@ -2218,16 +2214,6 @@ export class MainForm {
 
         frameChat.appendChild(btnSendChat);
         this.gameScene.ui.btnSendChat = btnSendChat;
-
-        var textAreaChatMsg = document.createElement("textarea");
-        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
-        textAreaChatMsg.placeholder = `消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
-        textAreaChatMsg.style.resize = 'none';
-        textAreaChatMsg.style.height = '3em';
-        textAreaChatMsg.style.bottom = 'calc(50px)';
-        textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
-        frameChat.appendChild(textAreaChatMsg);
-        this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
     }
 
     public drawGameRoom() {

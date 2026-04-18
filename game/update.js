@@ -1,8 +1,8 @@
 window.noname_update = {
-	version: '2026.03.18',
+	version: '2026.04.18',
 	update: '2020.11.06.2',
 	changeLog: [
-		'尝试解决客户端无故掉线问题',
+		'取消聊天功能',
 	],
 	files: []
 };
