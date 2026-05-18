@@ -72,6 +72,30 @@ export class CommonMethods {
     public static distributeLast8Interval = 0.1;
     public static distributeLast8Duration = 0.5;
     public static animatedEmojiTypeLength = 7
+
+    // chat UI toggle
+    public static chatUIChangeDuration = 0.5;
+    // divChatHistory.style.bottom
+    public static divChatHistoryBottomChatToggleValues: string[] = [
+        'calc(100px + 3em)',
+        'calc(90px)'
+    ];
+    // selectChatPresetMsgs.style.bottom
+    public static selectChatPresetMsgsBottomChatToggleValues: string[] = [
+        'calc(50px + 3em + 20px)',
+        'calc(50px)'
+    ];
+    // btnSendChat.style.bottom
+    public static btnSendChatBottomChatToggleValues: string[] = [
+        'calc(50px + 3em + 20px - 8px)',
+        'calc(50px)'
+    ];
+    // textAreaChatMsg.style.display
+    public static textAreaChatMsgDisplayChatToggleValues: string[] = [
+        'inline-block',
+        'none'
+    ];
+
     public static emojiMsgs: string[] = [
         "这波操作，666！",
         "哈哈哈哈~~",
@@ -132,7 +156,7 @@ export class CommonMethods {
     public static loginSuccessFlag = "LoginSuccess";
     public static qiangliangkaCost = 3;
     public static sendBroadcastPrefix = "@all";
-    public static sendBroadcastCost = 10;
+    public static sendBroadcastCost = 3;
     public static buyNoDongtuUntilCost = 0;
     public static chatMessageCost = 0;
     public static defaultSkinInUse = "skin_questionmark";

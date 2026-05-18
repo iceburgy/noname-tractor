@@ -86,8 +86,6 @@ export class MainForm {
     public MySkinInUse: any;
     public MySkinFrame: any;
 
-    public selectPresetMsgsIsOpen: boolean = false;
-
     // replay stuff
     public currentReplayEntities!: any[]
     public selectDates: any
@@ -1438,6 +1436,16 @@ export class MainForm {
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
+            let cbxEnableChat: any = document.getElementById("cbxEnableChat");
+            cbxEnableChat.checked = this.tractorPlayer.CurrentRoomSetting.EnableChat;
+            cbxEnableChat.onchange = () => {
+                this.tractorPlayer.CurrentRoomSetting.EnableChat = cbxEnableChat.checked;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
+                // we have to explicitly call toggleChatUI because this.tractorPlayer.CurrentRoomSetting.EnableChat has already been changed to the new value
+                // hence notify room setting won't detect the value change, and won't trigger toggleChatUI any more
+                this.toggleChatUI();
+            };
+
             let selectIsGameCasual: any = document.getElementById("selectIsGameCasual");
             selectIsGameCasual.value = this.tractorPlayer.CurrentRoomSetting.IsGameCasual;
             selectIsGameCasual.onchange = () => {
@@ -1567,6 +1575,21 @@ export class MainForm {
         }
     }
 
+    public toggleChatUI() {
+        if (this.gameScene.isInGameRoom() && !this.tractorPlayer.CurrentRoomSetting.EnableChat) {
+            this.gameScene.ui.textAreaChatMsg.value = "";
+        }
+        let chatUIToggleIndex = this.gameScene.isInGameRoom() ? (this.tractorPlayer.CurrentRoomSetting.EnableChat ? 0 : 1) : 0;
+        this.gameScene.ui.divChatHistory.style.bottom = CommonMethods.divChatHistoryBottomChatToggleValues[chatUIToggleIndex];
+        this.gameScene.ui.selectPresetMsgs.style.bottom = CommonMethods.selectChatPresetMsgsBottomChatToggleValues[chatUIToggleIndex];
+        this.gameScene.ui.btnSendChat.style.bottom = CommonMethods.btnSendChatBottomChatToggleValues[chatUIToggleIndex];
+        // delay if chat is changed from disabled to enabled
+        let timeoutDelay = chatUIToggleIndex == 0 ? CommonMethods.chatUIChangeDuration : 0;
+        setTimeout(() => {
+            this.gameScene.ui.textAreaChatMsg.style.display = CommonMethods.textAreaChatMsgDisplayChatToggleValues[chatUIToggleIndex];
+        }, timeoutDelay * 1000);
+    }
+
     public isNoDongtuUntilExpired(daojuInfo: any): boolean {
         if (!daojuInfo || !daojuInfo.daojuInfoByPlayer || !daojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil) return true;
         let dExp = new Date(daojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil);
@@ -1610,26 +1633,14 @@ export class MainForm {
         window.location.reload()
     }
 
-    private handleSelectPresetMsgsClick(selectPresetMsgs: any) {
-        if (this.selectPresetMsgsIsOpen) {
-            this.selectPresetMsgsIsOpen = false;
-            this.sendPresetMsgs(selectPresetMsgs);
-        } else {
-            this.selectPresetMsgsIsOpen = true;
-        }
-    }
-
-    private sendPresetMsgs(selectPresetMsgs: any) {
-        let selectedIndex = selectPresetMsgs.selectedIndex;
-        let selectedValue = selectPresetMsgs.value;
-        let args: (string | number)[] = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-        this.sendEmojiWithCheck(args);
-    }
-
     private emojiSubmitEventhandler() {
+        let msgString = this.gameScene.ui.textAreaChatMsg.value;
+        if (msgString) {
+            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
+        }
+        this.gameScene.ui.textAreaChatMsg.value = "";
         let emojiType = -1;
         let emojiIndex = -1;
-        let msgString = "";
         if (!msgString) {
             msgString = this.gameScene.ui.selectPresetMsgs.value;
             emojiType = this.gameScene.ui.selectPresetMsgs.selectedIndex;
@@ -2179,13 +2190,17 @@ export class MainForm {
         divOnlinePlayerList.style.height = 'calc(20% - 20px)';
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
 
+        let chatUIToggleIndex = 0;
+
         let divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.bottom = 'calc(90px)';
+        divChatHistory.style.transition = `${CommonMethods.chatUIChangeDuration}s`;
+        divChatHistory.style.bottom = CommonMethods.divChatHistoryBottomChatToggleValues[chatUIToggleIndex];
         this.gameScene.ui.divChatHistory = divChatHistory;
 
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.bottom = 'calc(50px)';
+        selectChatPresetMsgs.style.transition = `${CommonMethods.chatUIChangeDuration}s`;
+        selectChatPresetMsgs.style.bottom = CommonMethods.selectChatPresetMsgsBottomChatToggleValues[chatUIToggleIndex];
         selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.style.width = 'calc(100% - 55px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
@@ -2198,13 +2213,10 @@ export class MainForm {
             option.text = `${shortCutKeyChar}-${CommonMethods.emojiMsgs[i]}`;
             selectChatPresetMsgs.appendChild(option);
         }
-        selectChatPresetMsgs.addEventListener('change', () => {
-            this.selectPresetMsgsIsOpen = true;
-            this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
-        });
 
-        let btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', () => this.sendPresetMsgs(selectChatPresetMsgs));
-        btnSendChat.style.bottom = 'calc(50px)';
+        let btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', () => this.emojiSubmitEventhandler());
+        btnSendChat.style.transition = `${CommonMethods.chatUIChangeDuration}s`;
+        btnSendChat.style.bottom = CommonMethods.btnSendChatBottomChatToggleValues[chatUIToggleIndex];
         btnSendChat.style.height = 'calc(18px)';
         btnSendChat.style.width = 'calc(40px)';
         btnSendChat.style.right = 'calc(0px)';
@@ -2214,6 +2226,17 @@ export class MainForm {
 
         frameChat.appendChild(btnSendChat);
         this.gameScene.ui.btnSendChat = btnSendChat;
+
+        var textAreaChatMsg = document.createElement("textarea");
+        textAreaChatMsg.style.display = CommonMethods.textAreaChatMsgDisplayChatToggleValues[chatUIToggleIndex];
+        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
+        textAreaChatMsg.placeholder = `消息长度不超过${CommonMethods.chatMaxLength}，按“回车键”发送，消息为空时按“回车键”发送当前选中的快捷消息，快捷消息的快捷键为对应的数字/字母键`;
+        textAreaChatMsg.style.resize = 'none';
+        textAreaChatMsg.style.height = '3em';
+        textAreaChatMsg.style.bottom = 'calc(50px)';
+        textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
+        frameChat.appendChild(textAreaChatMsg);
+        this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
     }
 
     public drawGameRoom() {
@@ -2743,6 +2766,9 @@ export class MainForm {
             btnJoinOrQuitYuezhan.style.width = '40px';
             this.gameScene.ui.frameGameHallOnliners.appendChild(btnJoinOrQuitYuezhan);
         }
+
+        // toggle chat UI
+        this.toggleChatUI();
     }
 
     private joinOrQuitYuezhan(yuezhanEntity: YuezhanEntity) {
@@ -2855,10 +2881,8 @@ export class MainForm {
                 if (emojiType !== prevSelection) {
                     this.gameScene.ui.selectPresetMsgs.selectedIndex = emojiType;
                 }
-                let emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
-                let msgString = CommonMethods.emojiMsgs[emojiType]
-                let args: (string | number)[] = [emojiType, emojiIndex, msgString];
-                this.sendEmojiWithCheck(args)
+                this.gameScene.ui.textAreaChatMsg.value = "";
+                this.emojiSubmitEventhandler();
             }
 
             if (this.gameScene.isInGameRoom()) {

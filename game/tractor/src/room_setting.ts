@@ -18,6 +18,7 @@ export class RoomSetting {
     public IsGameCasual: number
     public HideOverridingFlag: boolean
     public RandomTeamUp: boolean
+    public EnableChat: boolean
 
     constructor() {
         this.RoomName = ""
@@ -37,6 +38,7 @@ export class RoomSetting {
         this.IsGameCasual = 0
         this.HideOverridingFlag = false
         this.RandomTeamUp = false
+        this.EnableChat = false
     }
     public CloneFrom(from: RoomSetting) {
         this.RoomName = from.RoomName
@@ -56,5 +58,6 @@ export class RoomSetting {
         this.IsGameCasual = from.IsGameCasual
         this.HideOverridingFlag = from.HideOverridingFlag
         this.RandomTeamUp = from.RandomTeamUp
+        this.EnableChat = from.EnableChat
     }
 }

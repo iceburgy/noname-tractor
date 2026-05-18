@@ -612,6 +612,28 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.distributeLast8Interval = 0.1;
     CommonMethods.distributeLast8Duration = 0.5;
     CommonMethods.animatedEmojiTypeLength = 7;
+    // chat UI toggle
+    CommonMethods.chatUIChangeDuration = 0.5;
+    // divChatHistory.style.bottom
+    CommonMethods.divChatHistoryBottomChatToggleValues = [
+        'calc(100px + 3em)',
+        'calc(90px)'
+    ];
+    // selectChatPresetMsgs.style.bottom
+    CommonMethods.selectChatPresetMsgsBottomChatToggleValues = [
+        'calc(50px + 3em + 20px)',
+        'calc(50px)'
+    ];
+    // btnSendChat.style.bottom
+    CommonMethods.btnSendChatBottomChatToggleValues = [
+        'calc(50px + 3em + 20px - 8px)',
+        'calc(50px)'
+    ];
+    // textAreaChatMsg.style.display
+    CommonMethods.textAreaChatMsgDisplayChatToggleValues = [
+        'inline-block',
+        'none'
+    ];
     CommonMethods.emojiMsgs = [
         "这波操作，666！",
         "哈哈哈哈~~",
@@ -672,7 +694,7 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.loginSuccessFlag = "LoginSuccess";
     CommonMethods.qiangliangkaCost = 3;
     CommonMethods.sendBroadcastPrefix = "@all";
-    CommonMethods.sendBroadcastCost = 10;
+    CommonMethods.sendBroadcastCost = 3;
     CommonMethods.buyNoDongtuUntilCost = 0;
     CommonMethods.chatMessageCost = 0;
     CommonMethods.defaultSkinInUse = "skin_questionmark";

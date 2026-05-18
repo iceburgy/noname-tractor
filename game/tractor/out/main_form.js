@@ -44,7 +44,6 @@ var MainForm = /** @class */ (function () {
         this.firstWinBySha = 3;
         // public sgcsPlayer: SGCSPlayer;
         this.rightSideButtonDepth = 1;
-        this.selectPresetMsgsIsOpen = false;
         this.gameScene = gs;
         this.tractorPlayer = new TractorPlayer(this);
         this.drawingFormHelper = new DrawingFormHelper(this);
@@ -1307,6 +1306,15 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo = !cbxNoSignalCard_1.checked;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
+            var cbxEnableChat_1 = document.getElementById("cbxEnableChat");
+            cbxEnableChat_1.checked = this.tractorPlayer.CurrentRoomSetting.EnableChat;
+            cbxEnableChat_1.onchange = function () {
+                _this.tractorPlayer.CurrentRoomSetting.EnableChat = cbxEnableChat_1.checked;
+                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
+                // we have to explicitly call toggleChatUI because this.tractorPlayer.CurrentRoomSetting.EnableChat has already been changed to the new value
+                // hence notify room setting won't detect the value change, and won't trigger toggleChatUI any more
+                _this.toggleChatUI();
+            };
             var selectIsGameCasual_1 = document.getElementById("selectIsGameCasual");
             selectIsGameCasual_1.value = this.tractorPlayer.CurrentRoomSetting.IsGameCasual;
             selectIsGameCasual_1.onchange = function () {
@@ -1431,6 +1439,21 @@ var MainForm = /** @class */ (function () {
             }
         }
     };
+    MainForm.prototype.toggleChatUI = function () {
+        var _this = this;
+        if (this.gameScene.isInGameRoom() && !this.tractorPlayer.CurrentRoomSetting.EnableChat) {
+            this.gameScene.ui.textAreaChatMsg.value = "";
+        }
+        var chatUIToggleIndex = this.gameScene.isInGameRoom() ? (this.tractorPlayer.CurrentRoomSetting.EnableChat ? 0 : 1) : 0;
+        this.gameScene.ui.divChatHistory.style.bottom = CommonMethods.divChatHistoryBottomChatToggleValues[chatUIToggleIndex];
+        this.gameScene.ui.selectPresetMsgs.style.bottom = CommonMethods.selectChatPresetMsgsBottomChatToggleValues[chatUIToggleIndex];
+        this.gameScene.ui.btnSendChat.style.bottom = CommonMethods.btnSendChatBottomChatToggleValues[chatUIToggleIndex];
+        // delay if chat is changed from disabled to enabled
+        var timeoutDelay = chatUIToggleIndex == 0 ? CommonMethods.chatUIChangeDuration : 0;
+        setTimeout(function () {
+            _this.gameScene.ui.textAreaChatMsg.style.display = CommonMethods.textAreaChatMsgDisplayChatToggleValues[chatUIToggleIndex];
+        }, timeoutDelay * 1000);
+    };
     MainForm.prototype.isNoDongtuUntilExpired = function (daojuInfo) {
         if (!daojuInfo || !daojuInfo.daojuInfoByPlayer || !daojuInfo.daojuInfoByPlayer[this.tractorPlayer.MyOwnId].noDongtuUntil)
             return true;
@@ -1473,25 +1496,14 @@ var MainForm = /** @class */ (function () {
         }
         window.location.reload();
     };
-    MainForm.prototype.handleSelectPresetMsgsClick = function (selectPresetMsgs) {
-        if (this.selectPresetMsgsIsOpen) {
-            this.selectPresetMsgsIsOpen = false;
-            this.sendPresetMsgs(selectPresetMsgs);
-        }
-        else {
-            this.selectPresetMsgsIsOpen = true;
-        }
-    };
-    MainForm.prototype.sendPresetMsgs = function (selectPresetMsgs) {
-        var selectedIndex = selectPresetMsgs.selectedIndex;
-        var selectedValue = selectPresetMsgs.value;
-        var args = [selectedIndex, CommonMethods.GetRandomInt(CommonMethods.winEmojiLength), selectedValue];
-        this.sendEmojiWithCheck(args);
-    };
     MainForm.prototype.emojiSubmitEventhandler = function () {
+        var msgString = this.gameScene.ui.textAreaChatMsg.value;
+        if (msgString) {
+            msgString = msgString.trim().replace(/(\r\n|\n|\r)/gm, "");
+        }
+        this.gameScene.ui.textAreaChatMsg.value = "";
         var emojiType = -1;
         var emojiIndex = -1;
-        var msgString = "";
         if (!msgString) {
             msgString = this.gameScene.ui.selectPresetMsgs.value;
             emojiType = this.gameScene.ui.selectPresetMsgs.selectedIndex;
@@ -2000,12 +2012,15 @@ var MainForm = /** @class */ (function () {
         divOnlinePlayerList.style.top = 'calc(0%)';
         divOnlinePlayerList.style.height = 'calc(20% - 20px)';
         this.gameScene.ui.divOnlinePlayerList = divOnlinePlayerList;
+        var chatUIToggleIndex = 0;
         var divChatHistory = this.gameScene.ui.create.div('.chatcomp.chatcompwithpadding.chattextdiv', frameChat);
         divChatHistory.style.top = 'calc(20%)';
-        divChatHistory.style.bottom = 'calc(90px)';
+        divChatHistory.style.transition = "".concat(CommonMethods.chatUIChangeDuration, "s");
+        divChatHistory.style.bottom = CommonMethods.divChatHistoryBottomChatToggleValues[chatUIToggleIndex];
         this.gameScene.ui.divChatHistory = divChatHistory;
         var selectChatPresetMsgs = document.createElement("select");
-        selectChatPresetMsgs.style.bottom = 'calc(50px)';
+        selectChatPresetMsgs.style.transition = "".concat(CommonMethods.chatUIChangeDuration, "s");
+        selectChatPresetMsgs.style.bottom = CommonMethods.selectChatPresetMsgsBottomChatToggleValues[chatUIToggleIndex];
         selectChatPresetMsgs.style.height = 'calc(30px)';
         selectChatPresetMsgs.style.width = 'calc(100% - 55px)';
         selectChatPresetMsgs.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
@@ -2018,12 +2033,9 @@ var MainForm = /** @class */ (function () {
             option.text = "".concat(shortCutKeyChar, "-").concat(CommonMethods.emojiMsgs[i]);
             selectChatPresetMsgs.appendChild(option);
         }
-        selectChatPresetMsgs.addEventListener('change', function () {
-            _this.selectPresetMsgsIsOpen = true;
-            _this.handleSelectPresetMsgsClick(selectChatPresetMsgs);
-        });
-        var btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', function () { return _this.sendPresetMsgs(selectChatPresetMsgs); });
-        btnSendChat.style.bottom = 'calc(50px)';
+        var btnSendChat = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv', '发送', function () { return _this.emojiSubmitEventhandler(); });
+        btnSendChat.style.transition = "".concat(CommonMethods.chatUIChangeDuration, "s");
+        btnSendChat.style.bottom = CommonMethods.btnSendChatBottomChatToggleValues[chatUIToggleIndex];
         btnSendChat.style.height = 'calc(18px)';
         btnSendChat.style.width = 'calc(40px)';
         btnSendChat.style.right = 'calc(0px)';
@@ -2032,6 +2044,16 @@ var MainForm = /** @class */ (function () {
         btnSendChat.classList.add('chatcomp', 'chatcompwithoutpadding', 'chatinput');
         frameChat.appendChild(btnSendChat);
         this.gameScene.ui.btnSendChat = btnSendChat;
+        var textAreaChatMsg = document.createElement("textarea");
+        textAreaChatMsg.style.display = CommonMethods.textAreaChatMsgDisplayChatToggleValues[chatUIToggleIndex];
+        textAreaChatMsg.maxLength = CommonMethods.chatMaxLength;
+        textAreaChatMsg.placeholder = "\u6D88\u606F\u957F\u5EA6\u4E0D\u8D85\u8FC7".concat(CommonMethods.chatMaxLength, "\uFF0C\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\uFF0C\u6D88\u606F\u4E3A\u7A7A\u65F6\u6309\u201C\u56DE\u8F66\u952E\u201D\u53D1\u9001\u5F53\u524D\u9009\u4E2D\u7684\u5FEB\u6377\u6D88\u606F\uFF0C\u5FEB\u6377\u6D88\u606F\u7684\u5FEB\u6377\u952E\u4E3A\u5BF9\u5E94\u7684\u6570\u5B57/\u5B57\u6BCD\u952E");
+        textAreaChatMsg.style.resize = 'none';
+        textAreaChatMsg.style.height = '3em';
+        textAreaChatMsg.style.bottom = 'calc(50px)';
+        textAreaChatMsg.classList.add('chatcomp', 'chatcompwithpadding', 'chatinput');
+        frameChat.appendChild(textAreaChatMsg);
+        this.gameScene.ui.textAreaChatMsg = textAreaChatMsg;
     };
     MainForm.prototype.drawGameRoom = function () {
         var _this = this;
@@ -2524,6 +2546,8 @@ var MainForm = /** @class */ (function () {
         for (var i = 0; i < yuezhanList.length; i++) {
             _loop_3(i);
         }
+        // toggle chat UI
+        this.toggleChatUI();
     };
     MainForm.prototype.joinOrQuitYuezhan = function (yuezhanEntity) {
         this.gameScene.sendMessageToServer(CommonMethods.SendJoinOrQuitYuezhan_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(yuezhanEntity));
@@ -2629,10 +2653,8 @@ var MainForm = /** @class */ (function () {
                 if (emojiType !== prevSelection) {
                     _this.gameScene.ui.selectPresetMsgs.selectedIndex = emojiType;
                 }
-                var emojiIndex = CommonMethods.GetRandomInt(CommonMethods.winEmojiLength);
-                var msgString = CommonMethods.emojiMsgs[emojiType];
-                var args = [emojiType, emojiIndex, msgString];
-                _this.sendEmojiWithCheck(args);
+                _this.gameScene.ui.textAreaChatMsg.value = "";
+                _this.emojiSubmitEventhandler();
             }
             if (_this.gameScene.isInGameRoom()) {
                 switch (keyCode) {
