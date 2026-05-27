@@ -36,6 +36,7 @@ const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
 const CardsReady_REQUEST = "CardsReady"
 const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
 const SaveRoomSetting_REQUEST = "SaveRoomSetting"
+const SaveRoomSettingWithPwd_REQUEST = "SaveRoomSettingWithPwd"
 const SetRankByTeam_REQUEST = "SetRankByTeam"
 const SetStarter_REQUEST = "SetStarter"
 const RandomSeat_REQUEST = "RandomSeat"
@@ -1436,14 +1437,17 @@ export class MainForm {
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
             };
 
-            let cbxEnableChat: any = document.getElementById("cbxEnableChat");
-            cbxEnableChat.checked = this.tractorPlayer.CurrentRoomSetting.EnableChat;
-            cbxEnableChat.onchange = () => {
-                this.tractorPlayer.CurrentRoomSetting.EnableChat = cbxEnableChat.checked;
-                gs.sendMessageToServer(SaveRoomSetting_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify(this.tractorPlayer.CurrentRoomSetting));
-                // we have to explicitly call toggleChatUI because this.tractorPlayer.CurrentRoomSetting.EnableChat has already been changed to the new value
-                // hence notify room setting won't detect the value change, and won't trigger toggleChatUI any more
-                this.toggleChatUI();
+            let btnEnableChat: any = document.getElementById("btnEnableChat");
+            btnEnableChat.value = this.tractorPlayer.CurrentRoomSetting.EnableChat ? "关闭聊天" : "开启聊天";
+            btnEnableChat.onclick = () => {
+                let adminPwd: string | null = window.prompt("请输入管理员密码", "");
+                if (adminPwd) {
+                    let newRoomSetting = new RoomSetting();
+                    newRoomSetting.CloneFrom(this.tractorPlayer.CurrentRoomSetting);
+                    newRoomSetting.EnableChat = !newRoomSetting.EnableChat;
+                    gs.sendMessageToServer(SaveRoomSettingWithPwd_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([JSON.stringify(newRoomSetting), adminPwd]));
+                }
+                this.resetGameRoomUI();
             };
 
             let selectIsGameCasual: any = document.getElementById("selectIsGameCasual");
@@ -1492,7 +1496,7 @@ export class MainForm {
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
-                cbxEnableChat.disabled = true;
+                btnEnableChat.disabled = true;
                 selectIsGameCasual.disabled = true;
                 selectSecondsToShowCards.disabled = true;
                 selectSecondsToDiscardCards.disabled = true;

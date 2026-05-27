@@ -1,3 +1,4 @@
+import { RoomSetting } from './room_setting.js';
 import { CurrentPoker } from './current_poker.js';
 import { GameState } from './game_state.js';
 import { CurrentHandState } from './current_hand_state.js';
@@ -28,6 +29,7 @@ var ValidateDumpingCards_REQUEST = "ValidateDumpingCards";
 var CardsReady_REQUEST = "CardsReady";
 var ResumeGameFromFile_REQUEST = "ResumeGameFromFile";
 var SaveRoomSetting_REQUEST = "SaveRoomSetting";
+var SaveRoomSettingWithPwd_REQUEST = "SaveRoomSettingWithPwd";
 var SetRankByTeam_REQUEST = "SetRankByTeam";
 var SetStarter_REQUEST = "SetStarter";
 var RandomSeat_REQUEST = "RandomSeat";
@@ -1306,14 +1308,17 @@ var MainForm = /** @class */ (function () {
                 _this.tractorPlayer.CurrentRoomSetting.DisplaySignalCardInfo = !cbxNoSignalCard_1.checked;
                 gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
             };
-            var cbxEnableChat_1 = document.getElementById("cbxEnableChat");
-            cbxEnableChat_1.checked = this.tractorPlayer.CurrentRoomSetting.EnableChat;
-            cbxEnableChat_1.onchange = function () {
-                _this.tractorPlayer.CurrentRoomSetting.EnableChat = cbxEnableChat_1.checked;
-                gs.sendMessageToServer(SaveRoomSetting_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify(_this.tractorPlayer.CurrentRoomSetting));
-                // we have to explicitly call toggleChatUI because this.tractorPlayer.CurrentRoomSetting.EnableChat has already been changed to the new value
-                // hence notify room setting won't detect the value change, and won't trigger toggleChatUI any more
-                _this.toggleChatUI();
+            var btnEnableChat = document.getElementById("btnEnableChat");
+            btnEnableChat.value = this.tractorPlayer.CurrentRoomSetting.EnableChat ? "关闭聊天" : "开启聊天";
+            btnEnableChat.onclick = function () {
+                var adminPwd = window.prompt("请输入管理员密码", "");
+                if (adminPwd) {
+                    var newRoomSetting = new RoomSetting();
+                    newRoomSetting.CloneFrom(_this.tractorPlayer.CurrentRoomSetting);
+                    newRoomSetting.EnableChat = !newRoomSetting.EnableChat;
+                    gs.sendMessageToServer(SaveRoomSettingWithPwd_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([JSON.stringify(newRoomSetting), adminPwd]));
+                }
+                _this.resetGameRoomUI();
             };
             var selectIsGameCasual_1 = document.getElementById("selectIsGameCasual");
             selectIsGameCasual_1.value = this.tractorPlayer.CurrentRoomSetting.IsGameCasual;
@@ -1355,7 +1360,7 @@ var MainForm = /** @class */ (function () {
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
-                cbxEnableChat_1.disabled = true;
+                btnEnableChat.disabled = true;
                 selectIsGameCasual_1.disabled = true;
                 selectSecondsToShowCards_1.disabled = true;
                 selectSecondsToDiscardCards_1.disabled = true;
