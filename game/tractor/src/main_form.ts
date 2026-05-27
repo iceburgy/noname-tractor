@@ -1492,6 +1492,7 @@ export class MainForm {
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
+                cbxEnableChat.disabled = true;
                 selectIsGameCasual.disabled = true;
                 selectSecondsToShowCards.disabled = true;
                 selectSecondsToDiscardCards.disabled = true;

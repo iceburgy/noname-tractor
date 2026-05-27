@@ -1355,6 +1355,7 @@ var MainForm = /** @class */ (function () {
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
+                cbxEnableChat_1.disabled = true;
                 selectIsGameCasual_1.disabled = true;
                 selectSecondsToShowCards_1.disabled = true;
                 selectSecondsToDiscardCards_1.disabled = true;
