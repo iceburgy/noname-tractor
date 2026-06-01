@@ -1,4 +1,13 @@
 {
+    "skin_autobot": {
+        "skinName": "skin_autobot",
+        "skinSex": "m",
+        "skinDesc": "机器人",
+        "skinType": 0,
+        "skinCost": 0,
+        "skinExpiration": "3021-12-22T18:53:16.1786133-08:00",
+        "isSkinExpired": false
+    },
     "skin_questionmark": {
         "skinName": "skin_questionmark",
         "skinSex": "m",

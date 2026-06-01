@@ -14,6 +14,7 @@ export class PlayerEntity {
     public Team: number
     public IsReadyToStart: boolean
     public IsRobot: boolean
+    public IsAutobot: boolean
     public IsQiangliang: boolean
     public IsOffline: boolean
     public Observers: string[]
@@ -25,6 +26,7 @@ export class PlayerEntity {
         this.Team = 0
         this.IsReadyToStart = false
         this.IsRobot = false
+        this.IsAutobot = false
         this.IsQiangliang = false
         this.IsOffline = false
         this.Observers = []
@@ -37,6 +39,7 @@ export class PlayerEntity {
         this.Team = from.Team
         this.IsReadyToStart = from.IsReadyToStart
         this.IsRobot = from.IsRobot
+        this.IsAutobot = from.IsAutobot
         this.IsQiangliang = from.IsQiangliang
         this.IsOffline = from.IsOffline
         this.Observers = CommonMethods.deepCopy<string[]>(from.Observers)

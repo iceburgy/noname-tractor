@@ -29,6 +29,7 @@ var ValidateDumpingCards_REQUEST = "ValidateDumpingCards";
 var CardsReady_REQUEST = "CardsReady";
 var ResumeGameFromFile_REQUEST = "ResumeGameFromFile";
 var SaveRoomSetting_REQUEST = "SaveRoomSetting";
+var ToggleRobotPlayer_REQUEST = "ToggleRobotPlayer";
 var SaveRoomSettingWithPwd_REQUEST = "SaveRoomSettingWithPwd";
 var SetRankByTeam_REQUEST = "SetRankByTeam";
 var SetStarter_REQUEST = "SetStarter";
@@ -304,7 +305,7 @@ var MainForm = /** @class */ (function () {
             }
             else {
                 if (shouldReDrawChairOrPlayer) {
-                    //skin                
+                    //skin
                     var skinInUse = this_1.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this_1.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
                     if (i !== 0) {
                         var playerUI = this_1.CreatePlayer(i, p.PlayerId, this_1.gameScene.ui.frameGameRoom);
@@ -1296,6 +1297,37 @@ var MainForm = /** @class */ (function () {
             }
         };
         if (gs.isInGameRoom()) {
+            // robot controls
+            var roomID_1 = parseInt(this.tractorPlayer.CurrentRoomSetting.RoomName, 10);
+            var cbxBringRobotR0_1 = document.getElementById("cbxBringRobotR0");
+            cbxBringRobotR0_1.disabled = this.tractorPlayer.CurrentGameState.Players[0] && !this.tractorPlayer.CurrentGameState.Players[0].IsAutobot;
+            cbxBringRobotR0_1.checked = this.tractorPlayer.CurrentGameState.Players[0] && this.tractorPlayer.CurrentGameState.Players[0].IsAutobot;
+            cbxBringRobotR0_1.onchange = function () {
+                var isRobot = cbxBringRobotR0_1.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 0, isRobot]));
+            };
+            var cbxBringRobotR1_1 = document.getElementById("cbxBringRobotR1");
+            cbxBringRobotR1_1.disabled = this.tractorPlayer.CurrentGameState.Players[1] && !this.tractorPlayer.CurrentGameState.Players[1].IsAutobot;
+            cbxBringRobotR1_1.checked = this.tractorPlayer.CurrentGameState.Players[1] && this.tractorPlayer.CurrentGameState.Players[1].IsAutobot;
+            cbxBringRobotR1_1.onchange = function () {
+                var isRobot = cbxBringRobotR1_1.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 1, isRobot]));
+            };
+            var cbxBringRobotR2_1 = document.getElementById("cbxBringRobotR2");
+            cbxBringRobotR2_1.disabled = this.tractorPlayer.CurrentGameState.Players[2] && !this.tractorPlayer.CurrentGameState.Players[2].IsAutobot;
+            cbxBringRobotR2_1.checked = this.tractorPlayer.CurrentGameState.Players[2] && this.tractorPlayer.CurrentGameState.Players[2].IsAutobot;
+            cbxBringRobotR2_1.onchange = function () {
+                var isRobot = cbxBringRobotR2_1.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 2, isRobot]));
+            };
+            var cbxBringRobotR3_1 = document.getElementById("cbxBringRobotR3");
+            cbxBringRobotR3_1.disabled = this.tractorPlayer.CurrentGameState.Players[3] && !this.tractorPlayer.CurrentGameState.Players[3].IsAutobot;
+            cbxBringRobotR3_1.checked = this.tractorPlayer.CurrentGameState.Players[3] && this.tractorPlayer.CurrentGameState.Players[3].IsAutobot;
+            cbxBringRobotR3_1.onchange = function () {
+                var isRobot = cbxBringRobotR3_1.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 3, isRobot]));
+            };
+            // robot controls end
             var cbxNoOverridingFlag_1 = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag_1.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
             cbxNoOverridingFlag_1.onchange = function () {
@@ -1358,6 +1390,10 @@ var MainForm = /** @class */ (function () {
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+                cbxBringRobotR0_1.disabled = true;
+                cbxBringRobotR1_1.disabled = true;
+                cbxBringRobotR2_1.disabled = true;
+                cbxBringRobotR3_1.disabled = true;
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
                 btnEnableChat.disabled = true;
@@ -1477,7 +1513,7 @@ var MainForm = /** @class */ (function () {
         else if (!this.DaojuInfo.daojuInfoByPlayer.hasOwnProperty(pid)) {
             console.log("this.DaojuInfo.daojuInfoByPlayer is missing playerID as key: ".concat(pid));
         }
-        if (this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
+        if (this.DaojuInfo.daojuInfoByPlayer[pid] && this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
             var dBanned = new Date(this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil);
             var dNow = new Date();
             return dNow < dBanned;
@@ -2880,11 +2916,13 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = playersInGameHall[i];
-                var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
-                var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
-                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
-                this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                if (this.DaojuInfo.daojuInfoByPlayer[pid]) {
+                    var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                    var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                    var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
+                    d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
+                    this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                }
             }
         }
         // players in game room playing or observing
@@ -2903,12 +2941,14 @@ var MainForm = /** @class */ (function () {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 var pid = players[i];
-                var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
-                var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                var isOfflineInfo = (pid in playerIsOffline) ? "-离线中" : "";
-                var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion).concat(isOfflineInfo);
-                d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
-                this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                if (this.DaojuInfo.daojuInfoByPlayer[pid]) {
+                    var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                    var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                    var isOfflineInfo = (pid in playerIsOffline) ? "-离线中" : "";
+                    var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion).concat(isOfflineInfo);
+                    d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
+                    this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                }
             }
             if (obs && obs.length > 0) {
                 var headerGameRoomObserving = document.createElement("p");
@@ -2920,11 +2960,13 @@ var MainForm = /** @class */ (function () {
                     d.style.position = 'static';
                     d.style.display = 'block';
                     var pid = obs[i];
-                    var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
-                    var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                    var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
-                    d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
-                    this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                    if (this.DaojuInfo.daojuInfoByPlayer[pid]) {
+                        var noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                        var clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                        var pidInfo = "".concat(pid).concat(noChat).concat(clientVersion);
+                        d.innerText = "\u3010".concat(pidInfo, "\u3011\u5347\u5E01\uFF1A").concat(this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi);
+                        this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                    }
                 }
             }
         }

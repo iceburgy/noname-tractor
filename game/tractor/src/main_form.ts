@@ -36,6 +36,7 @@ const ValidateDumpingCards_REQUEST = "ValidateDumpingCards"
 const CardsReady_REQUEST = "CardsReady"
 const ResumeGameFromFile_REQUEST = "ResumeGameFromFile"
 const SaveRoomSetting_REQUEST = "SaveRoomSetting"
+const ToggleRobotPlayer_REQUEST = "ToggleRobotPlayer"
 const SaveRoomSettingWithPwd_REQUEST = "SaveRoomSettingWithPwd"
 const SetRankByTeam_REQUEST = "SetRankByTeam"
 const SetStarter_REQUEST = "SetStarter"
@@ -366,7 +367,7 @@ export class MainForm {
                 }
             } else {
                 if (shouldReDrawChairOrPlayer) {
-                    //skin                
+                    //skin
                     let skinInUse = this.DaojuInfo.daojuInfoByPlayer[p.PlayerId] ? this.DaojuInfo.daojuInfoByPlayer[p.PlayerId].skinInUse : CommonMethods.defaultSkinInUse;
                     if (i !== 0) {
                         let playerUI = this.CreatePlayer(i, p.PlayerId, this.gameScene.ui.frameGameRoom);
@@ -1423,6 +1424,38 @@ export class MainForm {
         }
 
         if (gs.isInGameRoom()) {
+            // robot controls
+            let roomID: number = parseInt(this.tractorPlayer.CurrentRoomSetting.RoomName, 10);
+            let cbxBringRobotR0: any = document.getElementById("cbxBringRobotR0");
+            cbxBringRobotR0.disabled = this.tractorPlayer.CurrentGameState.Players[0] && !this.tractorPlayer.CurrentGameState.Players[0].IsAutobot;
+            cbxBringRobotR0.checked = this.tractorPlayer.CurrentGameState.Players[0] && this.tractorPlayer.CurrentGameState.Players[0].IsAutobot;
+            cbxBringRobotR0.onchange = () => {
+                let isRobot: number = cbxBringRobotR0.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 0, isRobot]));
+            };
+            let cbxBringRobotR1: any = document.getElementById("cbxBringRobotR1");
+            cbxBringRobotR1.disabled = this.tractorPlayer.CurrentGameState.Players[1] && !this.tractorPlayer.CurrentGameState.Players[1].IsAutobot;
+            cbxBringRobotR1.checked = this.tractorPlayer.CurrentGameState.Players[1] && this.tractorPlayer.CurrentGameState.Players[1].IsAutobot;
+            cbxBringRobotR1.onchange = () => {
+                let isRobot: number = cbxBringRobotR1.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 1, isRobot]));
+            };
+            let cbxBringRobotR2: any = document.getElementById("cbxBringRobotR2");
+            cbxBringRobotR2.disabled = this.tractorPlayer.CurrentGameState.Players[2] && !this.tractorPlayer.CurrentGameState.Players[2].IsAutobot;
+            cbxBringRobotR2.checked = this.tractorPlayer.CurrentGameState.Players[2] && this.tractorPlayer.CurrentGameState.Players[2].IsAutobot;
+            cbxBringRobotR2.onchange = () => {
+                let isRobot: number = cbxBringRobotR2.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 2, isRobot]));
+            };
+            let cbxBringRobotR3: any = document.getElementById("cbxBringRobotR3");
+            cbxBringRobotR3.disabled = this.tractorPlayer.CurrentGameState.Players[3] && !this.tractorPlayer.CurrentGameState.Players[3].IsAutobot;
+            cbxBringRobotR3.checked = this.tractorPlayer.CurrentGameState.Players[3] && this.tractorPlayer.CurrentGameState.Players[3].IsAutobot;
+            cbxBringRobotR3.onchange = () => {
+                let isRobot: number = cbxBringRobotR3.checked ? 1 : 0;
+                gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 3, isRobot]));
+            };
+            // robot controls end
+
             let cbxNoOverridingFlag: any = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
             cbxNoOverridingFlag.onchange = () => {
@@ -1494,6 +1527,10 @@ export class MainForm {
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
+                cbxBringRobotR0.disabled = true;
+                cbxBringRobotR1.disabled = true;
+                cbxBringRobotR2.disabled = true;
+                cbxBringRobotR3.disabled = true;
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
                 btnEnableChat.disabled = true;
@@ -1611,7 +1648,7 @@ export class MainForm {
         } else if (!this.DaojuInfo.daojuInfoByPlayer.hasOwnProperty(pid)) {
             console.log(`this.DaojuInfo.daojuInfoByPlayer is missing playerID as key: ${pid}`);
         }
-        if (this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
+        if (this.DaojuInfo.daojuInfoByPlayer[pid] && this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil) {
             let dBanned = new Date(this.DaojuInfo.daojuInfoByPlayer[pid].noChatUntil);
             let dNow = new Date();
             return dNow < dBanned;
@@ -3120,11 +3157,13 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = playersInGameHall[i];
-                let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
-                let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                let pidInfo = `${pid}${noChat}${clientVersion}`;
-                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
-                this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                if (this.DaojuInfo.daojuInfoByPlayer[pid]) {
+                    let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                    let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                    let pidInfo = `${pid}${noChat}${clientVersion}`;
+                    d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                    this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                }
             }
         }
 
@@ -3144,12 +3183,14 @@ export class MainForm {
                 d.style.position = 'static';
                 d.style.display = 'block';
                 let pid = players[i];
-                let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
-                let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                let isOfflineInfo = (pid in playerIsOffline) ? "-离线中" : "";
-                let pidInfo = `${pid}${noChat}${clientVersion}${isOfflineInfo}`;
-                d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
-                this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                if (this.DaojuInfo.daojuInfoByPlayer[pid]) {
+                    let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                    let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                    let isOfflineInfo = (pid in playerIsOffline) ? "-离线中" : "";
+                    let pidInfo = `${pid}${noChat}${clientVersion}${isOfflineInfo}`;
+                    d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                    this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                }
             }
 
             if (obs && obs.length > 0) {
@@ -3162,11 +3203,13 @@ export class MainForm {
                     d.style.position = 'static';
                     d.style.display = 'block';
                     let pid = obs[i];
-                    let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
-                    let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
-                    let pidInfo = `${pid}${noChat}${clientVersion}`;
-                    d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
-                    this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                    if (this.DaojuInfo.daojuInfoByPlayer[pid]) {
+                        let noChat = this.isChatBanned(pid) ? "-禁言中" : "";
+                        let clientVersion = this.DaojuInfo.daojuInfoByPlayer[pid].clientType === CommonMethods.PLAYER_CLIENT_TYPE_shengjiweb ? "-怀旧版" : "";
+                        let pidInfo = `${pid}${noChat}${clientVersion}`;
+                        d.innerText = `【${pidInfo}】升币：${this.DaojuInfo.daojuInfoByPlayer[pid].Shengbi}`;
+                        this.gameScene.ui.divOnlinePlayerList.appendChild(d);
+                    }
                 }
             }
         }
