@@ -1327,6 +1327,27 @@ var MainForm = /** @class */ (function () {
                 var isRobot = cbxBringRobotR3_1.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 3, isRobot]));
             };
+            var btnBringRobotAll = document.getElementById("btnBringRobotAll");
+            btnBringRobotAll.onclick = function () {
+                var isBringRobot = false;
+                for (var i = 0; i < 4; i++) {
+                    var cbxBringRobotI = document.getElementById("cbxBringRobotR".concat(i));
+                    if (cbxBringRobotI.disabled)
+                        continue;
+                    if (!cbxBringRobotI.checked) {
+                        isBringRobot = true;
+                        break;
+                    }
+                }
+                for (var i = 0; i < 4; i++) {
+                    var cbxBringRobotI = document.getElementById("cbxBringRobotR".concat(i));
+                    if (cbxBringRobotI.disabled)
+                        continue;
+                    if (isBringRobot && !cbxBringRobotI.checked || !isBringRobot && cbxBringRobotI.checked) {
+                        cbxBringRobotI.click();
+                    }
+                }
+            };
             // robot controls end
             var cbxNoOverridingFlag_1 = document.getElementById("cbxNoOverridingFlag");
             cbxNoOverridingFlag_1.checked = this.tractorPlayer.CurrentRoomSetting.HideOverridingFlag;
@@ -1394,6 +1415,7 @@ var MainForm = /** @class */ (function () {
                 cbxBringRobotR1_1.disabled = true;
                 cbxBringRobotR2_1.disabled = true;
                 cbxBringRobotR3_1.disabled = true;
+                btnBringRobotAll.disabled = true;
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
                 btnEnableChat.disabled = true;

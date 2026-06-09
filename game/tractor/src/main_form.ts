@@ -1454,6 +1454,25 @@ export class MainForm {
                 let isRobot: number = cbxBringRobotR3.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 3, isRobot]));
             };
+            let btnBringRobotAll: any = document.getElementById("btnBringRobotAll");
+            btnBringRobotAll.onclick = () => {
+                let isBringRobot = false;
+                for (let i = 0; i < 4; i++) {
+                    let cbxBringRobotI: any = document.getElementById(`cbxBringRobotR${i}`);
+                    if (cbxBringRobotI.disabled) continue;
+                    if (!cbxBringRobotI.checked) {
+                        isBringRobot = true;
+                        break;
+                    }
+                }
+                for (let i = 0; i < 4; i++) {
+                    let cbxBringRobotI: any = document.getElementById(`cbxBringRobotR${i}`);
+                    if (cbxBringRobotI.disabled) continue;
+                    if (isBringRobot && !cbxBringRobotI.checked || !isBringRobot && cbxBringRobotI.checked) {
+                        cbxBringRobotI.click();
+                    }
+                }
+            };
             // robot controls end
 
             let cbxNoOverridingFlag: any = document.getElementById("cbxNoOverridingFlag");
@@ -1531,6 +1550,7 @@ export class MainForm {
                 cbxBringRobotR1.disabled = true;
                 cbxBringRobotR2.disabled = true;
                 cbxBringRobotR3.disabled = true;
+                btnBringRobotAll.disabled = true;
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
                 btnEnableChat.disabled = true;
