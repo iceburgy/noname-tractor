@@ -43,6 +43,7 @@
         <div id="divRoomSettings" style="display: none;">
             <!-- 房主专有设置：仅为房主时才可见 -->
             <p><input type="button" id="btnResumeGame" value="继续上盘牌局" /></p>
+            <p><input type="button" id="btnBringRobotAll" value="一键添加/清除所有机器人"/></p>
             <p><input type="button" id="btnRandomSeat" value="随机组队" /></p>
             <p>
                 <select id="selectSwapSeat">
@@ -52,13 +53,12 @@
                 </select>
                 <input type="button" id="btnSwapSeat" value="互换座位" />
             </p>
-        </div>
+            <p><input type="checkbox" id="cbxBringRobotR0" /><label for="cbxBringRobotR0">为1号位添加机器人</label></p>
+            <p><input type="checkbox" id="cbxBringRobotR1" /><label for="cbxBringRobotR1">为2号位添加机器人</label></p>
+            <p><input type="checkbox" id="cbxBringRobotR2" /><label for="cbxBringRobotR2">为3号位添加机器人</label></p>
+            <p><input type="checkbox" id="cbxBringRobotR3" /><label for="cbxBringRobotR3">为4号位添加机器人</label></p>
+            </div>
         <!-- 房间设置：对所有人可见，仅为房主时才可修改 -->
-        <p><input type="button" id="btnBringRobotAll" value="一键添加/清除所有机器人"/></p>
-        <p><input type="checkbox" id="cbxBringRobotR0" /><label for="cbxBringRobotR0">为1号位添加机器人</label></p>
-        <p><input type="checkbox" id="cbxBringRobotR1" /><label for="cbxBringRobotR1">为2号位添加机器人</label></p>
-        <p><input type="checkbox" id="cbxBringRobotR2" /><label for="cbxBringRobotR2">为3号位添加机器人</label></p>
-        <p><input type="checkbox" id="cbxBringRobotR3" /><label for="cbxBringRobotR3">为4号位添加机器人</label></p>
         <p><input type="button" id="btnEnableChat" value="开启聊天" /> <label for="btnEnableChat">需管理员密码</label></p>
         <p><input type="checkbox" id="cbxNoOverridingFlag" /><label for="cbxNoOverridingFlag">关闭大牌语音及画面提示</label></p>
         <p><input type="checkbox" id="cbxNoSignalCard" /><label for="cbxNoSignalCard">不打信号牌</label></p>

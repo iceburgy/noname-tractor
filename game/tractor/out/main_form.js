@@ -1411,11 +1411,6 @@ var MainForm = /** @class */ (function () {
             var divRoomSettingsWrapper = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
-                cbxBringRobotR0_1.disabled = true;
-                cbxBringRobotR1_1.disabled = true;
-                cbxBringRobotR2_1.disabled = true;
-                cbxBringRobotR3_1.disabled = true;
-                btnBringRobotAll.disabled = true;
                 cbxNoOverridingFlag_1.disabled = true;
                 cbxNoSignalCard_1.disabled = true;
                 btnEnableChat.disabled = true;

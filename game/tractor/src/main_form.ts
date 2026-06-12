@@ -1546,11 +1546,6 @@ export class MainForm {
             let divRoomSettingsWrapper: any = document.getElementById("divRoomSettingsWrapper");
             divRoomSettingsWrapper.style.display = "block";
             if (this.tractorPlayer.CurrentRoomSetting.RoomOwner !== this.tractorPlayer.MyOwnId) {
-                cbxBringRobotR0.disabled = true;
-                cbxBringRobotR1.disabled = true;
-                cbxBringRobotR2.disabled = true;
-                cbxBringRobotR3.disabled = true;
-                btnBringRobotAll.disabled = true;
                 cbxNoOverridingFlag.disabled = true;
                 cbxNoSignalCard.disabled = true;
                 btnEnableChat.disabled = true;
