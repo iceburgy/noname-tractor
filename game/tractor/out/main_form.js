@@ -1299,14 +1299,14 @@ var MainForm = /** @class */ (function () {
         if (gs.isInGameRoom()) {
             // robot controls
             var roomID_1 = parseInt(this.tractorPlayer.CurrentRoomSetting.RoomName, 10);
+            var btnBringRobotAll_1 = document.getElementById("btnBringRobotAll");
             var cbxBringRobotR0_1 = document.getElementById("cbxBringRobotR0");
             cbxBringRobotR0_1.disabled = this.tractorPlayer.CurrentGameState.Players[0] && !this.tractorPlayer.CurrentGameState.Players[0].IsAutobot;
             cbxBringRobotR0_1.checked = this.tractorPlayer.CurrentGameState.Players[0] && this.tractorPlayer.CurrentGameState.Players[0].IsAutobot;
             cbxBringRobotR0_1.onchange = function () {
                 var isRobot = cbxBringRobotR0_1.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 0, isRobot]));
-                var isBringRobot0 = _this.DecideIsBringRobot();
-                btnBringRobotAll_1.value = isBringRobot0 ? "一键添加所有机器人" : "一键清除所有机器人";
+                _this.setBtnBringRobotAllValue(btnBringRobotAll_1);
             };
             var cbxBringRobotR1_1 = document.getElementById("cbxBringRobotR1");
             cbxBringRobotR1_1.disabled = this.tractorPlayer.CurrentGameState.Players[1] && !this.tractorPlayer.CurrentGameState.Players[1].IsAutobot;
@@ -1314,8 +1314,7 @@ var MainForm = /** @class */ (function () {
             cbxBringRobotR1_1.onchange = function () {
                 var isRobot = cbxBringRobotR1_1.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 1, isRobot]));
-                var isBringRobot1 = _this.DecideIsBringRobot();
-                btnBringRobotAll_1.value = isBringRobot1 ? "一键添加所有机器人" : "一键清除所有机器人";
+                _this.setBtnBringRobotAllValue(btnBringRobotAll_1);
             };
             var cbxBringRobotR2_1 = document.getElementById("cbxBringRobotR2");
             cbxBringRobotR2_1.disabled = this.tractorPlayer.CurrentGameState.Players[2] && !this.tractorPlayer.CurrentGameState.Players[2].IsAutobot;
@@ -1323,8 +1322,7 @@ var MainForm = /** @class */ (function () {
             cbxBringRobotR2_1.onchange = function () {
                 var isRobot = cbxBringRobotR2_1.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 2, isRobot]));
-                var isBringRobot2 = _this.DecideIsBringRobot();
-                btnBringRobotAll_1.value = isBringRobot2 ? "一键添加所有机器人" : "一键清除所有机器人";
+                _this.setBtnBringRobotAllValue(btnBringRobotAll_1);
             };
             var cbxBringRobotR3_1 = document.getElementById("cbxBringRobotR3");
             cbxBringRobotR3_1.disabled = this.tractorPlayer.CurrentGameState.Players[3] && !this.tractorPlayer.CurrentGameState.Players[3].IsAutobot;
@@ -1332,24 +1330,20 @@ var MainForm = /** @class */ (function () {
             cbxBringRobotR3_1.onchange = function () {
                 var isRobot = cbxBringRobotR3_1.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, _this.tractorPlayer.MyOwnId, JSON.stringify([roomID_1, 3, isRobot]));
-                var isBringRobot3 = _this.DecideIsBringRobot();
-                btnBringRobotAll_1.value = isBringRobot3 ? "一键添加所有机器人" : "一键清除所有机器人";
+                _this.setBtnBringRobotAllValue(btnBringRobotAll_1);
             };
-            var isBringRobot_1 = this.DecideIsBringRobot();
-            var btnBringRobotAll_1 = document.getElementById("btnBringRobotAll");
-            btnBringRobotAll_1.value = isBringRobot_1 ? "一键添加所有机器人" : "一键清除所有机器人";
+            this.setBtnBringRobotAllValue(btnBringRobotAll_1);
             btnBringRobotAll_1.onclick = function () {
-                isBringRobot_1 = _this.DecideIsBringRobot();
+                var isBringRobot = _this.DecideIsBringRobot();
                 for (var i = 0; i < 4; i++) {
                     var cbxBringRobotI = document.getElementById("cbxBringRobotR".concat(i));
                     if (cbxBringRobotI.disabled)
                         continue;
-                    if (isBringRobot_1 && !cbxBringRobotI.checked || !isBringRobot_1 && cbxBringRobotI.checked) {
+                    if (isBringRobot && !cbxBringRobotI.checked || !isBringRobot && cbxBringRobotI.checked) {
                         cbxBringRobotI.click();
                     }
                 }
-                isBringRobot_1 = _this.DecideIsBringRobot();
-                btnBringRobotAll_1.value = isBringRobot_1 ? "一键添加所有机器人" : "一键清除所有机器人";
+                _this.setBtnBringRobotAllValue(btnBringRobotAll_1);
             };
             // robot controls end
             var cbxNoOverridingFlag_1 = document.getElementById("cbxNoOverridingFlag");
@@ -1500,6 +1494,10 @@ var MainForm = /** @class */ (function () {
                 // };
             }
         }
+    };
+    MainForm.prototype.setBtnBringRobotAllValue = function (btnBringRobotAll) {
+        var isBringRobot = this.DecideIsBringRobot();
+        btnBringRobotAll.value = isBringRobot ? "一键添加所有机器人" : "一键清除所有机器人";
     };
     MainForm.prototype.DecideIsBringRobot = function () {
         var isBringRobot = false;
