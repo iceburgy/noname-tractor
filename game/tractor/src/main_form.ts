@@ -1432,6 +1432,8 @@ export class MainForm {
             cbxBringRobotR0.onchange = () => {
                 let isRobot: number = cbxBringRobotR0.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 0, isRobot]));
+                let isBringRobot0 = this.DecideIsBringRobot();
+                btnBringRobotAll.value = isBringRobot0 ? "一键添加所有机器人" : "一键清除所有机器人";
             };
             let cbxBringRobotR1: any = document.getElementById("cbxBringRobotR1");
             cbxBringRobotR1.disabled = this.tractorPlayer.CurrentGameState.Players[1] && !this.tractorPlayer.CurrentGameState.Players[1].IsAutobot;
@@ -1439,6 +1441,8 @@ export class MainForm {
             cbxBringRobotR1.onchange = () => {
                 let isRobot: number = cbxBringRobotR1.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 1, isRobot]));
+                let isBringRobot1 = this.DecideIsBringRobot();
+                btnBringRobotAll.value = isBringRobot1 ? "一键添加所有机器人" : "一键清除所有机器人";
             };
             let cbxBringRobotR2: any = document.getElementById("cbxBringRobotR2");
             cbxBringRobotR2.disabled = this.tractorPlayer.CurrentGameState.Players[2] && !this.tractorPlayer.CurrentGameState.Players[2].IsAutobot;
@@ -1446,6 +1450,8 @@ export class MainForm {
             cbxBringRobotR2.onchange = () => {
                 let isRobot: number = cbxBringRobotR2.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 2, isRobot]));
+                let isBringRobot2 = this.DecideIsBringRobot();
+                btnBringRobotAll.value = isBringRobot2 ? "一键添加所有机器人" : "一键清除所有机器人";
             };
             let cbxBringRobotR3: any = document.getElementById("cbxBringRobotR3");
             cbxBringRobotR3.disabled = this.tractorPlayer.CurrentGameState.Players[3] && !this.tractorPlayer.CurrentGameState.Players[3].IsAutobot;
@@ -1453,18 +1459,14 @@ export class MainForm {
             cbxBringRobotR3.onchange = () => {
                 let isRobot: number = cbxBringRobotR3.checked ? 1 : 0;
                 gs.sendMessageToServer(ToggleRobotPlayer_REQUEST, this.tractorPlayer.MyOwnId, JSON.stringify([roomID, 3, isRobot]));
+                let isBringRobot3 = this.DecideIsBringRobot();
+                btnBringRobotAll.value = isBringRobot3 ? "一键添加所有机器人" : "一键清除所有机器人";
             };
+            let isBringRobot = this.DecideIsBringRobot();
             let btnBringRobotAll: any = document.getElementById("btnBringRobotAll");
+            btnBringRobotAll.value = isBringRobot ? "一键添加所有机器人" : "一键清除所有机器人";
             btnBringRobotAll.onclick = () => {
-                let isBringRobot = false;
-                for (let i = 0; i < 4; i++) {
-                    let cbxBringRobotI: any = document.getElementById(`cbxBringRobotR${i}`);
-                    if (cbxBringRobotI.disabled) continue;
-                    if (!cbxBringRobotI.checked) {
-                        isBringRobot = true;
-                        break;
-                    }
-                }
+                isBringRobot = this.DecideIsBringRobot();
                 for (let i = 0; i < 4; i++) {
                     let cbxBringRobotI: any = document.getElementById(`cbxBringRobotR${i}`);
                     if (cbxBringRobotI.disabled) continue;
@@ -1472,6 +1474,8 @@ export class MainForm {
                         cbxBringRobotI.click();
                     }
                 }
+                isBringRobot = this.DecideIsBringRobot();
+                btnBringRobotAll.value = isBringRobot ? "一键添加所有机器人" : "一键清除所有机器人";
             };
             // robot controls end
 
@@ -1630,6 +1634,20 @@ export class MainForm {
                 // };
             }
         }
+    }
+
+    public DecideIsBringRobot(): boolean {
+        let isBringRobot = false;
+        for (let i = 0; i < 4; i++) {
+            let cbxBringRobotI: any = document.getElementById(`cbxBringRobotR${i}`);
+            if (cbxBringRobotI.disabled)
+                continue;
+            if (!cbxBringRobotI.checked) {
+                isBringRobot = true;
+                break;
+            }
+        }
+        return isBringRobot;
     }
 
     public toggleChatUI() {
