@@ -9,6 +9,7 @@ var CurrentPoker = /** @class */ (function () {
         }
         this.Rank = rank !== undefined ? rank : 0;
         this.Trump = suit !== undefined ? suit : 0;
+        this.TrumpInt = suit;
         if (cards !== undefined) {
             var temp = cards;
             temp.forEach(function (c) {
@@ -19,6 +20,7 @@ var CurrentPoker = /** @class */ (function () {
     CurrentPoker.prototype.CloneFrom = function (cp) {
         this.Rank = cp.Rank;
         this.Trump = cp.Trump;
+        this.TrumpInt = cp.TrumpInt;
         this.Cards = CommonMethods.deepCopy(cp.Cards);
     };
     //增加一张牌

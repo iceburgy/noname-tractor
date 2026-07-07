@@ -714,5 +714,8 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.classCardProcessed = "classCardProcessed";
     CommonMethods.cardTiltHeight = 30;
     CommonMethods.cardBackIndex = 54;
+    CommonMethods.BackupGamestateFileName = "backup_gamestate.json";
+    CommonMethods.BackupHandStateFileName = "backup_HandState.json";
+    CommonMethods.BackupTrickStateFileName = "backup_TrickState.json";
     return CommonMethods;
 }());

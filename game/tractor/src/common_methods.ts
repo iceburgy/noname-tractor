@@ -181,6 +181,10 @@ export class CommonMethods {
     public static cardTiltHeight = 30;
     public static cardBackIndex = 54;
 
+    public static BackupGamestateFileName = "backup_gamestate.json"
+    public static BackupHandStateFileName = "backup_HandState.json"
+    public static BackupTrickStateFileName = "backup_TrickState.json"
+
     constructor() {
     }
 

@@ -5,10 +5,12 @@ export class GameState {
     public Players: PlayerEntity[]
     public PlayerToIP: {}
     public startNextHandStarter: PlayerEntity
+    public specialCardsTracker: any
     constructor() {
         this.Players = []
         this.PlayerToIP = {}
         this.startNextHandStarter = new PlayerEntity()
+        this.specialCardsTracker = {}
     }
 
     public CloneFrom(from: GameState) {
@@ -22,6 +24,7 @@ export class GameState {
         this.PlayerToIP = CommonMethods.deepCopy<any>(from.PlayerToIP)
         this.startNextHandStarter = new PlayerEntity()
         if (from.startNextHandStarter != undefined) this.startNextHandStarter.CloneFrom(from.startNextHandStarter)
+        this.specialCardsTracker = {}
     }
 
     public ArePlayersInSameTeam(playerId1: string, playerId2: string): boolean {

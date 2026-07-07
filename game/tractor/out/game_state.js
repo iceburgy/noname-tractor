@@ -5,6 +5,7 @@ var GameState = /** @class */ (function () {
         this.Players = [];
         this.PlayerToIP = {};
         this.startNextHandStarter = new PlayerEntity();
+        this.specialCardsTracker = {};
     }
     GameState.prototype.CloneFrom = function (from) {
         this.Players = new Array(4);
@@ -19,6 +20,7 @@ var GameState = /** @class */ (function () {
         this.startNextHandStarter = new PlayerEntity();
         if (from.startNextHandStarter != undefined)
             this.startNextHandStarter.CloneFrom(from.startNextHandStarter);
+        this.specialCardsTracker = {};
     };
     GameState.prototype.ArePlayersInSameTeam = function (playerId1, playerId2) {
         var index1 = -1;

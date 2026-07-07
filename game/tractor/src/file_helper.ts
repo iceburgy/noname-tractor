@@ -88,4 +88,26 @@ export class FileHelper {
             }, 1000)
         });
     }
+    public static DownloadFileWorker(filename: string, content: string): void {
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+    }
+
+    public static DownloadFiles(fileNames: string[], contents: string[]): void {
+        if (fileNames.length == 0 || fileNames.length != contents.length) {
+            console.log(`invalid inputs for downloadFiles, fileNames.length: ${fileNames.length}, contents.length: ${contents.length}`)
+        }
+        for (let i = 0; i < fileNames.length; i++) {
+            FileHelper.DownloadFileWorker(fileNames[i], contents[i]);
+        }
+    }
 }

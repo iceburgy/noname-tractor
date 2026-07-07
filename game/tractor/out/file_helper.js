@@ -76,6 +76,25 @@ var FileHelper = /** @class */ (function () {
             }, 1000);
         });
     };
+    FileHelper.DownloadFileWorker = function (filename, content) {
+        var blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+    FileHelper.DownloadFiles = function (fileNames, contents) {
+        if (fileNames.length == 0 || fileNames.length != contents.length) {
+            console.log("invalid inputs for downloadFiles, fileNames.length: ".concat(fileNames.length, ", contents.length: ").concat(contents.length));
+        }
+        for (var i = 0; i < fileNames.length; i++) {
+            FileHelper.DownloadFileWorker(fileNames[i], contents[i]);
+        }
+    };
     return FileHelper;
 }());
 export { FileHelper };

@@ -31,6 +31,9 @@ var CurrentHandState = /** @class */ (function () {
         this.ScoreLast8CardsBase = 0;
         this.ScoreLast8CardsMultiplier = 0;
         this.ScorePunishment = 0;
+        this.AllShowedTricks = [];
+        this.AllShowedCards = new CurrentPoker();
+        this.OnlyMeHasPair = {};
     }
     CurrentHandState.prototype.CloneFrom = function (from) {
         var _this = this;
@@ -58,6 +61,9 @@ var CurrentHandState = /** @class */ (function () {
         this.ScoreLast8CardsMultiplier = from.ScoreLast8CardsMultiplier;
         this.ScorePunishment = from.ScorePunishment;
         this.LeftCardsCount = from.LeftCardsCount;
+        this.AllShowedTricks = [];
+        this.AllShowedCards = new CurrentPoker();
+        this.OnlyMeHasPair = {};
     };
     return CurrentHandState;
 }());

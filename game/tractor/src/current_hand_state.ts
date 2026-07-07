@@ -3,6 +3,7 @@ import { TrumpState } from './trump_state.js';
 import { GameState } from './game_state.js';
 import { CurrentPoker } from './current_poker.js';
 import { CommonMethods } from './common_methods.js';
+import { CurrentTrickState } from './current_trick_state.js';
 export class CurrentHandState {
     public Id: string
     public PlayerHoldingCards: any
@@ -23,6 +24,9 @@ export class CurrentHandState {
     public ScoreLast8CardsMultiplier: number
     public ScorePunishment: number
     public LeftCardsCount: number
+    public AllShowedTricks: CurrentTrickState[]
+    public AllShowedCards: CurrentPoker
+    public OnlyMeHasPair: any
     constructor(gameState?: GameState) {
         if (gameState != null) {
             this.PlayerHoldingCards = {}
@@ -52,6 +56,9 @@ export class CurrentHandState {
         this.ScoreLast8CardsBase = 0
         this.ScoreLast8CardsMultiplier = 0
         this.ScorePunishment = 0
+        this.AllShowedTricks = []
+        this.AllShowedCards = new CurrentPoker()
+        this.OnlyMeHasPair = {}
     }
     public CloneFrom(from: CurrentHandState) {
         this.Id = from.Id
@@ -78,5 +85,8 @@ export class CurrentHandState {
         this.ScoreLast8CardsMultiplier = from.ScoreLast8CardsMultiplier
         this.ScorePunishment = from.ScorePunishment
         this.LeftCardsCount = from.LeftCardsCount
+        this.AllShowedTricks = []
+        this.AllShowedCards = new CurrentPoker()
+        this.OnlyMeHasPair = {}
     }
 }

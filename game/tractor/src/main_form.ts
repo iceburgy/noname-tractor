@@ -19,7 +19,7 @@ import { RoomState } from './room_state.js';
 import { IDBHelper } from './idb_helper.js';
 import { ReplayEntity } from './replay_entity.js';
 import { FileHelper } from './file_helper.js';
-import { debug } from 'console';
+import { debug, time } from 'console';
 import { OnePlayerAtATime } from './one_player_at_a_time.js';
 import { YuezhanEntity } from './yuezhan_entity.js';
 import { ShowedCardKeyValue } from './showed_card_key_value.js';
@@ -528,6 +528,7 @@ export class MainForm {
         if (!drawCards) return;
         this.tractorPlayer.playerLocalCache.ShowedCardsInCurrentTrick = CommonMethods.deepCopy<any>(this.tractorPlayer.CurrentTrickState.ShowedCards);
         if (this.tractorPlayer.CurrentTrickState.ShowedCards && this.tractorPlayer.CurrentTrickState.ShowedCards.length == 4) {
+            // 甩牌失败时length==1 跳过
             this.tractorPlayer.playerLocalCache.WinnderID = TractorRules.GetWinner(this.tractorPlayer.CurrentTrickState);
             this.tractorPlayer.playerLocalCache.WinResult = this.IsWinningWithTrump(this.tractorPlayer.CurrentTrickState, this.tractorPlayer.playerLocalCache.WinnderID);
         }
@@ -3384,6 +3385,7 @@ export class MainForm {
         this.selectDates = document.getElementById("selectDates")
         this.selectTimes = document.getElementById("selectTimes")
         let btnLoadReplay: any = document.getElementById("btnLoadReplay")
+        let btnExportState: any = document.getElementById("btnExportState")
 
         this.selectDates.onchange = () => {
             this.onDatesSelectChange(true, 0)
@@ -3449,6 +3451,95 @@ export class MainForm {
 
             // btnLastTrick
             if (!this.btnLastTrick) this.btnLastTrick = this.gameScene.ui.create.div('.menubutton.highlight.pointerdiv.replayButtonsClass.replayButtonsClass1', '最末轮', this.gameScene.ui.replayFormWrapper, () => this.btnLastTrick_Click());
+        }
+        btnExportState.onclick = () => {
+            if (!this.tractorPlayer.replayEntity || this.tractorPlayer.replayEntity.CurrentTrickStates.length == 0) return;
+
+            let gameState = new GameState();
+            gameState.CloneFrom(this.tractorPlayer.CurrentGameState);
+            for (let i = 0; i < gameState.Players.length; i++) {
+                gameState.Players[i].OfflineSince = "0001-01-01T00:00:00Z";
+                if (gameState.Players[i].PlayerId == this.tractorPlayer.replayEntity.CurrentHandState.Starter) {
+                    gameState.startNextHandStarter.CloneFrom(gameState.Players[i]);
+                }
+            }
+
+            let rtLen = this.tractorPlayer.replayedTricks.length;
+            let handState = new CurrentHandState();
+            handState.CloneFrom(this.tractorPlayer.CurrentHandState);
+            // set dynamically generated fields
+            handState.AllShowedTricks = [];
+            handState.AllShowedCards = new CurrentPoker();
+            handState.LeftCardsCount = 25;
+            handState.OnlyMeHasPair = {};
+            for (let i = 0; i < rtLen; i++) {
+                let rt = this.tractorPlayer.replayedTricks[i];
+                if (rt && rt.Rank >= 0 && rt.ShowedCards.length == 4) {
+                    // 甩牌失败时length==1 跳过
+                    handState.AllShowedTricks.push(rt);
+                }
+            }
+            for (let i = 0; i < handState.AllShowedTricks.length; i++) {
+                let cts = handState.AllShowedTricks[i];
+                // set OnlyMeHasPairMap
+                let leaderHasPair = false;
+                let othersHasPair = false;
+                let firstSuit = cts.LeadingSuit();
+                let lenC = 0;
+                for (let j = 0; j < cts.ShowedCards.length; j++) {
+                    let sc = cts.ShowedCards[j];
+                    lenC = sc.Cards.length;
+                    for (let k = 0; k < lenC; k++) {
+                        handState.AllShowedCards.AddCard(sc.Cards[k]);
+                    }
+                    // set OnlyMeHasPairMap
+                    const curCP = new CurrentPoker(
+                        sc.Cards,
+                        handState.Trump,
+                        handState.Rank);
+                    if (curCP.GetPairsBySuit(firstSuit).length > 0) {
+                        if (sc.PlayerID === cts.Learder) {
+                            leaderHasPair = true;
+                        } else {
+                            othersHasPair = true;
+                        }
+                    }
+                }
+                if (leaderHasPair && !othersHasPair) {
+                    if (!(firstSuit in handState.OnlyMeHasPair)) {
+                        if (handState.OnlyMeHasPair == null) {
+                            handState.OnlyMeHasPair = {};
+                        }
+
+                        handState.OnlyMeHasPair[firstSuit] = cts.Learder;
+                    }
+                }
+                handState.LeftCardsCount -= lenC;
+            }
+
+            let trickState = new CurrentTrickState;
+            trickState.Trump = handState.Trump;
+            trickState.Rank = handState.Rank;
+            trickState.Learder = this.tractorPlayer.replayEntity.CurrentHandState.Starter;
+            if (rtLen > 0) {
+                let lastTrick = this.tractorPlayer.replayedTricks[rtLen - 1];
+                if (lastTrick.Rank > 0) {
+                    trickState.Learder = lastTrick.Winner;
+                }
+            }
+            for (let i = 0; i < gameState.Players.length; i++) {
+                let sckv = new ShowedCardKeyValue();
+                sckv.PlayerID = gameState.Players[i].PlayerId;
+                sckv.Cards = [];
+                trickState.ShowedCards.push(sckv);
+            }
+
+            let contentGameState = JSON.stringify(gameState);
+            let contentHandState = JSON.stringify(handState);
+            let contentTrickState = JSON.stringify(trickState);
+            FileHelper.DownloadFiles(
+                [CommonMethods.BackupGamestateFileName, CommonMethods.BackupHandStateFileName, CommonMethods.BackupTrickStateFileName],
+                [contentGameState, contentHandState, contentTrickState]);
         }
     }
 
@@ -3622,6 +3713,7 @@ export class MainForm {
                 this.drawingFormHelper.DrawFinishedSendedCards();
                 return;
             }
+            // 甩牌失败时length==1 跳过
             isNormalShowCards = trick.ShowedCards.length == 4;
             if (isOnePlayerAtATimeInit && isNormalShowCards) {
                 this.onePlayerAtATime.winner = trick.Winner;
@@ -3843,6 +3935,7 @@ export class MainForm {
             if (this.shouldShowLast8Cards()) this.drawingFormHelper.DrawDiscardedCards();
         }
         else if (Object.keys(trick.ShowedCards).length == 4) {
+            // 甩牌失败时length==1 跳过
             for (let i = 0; i < trick.ShowedCards.length; i++) {
                 let keyValue: ShowedCardKeyValue = trick.ShowedCards[i];
                 (keyValue.Cards as number[]).forEach(card => {

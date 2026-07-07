@@ -5,6 +5,7 @@ export class CurrentPoker {
     public Rank: number
     public Cards: number[]
     public Trump: number
+    public TrumpInt: number
     constructor(cards?: any, suit?: any, rank?: any) {
         this.Cards = []
         for (let i = 0; i < 54; i++) {
@@ -12,6 +13,7 @@ export class CurrentPoker {
         }
         this.Rank = rank !== undefined ? rank : 0
         this.Trump = suit !== undefined ? suit : 0
+        this.TrumpInt = suit
         if (cards !== undefined) {
             var temp: number[] = cards as Array<number>
             temp.forEach(c => {
@@ -23,6 +25,7 @@ export class CurrentPoker {
     public CloneFrom(cp: CurrentPoker) {
         this.Rank = cp.Rank;
         this.Trump = cp.Trump;
+        this.TrumpInt = cp.TrumpInt;
         this.Cards = CommonMethods.deepCopy<number[]>(cp.Cards)
     }
 
