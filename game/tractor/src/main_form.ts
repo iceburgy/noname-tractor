@@ -811,7 +811,7 @@ export class MainForm {
     public Last8Discarded() {
         this.gameScene.playAudio(CommonMethods.audioTie);
 
-        if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
+        if (this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             let tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId]
             this.tractorPlayer.CurrentPoker.CloneFrom(tempCP);
             this.drawingFormHelper.removeCardImage(this.tractorPlayer.CurrentHandState.DiscardedCards);
@@ -924,7 +924,7 @@ export class MainForm {
         }
 
         //即时更新旁观手牌
-        if (this.tractorPlayer.isObserver && this.tractorPlayer.PlayerId == latestPlayer) {
+        if (this.tractorPlayer.PlayerId == latestPlayer) {
             this.tractorPlayer.CurrentPoker.CloneFrom(this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId])
             this.drawingFormHelper.removeCardImage(showedCards);
             this.drawingFormHelper.ResortMyHandCards();
@@ -956,7 +956,7 @@ export class MainForm {
     private RobotPlayFollowing() {
         if (this.tractorPlayer.isObserver) return
         //跟出
-        if ((this.tractorPlayer.playerLocalCache.isLastTrick || this.IsDebug) && !this.tractorPlayer.isObserver &&
+        if (this.IsDebug && !this.tractorPlayer.isObserver &&
             this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId &&
             this.tractorPlayer.CurrentTrickState.IsStarted()) {
             let tempSelectedCards: number[] = []
@@ -3479,7 +3479,8 @@ export class MainForm {
                     handState.AllShowedTricks.push(rt);
                 }
             }
-            for (let i = 0; i < handState.AllShowedTricks.length; i++) {
+            let astLen = handState.AllShowedTricks.length;
+            for (let i = 0; i < astLen; i++) {
                 let cts = handState.AllShowedTricks[i];
                 // set OnlyMeHasPairMap
                 let leaderHasPair = false;
@@ -3517,21 +3518,27 @@ export class MainForm {
                 handState.LeftCardsCount -= lenC;
             }
 
-            let trickState = new CurrentTrickState;
-            trickState.Trump = handState.Trump;
-            trickState.Rank = handState.Rank;
-            trickState.Learder = this.tractorPlayer.replayEntity.CurrentHandState.Starter;
-            if (rtLen > 0) {
-                let lastTrick = this.tractorPlayer.replayedTricks[rtLen - 1];
-                if (lastTrick.Rank > 0) {
-                    trickState.Learder = lastTrick.Winner;
+            let trickState = new CurrentTrickState()
+            if (astLen > 0) {
+                trickState.CloneFrom(handState.AllShowedTricks[astLen - 1]);
+                trickState.serverLocalCache.lastShowedCards = CommonMethods.deepCopy<ShowedCardKeyValue[]>(trickState.ShowedCards);
+                trickState.serverLocalCache.lastLeader = trickState.Learder;
+
+                trickState.Learder = trickState.Winner;
+                trickState.Winner = "";
+                for (let i = 0; i < trickState.ShowedCards.length; i++) {
+                    trickState.ShowedCards[i].Cards = [];
                 }
-            }
-            for (let i = 0; i < gameState.Players.length; i++) {
-                let sckv = new ShowedCardKeyValue();
-                sckv.PlayerID = gameState.Players[i].PlayerId;
-                sckv.Cards = [];
-                trickState.ShowedCards.push(sckv);
+            } else {
+                trickState.Trump = handState.Trump;
+                trickState.Rank = handState.Rank;
+                trickState.Learder = this.tractorPlayer.replayEntity.CurrentHandState.Starter;
+                for (let i = 0; i < gameState.Players.length; i++) {
+                    let sckv = new ShowedCardKeyValue();
+                    sckv.PlayerID = gameState.Players[i].PlayerId;
+                    sckv.Cards = [];
+                    trickState.ShowedCards.push(sckv);
+                }
             }
 
             let contentGameState = JSON.stringify(gameState);
