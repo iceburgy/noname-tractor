@@ -717,5 +717,17 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.BackupGamestateFileName = "backup_gamestate.json";
     CommonMethods.BackupHandStateFileName = "backup_HandState.json";
     CommonMethods.BackupTrickStateFileName = "backup_TrickState.json";
+    // Special card case name string literals
+    CommonMethods.IsTractorSeen = "IsTractorSeen";
+    CommonMethods.IsUnbalancedSuitSeen = "IsUnbalancedSuitSeen";
+    CommonMethods.IsUnbalancedRankOrJokerSeen = "IsUnbalancedRankOrJokerSeen"; // 常主 小于等于1 大于等于5
+    CommonMethods.IsPairRankOrJokerSeen = "IsPairRankOrJokerSeen"; // 常主 对子
+    // Prevent consecutive special card cases
+    CommonMethods.SpecialCardCaseNames = [
+        CommonMethods.IsTractorSeen,
+        CommonMethods.IsUnbalancedSuitSeen,
+        CommonMethods.IsUnbalancedRankOrJokerSeen,
+        CommonMethods.IsPairRankOrJokerSeen,
+    ];
     return CommonMethods;
 }());

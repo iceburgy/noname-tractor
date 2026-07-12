@@ -185,6 +185,20 @@ export class CommonMethods {
     public static BackupHandStateFileName = "backup_HandState.json"
     public static BackupTrickStateFileName = "backup_TrickState.json"
 
+    // Special card case name string literals
+    public static IsTractorSeen = "IsTractorSeen";
+    public static IsUnbalancedSuitSeen = "IsUnbalancedSuitSeen";
+    public static IsUnbalancedRankOrJokerSeen = "IsUnbalancedRankOrJokerSeen"; // 常主 小于等于1 大于等于5
+    public static IsPairRankOrJokerSeen = "IsPairRankOrJokerSeen"; // 常主 对子
+
+    // Prevent consecutive special card cases
+    public static SpecialCardCaseNames: string[] = [
+        CommonMethods.IsTractorSeen,
+        CommonMethods.IsUnbalancedSuitSeen,
+        CommonMethods.IsUnbalancedRankOrJokerSeen,
+        CommonMethods.IsPairRankOrJokerSeen,
+    ];
+
     constructor() {
     }
 

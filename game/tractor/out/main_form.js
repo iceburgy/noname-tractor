@@ -3200,6 +3200,10 @@ var MainForm = /** @class */ (function () {
                 return;
             var gameState = new GameState();
             gameState.CloneFrom(_this.tractorPlayer.CurrentGameState);
+            for (var _i = 0, _a = CommonMethods.SpecialCardCaseNames; _i < _a.length; _i++) {
+                var caseName = _a[_i];
+                gameState.specialCardsTracker[caseName] = [0, 0];
+            }
             for (var i = 0; i < gameState.Players.length; i++) {
                 gameState.Players[i].OfflineSince = "0001-01-01T00:00:00Z";
                 if (gameState.Players[i].PlayerId == _this.tractorPlayer.replayEntity.CurrentHandState.Starter) {

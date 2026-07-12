@@ -3457,6 +3457,9 @@ export class MainForm {
 
             let gameState = new GameState();
             gameState.CloneFrom(this.tractorPlayer.CurrentGameState);
+            for (const caseName of CommonMethods.SpecialCardCaseNames) {
+                gameState.specialCardsTracker[caseName] = [0, 0];
+            }
             for (let i = 0; i < gameState.Players.length; i++) {
                 gameState.Players[i].OfflineSince = "0001-01-01T00:00:00Z";
                 if (gameState.Players[i].PlayerId == this.tractorPlayer.replayEntity.CurrentHandState.Starter) {
