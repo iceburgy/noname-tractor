@@ -191,6 +191,9 @@ export class CommonMethods {
     public static IsUnbalancedRankOrJokerSeen = "IsUnbalancedRankOrJokerSeen"; // 常主 小于等于1 大于等于5
     public static IsPairRankOrJokerSeen = "IsPairRankOrJokerSeen"; // 常主 对子
 
+    // autobot
+    public static AutobotIDPrefix = "R"
+
     // Prevent consecutive special card cases
     public static SpecialCardCaseNames: string[] = [
         CommonMethods.IsTractorSeen,

@@ -722,6 +722,8 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.IsUnbalancedSuitSeen = "IsUnbalancedSuitSeen";
     CommonMethods.IsUnbalancedRankOrJokerSeen = "IsUnbalancedRankOrJokerSeen"; // 常主 小于等于1 大于等于5
     CommonMethods.IsPairRankOrJokerSeen = "IsPairRankOrJokerSeen"; // 常主 对子
+    // autobot
+    CommonMethods.AutobotIDPrefix = "R";
     // Prevent consecutive special card cases
     CommonMethods.SpecialCardCaseNames = [
         CommonMethods.IsTractorSeen,

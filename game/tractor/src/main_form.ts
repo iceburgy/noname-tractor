@@ -3465,6 +3465,9 @@ export class MainForm {
                 if (gameState.Players[i].PlayerId == this.tractorPlayer.replayEntity.CurrentHandState.Starter) {
                     gameState.startNextHandStarter.CloneFrom(gameState.Players[i]);
                 }
+                if (/^R\d{2}$/.test(gameState.Players[i].PlayerId)) {
+                    gameState.Players[i].IsAutobot = true;
+                }
             }
 
             let rtLen = this.tractorPlayer.replayedTricks.length;

@@ -3209,6 +3209,9 @@ var MainForm = /** @class */ (function () {
                 if (gameState.Players[i].PlayerId == _this.tractorPlayer.replayEntity.CurrentHandState.Starter) {
                     gameState.startNextHandStarter.CloneFrom(gameState.Players[i]);
                 }
+                if (/^R\d{2}$/.test(gameState.Players[i].PlayerId)) {
+                    gameState.Players[i].IsAutobot = true;
+                }
             }
             var rtLen = _this.tractorPlayer.replayedTricks.length;
             var handState = new CurrentHandState();
