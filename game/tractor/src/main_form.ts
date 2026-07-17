@@ -811,7 +811,7 @@ export class MainForm {
     public Last8Discarded() {
         this.gameScene.playAudio(CommonMethods.audioTie);
 
-        if (this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
+        if (this.tractorPlayer.isObserver && this.tractorPlayer.CurrentHandState.Last8Holder == this.tractorPlayer.PlayerId) {
             let tempCP = this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId]
             this.tractorPlayer.CurrentPoker.CloneFrom(tempCP);
             this.drawingFormHelper.removeCardImage(this.tractorPlayer.CurrentHandState.DiscardedCards);
@@ -924,7 +924,7 @@ export class MainForm {
         }
 
         //即时更新旁观手牌
-        if (this.tractorPlayer.PlayerId == latestPlayer) {
+        if (this.tractorPlayer.isObserver && this.tractorPlayer.PlayerId == latestPlayer) {
             this.tractorPlayer.CurrentPoker.CloneFrom(this.tractorPlayer.CurrentHandState.PlayerHoldingCards[this.tractorPlayer.PlayerId])
             this.drawingFormHelper.removeCardImage(showedCards);
             this.drawingFormHelper.ResortMyHandCards();
@@ -956,7 +956,7 @@ export class MainForm {
     private RobotPlayFollowing() {
         if (this.tractorPlayer.isObserver) return
         //跟出
-        if (this.IsDebug && !this.tractorPlayer.isObserver &&
+        if ((this.tractorPlayer.playerLocalCache.isLastTrick || this.IsDebug) && !this.tractorPlayer.isObserver &&
             this.tractorPlayer.CurrentTrickState.NextPlayer() == this.tractorPlayer.PlayerId &&
             this.tractorPlayer.CurrentTrickState.IsStarted()) {
             let tempSelectedCards: number[] = []
