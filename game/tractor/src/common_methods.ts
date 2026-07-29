@@ -187,8 +187,10 @@ export class CommonMethods {
 
     // Special card case name string literals
     public static IsTractorSeen = "IsTractorSeen";
-    public static IsUnbalancedSuitSeen = "IsUnbalancedSuitSeen";
-    public static IsUnbalancedRankOrJokerSeen = "IsUnbalancedRankOrJokerSeen"; // 常主 小于等于1 大于等于5
+    public static IsUnbalancedSuitSeenTooFew = "IsUnbalancedSuitSeenTooFew"; //一门花色 小于等于 UnbalancedSuitCountLower
+    public static IsUnbalancedSuitSeenTooMany = "IsUnbalancedSuitSeenTooMany"; //一门花色 大于等于 UnbalancedSuitCountUpper
+    public static IsUnbalancedRankOrJokerSeenTooFew = "IsUnbalancedRankOrJokerSeenTooFew"; //常主 小于等于 UnbalancedRankOrJokerCountLower
+    public static IsUnbalancedRankOrJokerSeenTooMany = "IsUnbalancedRankOrJokerSeenTooMany"; //常主 大于等于 UnbalancedRankOrJokerCountUpper
     public static IsPairRankOrJokerSeen = "IsPairRankOrJokerSeen"; // 常主 对子
 
     // autobot
@@ -197,8 +199,10 @@ export class CommonMethods {
     // Prevent consecutive special card cases
     public static SpecialCardCaseNames: string[] = [
         CommonMethods.IsTractorSeen,
-        CommonMethods.IsUnbalancedSuitSeen,
-        CommonMethods.IsUnbalancedRankOrJokerSeen,
+        CommonMethods.IsUnbalancedSuitSeenTooFew,
+        CommonMethods.IsUnbalancedSuitSeenTooMany,
+        CommonMethods.IsUnbalancedRankOrJokerSeenTooFew,
+        CommonMethods.IsUnbalancedRankOrJokerSeenTooMany,
         CommonMethods.IsPairRankOrJokerSeen,
     ];
 

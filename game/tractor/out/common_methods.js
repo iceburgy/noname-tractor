@@ -719,16 +719,20 @@ export var CommonMethods = /** @class */ (function () {
     CommonMethods.BackupTrickStateFileName = "backup_TrickState.json";
     // Special card case name string literals
     CommonMethods.IsTractorSeen = "IsTractorSeen";
-    CommonMethods.IsUnbalancedSuitSeen = "IsUnbalancedSuitSeen";
-    CommonMethods.IsUnbalancedRankOrJokerSeen = "IsUnbalancedRankOrJokerSeen"; // 常主 小于等于1 大于等于5
+    CommonMethods.IsUnbalancedSuitSeenTooFew = "IsUnbalancedSuitSeenTooFew"; //一门花色 小于等于 UnbalancedSuitCountLower
+    CommonMethods.IsUnbalancedSuitSeenTooMany = "IsUnbalancedSuitSeenTooMany"; //一门花色 大于等于 UnbalancedSuitCountUpper
+    CommonMethods.IsUnbalancedRankOrJokerSeenTooFew = "IsUnbalancedRankOrJokerSeenTooFew"; //常主 小于等于 UnbalancedRankOrJokerCountLower
+    CommonMethods.IsUnbalancedRankOrJokerSeenTooMany = "IsUnbalancedRankOrJokerSeenTooMany"; //常主 大于等于 UnbalancedRankOrJokerCountUpper
     CommonMethods.IsPairRankOrJokerSeen = "IsPairRankOrJokerSeen"; // 常主 对子
     // autobot
     CommonMethods.AutobotIDPrefix = "R";
     // Prevent consecutive special card cases
     CommonMethods.SpecialCardCaseNames = [
         CommonMethods.IsTractorSeen,
-        CommonMethods.IsUnbalancedSuitSeen,
-        CommonMethods.IsUnbalancedRankOrJokerSeen,
+        CommonMethods.IsUnbalancedSuitSeenTooFew,
+        CommonMethods.IsUnbalancedSuitSeenTooMany,
+        CommonMethods.IsUnbalancedRankOrJokerSeenTooFew,
+        CommonMethods.IsUnbalancedRankOrJokerSeenTooMany,
         CommonMethods.IsPairRankOrJokerSeen,
     ];
     return CommonMethods;
