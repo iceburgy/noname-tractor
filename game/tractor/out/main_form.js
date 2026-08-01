@@ -3216,6 +3216,9 @@ var MainForm = /** @class */ (function () {
             var rtLen = _this.tractorPlayer.replayedTricks.length;
             var handState = new CurrentHandState();
             handState.CloneFrom(_this.tractorPlayer.CurrentHandState);
+            // reset fields that should not be picked up from replay
+            handState.ScoreLast8CardsBase = 0;
+            handState.ScoreLast8CardsMultiplier = 0;
             // set dynamically generated fields
             handState.AllShowedTricks = [];
             handState.AllShowedCards = new CurrentPoker();
