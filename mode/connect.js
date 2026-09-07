@@ -229,7 +229,7 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 						});
 					}
 					ui.criticalResourceLoaded = true;
-					updateButtonStatus();
+					// todo: notify reenter from offline
 					return;
 				}
 
@@ -516,11 +516,6 @@ game.import('mode', function (lib, game, ui, get, ai, _status) {
 				document.getElementById("inputAccessKeyLink").addEventListener('click', displayButton);
 
 				updateButtonStatus = function () {
-					if (!ui.criticalResourceLoaded) {
-						button.classList.add('disabled');
-						button.classList.remove('pointerdiv');
-						return;
-					}
 					switch (button.innerHTML) {
 						case '进入大厅':
 							if (!nodePlayerName.value || !nodePassword.value) {
