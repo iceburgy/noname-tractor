@@ -1126,9 +1126,7 @@ export class MainForm {
         this.gameScene.ui.btnReady.classList.add('disabled');
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
 
-        console.log(`===btnReady_Click attempted`);
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "")
-        console.log(`===btnReady_Click done`);
     }
 
     private btnQiangliang_Click() {
@@ -3474,10 +3472,6 @@ export class MainForm {
             let handState = new CurrentHandState();
             handState.CloneFrom(this.tractorPlayer.CurrentHandState);
 
-            // reset fields that should not be picked up from replay
-            handState.ScoreLast8CardsBase = 0;
-            handState.ScoreLast8CardsMultiplier = 0;
-
             // set dynamically generated fields
             handState.AllShowedTricks = [];
             handState.AllShowedCards = new CurrentPoker();
@@ -3682,6 +3676,10 @@ export class MainForm {
             this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key] = tempcp;
         }
 
+        // reset fields that should not be picked up from replay
+        this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase = 0;
+        this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier = 0;
+        this.tractorPlayer.CurrentHandState.ScorePunishment = 0;
 
         this.tractorPlayer.CurrentHandState.Score = 0;
         this.tractorPlayer.CurrentHandState.ScoreCards = [];
@@ -3750,6 +3748,14 @@ export class MainForm {
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
             if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] == 1) {
                 this.DrawDumpFailureMessage(trick);
+                let punishScore = trick.ShowedCards[0].Cards.length * 10
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                    this.tractorPlayer.CurrentHandState.Score -= punishScore
+                    this.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore
+                } else {
+                    this.tractorPlayer.CurrentHandState.Score += punishScore
+                    this.tractorPlayer.CurrentHandState.ScorePunishment += punishScore
+                }
             }
         }
 
@@ -3790,6 +3796,14 @@ export class MainForm {
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
             if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] != 1) {
                 this.DrawDumpFailureMessage(trick);
+                let punishScore = trick.ShowedCards[0].Cards.length * 10
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                    this.tractorPlayer.CurrentHandState.Score -= punishScore
+                    this.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore
+                } else {
+                    this.tractorPlayer.CurrentHandState.Score += punishScore
+                    this.tractorPlayer.CurrentHandState.ScorePunishment += punishScore
+                }
             }
         }
 
@@ -3897,7 +3911,17 @@ export class MainForm {
                 this.tractorPlayer.replayEntity.CurrentTrickStates.shift();
 
                 // 甩牌失败
-                if (trick.ShowedCards.length == 1) continue;
+                if (trick.ShowedCards.length == 1) {
+                    let punishScore = trick.ShowedCards[0].Cards.length * 10
+                    if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                        this.tractorPlayer.CurrentHandState.Score -= punishScore
+                        this.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore
+                    } else {
+                        this.tractorPlayer.CurrentHandState.Score += punishScore
+                        this.tractorPlayer.CurrentHandState.ScorePunishment += punishScore
+                    }
+                    continue;
+                }
 
                 let curPlayer: string = trick.Learder;
                 for (let i = 0; i < trick.ShowedCards.length; i++) {
@@ -3949,11 +3973,10 @@ export class MainForm {
         let trick: CurrentTrickState = (this.tractorPlayer.replayedTricks.pop() as CurrentTrickState);
         this.tractorPlayer.replayEntity.CurrentTrickStates.unshift(trick);
         if (trick.Rank < 0) {
-            this.tractorPlayer.CurrentHandState.Score -= this.tractorPlayer.CurrentHandState.ScorePunishment + this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
+            this.tractorPlayer.CurrentHandState.Score -= this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
             if (this.shouldShowLast8Cards()) this.drawingFormHelper.DrawDiscardedCards();
         }
         else if (Object.keys(trick.ShowedCards).length == 4) {
-            // 甩牌失败时length==1 跳过
             for (let i = 0; i < trick.ShowedCards.length; i++) {
                 let keyValue: ShowedCardKeyValue = trick.ShowedCards[i];
                 (keyValue.Cards as number[]).forEach(card => {
@@ -3970,6 +3993,16 @@ export class MainForm {
                 }
             }
             this.drawingFormHelper.DrawScoreImageAndCards();
+        } else if (Object.keys(trick.ShowedCards).length == 1) {
+            // 甩牌失败时 反向apply punishScore
+            let punishScore = trick.ShowedCards[0].Cards.length * 10
+            if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                this.tractorPlayer.CurrentHandState.Score += punishScore
+                this.tractorPlayer.CurrentHandState.ScorePunishment += punishScore
+            } else {
+                this.tractorPlayer.CurrentHandState.Score -= punishScore
+                this.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore
+            }
         }
     }
 

@@ -3216,9 +3216,7 @@ var MainForm = /** @class */ (function () {
             var rtLen = _this.tractorPlayer.replayedTricks.length;
             var handState = new CurrentHandState();
             handState.CloneFrom(_this.tractorPlayer.CurrentHandState);
-            // reset fields that should not be picked up from replay
-            handState.ScoreLast8CardsBase = 0;
-            handState.ScoreLast8CardsMultiplier = 0;
+            console.log("===this.tractorPlayer.CurrentHandState.Score: ".concat(_this.tractorPlayer.CurrentHandState.Score));
             // set dynamically generated fields
             handState.AllShowedTricks = [];
             handState.AllShowedCards = new CurrentPoker();
@@ -3414,6 +3412,10 @@ var MainForm = /** @class */ (function () {
             this.tractorPlayer.CurrentHandState.PlayerHoldingCards[key] = tempcp;
             this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key] = tempcp;
         }
+        // reset fields that should not be picked up from replay
+        this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase = 0;
+        this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier = 0;
+        this.tractorPlayer.CurrentHandState.ScorePunishment = 0;
         this.tractorPlayer.CurrentHandState.Score = 0;
         this.tractorPlayer.CurrentHandState.ScoreCards = [];
         this.tractorPlayer.CurrentPoker = this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[players[0]];
@@ -3476,6 +3478,15 @@ var MainForm = /** @class */ (function () {
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
             if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] == 1) {
                 this.DrawDumpFailureMessage(trick);
+                var punishScore = trick.ShowedCards[0].Cards.length * 10;
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                    this.tractorPlayer.CurrentHandState.Score -= punishScore;
+                    this.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore;
+                }
+                else {
+                    this.tractorPlayer.CurrentHandState.Score += punishScore;
+                    this.tractorPlayer.CurrentHandState.ScorePunishment += punishScore;
+                }
             }
         }
         var curPlayer;
@@ -3516,6 +3527,15 @@ var MainForm = /** @class */ (function () {
         if (!isOnePlayerAtATime || isOnePlayerAtATimeInit) {
             if (trick.ShowedCards.length == 1 && this.PlayerPosition[trick.Learder] != 1) {
                 this.DrawDumpFailureMessage(trick);
+                var punishScore = trick.ShowedCards[0].Cards.length * 10;
+                if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                    this.tractorPlayer.CurrentHandState.Score -= punishScore;
+                    this.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore;
+                }
+                else {
+                    this.tractorPlayer.CurrentHandState.Score += punishScore;
+                    this.tractorPlayer.CurrentHandState.ScorePunishment += punishScore;
+                }
             }
         }
         if (isOnePlayerAtATime) {
@@ -3589,9 +3609,13 @@ var MainForm = /** @class */ (function () {
         }
         if (this.tractorPlayer.replayedTricks.length > 1) {
             this.drawingFormHelper.resetReplay();
+            console.log("===this.tractorPlayer.CurrentHandState.Score 1: ".concat(this.tractorPlayer.CurrentHandState.Score));
             this.revertReplayTrick();
+            console.log("===this.tractorPlayer.CurrentHandState.Score 2: ".concat(this.tractorPlayer.CurrentHandState.Score));
             this.revertReplayTrick();
+            console.log("===this.tractorPlayer.CurrentHandState.Score 3: ".concat(this.tractorPlayer.CurrentHandState.Score));
             this.replayNextTrick();
+            console.log("===this.tractorPlayer.CurrentHandState.Score 4: ".concat(this.tractorPlayer.CurrentHandState.Score));
         }
         else if (this.tractorPlayer.replayedTricks.length == 1) {
             this.btnFirstTrick_Click();
@@ -3619,8 +3643,18 @@ var MainForm = /** @class */ (function () {
                 this_6.tractorPlayer.replayedTricks.push(trick);
                 this_6.tractorPlayer.replayEntity.CurrentTrickStates.shift();
                 // 甩牌失败
-                if (trick.ShowedCards.length == 1)
+                if (trick.ShowedCards.length == 1) {
+                    var punishScore = trick.ShowedCards[0].Cards.length * 10;
+                    if (!this_6.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this_6.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                        this_6.tractorPlayer.CurrentHandState.Score -= punishScore;
+                        this_6.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore;
+                    }
+                    else {
+                        this_6.tractorPlayer.CurrentHandState.Score += punishScore;
+                        this_6.tractorPlayer.CurrentHandState.ScorePunishment += punishScore;
+                    }
                     return "continue";
+                }
                 var curPlayer = trick.Learder;
                 for (var i = 0; i < trick.ShowedCards.length; i++) {
                     CommonMethods.GetShowedCardsByPlayerID(trick.ShowedCards, curPlayer).forEach(function (card) {
@@ -3674,7 +3708,7 @@ var MainForm = /** @class */ (function () {
         var trick = this.tractorPlayer.replayedTricks.pop();
         this.tractorPlayer.replayEntity.CurrentTrickStates.unshift(trick);
         if (trick.Rank < 0) {
-            this.tractorPlayer.CurrentHandState.Score -= this.tractorPlayer.CurrentHandState.ScorePunishment + this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
+            this.tractorPlayer.CurrentHandState.Score -= this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase * this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier;
             if (this.shouldShowLast8Cards())
                 this.drawingFormHelper.DrawDiscardedCards();
         }
@@ -3685,7 +3719,6 @@ var MainForm = /** @class */ (function () {
                     _this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[keyValue.PlayerID].AddCard(card);
                 });
             };
-            // 甩牌失败时length==1 跳过
             for (var i = 0; i < trick.ShowedCards.length; i++) {
                 _loop_8(i);
             }
@@ -3699,6 +3732,18 @@ var MainForm = /** @class */ (function () {
                 }
             }
             this.drawingFormHelper.DrawScoreImageAndCards();
+        }
+        else if (Object.keys(trick.ShowedCards).length == 1) {
+            // 甩牌失败时 反向apply punishScore
+            var punishScore = trick.ShowedCards[0].Cards.length * 10;
+            if (!this.tractorPlayer.CurrentGameState.ArePlayersInSameTeam(this.tractorPlayer.CurrentHandState.Starter, trick.ShowedCards[0].PlayerID)) {
+                this.tractorPlayer.CurrentHandState.Score += punishScore;
+                this.tractorPlayer.CurrentHandState.ScorePunishment += punishScore;
+            }
+            else {
+                this.tractorPlayer.CurrentHandState.Score -= punishScore;
+                this.tractorPlayer.CurrentHandState.ScorePunishment -= punishScore;
+            }
         }
     };
     // pos is 1-based
