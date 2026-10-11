@@ -1019,9 +1019,7 @@ var MainForm = /** @class */ (function () {
         //为防止以外连续点两下开始按钮，造成重复发牌，点完一下就立即disable开始按钮
         this.gameScene.ui.btnReady.classList.add('disabled');
         this.gameScene.ui.btnReady.classList.remove('pointerdiv');
-        console.log("===btnReady_Click attempted");
         this.gameScene.sendMessageToServer(ReadyToStart_REQUEST, this.tractorPlayer.PlayerId, "");
-        console.log("===btnReady_Click done");
     };
     MainForm.prototype.btnQiangliang_Click = function () {
         if (!this.gameScene.ui.btnQiangliang || this.gameScene.ui.btnQiangliang.classList.contains('hidden') || this.gameScene.ui.btnQiangliang.classList.contains('disabled'))
@@ -3216,7 +3214,9 @@ var MainForm = /** @class */ (function () {
             var rtLen = _this.tractorPlayer.replayedTricks.length;
             var handState = new CurrentHandState();
             handState.CloneFrom(_this.tractorPlayer.CurrentHandState);
-            console.log("===this.tractorPlayer.CurrentHandState.Score: ".concat(_this.tractorPlayer.CurrentHandState.Score));
+            // reset fields that should not be picked up from replay
+            handState.ScoreLast8CardsBase = 0;
+            handState.ScoreLast8CardsMultiplier = 0;
             // set dynamically generated fields
             handState.AllShowedTricks = [];
             handState.AllShowedCards = new CurrentPoker();
@@ -3413,8 +3413,6 @@ var MainForm = /** @class */ (function () {
             this.tractorPlayer.replayEntity.CurrentHandState.PlayerHoldingCards[key] = tempcp;
         }
         // reset fields that should not be picked up from replay
-        this.tractorPlayer.CurrentHandState.ScoreLast8CardsBase = 0;
-        this.tractorPlayer.CurrentHandState.ScoreLast8CardsMultiplier = 0;
         this.tractorPlayer.CurrentHandState.ScorePunishment = 0;
         this.tractorPlayer.CurrentHandState.Score = 0;
         this.tractorPlayer.CurrentHandState.ScoreCards = [];
@@ -3609,13 +3607,9 @@ var MainForm = /** @class */ (function () {
         }
         if (this.tractorPlayer.replayedTricks.length > 1) {
             this.drawingFormHelper.resetReplay();
-            console.log("===this.tractorPlayer.CurrentHandState.Score 1: ".concat(this.tractorPlayer.CurrentHandState.Score));
             this.revertReplayTrick();
-            console.log("===this.tractorPlayer.CurrentHandState.Score 2: ".concat(this.tractorPlayer.CurrentHandState.Score));
             this.revertReplayTrick();
-            console.log("===this.tractorPlayer.CurrentHandState.Score 3: ".concat(this.tractorPlayer.CurrentHandState.Score));
             this.replayNextTrick();
-            console.log("===this.tractorPlayer.CurrentHandState.Score 4: ".concat(this.tractorPlayer.CurrentHandState.Score));
         }
         else if (this.tractorPlayer.replayedTricks.length == 1) {
             this.btnFirstTrick_Click();
