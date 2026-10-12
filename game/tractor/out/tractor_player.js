@@ -22,6 +22,7 @@ var TractorPlayer = /** @class */ (function () {
         this.PlayerId = mf.gameScene.playerName;
         this.MyOwnId = mf.gameScene.playerName;
         this.isObserver = false;
+        this.isAutobot = false;
         this.IsTryingReenter = false;
         this.IsTryingResumeGame = false;
         this.ShowLastTrickCards = false;
@@ -102,6 +103,9 @@ var TractorPlayer = /** @class */ (function () {
             if (p_1) {
                 newPlayerPosition[p_1.PlayerId] = i + 1;
                 newPositionPlayer[i + 1] = p_1.PlayerId;
+                if (p_1.PlayerId === this.MyOwnId) {
+                    this.isAutobot = p_1.IsAutobot;
+                }
             }
             curIndex = (curIndex + 1) % 4;
         }

@@ -27,6 +27,7 @@ export class TractorPlayer {
     public PlayerId: string
     public MyOwnId: string
     public isObserver: boolean
+    public isAutobot: boolean
     public IsTryingReenter: boolean
     public IsTryingResumeGame: boolean
     public ShowLastTrickCards: boolean
@@ -48,6 +49,7 @@ export class TractorPlayer {
         this.PlayerId = mf.gameScene.playerName
         this.MyOwnId = mf.gameScene.playerName
         this.isObserver = false
+        this.isAutobot = false
         this.IsTryingReenter = false
         this.IsTryingResumeGame = false
         this.ShowLastTrickCards = false
@@ -132,6 +134,9 @@ export class TractorPlayer {
             if (p) {
                 newPlayerPosition[p.PlayerId] = i + 1;
                 newPositionPlayer[i + 1] = p.PlayerId;
+                if (p.PlayerId === this.MyOwnId) {
+                    this.isAutobot = p.IsAutobot
+                }
             }
             curIndex = (curIndex + 1) % 4
         }
